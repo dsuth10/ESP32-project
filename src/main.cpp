@@ -89,6 +89,12 @@ void setup() {
   Serial.println("[Setup] Starting BLE Keyboard as 'ESP32 MacroPad'...");
   bleKeyboard.begin();
 
+  // Configure BLE Security to avoid Windows MITM PIN requirement loop
+  BLESecurity* pSecurity = new BLESecurity();
+  pSecurity->setAuthenticationMode(ESP_LE_AUTH_BOND);
+  pSecurity->setCapability(ESP_IO_CAP_NONE);
+  pSecurity->setInitEncryptionKey(ESP_BLE_ENC_KEY_MASK | ESP_BLE_ID_KEY_MASK);
+
   Serial.println("[Setup] Ready! Pair with Windows as 'ESP32 MacroPad'.");
 }
 

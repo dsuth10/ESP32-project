@@ -1,0 +1,17 @@
+# PlatformIO build directory and environments
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# Editor and IDE configurations
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
