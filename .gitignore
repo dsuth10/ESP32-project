@@ -3,6 +3,17 @@
 .pioenvs/
 .piolibdeps/
 
+# Sensitive Configuration & Credentials
+*wifi_config.h
+!*wifi_config.h.example
+
+# Python cache & virtual environments
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+
 # Editor and IDE configurations
 .vscode/
 .idea/

@@ -6,6 +6,14 @@
 #define TOUCH_PREV_PAGE 100
 #define TOUCH_NEXT_PAGE 101
 
+enum VoiceUIState {
+  VOICE_UI_IDLE,
+  VOICE_UI_RECORDING,
+  VOICE_UI_SENDING,
+  VOICE_UI_SUCCESS,
+  VOICE_UI_ERROR
+};
+
 class MacroPadGUI {
 public:
   MacroPadGUI(TFT_eSPI& tft);
@@ -13,6 +21,7 @@ public:
   void drawAll(bool isConnected, uint8_t currentPage);
   void drawStatusBar(bool isConnected, uint8_t currentPage);
   void drawButton(uint8_t pageIndex, uint8_t btnIndex, bool pressed);
+  void drawVoiceCard(VoiceUIState state, const char* statusMsg, const char* detailMsg);
   int8_t getTouchTarget(int16_t x, int16_t y, uint8_t currentPage);
 
 private:

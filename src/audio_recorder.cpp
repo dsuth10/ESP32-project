@@ -1,0 +1,206 @@
+#include "audio_recorder.h"
+#include "es8311.h"
+#include "driver/i2s.h"
+
+#define I2S_PORT         I2S_NUM_0
+#define PIN_I2S_MCLK     4
+#define PIN_I2S_BCLK     5
+#define PIN_I2S_WS       7
+#define PIN_I2S_DOUT     8  // ESP32 I2S DOUT (Speaker / DAC DSDIN)
+#define PIN_I2S_DIN      6  // ESP32 I2S DIN (Microphone / ADC ASDOUT)
+#define PIN_PA_ENABLE    1
+
+AudioRecorder recorder;
+
+AudioRecorder::AudioRecorder()
+    : _psramBuffer(nullptr),
+      _pcmBytesRecorded(0),
+      _totalWavBytes(0),
+      _isRecording(false),
+      _recordStartTime(0) {}
+
+bool AudioRecorder::begin() {
+    // 1. Ensure Audio Power Amplifier (FM8002, active-LOW) is shut down / muted
+    pinMode(PIN_PA_ENABLE, OUTPUT);
+    digitalWrite(PIN_PA_ENABLE, HIGH);
+
+    // 2. Allocate PSRAM Audio Buffer
+    _psramBuffer = (uint8_t*)ps_malloc(MAX_AUDIO_BUFFER_SIZE);
+    if (!_psramBuffer) {
+        Serial.println("[Recorder] Failed to allocate audio buffer in PSRAM!");
+        return false;
+    }
+    Serial.printf("[Recorder] Allocated %u bytes in PSRAM for audio recording\n", (unsigned int)MAX_AUDIO_BUFFER_SIZE);
+
+    // 3. Configure I2S Driver (IDF 4.4 standard API)
+    // Master RX+TX mode (TX ensures master clock MCLK is continuously generated on GPIO 4)
+    i2s_config_t i2s_config = {
+        .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX | I2S_MODE_TX),
+        .sample_rate = AUDIO_SAMPLE_RATE,
+        .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+        .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
+        .communication_format = I2S_COMM_FORMAT_STAND_I2S,
+        .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
+        .dma_buf_count = 8,
+        .dma_buf_len = 512,
+        .use_apll = false,
+        .tx_desc_auto_clear = true,
+        .fixed_mclk = 0,
+        .mclk_multiple = I2S_MCLK_MULTIPLE_256,
+        .bits_per_chan = I2S_BITS_PER_CHAN_16BIT
+    };
+
+    i2s_pin_config_t pin_config = {
+        .mck_io_num = PIN_I2S_MCLK,
+        .bck_io_num = PIN_I2S_BCLK,
+        .ws_io_num = PIN_I2S_WS,
+        .data_out_num = PIN_I2S_DOUT,
+        .data_in_num = PIN_I2S_DIN
+    };
+
+    esp_err_t err = i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
+    if (err != ESP_OK) {
+        Serial.printf("[Recorder] I2S driver install failed: 0x%x\n", err);
+        return false;
+    }
+
+    err = i2s_set_pin(I2S_PORT, &pin_config);
+    if (err != ESP_OK) {
+        Serial.printf("[Recorder] I2S set pin failed: 0x%x\n", err);
+        return false;
+    }
+
+    // 4. Initialize ES8311 Codec (over Wire I2C)
+    if (es8311_codec_init() != ESP_OK) {
+        Serial.println("[Recorder] ES8311 init failed!");
+        return false;
+    }
+
+    Serial.println("[Recorder] Audio system initialized successfully");
+    return true;
+}
+
+bool AudioRecorder::startRecording() {
+    if (!_psramBuffer) return false;
+    _pcmBytesRecorded = 0;
+    _totalWavBytes = 0;
+    _isRecording = true;
+    _recordStartTime = millis();
+    _maxLeftPeak = 0;
+    _maxRightPeak = 0;
+
+    // Flush old samples from DMA
+    i2s_zero_dma_buffer(I2S_PORT);
+    Serial.println("[Recorder] >>> START RECORDING <<<");
+    return true;
+}
+
+void AudioRecorder::update() {
+    if (!_isRecording) return;
+
+    // Check max duration safety cutoff
+    if (millis() - _recordStartTime >= (MAX_RECORD_SECONDS * 1000)) {
+        Serial.println("[Recorder] Max record duration reached");
+        stopRecording();
+        return;
+    }
+
+    // Read available I2S stereo samples
+    const size_t CHUNK_SAMPLES = 256;
+    int16_t stereoBuf[CHUNK_SAMPLES * 2];
+    size_t bytesRead = 0;
+
+    esp_err_t ret = i2s_read(I2S_PORT, (void*)stereoBuf, sizeof(stereoBuf), &bytesRead, 10);
+    if (ret == ESP_OK && bytesRead > 0) {
+        size_t samplesRead = bytesRead / (sizeof(int16_t) * 2);
+        size_t maxPcmBytes = MAX_AUDIO_BUFFER_SIZE - 44;
+
+        int16_t* pcmDest = (int16_t*)(_psramBuffer + 44 + _pcmBytesRecorded);
+        for (size_t i = 0; i < samplesRead; i++) {
+            if (_pcmBytesRecorded + sizeof(int16_t) > maxPcmBytes) {
+                stopRecording();
+                return;
+            }
+            int16_t left = stereoBuf[i * 2];
+            int16_t right = stereoBuf[i * 2 + 1];
+
+            if (abs(left) > _maxLeftPeak) _maxLeftPeak = abs(left);
+            if (abs(right) > _maxRightPeak) _maxRightPeak = abs(right);
+
+            // Select active audio channel (pick whichever has real signal)
+            int16_t sample = (abs(right) > abs(left)) ? right : left;
+            *pcmDest++ = sample;
+            _pcmBytesRecorded += sizeof(int16_t);
+        }
+    }
+}
+
+size_t AudioRecorder::stopRecording() {
+    if (!_isRecording) return _totalWavBytes;
+    _isRecording = false;
+
+    writeWavHeader(_pcmBytesRecorded);
+    _totalWavBytes = _pcmBytesRecorded + 44;
+
+    uint32_t durationMs = millis() - _recordStartTime;
+    Serial.printf("[Recorder] >>> STOPPED: %u ms, %u PCM bytes, Left Peak=%d, Right Peak=%d <<<\n",
+                  (unsigned int)durationMs, (unsigned int)_pcmBytesRecorded, _maxLeftPeak, _maxRightPeak);
+
+    return _totalWavBytes;
+}
+
+uint32_t AudioRecorder::getRecordDurationMs() const {
+    if (!_isRecording) return 0;
+    return millis() - _recordStartTime;
+}
+
+void AudioRecorder::writeWavHeader(size_t pcmBytes) {
+    if (!_psramBuffer) return;
+
+    uint32_t totalFileSize = pcmBytes + 36;
+    uint32_t byteRate = AUDIO_SAMPLE_RATE * AUDIO_CHANNELS * (AUDIO_BITS_PER_SAMPLE / 8);
+    uint16_t blockAlign = AUDIO_CHANNELS * (AUDIO_BITS_PER_SAMPLE / 8);
+
+    uint8_t* h = _psramBuffer;
+
+    // RIFF chunk descriptor
+    h[0] = 'R'; h[1] = 'I'; h[2] = 'F'; h[3] = 'F';
+    h[4] = (uint8_t)(totalFileSize & 0xFF);
+    h[5] = (uint8_t)((totalFileSize >> 8) & 0xFF);
+    h[6] = (uint8_t)((totalFileSize >> 16) & 0xFF);
+    h[7] = (uint8_t)((totalFileSize >> 24) & 0xFF);
+    h[8] = 'W'; h[9] = 'A'; h[10] = 'V'; h[11] = 'E';
+
+    // "fmt " sub-chunk
+    h[12] = 'f'; h[13] = 'm'; h[14] = 't'; h[15] = ' ';
+    h[16] = 16; h[17] = 0; h[18] = 0; h[19] = 0; // Subchunk1Size (16 for PCM)
+    h[20] = 1; h[21] = 0;                         // AudioFormat (1 = PCM)
+    h[22] = AUDIO_CHANNELS; h[23] = 0;
+    
+    // SampleRate (16000)
+    h[24] = (uint8_t)(AUDIO_SAMPLE_RATE & 0xFF);
+    h[25] = (uint8_t)((AUDIO_SAMPLE_RATE >> 8) & 0xFF);
+    h[26] = (uint8_t)((AUDIO_SAMPLE_RATE >> 16) & 0xFF);
+    h[27] = (uint8_t)((AUDIO_SAMPLE_RATE >> 24) & 0xFF);
+
+    // ByteRate
+    h[28] = (uint8_t)(byteRate & 0xFF);
+    h[29] = (uint8_t)((byteRate >> 8) & 0xFF);
+    h[30] = (uint8_t)((byteRate >> 16) & 0xFF);
+    h[31] = (uint8_t)((byteRate >> 24) & 0xFF);
+
+    // BlockAlign
+    h[32] = (uint8_t)(blockAlign & 0xFF);
+    h[33] = (uint8_t)((blockAlign >> 8) & 0xFF);
+
+    // BitsPerSample (16)
+    h[34] = (uint8_t)(AUDIO_BITS_PER_SAMPLE & 0xFF);
+    h[35] = (uint8_t)((AUDIO_BITS_PER_SAMPLE >> 8) & 0xFF);
+
+    // "data" sub-chunk
+    h[36] = 'd'; h[37] = 'a'; h[38] = 't'; h[39] = 'a';
+    h[40] = (uint8_t)(pcmBytes & 0xFF);
+    h[41] = (uint8_t)((pcmBytes >> 8) & 0xFF);
+    h[42] = (uint8_t)((pcmBytes >> 16) & 0xFF);
+    h[43] = (uint8_t)((pcmBytes >> 24) & 0xFF);
+}

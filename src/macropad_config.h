@@ -21,7 +21,8 @@
 #define GRID_ROWS         2
 #define GRID_COLS         3
 #define NUM_BUTTONS_PAGE  (GRID_ROWS * GRID_COLS)
-#define NUM_PAGES         4
+#define NUM_PAGES         5
+#define PAGE_VOICE        4
 
 // Color Palette (RGB565)
 #define C_BG              0x0842  // Very dark slate
@@ -31,12 +32,15 @@
 #define C_CONNECTED       0x07E0  // Green
 #define C_DISCONNECTED    0xF800  // Red
 #define C_ACCENT          0x051D  // Cyan / Blue
+#define C_VOICE_BG        0x18F4  // Deep Indigo
+#define C_VOICE_BORDER    0x8A3F  // Vibrant Violet
 
 // Action Types
 enum ActionType {
   ACTION_MEDIA,
   ACTION_KEY_COMBO,
-  ACTION_STRING
+  ACTION_STRING,
+  ACTION_VOICE
 };
 
 struct MacroButton {

@@ -1,0 +1,11 @@
+#pragma once
+
+// Local Wi-Fi credentials:
+#define WIFI_SSID           "YOUR_WIFI_SSID"
+#define WIFI_PASSWORD       "YOUR_WIFI_PASSWORD"
+
+// Hermes Voice Gateway over Internet (Cloudflare Tunnel or Local LAN IP):
+// Example Cloudflare: "https://your-tunnel-subdomain.trycloudflare.com/voice"
+// Example Local LAN:   "http://192.168.1.100:8787/voice"
+#define HERMES_SERVER_URL   "https://your-tunnel-subdomain.trycloudflare.com/voice"
+#define HERMES_AUTH_TOKEN   "your_hermes_auth_token_here"

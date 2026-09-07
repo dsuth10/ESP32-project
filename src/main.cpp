@@ -7,6 +7,8 @@
 
 #include "macropad_config.h"
 #include "gui.h"
+#include "audio_recorder.h"
+#include "network_manager.h"
 
 // Hardware Instances
 TFT_eSPI tft = TFT_eSPI();
@@ -56,10 +58,18 @@ void executeMacro(const MacroButton& btn) {
         bleKeyboard.print(btn.textPayload);
       }
       break;
+
+    case ACTION_VOICE:
+      // Handled directly in loop()
+      break;
   }
 }
 
 void setup() {
+  // 0. Ensure Audio Power Amplifier (FM8002 on GPIO 1, active-LOW) is shut down / muted
+  pinMode(1, OUTPUT);
+  digitalWrite(1, HIGH);
+
   Serial.begin(115200);
   delay(500);
   Serial.println("\n==========================================");
@@ -75,7 +85,7 @@ void setup() {
   pixel.setBrightness(40);
   setLedColor(0, 0, 50); // Blue during startup
 
-  // Initialize Touch Screen
+  // Initialize Touch Screen (Wire on SDA 16, SCL 15)
   Serial.println("[Setup] Initializing FT6336 Touch...");
   ts.begin();
   ts.setRotation(ROTATION_RIGHT); // Landscape rotation
@@ -95,13 +105,24 @@ void setup() {
   pSecurity->setCapability(ESP_IO_CAP_NONE);
   pSecurity->setInitEncryptionKey(ESP_BLE_ENC_KEY_MASK | ESP_BLE_ID_KEY_MASK);
 
+  // Initialize Audio Recorder & ES8311 Codec
+  Serial.println("[Setup] Initializing Audio Recorder & ES8311 Codec...");
+  recorder.begin();
+
+  // Initialize Wi-Fi Network Manager
+  Serial.println("[Setup] Initializing Wi-Fi Connection...");
+  netManager.begin();
+
   Serial.println("[Setup] Ready! Pair with Windows as 'ESP32 MacroPad'.");
 }
 
 void loop() {
   bool currentBleState = bleKeyboard.isConnected();
 
-  // 1. Check BLE Connection Changes
+  // 1. Maintain Wi-Fi Connection
+  netManager.update();
+
+  // 2. Check BLE Connection Changes
   if (currentBleState != lastBleState) {
     lastBleState = currentBleState;
     gui.drawStatusBar(currentBleState, currentPage);
@@ -115,7 +136,7 @@ void loop() {
     }
   }
 
-  // 2. Background LED Breathing Effect when Disconnected
+  // 3. Background LED Breathing Effect when Disconnected
   if (!currentBleState) {
     uint32_t now = millis();
     if (now - lastPulseTime > 25) {
@@ -127,7 +148,7 @@ void loop() {
     }
   }
 
-  // 3. Touch Handling
+  // 4. Touch Handling
   ts.read();
   if (ts.isTouched) {
     int16_t tx = ts.points[0].x;
@@ -167,30 +188,98 @@ void loop() {
       uint8_t btnIndex = (uint8_t)target;
       const MacroButton& btn = PROFILES[currentPage].buttons[btnIndex];
 
-      // Visual & Haptic Press Feedback
-      gui.drawButton(currentPage, btnIndex, true);
-      setLedColor(120, 120, 120); // Bright White flash
+      if (btn.type == ACTION_VOICE) {
+        // === HERMES VOICE RECORD & SEND FLOW ===
+        Serial.println("[Voice] >>> Touch down: Starting Voice Recording <<<");
+        gui.drawButton(currentPage, btnIndex, true);
+        gui.drawVoiceCard(VOICE_UI_RECORDING, "Listening...", "Keep holding while speaking");
+        setLedColor(120, 0, 0); // Solid Red recording indicator
 
-      // Send Macro Command
-      executeMacro(btn);
+        recorder.startRecording();
 
-      // Wait until finger is lifted
-      uint32_t pressStart = millis();
-      while (true) {
-        ts.read();
-        if (!ts.isTouched) break;
-        // Safety timeout in case finger stays held
-        if (millis() - pressStart > 1500) break;
-        delay(15);
+        uint32_t lastSec = 0;
+        while (true) {
+          ts.read();
+          recorder.update();
+
+          uint32_t elapsedSec = recorder.getRecordDurationMs() / 1000;
+          if (elapsedSec != lastSec && elapsedSec < 15) {
+            lastSec = elapsedSec;
+            char durBuf[32];
+            snprintf(durBuf, sizeof(durBuf), "Recording [%u s]...", (unsigned int)elapsedSec);
+            gui.drawVoiceCard(VOICE_UI_RECORDING, durBuf, "Release button to send");
+          }
+
+          if (!ts.isTouched || recorder.getRecordDurationMs() >= 15000) {
+            break;
+          }
+          delay(10);
+        }
+
+        size_t wavBytes = recorder.stopRecording();
+        gui.drawButton(currentPage, btnIndex, false);
+
+        if (wavBytes > 1000) {
+          Serial.printf("[Voice] Recording finished (%u bytes). Sending to receiver...\n", (unsigned int)wavBytes);
+          char statsBuf[64];
+          snprintf(statsBuf, sizeof(statsBuf), "L:%d R:%d (%u KB)", 
+                   recorder.getMaxLeft(), recorder.getMaxRight(), (unsigned int)(wavBytes / 1024));
+          gui.drawVoiceCard(VOICE_UI_SENDING, "Uploading to Gateway...", statsBuf);
+          setLedColor(120, 80, 0); // Amber / Yellow
+
+          String transcript, reply;
+          bool success = netManager.sendVoiceAudio(recorder.getWavBuffer(), wavBytes, transcript, reply);
+
+          if (success) {
+            Serial.printf("[Voice] Success! Transcript: %s | Reply: %s\n", transcript.c_str(), reply.c_str());
+            char subtitleBuf[128];
+            snprintf(subtitleBuf, sizeof(subtitleBuf), "[L:%d R:%d] %s", 
+                     recorder.getMaxLeft(), recorder.getMaxRight(), reply.c_str());
+            gui.drawVoiceCard(VOICE_UI_SUCCESS, transcript.c_str(), subtitleBuf);
+            setLedColor(0, 120, 30); // Bright Green
+            delay(4000);
+          } else {
+            Serial.println("[Voice] Failed to send audio to receiver");
+            char errBuf[128];
+            snprintf(errBuf, sizeof(errBuf), "[L:%d R:%d] %s", 
+                     recorder.getMaxLeft(), recorder.getMaxRight(), reply.c_str());
+            gui.drawVoiceCard(VOICE_UI_ERROR, "Transmission Failed", errBuf);
+            setLedColor(120, 0, 0); // Red
+            delay(4000);
+          }
+        } else {
+          Serial.println("[Voice] Recording too short, dropped.");
+          gui.drawVoiceCard(VOICE_UI_IDLE, "Recording Canceled", "Hold button longer to speak");
+          delay(1000);
+        }
+
+        if (currentBleState) {
+          setLedColor(0, 50, 15);
+        }
+        gui.drawVoiceCard(VOICE_UI_IDLE, "Hermes Satellite Ready", "Hold button above to record voice message");
+      } 
+      else {
+        // === STANDARD MACRO KEYSTROKE FLOW ===
+        gui.drawButton(currentPage, btnIndex, true);
+        setLedColor(120, 120, 120); // Bright White flash
+
+        executeMacro(btn);
+
+        // Wait until finger is lifted
+        uint32_t pressStart = millis();
+        while (true) {
+          ts.read();
+          if (!ts.isTouched) break;
+          if (millis() - pressStart > 1500) break;
+          delay(15);
+        }
+
+        gui.drawButton(currentPage, btnIndex, false);
+        if (currentBleState) {
+          setLedColor(0, 50, 15);
+        }
+        delay(30);
       }
-
-      // Visual Release Feedback
-      gui.drawButton(currentPage, btnIndex, false);
-      if (currentBleState) {
-        setLedColor(0, 50, 15);
-      }
-
-      delay(30); // Small debounce
     }
   }
 

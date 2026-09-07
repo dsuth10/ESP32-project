@@ -43,9 +43,9 @@ However:
 | **AUDIO_EN (PA)** | **GPIO 1** | Audio PA Enable (Active Low) |
 | **I2S_MCK** | **GPIO 4** | Master Clock |
 | **I2S_SCK (BCLK)**| **GPIO 5** | Bit Clock |
-| **I2S_DO** | **GPIO 6** | Audio Data Out |
+| **I2S_DO (ASDOUT)**| **GPIO 6** | Audio Data from ES8311 to ESP32 (Microphone) |
 | **I2S_LRC (WS)** | **GPIO 7** | Word Select (Left/Right clock) |
-| **I2S_DI** | **GPIO 8** | Audio Data In (Mic) |
+| **I2S_DI (DSDIN)**| **GPIO 8** | Audio Data from ESP32 to ES8311 (Speaker DAC) |
 
 ### Other Onboard Peripherals
 | Peripheral | Pin | Notes |

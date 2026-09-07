@@ -59,5 +59,21 @@ const MacroProfile PROFILES[NUM_PAGES] = {
       { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
       { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr }
     }
+  },
+
+  // Page 4: Hermes Voice Assistant
+  {
+    "Hermes Voice",
+    0x915F, // Vibrant Purple accent
+    1,      // 1 dedicated Talk button
+    {
+      { "HOLD TO TALK", "Message Hermes", 0x18F4, 0x8A3F, ACTION_VOICE, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr }
+    }
   }
 };
+
