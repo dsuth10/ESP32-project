@@ -44,7 +44,9 @@ public:
     void logDiagnostics(); // Print full per-channel analysis and codec registers
     
     bool isRecording() const { return _isRecording; }
-    uint32_t getRecordDurationMs() const;
+    uint32_t getRecordDurationMs() const {
+        return _isRecording ? (millis() - _recordStartTime) : _lastRecordDurationMs;
+    }
     uint8_t* getWavBuffer() { return _psramBuffer; }
     size_t getWavSize() const { return _totalWavBytes; }
     uint32_t getMaxLeft() const { return _maxLeftPeak; }
@@ -60,6 +62,7 @@ private:
     size_t _totalWavBytes;
     bool _isRecording;
     uint32_t _recordStartTime;
+    uint32_t _lastRecordDurationMs;
     uint32_t _maxLeftPeak;
     uint32_t _maxRightPeak;
 

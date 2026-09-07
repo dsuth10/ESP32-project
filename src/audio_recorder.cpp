@@ -17,7 +17,8 @@ AudioRecorder::AudioRecorder()
       _pcmBytesRecorded(0),
       _totalWavBytes(0),
       _isRecording(false),
-      _recordStartTime(0) {}
+      _recordStartTime(0),
+      _lastRecordDurationMs(0) {}
 
 bool AudioRecorder::begin() {
     // 1. Ensure Audio Power Amplifier (FM8002, active-LOW) is shut down / muted
@@ -194,6 +195,7 @@ size_t AudioRecorder::stopRecording() {
     _totalWavBytes = _pcmBytesRecorded + 44;
 
     uint32_t durationMs = millis() - _recordStartTime;
+    _lastRecordDurationMs = durationMs;
     Serial.printf("[Recorder] >>> STOPPED: %u ms, %u PCM bytes, Left Peak=%u, Right Peak=%u <<<\n",
                   (unsigned int)durationMs, (unsigned int)_pcmBytesRecorded, _maxLeftPeak, _maxRightPeak);
 
@@ -239,11 +241,6 @@ void AudioRecorder::logDiagnostics() {
     // Call ES8311 register dump directly
     es8311_codec_dump_registers();
     Serial.println("=============================================================\n");
-}
-
-uint32_t AudioRecorder::getRecordDurationMs() const {
-    if (!_isRecording) return 0;
-    return millis() - _recordStartTime;
 }
 
 void AudioRecorder::writeWavHeader(size_t pcmBytes) {

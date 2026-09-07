@@ -70,6 +70,7 @@ void executeMacro(const MacroButton& btn) {
 }
 
 void setup() {
+  disableLoopWDT();
   // 0. Ensure Audio Power Amplifier (FM8002 on GPIO 1, active-LOW) is shut down / muted
   pinMode(1, OUTPUT);
   digitalWrite(1, HIGH);

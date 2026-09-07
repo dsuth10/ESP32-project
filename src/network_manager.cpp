@@ -1,5 +1,6 @@
 #include "network_manager.h"
 #include <WiFiClientSecure.h>
+#include <esp_task_wdt.h>
 
 NetworkManager netManager;
 
@@ -95,8 +96,6 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
     WiFiClientSecure secureClient;
     secureClient.setInsecure(); // Allow TLS without embedded CA bundle
 
-    Serial.printf("[HTTP] POSTing %u bytes to %s ...\n", (unsigned int)wavSize, HERMES_SERVER_URL);
-
     if (String(HERMES_SERVER_URL).startsWith("https://")) {
         http.begin(secureClient, HERMES_SERVER_URL);
     } else {
@@ -104,16 +103,21 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
     }
 
     http.addHeader("Content-Type", "audio/wav");
+    http.addHeader("Connection", "close");
 #ifdef HERMES_AUTH_TOKEN
     http.addHeader("Authorization", "Bearer " + String(HERMES_AUTH_TOKEN));
 #endif
-    http.setTimeout(45000); // 45s timeout for internet transit + Whisper STT + Hermes reasoning
+    http.setTimeout(65000); // 65s max uint16_t timeout for transit + Whisper STT + Hermes LLM reasoning
 
+    Serial.printf("[HTTP] POSTing %u bytes to %s ...\n", (unsigned int)wavSize, HERMES_SERVER_URL);
+
+    uint32_t httpStart = millis();
     int httpCode = http.POST((uint8_t*)wavData, wavSize);
+    uint32_t httpDuration = millis() - httpStart;
 
     if (httpCode == HTTP_CODE_OK || httpCode == 200) {
         String response = http.getString();
-        Serial.printf("[HTTP] Response (200 OK): %s\n", response.c_str());
+        Serial.printf("[HTTP] 200 OK | %u ms | Response: %s\n", (unsigned int)httpDuration, response.c_str());
 
         outTranscript = extractJsonField(response, "transcript");
         outReply = extractJsonField(response, "reply");
@@ -121,10 +125,14 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
         if (outTranscript.length() == 0) outTranscript = "Audio Processed";
         if (outReply.length() == 0) outReply = "Received by Hermes";
 
+        Serial.printf("[STT] \"%s\"\n", outTranscript.c_str());
+        Serial.printf("[REPLY] \"%s\"\n", outReply.c_str());
+
         http.end();
         return true;
     } else {
-        Serial.printf("[HTTP] POST failed, error code: %d (%s)\n", httpCode, http.errorToString(httpCode).c_str());
+        Serial.printf("[HTTP] POST failed, error code: %d (%s) after %u ms\n", 
+                      httpCode, http.errorToString(httpCode).c_str(), (unsigned int)httpDuration);
         if (httpCode > 0) {
             String errResponse = http.getString();
             Serial.printf("[HTTP] Server error response: %s\n", errResponse.c_str());
