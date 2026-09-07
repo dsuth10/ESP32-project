@@ -10,6 +10,10 @@
 #include "audio_recorder.h"
 #include "network_manager.h"
 
+// Set to 1 for raw microphone isolation diagnostic (Wi-Fi, TLS & Hermes upload disabled).
+// Once genuine microphone PCM is proven, set to 0 to restore full network pipeline.
+#define AUDIO_DIAGNOSTIC_MODE 0
+
 // Hardware Instances
 TFT_eSPI tft = TFT_eSPI();
 FT6336 ts = FT6336(PIN_TP_SDA, PIN_TP_SCL, PIN_TP_INT, PIN_TP_RST, 240, 320);
@@ -109,9 +113,17 @@ void setup() {
   Serial.println("[Setup] Initializing Audio Recorder & ES8311 Codec...");
   recorder.begin();
 
+#if !AUDIO_DIAGNOSTIC_MODE
   // Initialize Wi-Fi Network Manager
   Serial.println("[Setup] Initializing Wi-Fi Connection...");
   netManager.begin();
+#else
+  Serial.println("[Setup] *************************************************************");
+  Serial.println("[Setup] *** AUDIO_DIAGNOSTIC_MODE ACTIVE                          ***");
+  Serial.println("[Setup] *** Wi-Fi, TLS, Cloudflare & Hermes upload are DISABLED. ***");
+  Serial.println("[Setup] *** Press voice button to record and view raw statistics. ***");
+  Serial.println("[Setup] *************************************************************");
+#endif
 
   Serial.println("[Setup] Ready! Pair with Windows as 'ESP32 MacroPad'.");
 }
@@ -119,8 +131,10 @@ void setup() {
 void loop() {
   bool currentBleState = bleKeyboard.isConnected();
 
+#if !AUDIO_DIAGNOSTIC_MODE
   // 1. Maintain Wi-Fi Connection
   netManager.update();
+#endif
 
   // 2. Check BLE Connection Changes
   if (currentBleState != lastBleState) {
@@ -219,11 +233,41 @@ void loop() {
         size_t wavBytes = recorder.stopRecording();
         gui.drawButton(currentPage, btnIndex, false);
 
+        // Always log full per-channel diagnostics and codec registers
+        recorder.logDiagnostics();
+
+#if AUDIO_DIAGNOSTIC_MODE
+        char titleBuf[64];
+        char subBuf[128];
+        snprintf(titleBuf, sizeof(titleBuf), "RMS: L%.0f R%.0f M%.0f", 
+                 recorder.getLeftStats().getRms(),
+                 recorder.getRightStats().getRms(),
+                 recorder.getMonoStats().getRms());
+        snprintf(subBuf, sizeof(subBuf), "Pk: L%d R%d | %s",
+                 recorder.getMaxLeft(), recorder.getMaxRight(),
+                 (recorder.getMonoStats().getRms() > 10.0 || recorder.getMaxLeft() > 30) ? "SIGNAL DETECTED" : "FLOOR / LOW");
+
+        if (recorder.getMonoStats().getRms() > 10.0 || recorder.getMaxLeft() > 30) {
+          gui.drawVoiceCard(VOICE_UI_SUCCESS, titleBuf, subBuf);
+          setLedColor(0, 120, 30); // Green
+        } else {
+          gui.drawVoiceCard(VOICE_UI_ERROR, titleBuf, subBuf);
+          setLedColor(120, 50, 0); // Amber
+        }
+        delay(4000);
+#else
         if (wavBytes > 1000) {
+          uint32_t peakVal = recorder.getMaxLeft() > recorder.getMaxRight() ? recorder.getMaxLeft() : recorder.getMaxRight();
+          Serial.printf("[AUDIO] %.2fs | RMS %.1f | Peak %u | clipped %.2f%%\n",
+                        recorder.getRecordDurationMs() / 1000.0f,
+                        recorder.getMonoStats().getRms(),
+                        peakVal,
+                        recorder.getMonoStats().getClipPct());
+
           Serial.printf("[Voice] Recording finished (%u bytes). Sending to receiver...\n", (unsigned int)wavBytes);
           char statsBuf[64];
-          snprintf(statsBuf, sizeof(statsBuf), "L:%d R:%d (%u KB)", 
-                   recorder.getMaxLeft(), recorder.getMaxRight(), (unsigned int)(wavBytes / 1024));
+          snprintf(statsBuf, sizeof(statsBuf), "RMS:%.0f Pk:%u (%u KB)", 
+                   recorder.getMonoStats().getRms(), peakVal, (unsigned int)(wavBytes / 1024));
           gui.drawVoiceCard(VOICE_UI_SENDING, "Uploading to Gateway...", statsBuf);
           setLedColor(120, 80, 0); // Amber / Yellow
 
@@ -233,16 +277,16 @@ void loop() {
           if (success) {
             Serial.printf("[Voice] Success! Transcript: %s | Reply: %s\n", transcript.c_str(), reply.c_str());
             char subtitleBuf[128];
-            snprintf(subtitleBuf, sizeof(subtitleBuf), "[L:%d R:%d] %s", 
-                     recorder.getMaxLeft(), recorder.getMaxRight(), reply.c_str());
+            snprintf(subtitleBuf, sizeof(subtitleBuf), "[RMS:%.0f] %s", 
+                     recorder.getMonoStats().getRms(), reply.c_str());
             gui.drawVoiceCard(VOICE_UI_SUCCESS, transcript.c_str(), subtitleBuf);
             setLedColor(0, 120, 30); // Bright Green
             delay(4000);
           } else {
             Serial.println("[Voice] Failed to send audio to receiver");
             char errBuf[128];
-            snprintf(errBuf, sizeof(errBuf), "[L:%d R:%d] %s", 
-                     recorder.getMaxLeft(), recorder.getMaxRight(), reply.c_str());
+            snprintf(errBuf, sizeof(errBuf), "[RMS:%.0f] %s", 
+                     recorder.getMonoStats().getRms(), reply.c_str());
             gui.drawVoiceCard(VOICE_UI_ERROR, "Transmission Failed", errBuf);
             setLedColor(120, 0, 0); // Red
             delay(4000);
@@ -252,11 +296,16 @@ void loop() {
           gui.drawVoiceCard(VOICE_UI_IDLE, "Recording Canceled", "Hold button longer to speak");
           delay(1000);
         }
+#endif
 
         if (currentBleState) {
           setLedColor(0, 50, 15);
         }
+#if AUDIO_DIAGNOSTIC_MODE
+        gui.drawVoiceCard(VOICE_UI_IDLE, "Audio Diagnostic Mode", "Hold button above to test mic response");
+#else
         gui.drawVoiceCard(VOICE_UI_IDLE, "Hermes Satellite Ready", "Hold button above to record voice message");
+#endif
       } 
       else {
         // === STANDARD MACRO KEYSTROKE FLOW ===

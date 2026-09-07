@@ -191,22 +191,39 @@ static esp_err_t es8311_fmt_config(es8311_handle_t dev, const es8311_resolution_
 
 esp_err_t es8311_microphone_config(es8311_handle_t dev, bool digital_mic)
 {
-    // Reg 0x14: 0x1A selects Mic1P/Mic1N analog differential/single-ended input with default bias
+    // Centralized single source of truth for microphone ADC configuration:
+    // 1. REG14: Mic input selection & PGA gain
+    //    0x1A = Select MIC1P-MIC1N analog differential, digital mic disabled, +30dB PGA gain
     uint8_t reg14 = 0x1A;
     if (digital_mic) {
         reg14 |= (1 << 6);
     }
-    // Reg 0x17 is ADC Digital Attenuation: 0x00 = 0dB attenuation (Full Volume)
-    // (0xC8 previously was -100dB attenuation, causing total silence!)
-    es8311_write_reg(dev, ES8311_ADC_REG17, 0x00); // 0dB attenuation (full sensitivity)
-    return es8311_write_reg(dev, ES8311_SYSTEM_REG14, reg14);
+    ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_SYSTEM_REG14, reg14), TAG, "I2C write error");
+
+    // 2. REG16: ADC Gain Scale (bits [2:0]).
+    //    0x04 = +24dB ADC scale (board reset/default, matching Bruce ES3C28P known-good)
+    ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_ADC_REG16, 0x04), TAG, "I2C write error");
+
+    // 3. REG17: ADC Digital Volume.
+    //    0xC8 = +4.5dB digital volume (0xBF is 0dB unity gain; 0x00 was -95.5dB mute bug!)
+    ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_ADC_REG17, 0xC8), TAG, "I2C write error");
+
+    // 4. REG1C: ADC HPF and equalizer bypass (0x6A = enable HPF to eliminate DC offset)
+    ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_ADC_REG1C, 0x6A), TAG, "I2C write error");
+
+    return ESP_OK;
 }
 
 esp_err_t es8311_microphone_gain_set(es8311_handle_t dev, es8311_mic_gain_t gain_db)
 {
-    // Reg 0x16: Set both ADC gain stages
-    uint8_t g = (uint8_t)gain_db;
-    return es8311_write_reg(dev, ES8311_ADC_REG16, (g << 4) | (g & 0x0F));
+    if (gain_db <= ES8311_MIC_GAIN_MIN || gain_db >= ES8311_MIC_GAIN_MAX) {
+        ESP_LOGE(TAG, "Invalid mic gain value: %d", gain_db);
+        return ESP_ERR_INVALID_ARG;
+    }
+    // Reg 0x16 bits [2:0] set ADC gain scale:
+    // 0: 0dB, 1: 6dB, 2: 12dB, 3: 18dB, 4: 24dB, 5: 30dB, 6: 36dB, 7: 42dB.
+    // Write the enum value directly without nibble duplication or arbitrary masking.
+    return es8311_write_reg(dev, ES8311_ADC_REG16, (uint8_t)gain_db);
 }
 
 esp_err_t es8311_init(es8311_handle_t dev, const es8311_clock_config_t *const clk_cfg, const es8311_resolution_t res_in, const es8311_resolution_t res_out)
@@ -220,25 +237,20 @@ esp_err_t es8311_init(es8311_handle_t dev, const es8311_clock_config_t *const cl
     ESP_RETURN_ON_ERROR(es8311_clock_config(dev, clk_cfg, res_out), TAG, "Clock config error");
     ESP_RETURN_ON_ERROR(es8311_fmt_config(dev, res_in, res_out), TAG, "Fmt config error");
 
-    // REG0D: Power up Analog, internal bias generator, ADC bias gen, ADC Vref gen, and set VMID to normal operation (0b10)
-    // (Writing 0x01 previously had bits 7,6,5,4,2 high which shut down all analog/bias circuits!)
-    ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_SYSTEM_REG0D, 0x02), TAG, "I2C write error");
-    // REG0E: Power up PGA (bit 6 = 0) and ADC modulator (bit 5 = 0)
-    ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_SYSTEM_REG0E, 0x00), TAG, "I2C write error"); 
-    // REG12: Power up DAC (bit 1 = 0)
+    // Power and Analog baseline matching known-good ES3C28P (Bruce / LCDWiki / Waveshare):
+    // REG0D: Power up analog circuitry (0x01)
+    ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_SYSTEM_REG0D, 0x01), TAG, "I2C write error");
+    // REG0E: Enable analog PGA and ADC modulator (0x02)
+    ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_SYSTEM_REG0E, 0x02), TAG, "I2C write error"); 
+    // REG12: Power up DAC (0x00)
     ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_SYSTEM_REG12, 0x00), TAG, "I2C write error");
-    // REG13: Output drive setup
+    // REG13: Output drive setup (0x10)
     ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_SYSTEM_REG13, 0x10), TAG, "I2C write error");
-    // REG14: Mic input enable (MIC1P-MIC1N analog differential)
-    ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_SYSTEM_REG14, 0x1A), TAG, "I2C write error");
-    // REG17: ADC Digital Attenuation: 0x00 = 0dB attenuation (full sensitivity)
-    ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_ADC_REG17, 0x00), TAG, "I2C write error");
-    // REG1C: ADC HPF and equalizer bypass (enable HPF to eliminate DC offset)
-    ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_ADC_REG1C, 0x6A), TAG, "I2C write error");
-    // REG44: GPIO / AIF1TX Source: 0x00 routes ADC data to both Left and Right I2S slots (ADC + ADC)
-    ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_GPIO_REG44, 0x00), TAG, "I2C write error");
-    // REG37: DAC ramp rate
+    // REG37: Bypass DAC equalizer / DAC ramp rate (0x08)
     ESP_RETURN_ON_ERROR(es8311_write_reg(dev, ES8311_DAC_REG37, 0x08), TAG, "I2C write error");
+
+    // Note: Microphone registers (0x14, 0x16, 0x17, 0x1C) are configured exclusively
+    // in es8311_microphone_config() as single source of truth. REG44 is left at default.
 
     return ESP_OK;
 }
@@ -283,15 +295,38 @@ esp_err_t es8311_voice_mute(es8311_handle_t dev, bool mute)
     return es8311_write_reg(dev, ES8311_DAC_REG31, reg31);
 }
 
+static es8311_handle_t s_es_handle = NULL;
+
+void es8311_codec_dump_registers(void)
+{
+    if (!s_es_handle) {
+        Serial.println("[ES8311] Register dump unavailable (codec not initialized)");
+        return;
+    }
+    const uint8_t dumpRegs[] = {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A,
+        0x0D, 0x0E, 0x12, 0x13, 0x14, 0x16, 0x17, 0x1C, 0x31, 0x32, 0x37,
+        0x44, 0xFD, 0xFE
+    };
+    Serial.println("----------------- [ES8311 REGISTER DUMP] -----------------");
+    for (size_t i = 0; i < sizeof(dumpRegs); i++) {
+        uint8_t val = 0;
+        es8311_read_reg(s_es_handle, dumpRegs[i], &val);
+        Serial.printf("R%02X=%02X ", dumpRegs[i], val);
+        if ((i + 1) % 8 == 0) Serial.println();
+    }
+    Serial.println("\n----------------------------------------------------------");
+}
+
 esp_err_t es8311_codec_init(void)
 {
-    es8311_handle_t es_handle = es8311_create(I2C_NUM_0, ES8311_ADDRESS_0);
-    if (!es_handle) return ESP_FAIL;
+    s_es_handle = es8311_create(I2C_NUM_0, ES8311_ADDRESS_0);
+    if (!s_es_handle) return ESP_FAIL;
 
     // Check Chip ID
     uint8_t id1 = 0, id2 = 0;
-    es8311_read_reg(es_handle, ES8311_CHD1_REGFD, &id1);
-    es8311_read_reg(es_handle, ES8311_CHD2_REGFE, &id2);
+    es8311_read_reg(s_es_handle, ES8311_CHD1_REGFD, &id1);
+    es8311_read_reg(s_es_handle, ES8311_CHD2_REGFE, &id2);
     Serial.printf("[ES8311] Detected Chip ID: 0x%02X 0x%02X\n", id1, id2);
 
     const es8311_clock_config_t es_clk = {
@@ -302,27 +337,20 @@ esp_err_t es8311_codec_init(void)
         .sample_frequency = EXAMPLE_SAMPLE_RATE
     };
 
-    esp_err_t err = es8311_init(es_handle, &es_clk, ES8311_RESOLUTION_16, ES8311_RESOLUTION_16);
+    esp_err_t err = es8311_init(s_es_handle, &es_clk, ES8311_RESOLUTION_16, ES8311_RESOLUTION_16);
     if (err != ESP_OK) {
         Serial.printf("[ES8311] Init failed: 0x%x\n", err);
         return err;
     }
 
-    es8311_sample_frequency_config(es_handle, EXAMPLE_SAMPLE_RATE * EXAMPLE_MCLK_MULTIPLE, EXAMPLE_SAMPLE_RATE);
-    es8311_voice_volume_set(es_handle, EXAMPLE_VOICE_VOLUME, NULL);
-    es8311_microphone_config(es_handle, false);
-    es8311_microphone_gain_set(es_handle, ES8311_MIC_GAIN_30DB);
-    Serial.println("[ES8311] Codec initialized successfully (+30dB mic gain)");
+    es8311_sample_frequency_config(s_es_handle, EXAMPLE_SAMPLE_RATE * EXAMPLE_MCLK_MULTIPLE, EXAMPLE_SAMPLE_RATE);
+    es8311_voice_volume_set(s_es_handle, EXAMPLE_VOICE_VOLUME, NULL);
+    
+    // Single point of microphone configuration
+    es8311_microphone_config(s_es_handle, false);
+    Serial.println("[ES8311] Codec initialized (R0D=01, R0E=02, R14=1A, R16=04, R17=C8, R1C=6A)");
 
-    // Print register dump for verification
-    uint8_t dumpRegs[] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0D, 0x0E, 0x12, 0x13, 0x14, 0x16, 0x17, 0x1C, 0x44 };
-    Serial.print("[ES8311] Reg dump: ");
-    for (size_t i = 0; i < sizeof(dumpRegs); i++) {
-        uint8_t val = 0;
-        es8311_read_reg(es_handle, dumpRegs[i], &val);
-        Serial.printf("R%02X=%02X ", dumpRegs[i], val);
-    }
-    Serial.println();
+    es8311_codec_dump_registers();
 
     return ESP_OK;
 }

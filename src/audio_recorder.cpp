@@ -82,6 +82,15 @@ bool AudioRecorder::begin() {
 
 bool AudioRecorder::startRecording() {
     if (!_psramBuffer) return false;
+
+    // Actively drain any pre-existing queued RX DMA samples before recording
+    uint8_t drainBuf[512];
+    size_t drainedBytes = 0;
+    do {
+        drainedBytes = 0;
+        i2s_read(I2S_PORT, (void*)drainBuf, sizeof(drainBuf), &drainedBytes, 0);
+    } while (drainedBytes > 0);
+
     _pcmBytesRecorded = 0;
     _totalWavBytes = 0;
     _isRecording = true;
@@ -89,8 +98,11 @@ bool AudioRecorder::startRecording() {
     _maxLeftPeak = 0;
     _maxRightPeak = 0;
 
-    // Flush old samples from DMA
-    i2s_zero_dma_buffer(I2S_PORT);
+    _leftStats.reset();
+    _rightStats.reset();
+    _monoStats.reset();
+    _previewCount = 0;
+
     Serial.println("[Recorder] >>> START RECORDING <<<");
     return true;
 }
@@ -124,11 +136,50 @@ void AudioRecorder::update() {
             int16_t left = stereoBuf[i * 2];
             int16_t right = stereoBuf[i * 2 + 1];
 
-            if (abs(left) > _maxLeftPeak) _maxLeftPeak = abs(left);
-            if (abs(right) > _maxRightPeak) _maxRightPeak = abs(right);
+            // 1. Left channel statistics (64-bit accumulators prevent overflow)
+            _leftStats.count++;
+            if (left < _leftStats.minVal) _leftStats.minVal = left;
+            if (left > _leftStats.maxVal) _leftStats.maxVal = left;
+            _leftStats.sum += left;
+            _leftStats.sumSq += (uint64_t)((int32_t)left * (int32_t)left);
+            if (left != 0) _leftStats.nonZeroCount++;
+            if (left <= -32767 || left >= 32767) _leftStats.clipCount++;
 
-            // Select active audio channel (pick whichever has real signal)
-            int16_t sample = (abs(right) > abs(left)) ? right : left;
+            // 2. Right channel statistics
+            _rightStats.count++;
+            if (right < _rightStats.minVal) _rightStats.minVal = right;
+            if (right > _rightStats.maxVal) _rightStats.maxVal = right;
+            _rightStats.sum += right;
+            _rightStats.sumSq += (uint64_t)((int32_t)right * (int32_t)right);
+            if (right != 0) _rightStats.nonZeroCount++;
+            if (right <= -32767 || right >= 32767) _rightStats.clipCount++;
+
+            // Safe peak calculation using int32_t (handles -32768 without int16_t overflow)
+            int32_t sl = left;
+            uint32_t magL = (sl < 0) ? (uint32_t)(-sl) : (uint32_t)sl;
+            if (magL > _maxLeftPeak) _maxLeftPeak = magL;
+
+            int32_t sr = right;
+            uint32_t magR = (sr < 0) ? (uint32_t)(-sr) : (uint32_t)sr;
+            if (magR > _maxRightPeak) _maxRightPeak = magR;
+
+            // 3. Mono selection & statistics
+            int16_t sample = (magR > magL) ? right : left;
+            _monoStats.count++;
+            if (sample < _monoStats.minVal) _monoStats.minVal = sample;
+            if (sample > _monoStats.maxVal) _monoStats.maxVal = sample;
+            _monoStats.sum += sample;
+            _monoStats.sumSq += (uint64_t)((int32_t)sample * (int32_t)sample);
+            if (sample != 0) _monoStats.nonZeroCount++;
+            if (sample <= -32767 || sample >= 32767) _monoStats.clipCount++;
+
+            if (_previewCount < 30) {
+                _previewLeft[_previewCount] = left;
+                _previewRight[_previewCount] = right;
+                _previewMono[_previewCount] = sample;
+                _previewCount++;
+            }
+
             *pcmDest++ = sample;
             _pcmBytesRecorded += sizeof(int16_t);
         }
@@ -143,10 +194,51 @@ size_t AudioRecorder::stopRecording() {
     _totalWavBytes = _pcmBytesRecorded + 44;
 
     uint32_t durationMs = millis() - _recordStartTime;
-    Serial.printf("[Recorder] >>> STOPPED: %u ms, %u PCM bytes, Left Peak=%d, Right Peak=%d <<<\n",
+    Serial.printf("[Recorder] >>> STOPPED: %u ms, %u PCM bytes, Left Peak=%u, Right Peak=%u <<<\n",
                   (unsigned int)durationMs, (unsigned int)_pcmBytesRecorded, _maxLeftPeak, _maxRightPeak);
 
     return _totalWavBytes;
+}
+
+void AudioRecorder::logDiagnostics() {
+    uint32_t durationMs = millis() - _recordStartTime;
+    Serial.println("\n==================== [AUDIO DIAGNOSTICS] ====================");
+    Serial.printf("Duration: %u ms | PCM Bytes: %u | Mono Samples: %u\n",
+                  (unsigned int)durationMs, (unsigned int)_pcmBytesRecorded, (unsigned int)_monoStats.count);
+    Serial.printf("LEFT : RMS=%-7.1f min=%-6d max=%-6d mean=%-6.1f nonzero=%5.1f%% clip=%u (%.2f%%)\n",
+                  _leftStats.getRms(), _leftStats.minVal, _leftStats.maxVal,
+                  _leftStats.getMean(), _leftStats.getNonZeroPct(),
+                  (unsigned int)_leftStats.clipCount, _leftStats.getClipPct());
+    Serial.printf("RIGHT: RMS=%-7.1f min=%-6d max=%-6d mean=%-6.1f nonzero=%5.1f%% clip=%u (%.2f%%)\n",
+                  _rightStats.getRms(), _rightStats.minVal, _rightStats.maxVal,
+                  _rightStats.getMean(), _rightStats.getNonZeroPct(),
+                  (unsigned int)_rightStats.clipCount, _rightStats.getClipPct());
+    Serial.printf("MONO : RMS=%-7.1f min=%-6d max=%-6d mean=%-6.1f nonzero=%5.1f%% clip=%u (%.2f%%)\n",
+                  _monoStats.getRms(), _monoStats.minVal, _monoStats.maxVal,
+                  _monoStats.getMean(), _monoStats.getNonZeroPct(),
+                  (unsigned int)_monoStats.clipCount, _monoStats.getClipPct());
+
+    Serial.print("First 25 Left samples : ");
+    for (size_t i = 0; i < (_previewCount < 25 ? _previewCount : 25); i++) {
+        Serial.printf("%d ", _previewLeft[i]);
+    }
+    Serial.println();
+
+    Serial.print("First 25 Right samples: ");
+    for (size_t i = 0; i < (_previewCount < 25 ? _previewCount : 25); i++) {
+        Serial.printf("%d ", _previewRight[i]);
+    }
+    Serial.println();
+
+    Serial.print("First 25 Mono samples : ");
+    for (size_t i = 0; i < (_previewCount < 25 ? _previewCount : 25); i++) {
+        Serial.printf("%d ", _previewMono[i]);
+    }
+    Serial.println();
+
+    // Call ES8311 register dump directly
+    es8311_codec_dump_registers();
+    Serial.println("=============================================================\n");
 }
 
 uint32_t AudioRecorder::getRecordDurationMs() const {
