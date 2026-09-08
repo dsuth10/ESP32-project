@@ -1189,71 +1189,66 @@ I'd also document what each dashboard state means.
 
 The work will probably touch these existing files:
 
-| File                              | Main work                                                        |
-| --------------------------------- | ---------------------------------------------------------------- |
-| `src/main.cpp`                    | Dashboard lifecycle, profile switch handling, status integration |
-| `src/macropad_config.h`           | `NUM_PAGES = 6`, dashboard page constant                         |
-| `src/macropad_config.cpp`         | System/dashboard profile entry                                   |
-| `src/gui.h`                       | Dashboard rendering API                                          |
-| `src/gui.cpp`                     | Dashboard layout, indicators and touch handling                  |
-| `src/network_manager.h`           | Profile-aware networking and health API                          |
-| `src/network_manager.cpp`         | Dynamic SSID/server, Internet/receiver probes                    |
-| `src/wifi_config.h.example`       | Home/Work profile template                                       |
-| `server/hermes_voice_receiver.py` | Persistent gateway, composite health, security, Ollama check     |
-| `server/start_receiver.bat`       | Work launcher                                                    |
-| `README.md`                       | New architecture                                                 |
+| File                              | Main work                                                        | Status      |
+| --------------------------------- | ---------------------------------------------------------------- | ----------- |
+| `src/main.cpp`                    | Dashboard lifecycle, profile switch handling, status integration | Completed   |
+| `src/macropad_config.h`           | `NUM_PAGES = 6`, dashboard page constant                         | Completed   |
+| `src/macropad_config.cpp`         | System/dashboard profile entry                                   | Completed   |
+| `src/gui.h`                       | Dashboard rendering API                                          | Completed   |
+| `src/gui.cpp`                     | Dashboard layout, indicators and touch handling                  | Completed   |
+| `src/network_manager.h`           | Profile-aware networking and health API                          | Completed   |
+| `src/network_manager.cpp`         | Dynamic SSID/server, Internet/receiver probes                    | Completed   |
+| `src/wifi_config.h.example`       | Home/Work profile template                                       | Completed   |
+| `server/hermes_voice_receiver.py` | Persistent gateway, composite health, security, Ollama check     | Completed   |
+| `server/start_receiver.bat`       | Work launcher                                                    | Completed   |
+| `README.md`                       | New architecture                                                 | Pending     |
 
-And I would likely add:
+And newly added files:
 
-```text
-src/environment_manager.h
-src/environment_manager.cpp
-
-src/system_status.h
-
-server/start_receiver.sh
-server/receiver.env.example
-
-docs/home-work-architecture.md
-```
-
-I would resist adding more files unless they materially improve separation of responsibilities.
+| File                                  | Purpose                                                        | Status    |
+| ------------------------------------- | -------------------------------------------------------------- | --------- |
+| `src/environment_manager.h`           | Profile structures and NVS storage declaration                 | Completed |
+| `src/environment_manager.cpp`         | NVS Preferences persistence and mode switching logic           | Completed |
+| `src/system_status.h`                 | `HealthState` and `DashboardStatus` telemetry model            | Completed |
+| `server/start_receiver.sh`            | Linux receiver launcher for Home hosting                       | Completed |
+| `server/receiver.env.example`         | Template environment configuration                             | Completed |
+| `server/benchmark_hermes_standalone.py` | Standalone latency comparison utility                        | Completed |
+| `docs/home-work-architecture.md`      | Standalone documentation guide                                 | Pending   |
 
 ---
 
 # The implementation order I recommend
 
-I would execute it in this exact order:
-
-**1. Create integration branch and preserve both current implementations.**
-
-**2. Merge the persistent Hermes Gateway architecture into today's school implementation.**
-
-**3. Prove the new unified receiver works at Work with Ollama before touching the GUI.**
-
-**4. Deploy the same receiver on the Home Linux Hermes host and prove Home voice works.**
-
-**5. Add EnvironmentManager and persistent HOME/WORK selection.**
-
-**6. Make `NetworkManager` profile-aware and remove cross-environment automatic Wi-Fi selection.**
-
-**7. Add receiver `/status`, Hermes health and Ollama health.**
-
-**8. Add ESP32 health/status model.**
-
-**9. Add page 6 dashboard.**
-
-**10. Add HOME/WORK touchscreen switching.**
-
-**11. Add authentication and Work privacy hardening.**
-
-**12. Tune Ollama warm-model behaviour and latency.**
-
-**13. Field-test actual Home → Work → Home movement.**
-
-**14. Implement verified Bluetooth hostname as a separate final enhancement.**
-
-**15. Update documentation and merge the integration branch to `main`.**
+- [x] **1. Create integration branch and preserve both current implementations.**
+  - *Status: Completed.* Created `feature/home-work-dashboard` from `origin/main` (`bdc7b61`). Tagged `tag-school-baseline` and `tag-latency-baseline`. Tracked `docs/Dashboard-plan.md`.
+- [x] **2. Merge the persistent Hermes Gateway architecture into today's school implementation.**
+  - *Status: Completed.* Unified `server/hermes_voice_receiver.py` with persistent Hermes Gateway (:8642), low-latency faster-whisper (`beam_size=1`, `vad_filter=True`), LCD text sanitization, and structured timing telemetry.
+- [x] **3. Prove the new unified receiver works at Work with Ollama before touching the GUI.**
+  - *Status: Completed.* Implemented `ThreadingHTTPServer`, instant `GET /health`, and composite `GET /status` authority. Verified against local Hermes and Ollama with 52 ms concurrent response under active audio lock.
+- [ ] **4. Deploy the same receiver on the Home Linux Hermes host and prove Home voice works.**
+  - *Status: In Progress.* Created Linux launcher `server/start_receiver.sh` and `server/receiver.env.example` ready for Home host deployment.
+- [x] **5. Add EnvironmentManager and persistent HOME/WORK selection.**
+  - *Status: Completed.* Implemented `src/environment_manager.h` and `src/environment_manager.cpp` with NVS `Preferences` persistence across reboots.
+- [x] **6. Make `NetworkManager` profile-aware and remove cross-environment automatic Wi-Fi selection.**
+  - *Status: Completed.* Replaced `WiFiMulti` with strict profile isolation in `src/network_manager.cpp` (HOME connects only to Home Wi-Fi/receiver; WORK connects only to phone hotspot/school receiver).
+- [x] **7. Add receiver `/status`, Hermes health and Ollama health.**
+  - *Status: Completed.* Probes Hermes liveness/readiness and Ollama model residency (`warm: true/false`) with 2.5-second thread-safe caching.
+- [x] **8. Add ESP32 health/status model.**
+  - *Status: Completed.* Defined `HealthState` and `DashboardStatus` in `src/system_status.h`.
+- [x] **9. Add page 6 dashboard.**
+  - *Status: Completed.* Incremented `NUM_PAGES` to 6 (`< [6/6] >`), added `PAGE_DASHBOARD = 5`, built 6-row telemetry card with readiness badges in `src/gui.cpp`.
+- [x] **10. Add HOME/WORK touchscreen switching.**
+  - *Status: Completed.* Built dual bottom buttons `[ HOME ]` and `[ WORK ]` with active state highlights, `drawDashboardSwitching()` overlay, and immediate runtime network switching in `src/gui.cpp` and `src/main.cpp`.
+- [ ] **11. Add authentication and Work privacy hardening.**
+  - *Status: Pending.* Enforce bearer tokens and verify zero external network calls in Work mode.
+- [ ] **12. Tune Ollama warm-model behaviour and latency.**
+  - *Status: Pending.* Configure `OLLAMA_KEEP_ALIVE=8h` and startup model preload.
+- [ ] **13. Field-test actual Home → Work → Home movement.**
+  - *Status: Pending.* Real-world movement test without code or config changes.
+- [ ] **14. Implement verified Bluetooth hostname as a separate final enhancement.**
+  - *Status: Pending.* Hostname discovery and identity confirmation.
+- [ ] **15. Update documentation and merge the integration branch to `main`.**
+  - *Status: Pending.* Final README update and branch merge.
 
 That ordering is deliberate: **we establish one unified voice architecture first, then portability, then observability, then polish**. It avoids simultaneously debugging Hermes, Ollama, networking, BLE and the TFT interface.
 
