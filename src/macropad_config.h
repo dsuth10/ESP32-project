@@ -29,6 +29,7 @@
 #define TOUCH_NEXT_PAGE   101
 #define TOUCH_DASH_HOME   102
 #define TOUCH_DASH_WORK   103
+#define TOUCH_VOICE_CHAT  104
 
 // Color Palette (RGB565)
 #define C_BG              0x0842  // Very dark slate

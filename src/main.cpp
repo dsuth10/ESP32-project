@@ -29,6 +29,10 @@ uint32_t lastPulseTime = 0;
 uint8_t pulseBrightness = 0;
 int8_t pulseDirection = 1;
 
+// Non-blocking drag state for Page 5 Voice chat viewport (Rules 8 & 10)
+static bool s_voiceDragActive = false;
+static int16_t s_voiceLastTouchY = 0;
+
 // Background Telemetry Worker on Core 0 (Rule 3: Non-blocking asynchronous health probes)
 static DashboardStatus g_telemetryStatus;
 static bool g_telemetryDirty = false;
@@ -250,9 +254,35 @@ void loop() {
     tx = constrain(tx, 0, 319);
     ty = constrain(ty, 0, 239);
 
+    // Active drag tracking for Page 5 scrollable chat (non-blocking, Rules 8 & 10)
+    if (s_voiceDragActive) {
+      int16_t deltaY = ty - s_voiceLastTouchY;
+      if (abs(deltaY) >= 16) {
+        int lines = abs(deltaY) / 16;
+        if (deltaY < 0) {
+          gui.scrollVoiceChat(+lines); // Swipe up -> scroll towards later text
+          s_voiceLastTouchY -= lines * 16;
+        } else {
+          gui.scrollVoiceChat(-lines); // Swipe down -> scroll towards earlier text
+          s_voiceLastTouchY += lines * 16;
+        }
+      }
+      delay(10);
+      return;
+    }
+
     int8_t target = gui.getTouchTarget(tx, ty, currentPage);
 
+    // Page 5 conversation card touch down
+    if (target == TOUCH_VOICE_CHAT) {
+      s_voiceDragActive = true;
+      s_voiceLastTouchY = ty;
+      delay(10);
+      return;
+    }
+
     if (target == TOUCH_PREV_PAGE) {
+      s_voiceDragActive = false;
       currentPage = (currentPage == 0) ? (NUM_PAGES - 1) : (currentPage - 1);
       setLedColor(50, 50, 50);
       gui.drawAll(currentBleState, currentPage);
@@ -266,6 +296,7 @@ void loop() {
       if (currentBleState) setLedColor(0, 50, 15);
     } 
     else if (target == TOUCH_NEXT_PAGE) {
+      s_voiceDragActive = false;
       currentPage = (currentPage + 1) % NUM_PAGES;
       setLedColor(50, 50, 50);
       gui.drawAll(currentBleState, currentPage);
@@ -430,6 +461,8 @@ void loop() {
         delay(30);
       }
     }
+  } else {
+    s_voiceDragActive = false;
   }
 
   delay(10);

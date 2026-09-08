@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include <TFT_eSPI.h>
+#include <vector>
 #include "macropad_config.h"
 #include "system_status.h"
 #include "environment_manager.h"
@@ -13,6 +14,11 @@ enum VoiceUIState {
   VOICE_UI_ERROR
 };
 
+struct ChatLine {
+  String text;
+  uint16_t color;
+};
+
 class MacroPadGUI {
 public:
   MacroPadGUI(TFT_eSPI& tft);
@@ -21,12 +27,27 @@ public:
   void drawStatusBar(bool isConnected, uint8_t currentPage);
   void drawButton(uint8_t pageIndex, uint8_t btnIndex, bool pressed);
   void drawVoiceCard(VoiceUIState state, const char* statusMsg, const char* detailMsg);
+  void redrawVoiceCard();
+  void scrollVoiceChat(int deltaLines);
+  bool voiceChatScrollable() const;
   void drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode, bool fullRedraw = true);
   void drawDashboardSwitching(const char* targetModeName);
   int8_t getTouchTarget(int16_t x, int16_t y, uint8_t currentPage);
 
 private:
   TFT_eSPI& _tft;
+
+  // Page 5 Voice Assistant Chat State
+  VoiceUIState _voiceState;
+  String _voiceStatusMsg;
+  String _voiceDetailMsg;
+  String _voiceTranscript;
+  String _voiceReply;
+  int _voiceScrollLine;
+  std::vector<ChatLine> _chatLines;
+
   void getButtonRect(uint8_t pageIndex, uint8_t btnIndex, int16_t& x, int16_t& y, int16_t& w, int16_t& h);
   void drawStatusRow(int16_t x, int16_t y, int16_t w, const char* label, const char* value, HealthState health, bool fullRedraw = true);
+  void renderVoiceChatViewport();
+  void rebuildChatLines();
 };

@@ -1,7 +1,14 @@
 #include "gui.h"
 #include "network_manager.h"
 
-MacroPadGUI::MacroPadGUI(TFT_eSPI& tft) : _tft(tft) {}
+MacroPadGUI::MacroPadGUI(TFT_eSPI& tft)
+  : _tft(tft),
+    _voiceState(VOICE_UI_IDLE),
+    _voiceStatusMsg(""),
+    _voiceDetailMsg(""),
+    _voiceTranscript(""),
+    _voiceReply(""),
+    _voiceScrollLine(0) {}
 
 void MacroPadGUI::init() {
   _tft.init();
@@ -165,7 +172,150 @@ static void drawWrappedText(TFT_eSPI& tft, const char* text, int16_t x, int16_t 
   }
 }
 
+static void wrapTextToChatLines(TFT_eSPI& tft, const char* text, int16_t maxW, uint16_t color, std::vector<ChatLine>& outLines, uint8_t font = 2) {
+  if (!text || strlen(text) == 0) return;
+  String word = "";
+  String line = "";
+  size_t len = strlen(text);
+
+  for (size_t i = 0; i <= len; i++) {
+    char c = text[i];
+    if (c == '\r') continue; // Ignore carriage return for clean CRLF handling
+    if (c == ' ' || c == '\n' || c == '\0') {
+      // If the word itself is wider than maxW, break it into chunks
+      while (word.length() > 0 && tft.textWidth(word.c_str(), font) > maxW) {
+        size_t fitLen = word.length();
+        while (fitLen > 1 && tft.textWidth(word.substring(0, fitLen).c_str(), font) > maxW) {
+          fitLen--;
+        }
+        if (line.length() > 0) {
+          outLines.push_back({line, color});
+          line = "";
+        }
+        outLines.push_back({word.substring(0, fitLen), color});
+        word = word.substring(fitLen);
+      }
+
+      String testLine = (line.length() == 0) ? word : (line + " " + word);
+      if (tft.textWidth(testLine.c_str(), font) > maxW && line.length() > 0) {
+        outLines.push_back({line, color});
+        line = word;
+      } else {
+        line = testLine;
+      }
+      word = "";
+
+      if (c == '\n') {
+        outLines.push_back({line, color});
+        line = "";
+      }
+    } else {
+      word += c;
+    }
+  }
+  if (line.length() > 0) {
+    outLines.push_back({line, color});
+  }
+}
+
+void MacroPadGUI::rebuildChatLines() {
+  _chatLines.clear();
+  const int16_t textMaxW = 280;
+
+  if (_voiceTranscript.length() > 0) {
+    _chatLines.push_back({"You:", 0x07FF}); // Cyan
+    wrapTextToChatLines(_tft, _voiceTranscript.c_str(), textMaxW, 0xFFFF, _chatLines, 2);
+    _chatLines.push_back({"", 0xFFFF}); // Blank line separator
+  }
+
+  _chatLines.push_back({"Hermes:", 0x07E0}); // Green
+  wrapTextToChatLines(_tft, _voiceReply.c_str(), textMaxW, 0xFFFF, _chatLines, 2);
+}
+
+void MacroPadGUI::renderVoiceChatViewport() {
+  const int16_t vpX = 14;
+  const int16_t vpY = 115;
+  const int16_t vpW = 292;
+  const int16_t vpH = 116;
+  const uint16_t bgColor = 0x0842;
+  const uint8_t font = 2;
+  const int16_t lineHeight = 16;
+  const int visibleLines = 7;
+  const int total = (int)_chatLines.size();
+
+  // 1. Clear conversation text area and scrollbar track
+  _tft.fillRect(vpX, vpY, vpW, vpH, bgColor);
+
+  // 2. Render visible chat lines
+  int16_t curY = vpY + 2;
+  int endLine = min(total, _voiceScrollLine + visibleLines);
+  for (int i = _voiceScrollLine; i < endLine; i++) {
+    if (_chatLines[i].text.length() > 0) {
+      _tft.setTextDatum(TL_DATUM);
+      _tft.setTextColor(_chatLines[i].color, bgColor);
+      _tft.drawString(_chatLines[i].text.c_str(), vpX, curY, font);
+    }
+    curY += lineHeight;
+  }
+
+  // 3. Render vertical scrollbar if total lines exceed visible capacity
+  if (total > visibleLines) {
+    const int16_t sbX = 302;
+    const int16_t sbY = vpY + 2;
+    const int16_t sbW = 4;
+    const int16_t sbH = vpH - 4; // 112px
+
+    // Track
+    _tft.fillRoundRect(sbX, sbY, sbW, sbH, 2, 0x18C3);
+
+    // Thumb
+    int16_t thumbH = (visibleLines * sbH) / total;
+    if (thumbH < 14) thumbH = 14;
+    int maxScroll = total - visibleLines;
+    int16_t thumbY = sbY + (_voiceScrollLine * (sbH - thumbH)) / maxScroll;
+
+    _tft.fillRoundRect(sbX, thumbY, sbW, thumbH, 2, 0x8A3F); // Vibrant violet thumb
+  }
+}
+
+void MacroPadGUI::scrollVoiceChat(int deltaLines) {
+  const int visibleLines = 7;
+  int total = (int)_chatLines.size();
+  if (_voiceState != VOICE_UI_SUCCESS || total <= visibleLines) {
+    return;
+  }
+
+  int maxScroll = total - visibleLines;
+  int newScroll = constrain(_voiceScrollLine + deltaLines, 0, maxScroll);
+  if (newScroll != _voiceScrollLine) {
+    _voiceScrollLine = newScroll;
+    renderVoiceChatViewport();
+  }
+}
+
+bool MacroPadGUI::voiceChatScrollable() const {
+  return (_voiceState == VOICE_UI_SUCCESS && _chatLines.size() > 7);
+}
+
 void MacroPadGUI::drawVoiceCard(VoiceUIState state, const char* statusMsg, const char* detailMsg) {
+  _voiceState = state;
+
+  if (state == VOICE_UI_SUCCESS) {
+    _voiceTranscript = statusMsg ? statusMsg : "";
+    _voiceReply = detailMsg ? detailMsg : "";
+    _voiceScrollLine = 0;
+    rebuildChatLines();
+  } else {
+    _voiceStatusMsg = statusMsg ? statusMsg : "";
+    _voiceDetailMsg = detailMsg ? detailMsg : "";
+    _chatLines.clear();
+    _voiceScrollLine = 0;
+  }
+
+  redrawVoiceCard();
+}
+
+void MacroPadGUI::redrawVoiceCard() {
   int16_t x = 10;
   int16_t y = 82;
   int16_t w = 300;
@@ -182,7 +332,7 @@ void MacroPadGUI::drawVoiceCard(VoiceUIState state, const char* statusMsg, const
   uint16_t pillText = 0x9CD3;
   const char* pillStr = "VOICE SATELLITE READY";
 
-  switch (state) {
+  switch (_voiceState) {
     case VOICE_UI_IDLE:
       pillBg = 0x18C3;
       pillText = 0x8410;
@@ -223,49 +373,36 @@ void MacroPadGUI::drawVoiceCard(VoiceUIState state, const char* statusMsg, const
   // Divider line below pill
   _tft.drawFastHLine(x + 6, y + 30, w - 12, 0x2965);
 
-  if (state == VOICE_UI_SUCCESS) {
-    // 1. Question (Transcript)
-    _tft.setTextDatum(TL_DATUM);
-    _tft.setTextColor(0x07FF, bgColor); // Cyan
-    _tft.drawString("You:", x + 10, y + 36, 2);
-    drawWrappedText(_tft, statusMsg ? statusMsg : "", x + 46, y + 36, w - 56, 2, 0xFFFF, bgColor, 2);
-
-    // Divider between question and reply
-    _tft.drawFastHLine(x + 10, y + 74, w - 20, 0x2965);
-
-    // 2. Answer (Hermes response)
-    _tft.setTextDatum(TL_DATUM);
-    _tft.setTextColor(0x07E0, bgColor); // Green
-    _tft.drawString("Hermes:", x + 10, y + 80, 2);
-    drawWrappedText(_tft, detailMsg ? detailMsg : "", x + 10, y + 98, w - 20, 3, 0xFFFF, bgColor, 2);
+  if (_voiceState == VOICE_UI_SUCCESS) {
+    renderVoiceChatViewport();
   }
-  else if (state == VOICE_UI_RECORDING) {
+  else if (_voiceState == VOICE_UI_RECORDING) {
     _tft.setTextDatum(MC_DATUM);
     _tft.setTextColor(0xFFFF, bgColor);
-    _tft.drawString("Listening to your voice...", x + w / 2, y + 64, 2);
+    _tft.drawString(_voiceStatusMsg.length() > 0 ? _voiceStatusMsg.c_str() : "Listening to your voice...", x + w / 2, y + 64, 2);
     _tft.setTextColor(0x8410, bgColor);
-    _tft.drawString("Release button when done speaking", x + w / 2, y + 92, 2);
+    _tft.drawString(_voiceDetailMsg.length() > 0 ? _voiceDetailMsg.c_str() : "Release button when done speaking", x + w / 2, y + 92, 2);
   }
-  else if (state == VOICE_UI_SENDING) {
+  else if (_voiceState == VOICE_UI_SENDING) {
     _tft.setTextDatum(MC_DATUM);
     _tft.setTextColor(0xFFE0, bgColor);
-    _tft.drawString("Uploading audio to Hermes...", x + w / 2, y + 64, 2);
+    _tft.drawString(_voiceStatusMsg.length() > 0 ? _voiceStatusMsg.c_str() : "Uploading audio to Hermes...", x + w / 2, y + 64, 2);
     _tft.setTextColor(0x8410, bgColor);
-    _tft.drawString(detailMsg ? detailMsg : "Transcribing with Whisper AI...", x + w / 2, y + 92, 2);
+    _tft.drawString(_voiceDetailMsg.length() > 0 ? _voiceDetailMsg.c_str() : "Transcribing with Whisper AI...", x + w / 2, y + 92, 2);
   }
-  else if (state == VOICE_UI_ERROR) {
+  else if (_voiceState == VOICE_UI_ERROR) {
     _tft.setTextDatum(MC_DATUM);
     _tft.setTextColor(0xF800, bgColor);
-    _tft.drawString(statusMsg ? statusMsg : "Transmission Failed", x + w / 2, y + 54, 2);
+    _tft.drawString(_voiceStatusMsg.length() > 0 ? _voiceStatusMsg.c_str() : "Transmission Failed", x + w / 2, y + 54, 2);
     _tft.setTextColor(0xFA40, bgColor);
-    drawWrappedText(_tft, detailMsg ? detailMsg : "", x + 10, y + 78, w - 20, 3, 0xFA40, bgColor, 2);
+    drawWrappedText(_tft, _voiceDetailMsg.c_str(), x + 10, y + 78, w - 20, 3, 0xFA40, bgColor, 2);
   }
   else { // VOICE_UI_IDLE
     _tft.setTextDatum(MC_DATUM);
     _tft.setTextColor(0xCE7F, bgColor);
-    _tft.drawString("Hold button above to record voice.", x + w / 2, y + 64, 2);
+    _tft.drawString(_voiceStatusMsg.length() > 0 ? _voiceStatusMsg.c_str() : "Hold button above to record voice.", x + w / 2, y + 64, 2);
     _tft.setTextColor(0x8410, bgColor);
-    _tft.drawString("Question & answer will appear here.", x + w / 2, y + 92, 2);
+    _tft.drawString(_voiceDetailMsg.length() > 0 ? _voiceDetailMsg.c_str() : "Question & answer will appear here.", x + w / 2, y + 92, 2);
   }
 }
 
@@ -464,7 +601,7 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
     drawButton(currentPage, i, false);
   }
   if (currentPage == PAGE_VOICE) {
-    drawVoiceCard(VOICE_UI_IDLE, "", "");
+    redrawVoiceCard();
   }
 }
 
@@ -475,6 +612,13 @@ int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
     if (x < 260) return TOUCH_PREV_PAGE;
     // Right side of top bar navigates to next page (> arrow)
     return TOUCH_NEXT_PAGE;
+  }
+
+  // Check Page 5 Voice scroll area (inside conversation card)
+  if (currentPage == PAGE_VOICE) {
+    if (x >= 10 && x <= 310 && y >= 112 && y <= 234) {
+      return TOUCH_VOICE_CHAT;
+    }
   }
 
   // Check Page 6 Dashboard buttons
