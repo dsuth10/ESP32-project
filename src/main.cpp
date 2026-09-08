@@ -29,6 +29,44 @@ uint32_t lastPulseTime = 0;
 uint8_t pulseBrightness = 0;
 int8_t pulseDirection = 1;
 
+// Background Telemetry Worker on Core 0 (Rule 3: Non-blocking asynchronous health probes)
+static DashboardStatus g_telemetryStatus;
+static bool g_telemetryDirty = false;
+static SemaphoreHandle_t g_telemetryMutex = NULL;
+
+void telemetryWorkerTask(void* pvParameters) {
+  while (true) {
+    if (!recorder.isRecording()) {
+      DashboardStatus temp;
+      temp.expectedBleHost = envManager.getActiveProfile().expectedBleHost;
+
+      if (netManager.isConnected()) {
+        // Deep probe: queries receiver :8787/status and DNS in background on Core 0
+        netManager.fetchCompositeStatus(temp);
+      } else {
+        temp.wifi = HEALTH_FAILED;
+        temp.wifiSsid = "Disconnected";
+        temp.wifiRssi = 0;
+        temp.internet = HEALTH_FAILED;
+        temp.voiceHost = HEALTH_FAILED;
+        temp.voiceHostReady = false;
+        temp.hermes = HEALTH_FAILED;
+        temp.hermesReady = false;
+        temp.aiBackend = HEALTH_FAILED;
+        temp.aiBackendName = "None";
+      }
+
+      if (g_telemetryMutex != NULL && xSemaphoreTake(g_telemetryMutex, pdMS_TO_TICKS(100)) == pdTRUE) {
+        g_telemetryStatus = temp;
+        g_telemetryDirty = true;
+        xSemaphoreGive(g_telemetryMutex);
+      }
+    }
+    // Poll every 5 seconds
+    vTaskDelay(pdMS_TO_TICKS(5000));
+  }
+}
+
 void setLedColor(uint8_t r, uint8_t g, uint8_t b) {
   pixel.setPixelColor(0, pixel.Color(r, g, b));
   pixel.show();
@@ -126,6 +164,12 @@ void setup() {
   // Initialize Wi-Fi Network Manager strictly for active environment
   Serial.println("[Setup] Initializing Wi-Fi Connection...");
   netManager.begin();
+
+  // Create mutex for Core 0 telemetry background worker
+  g_telemetryMutex = xSemaphoreCreateMutex();
+
+  // Start background telemetry worker on Core 0 (pinned to Core 0 with 8KB stack, Rule 3)
+  xTaskCreatePinnedToCore(telemetryWorkerTask, "telemetryTask", 8192, NULL, 1, NULL, 0);
 #else
   Serial.println("[Setup] *************************************************************");
   Serial.println("[Setup] *** AUDIO_DIAGNOSTIC_MODE ACTIVE                          ***");
@@ -171,22 +215,28 @@ void loop() {
     }
   }
 
-  // 4. Periodic Dashboard Telemetry Update (Page 6)
+  // 4. Periodic Dashboard Telemetry Update (Page 6) - 100% non-blocking from Core 0 worker
   if (currentPage == PAGE_DASHBOARD && !recorder.isRecording()) {
-    static uint32_t lastDashUpdate = 0;
-    uint32_t now = millis();
-    if (now - lastDashUpdate > 3000) {
-      lastDashUpdate = now;
-      DashboardStatus status;
-      status.ble = currentBleState ? HEALTH_READY : HEALTH_FAILED;
-      status.bleConnected = currentBleState;
-      status.expectedBleHost = envManager.getActiveProfile().expectedBleHost;
-      status.macropadReady = currentBleState;
+    bool hasUpdate = false;
+    DashboardStatus statusToDraw;
 
-      // Deep probe: fetches composite status from receiver :8787/status with Bearer token
-      netManager.fetchCompositeStatus(status);
+    if (g_telemetryMutex != NULL && xSemaphoreTake(g_telemetryMutex, 0) == pdTRUE) {
+      if (g_telemetryDirty) {
+        statusToDraw = g_telemetryStatus;
+        g_telemetryDirty = false;
+        hasUpdate = true;
+      }
+      xSemaphoreGive(g_telemetryMutex);
+    }
 
-      gui.drawDashboard(status, envManager.getMode());
+    if (hasUpdate) {
+      statusToDraw.ble = currentBleState ? HEALTH_READY : HEALTH_FAILED;
+      statusToDraw.bleConnected = currentBleState;
+      statusToDraw.expectedBleHost = envManager.getActiveProfile().expectedBleHost;
+      statusToDraw.macropadReady = currentBleState;
+
+      // In-place flicker-free telemetry update (fullRedraw = false)
+      gui.drawDashboard(statusToDraw, envManager.getMode(), false);
     }
   }
 
@@ -207,7 +257,8 @@ void loop() {
       setLedColor(50, 50, 50);
       gui.drawAll(currentBleState, currentPage);
       delay(150);
-      while (true) {
+      uint32_t waitRelease = millis();
+      while (millis() - waitRelease < 1000) {
         ts.read();
         if (!ts.isTouched) break;
         delay(20);
@@ -219,7 +270,8 @@ void loop() {
       setLedColor(50, 50, 50);
       gui.drawAll(currentBleState, currentPage);
       delay(150);
-      while (true) {
+      uint32_t waitRelease = millis();
+      while (millis() - waitRelease < 1000) {
         ts.read();
         if (!ts.isTouched) break;
         delay(20);
@@ -234,7 +286,8 @@ void loop() {
         envManager.setMode(ENV_HOME);
         delay(400);
         gui.drawAll(currentBleState, currentPage);
-        while (true) {
+        uint32_t waitRelease = millis();
+        while (millis() - waitRelease < 1000) {
           ts.read();
           if (!ts.isTouched) break;
           delay(20);
@@ -250,7 +303,8 @@ void loop() {
         envManager.setMode(ENV_WORK);
         delay(400);
         gui.drawAll(currentBleState, currentPage);
-        while (true) {
+        uint32_t waitRelease = millis();
+        while (millis() - waitRelease < 1000) {
           ts.read();
           if (!ts.isTouched) break;
           delay(20);

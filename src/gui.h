@@ -21,12 +21,12 @@ public:
   void drawStatusBar(bool isConnected, uint8_t currentPage);
   void drawButton(uint8_t pageIndex, uint8_t btnIndex, bool pressed);
   void drawVoiceCard(VoiceUIState state, const char* statusMsg, const char* detailMsg);
-  void drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode);
+  void drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode, bool fullRedraw = true);
   void drawDashboardSwitching(const char* targetModeName);
   int8_t getTouchTarget(int16_t x, int16_t y, uint8_t currentPage);
 
 private:
   TFT_eSPI& _tft;
   void getButtonRect(uint8_t pageIndex, uint8_t btnIndex, int16_t& x, int16_t& y, int16_t& w, int16_t& h);
-  void drawStatusRow(int16_t x, int16_t y, int16_t w, const char* label, const char* value, HealthState health);
+  void drawStatusRow(int16_t x, int16_t y, int16_t w, const char* label, const char* value, HealthState health, bool fullRedraw = true);
 };

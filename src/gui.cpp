@@ -269,7 +269,7 @@ void MacroPadGUI::drawVoiceCard(VoiceUIState state, const char* statusMsg, const
   }
 }
 
-void MacroPadGUI::drawStatusRow(int16_t x, int16_t y, int16_t w, const char* label, const char* value, HealthState health) {
+void MacroPadGUI::drawStatusRow(int16_t x, int16_t y, int16_t w, const char* label, const char* value, HealthState health, bool fullRedraw) {
   uint16_t dotColor;
   switch (health) {
     case HEALTH_READY:    dotColor = 0x07E0; break; // Green
@@ -282,10 +282,15 @@ void MacroPadGUI::drawStatusRow(int16_t x, int16_t y, int16_t w, const char* lab
   // Draw status dot
   _tft.fillCircle(x + 8, y + 8, 4, dotColor);
 
-  // Draw Label (Left aligned)
-  _tft.setTextDatum(ML_DATUM);
-  _tft.setTextColor(C_TEXT_MUTED, 0x0842);
-  _tft.drawString(label, x + 18, y + 8, 2);
+  // Draw Label only on fullRedraw (static labels never change)
+  if (fullRedraw) {
+    _tft.setTextDatum(ML_DATUM);
+    _tft.setTextColor(C_TEXT_MUTED, 0x0842);
+    _tft.drawString(label, x + 18, y + 8, 2);
+  }
+
+  // Clear value area to prevent ghosting when text length changes
+  _tft.fillRect(x + 85, y, w - 90, 16, 0x0842);
 
   // Draw Value (Right aligned)
   _tft.setTextDatum(MR_DATUM);
@@ -293,23 +298,26 @@ void MacroPadGUI::drawStatusRow(int16_t x, int16_t y, int16_t w, const char* lab
   _tft.drawString(value, x + w - 8, y + 8, 2);
 }
 
-void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode) {
+void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode, bool fullRedraw) {
   int16_t cardX = 8;
   int16_t cardY = 36;
   int16_t cardW = 304;
   int16_t cardH = 144;
 
-  // Background card
-  _tft.fillRoundRect(cardX, cardY, cardW, cardH, 6, 0x0842);
-  _tft.drawRoundRect(cardX, cardY, cardW, cardH, 6, 0x3186);
+  if (fullRedraw) {
+    // Background card
+    _tft.fillRoundRect(cardX, cardY, cardW, cardH, 6, 0x0842);
+    _tft.drawRoundRect(cardX, cardY, cardW, cardH, 6, 0x3186);
 
-  // Header banner inside card
-  _tft.fillRoundRect(cardX + 4, cardY + 4, cardW - 8, 22, 4, 0x18C3);
-  _tft.setTextDatum(ML_DATUM);
-  _tft.setTextColor(0xFFFF, 0x18C3);
-  _tft.drawString("SYSTEM TELEMETRY", cardX + 12, cardY + 15, 2);
+    // Header banner inside card
+    _tft.fillRoundRect(cardX + 4, cardY + 4, cardW - 8, 22, 4, 0x18C3);
+    _tft.setTextDatum(ML_DATUM);
+    _tft.setTextColor(0xFFFF, 0x18C3);
+    _tft.drawString("SYSTEM TELEMETRY", cardX + 12, cardY + 15, 2);
+  }
 
-  // Subsystem readiness badges on header right
+  // Subsystem readiness badges on header right (clear badge box only)
+  _tft.fillRect(cardX + cardW - 145, cardY + 5, 140, 20, 0x18C3);
   _tft.setTextDatum(MR_DATUM);
   if (status.macropadReady && status.voiceReady) {
     _tft.setTextColor(0x07E0, 0x18C3);
@@ -333,7 +341,7 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
   } else {
     snprintf(wifiBuf, sizeof(wifiBuf), "%s", status.wifiSsid.c_str());
   }
-  drawStatusRow(cardX + 4, rowY, cardW - 8, "Wi-Fi", wifiBuf, status.wifi);
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Wi-Fi", wifiBuf, status.wifi, fullRedraw);
 
   // Row 2: Internet Connectivity (Phase 13)
   rowY += rowH;
@@ -345,7 +353,7 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
   } else {
     internetVal = "Offline";
   }
-  drawStatusRow(cardX + 4, rowY, cardW - 8, "Internet", internetVal, status.internet);
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Internet", internetVal, status.internet, fullRedraw);
 
   // Row 3: Bluetooth HID + Expected Host (Phase 21)
   rowY += rowH;
@@ -355,50 +363,52 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
   } else {
     snprintf(bleBuf, sizeof(bleBuf), "Advertising...");
   }
-  drawStatusRow(cardX + 4, rowY, cardW - 8, "Bluetooth", bleBuf, status.ble);
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Bluetooth", bleBuf, status.ble, fullRedraw);
 
   // Row 4: Voice Host
   rowY += rowH;
-  drawStatusRow(cardX + 4, rowY, cardW - 8, "Voice Host", status.voiceHostReady ? "Online (:8787)" : "Unreachable", status.voiceHost);
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Voice Host", status.voiceHostReady ? "Online (:8787)" : "Unreachable", status.voiceHost, fullRedraw);
 
   // Row 5: Hermes Gateway
   rowY += rowH;
-  drawStatusRow(cardX + 4, rowY, cardW - 8, "Hermes", status.hermesReady ? "Ready (:8642)" : (status.hermes == HEALTH_DEGRADED ? "Starting / Live" : "Offline"), status.hermes);
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Hermes", status.hermesReady ? "Ready (:8642)" : (status.hermes == HEALTH_DEGRADED ? "Starting / Live" : "Offline"), status.hermes, fullRedraw);
 
   // Row 6: AI Backend
   rowY += rowH;
-  drawStatusRow(cardX + 4, rowY, cardW - 8, "AI Model", status.aiBackendName.c_str(), status.aiBackend);
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "AI Model", status.aiBackendName.c_str(), status.aiBackend, fullRedraw);
 
-  // Bottom Section: Environment Switcher Buttons
-  int16_t btnY = 186;
-  int16_t btnH = 46;
-  int16_t btnW = 146;
+  // Bottom Section: Environment Switcher Buttons (only on fullRedraw)
+  if (fullRedraw) {
+    int16_t btnY = 186;
+    int16_t btnH = 46;
+    int16_t btnW = 146;
 
-  bool homeActive = (currentMode == ENV_HOME);
-  uint16_t homeBg = homeActive ? 0x0B4E : 0x1084;
-  uint16_t homeBorder = homeActive ? 0x07E0 : 0x4228;
-  _tft.fillRoundRect(cardX, btnY, btnW, btnH, 6, homeBg);
-  _tft.drawRoundRect(cardX, btnY, btnW, btnH, 6, homeBorder);
-  if (homeActive) {
-    _tft.drawRoundRect(cardX + 1, btnY + 1, btnW - 2, btnH - 2, 5, homeBorder);
+    bool homeActive = (currentMode == ENV_HOME);
+    uint16_t homeBg = homeActive ? 0x0B4E : 0x1084;
+    uint16_t homeBorder = homeActive ? 0x07E0 : 0x4228;
+    _tft.fillRoundRect(cardX, btnY, btnW, btnH, 6, homeBg);
+    _tft.drawRoundRect(cardX, btnY, btnW, btnH, 6, homeBorder);
+    if (homeActive) {
+      _tft.drawRoundRect(cardX + 1, btnY + 1, btnW - 2, btnH - 2, 5, homeBorder);
+    }
+    _tft.setTextDatum(MC_DATUM);
+    _tft.setTextColor(homeActive ? 0xFFFF : C_TEXT_MUTED, homeBg);
+    _tft.drawString(homeActive ? "HOME [ ACTIVE ]" : "SWITCH TO HOME", cardX + btnW / 2, btnY + btnH / 2, 2);
+
+    // Right Button: WORK
+    int16_t workX = cardX + btnW + 12;
+    bool workActive = (currentMode == ENV_WORK);
+    uint16_t workBg = workActive ? 0x3194 : 0x1084;
+    uint16_t workBorder = workActive ? 0x07E0 : 0x4228;
+    _tft.fillRoundRect(workX, btnY, btnW, btnH, 6, workBg);
+    _tft.drawRoundRect(workX, btnY, btnW, btnH, 6, workBorder);
+    if (workActive) {
+      _tft.drawRoundRect(workX + 1, btnY + 1, btnW - 2, btnH - 2, 5, workBorder);
+    }
+    _tft.setTextDatum(MC_DATUM);
+    _tft.setTextColor(workActive ? 0xFFFF : C_TEXT_MUTED, workBg);
+    _tft.drawString(workActive ? "WORK [ ACTIVE ]" : "SWITCH TO WORK", workX + btnW / 2, btnY + btnH / 2, 2);
   }
-  _tft.setTextDatum(MC_DATUM);
-  _tft.setTextColor(homeActive ? 0xFFFF : C_TEXT_MUTED, homeBg);
-  _tft.drawString(homeActive ? "HOME [ ACTIVE ]" : "SWITCH TO HOME", cardX + btnW / 2, btnY + btnH / 2, 2);
-
-  // Right Button: WORK
-  int16_t workX = cardX + btnW + 12;
-  bool workActive = (currentMode == ENV_WORK);
-  uint16_t workBg = workActive ? 0x3194 : 0x1084;
-  uint16_t workBorder = workActive ? 0x07E0 : 0x4228;
-  _tft.fillRoundRect(workX, btnY, btnW, btnH, 6, workBg);
-  _tft.drawRoundRect(workX, btnY, btnW, btnH, 6, workBorder);
-  if (workActive) {
-    _tft.drawRoundRect(workX + 1, btnY + 1, btnW - 2, btnH - 2, 5, workBorder);
-  }
-  _tft.setTextDatum(MC_DATUM);
-  _tft.setTextColor(workActive ? 0xFFFF : C_TEXT_MUTED, workBg);
-  _tft.drawString(workActive ? "WORK [ ACTIVE ]" : "SWITCH TO WORK", workX + btnW / 2, btnY + btnH / 2, 2);
 }
 
 void MacroPadGUI::drawDashboardSwitching(const char* targetModeName) {
@@ -431,8 +441,8 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
     status.wifiSsid = netManager.getConnectedSSID();
     status.wifiRssi = netManager.getRSSI();
     status.ipAddress = netManager.getIpAddress();
-    status.internet = netManager.isConnected() ? (netManager.checkInternet() ? HEALTH_READY : HEALTH_DEGRADED) : HEALTH_FAILED;
-    status.internetConnected = (status.internet == HEALTH_READY);
+    status.internet = netManager.isConnected() ? HEALTH_READY : HEALTH_FAILED;
+    status.internetConnected = netManager.isConnected();
     status.ble = isConnected ? HEALTH_READY : HEALTH_FAILED;
     status.bleConnected = isConnected;
     status.expectedBleHost = envManager.getActiveProfile().expectedBleHost;
@@ -445,7 +455,7 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
     status.macropadReady = isConnected;
     status.voiceReady = netManager.isConnected();
 
-    drawDashboard(status, envManager.getMode());
+    drawDashboard(status, envManager.getMode(), true); // fullRedraw = true on initial page entry
     return;
   }
 
@@ -459,25 +469,22 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
 }
 
 int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
-  // Check Top Navigation Buttons (Status Bar is 32px high, allow up to 36px for easy touch)
-  if (y >= 0 && y <= (STATUS_BAR_H + 4)) {
-    // Left arrow area
-    if (x >= 180 && x < 255) return TOUCH_PREV_PAGE;
-    // Page indicator ("X/6") and Right arrow area
-    if (x >= 255 && x <= 320) return TOUCH_NEXT_PAGE;
-    // Tapping the profile title in the center also advances to next page
-    if (x >= 80 && x < 180) return TOUCH_NEXT_PAGE;
-    return -1;
+  // Check Top Navigation Buttons (allow up to 45px for effortless finger touches)
+  if (y >= 0 && y <= 45) {
+    // Left side of top bar navigates to previous page (< arrow & title)
+    if (x < 260) return TOUCH_PREV_PAGE;
+    // Right side of top bar navigates to next page (> arrow)
+    return TOUCH_NEXT_PAGE;
   }
 
   // Check Page 6 Dashboard buttons
   if (currentPage == PAGE_DASHBOARD) {
-    // HOME button: cardX (8) to 8 + 146 = 154, y: 186 to 232
-    if (x >= 8 && x <= 156 && y >= 184 && y <= 236) {
+    // HOME button: left bottom area
+    if (x >= 4 && x <= 158 && y >= 180 && y <= 240) {
       return TOUCH_DASH_HOME;
     }
-    // WORK button: workX (166) to 166 + 146 = 312, y: 186 to 232
-    if (x >= 164 && x <= 314 && y >= 184 && y <= 236) {
+    // WORK button: right bottom area
+    if (x >= 160 && x <= 316 && y >= 180 && y <= 240) {
       return TOUCH_DASH_WORK;
     }
     return -1;
