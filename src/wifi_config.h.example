@@ -1,11 +1,28 @@
 #pragma once
 
-// Local Wi-Fi credentials:
-#define WIFI_SSID           "YOUR_WIFI_SSID"
-#define WIFI_PASSWORD       "YOUR_WIFI_PASSWORD"
+// Set to 1 to enable multi-network auto-switching (recommended):
+#define USE_WIFI_MULTI 1
+
+// Multi-network list:
+// Add as many networks as you need (Home, Mobile Hotspot, Work/School).
+// The ESP32 will automatically scan and connect to whichever network is in range.
+struct WifiCredential {
+    const char* ssid;
+    const char* password;
+};
+
+static const WifiCredential WIFI_NETWORKS[] = {
+    { "Galaxy A55 5G BF29", "YOUR_HOTSPOT_PASSWORD" }, // Mobile Hotspot (Make sure Hotspot is 2.4 GHz!)
+    { "YOUR_HOME_SSID",     "YOUR_HOME_PASSWORD" },    // Home Wi-Fi
+};
+
+// Legacy single-network fallback (used if USE_WIFI_MULTI is 0):
+#define WIFI_SSID           "Galaxy A55 5G BF29"
+#define WIFI_PASSWORD       "YOUR_HOTSPOT_PASSWORD"
 
 // Hermes Voice Gateway over Internet (Cloudflare Tunnel or Local LAN IP):
-// Example Cloudflare: "https://your-tunnel-subdomain.trycloudflare.com/voice"
-// Example Local LAN:   "http://192.168.1.100:8787/voice"
-#define HERMES_SERVER_URL   "https://your-tunnel-subdomain.trycloudflare.com/voice"
-#define HERMES_AUTH_TOKEN   "your_hermes_auth_token_here"
+// Example School Hotspot LAN: "http://10.170.101.33:8787/voice"
+// Example Home LAN:          "http://192.168.0.45:8787/voice"
+// Example Cloudflare Tunnel: "https://your-tunnel-subdomain.trycloudflare.com/voice"
+#define HERMES_SERVER_URL   "http://10.170.101.33:8787/voice"
+#define HERMES_AUTH_TOKEN   ""

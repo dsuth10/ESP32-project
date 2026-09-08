@@ -267,9 +267,7 @@ void loop() {
 
           Serial.printf("[Voice] Recording finished (%u bytes). Sending to receiver...\n", (unsigned int)wavBytes);
           char statsBuf[64];
-          snprintf(statsBuf, sizeof(statsBuf), "RMS:%.0f Pk:%u (%u KB)", 
-                   recorder.getMonoStats().getRms(), peakVal, (unsigned int)(wavBytes / 1024));
-          gui.drawVoiceCard(VOICE_UI_SENDING, "Uploading to Gateway...", statsBuf);
+          gui.drawVoiceCard(VOICE_UI_SENDING, "Uploading to Gateway...", "Transcribing speech...");
           setLedColor(120, 80, 0); // Amber / Yellow
 
           String transcript, reply;
@@ -277,36 +275,24 @@ void loop() {
 
           if (success) {
             Serial.printf("[Voice] Success! Transcript: %s | Reply: %s\n", transcript.c_str(), reply.c_str());
-            char subtitleBuf[128];
-            snprintf(subtitleBuf, sizeof(subtitleBuf), "[RMS:%.0f] %s", 
-                     recorder.getMonoStats().getRms(), reply.c_str());
-            gui.drawVoiceCard(VOICE_UI_SUCCESS, transcript.c_str(), subtitleBuf);
+            gui.drawVoiceCard(VOICE_UI_SUCCESS, transcript.c_str(), reply.c_str());
             setLedColor(0, 120, 30); // Bright Green
-            delay(4000);
           } else {
             Serial.println("[Voice] Failed to send audio to receiver");
-            char errBuf[128];
-            snprintf(errBuf, sizeof(errBuf), "[RMS:%.0f] %s", 
-                     recorder.getMonoStats().getRms(), reply.c_str());
-            gui.drawVoiceCard(VOICE_UI_ERROR, "Transmission Failed", errBuf);
+            gui.drawVoiceCard(VOICE_UI_ERROR, "Transmission Failed", reply.c_str());
             setLedColor(120, 0, 0); // Red
-            delay(4000);
           }
         } else {
           Serial.println("[Voice] Recording too short, dropped.");
           gui.drawVoiceCard(VOICE_UI_IDLE, "Recording Canceled", "Hold button longer to speak");
-          delay(1000);
+          delay(800);
         }
 #endif
 
+        gui.drawButton(currentPage, btnIndex, false);
         if (currentBleState) {
           setLedColor(0, 50, 15);
         }
-#if AUDIO_DIAGNOSTIC_MODE
-        gui.drawVoiceCard(VOICE_UI_IDLE, "Audio Diagnostic Mode", "Hold button above to test mic response");
-#else
-        gui.drawVoiceCard(VOICE_UI_IDLE, "Hermes Satellite Ready", "Hold button above to record voice message");
-#endif
       } 
       else {
         // === STANDARD MACRO KEYSTROKE FLOW ===

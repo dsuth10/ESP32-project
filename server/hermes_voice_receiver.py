@@ -15,6 +15,11 @@ import subprocess
 import tempfile
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(line_buffering=True, encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(line_buffering=True, encoding='utf-8', errors='replace')
+
 # ── 1. Configuration & Paths ──────────────────────────────────────────
 PORT = 8787
 HOST = "0.0.0.0"
@@ -86,32 +91,66 @@ def send_telegram_message(text):
         print(f"[Telegram] Error sending message: {e}")
         return False
 
-# ── 4. Hermes Dispatcher ──────────────────────────────────────────────
+# ── 4. Hermes Dispatcher & LLM Fallback ───────────────────────────────
+def query_ollama(prompt):
+    """Fallback to local Ollama if Hermes CLI is not present."""
+    models_to_try = ["gemma3:latest", "llama3.1:latest", "qwen3.5:latest", "phi4:latest"]
+    system_prompt = "You are a helpful voice assistant for an ESP32 desk device. Answer clearly in 1 or 2 concise sentences without markdown, bullets, or emojis."
+    for model in models_to_try:
+        try:
+            req_data = json.dumps({
+                "model": model,
+                "prompt": f"{system_prompt}\n\nUser: {prompt}\nAssistant:",
+                "stream": False
+            }).encode("utf-8")
+            req = urllib.request.Request(
+                "http://localhost:11434/api/generate",
+                data=req_data,
+                headers={"Content-Type": "application/json"}
+            )
+            with urllib.request.urlopen(req, timeout=25) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                reply = data.get("response", "").strip()
+                if reply:
+                    # Clean markdown and emojis for clean LCD display
+                    clean = reply.replace("**", "").replace("*", "").replace("#", "").replace("`", "")
+                    clean = "".join(c for c in clean if ord(c) < 128 or c.isalnum() or c in " .,!?'\"-")
+                    return clean.strip()
+        except Exception:
+            continue
+    return None
+
 def run_hermes_prompt(prompt):
-    if not os.path.exists(HERMES_BIN):
-        return "Hermes CLI binary not found on host."
+    if os.path.exists(HERMES_BIN):
+        print(f"[Hermes] Executing prompt: '{prompt}'")
+        cmd = [HERMES_BIN, "-z", prompt]
+        try:
+            result = subprocess.run(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=120,
+                encoding="utf-8",
+                errors="replace"
+            )
+            reply = result.stdout.strip()
+            if not reply and result.stderr:
+                reply = f"Hermes note: {result.stderr.strip()[:200]}"
+            if reply:
+                return reply
+        except subprocess.TimeoutExpired:
+            return "Hermes processing timed out after 120s."
+        except Exception as e:
+            print(f"[Hermes] CLI error: {e}")
 
-    print(f"[Hermes] Executing prompt: '{prompt}'")
-    cmd = [HERMES_BIN, "-z", prompt]
+    # Fallback to local Ollama
+    print(f"[LLM] Dispatching to local Ollama for: '{prompt}'")
+    ollama_reply = query_ollama(prompt)
+    if ollama_reply:
+        return ollama_reply
 
-    try:
-        result = subprocess.run(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            timeout=120,
-            encoding="utf-8",
-            errors="replace"
-        )
-        reply = result.stdout.strip()
-        if not reply and result.stderr:
-            reply = f"Hermes note: {result.stderr.strip()[:200]}"
-        return reply or "Command executed."
-    except subprocess.TimeoutExpired:
-        return "Hermes processing timed out after 120s."
-    except Exception as e:
-        return f"Error executing Hermes: {str(e)}"
+    return "Received, but no AI model was available to reply."
 
 # ── 5. HTTP Handler ───────────────────────────────────────────────────
 class VoiceRequestHandler(BaseHTTPRequestHandler):

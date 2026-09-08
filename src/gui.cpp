@@ -12,11 +12,11 @@ void MacroPadGUI::getButtonRect(uint8_t pageIndex, uint8_t btnIndex, int16_t& x,
   uint8_t count = PROFILES[pageIndex].numButtons;
 
   if (count == 1) {
-    // Single Large Center Button (Voice Page)
-    w = 280;
-    h = 75;
-    x = 20;
-    y = 44;
+    // Single compact button on Voice Page
+    w = 300;
+    h = 42;
+    x = 10;
+    y = 36;
   } else if (count <= 3) {
     // 3 Wide Horizontal Buttons stacked vertically
     w = 300;
@@ -120,79 +120,152 @@ void MacroPadGUI::drawButton(uint8_t pageIndex, uint8_t btnIndex, bool pressed) 
   }
 }
 
-void MacroPadGUI::drawVoiceCard(VoiceUIState state, const char* statusMsg, const char* detailMsg) {
-  int16_t x = 15;
-  int16_t y = 128;
-  int16_t w = 290;
-  int16_t h = 98;
+static void drawWrappedText(TFT_eSPI& tft, const char* text, int16_t x, int16_t y, int16_t maxW, uint8_t maxLines, uint16_t color, uint16_t bg, uint8_t font = 2) {
+  if (!text || strlen(text) == 0) return;
+  tft.setTextDatum(TL_DATUM);
+  tft.setTextColor(color, bg);
 
-  uint16_t borderColor = 0x5A1F;
+  int16_t curX = x;
+  int16_t curY = y;
+  int16_t lineHeight = (font == 1) ? 12 : 16;
+  uint8_t lineCount = 0;
+
+  String word = "";
+  String line = "";
+  size_t len = strlen(text);
+
+  for (size_t i = 0; i <= len; i++) {
+    char c = text[i];
+    if (c == ' ' || c == '\n' || c == '\0') {
+      String testLine = (line.length() == 0) ? word : (line + " " + word);
+      if (tft.textWidth(testLine.c_str(), font) > maxW && line.length() > 0) {
+        tft.drawString(line.c_str(), curX, curY, font);
+        lineCount++;
+        if (lineCount >= maxLines) return;
+        curY += lineHeight;
+        line = word;
+      } else {
+        line = testLine;
+      }
+      word = "";
+      if (c == '\n') {
+        tft.drawString(line.c_str(), curX, curY, font);
+        lineCount++;
+        if (lineCount >= maxLines) return;
+        curY += lineHeight;
+        line = "";
+      }
+    } else {
+      word += c;
+    }
+  }
+  if (line.length() > 0 && lineCount < maxLines) {
+    tft.drawString(line.c_str(), curX, curY, font);
+  }
+}
+
+void MacroPadGUI::drawVoiceCard(VoiceUIState state, const char* statusMsg, const char* detailMsg) {
+  int16_t x = 10;
+  int16_t y = 82;
+  int16_t w = 300;
+  int16_t h = 152;
+
+  uint16_t borderColor = 0x39E7;
   uint16_t bgColor = 0x0842;
-  uint16_t headerColor = 0xFFFF;
-  const char* header = "HERMES VOICE SATELLITE";
+
+  _tft.fillRoundRect(x, y, w, h, 6, bgColor);
+  _tft.drawRoundRect(x, y, w, h, 6, borderColor);
+
+  // Status Indicator Pill (20px high)
+  uint16_t pillBg = 0x2124;
+  uint16_t pillText = 0x9CD3;
+  const char* pillStr = "VOICE SATELLITE READY";
 
   switch (state) {
     case VOICE_UI_IDLE:
-      borderColor = 0x8A3F; // Violet
-      bgColor = 0x10A4;
-      headerColor = 0xCE7F;
-      header = "HERMES VOICE SATELLITE";
+      pillBg = 0x18C3;
+      pillText = 0x8410;
+      pillStr = "READY - HOLD BUTTON TO SPEAK";
       break;
 
     case VOICE_UI_RECORDING:
-      borderColor = 0xF800; // Red
-      bgColor = 0x4800;     // Dark Red
-      headerColor = 0xFFFF;
-      header = "[ RECORDING AUDIO ]";
+      pillBg = 0x9800; // Red
+      pillText = 0xFFFF;
+      pillStr = "[ RECORDING AUDIO ]";
       break;
 
     case VOICE_UI_SENDING:
-      borderColor = 0xFD20; // Amber / Yellow
-      bgColor = 0x4220;     // Dark Amber
-      headerColor = 0xFFE0;
-      header = "[ TRANSCRIBING & SENDING ]";
+      pillBg = 0xD3A0; // Amber
+      pillText = 0x0000;
+      pillStr = "[ TRANSCRIBING & SENDING ]";
       break;
 
     case VOICE_UI_SUCCESS:
-      borderColor = 0x07E0; // Green
-      bgColor = 0x0280;     // Dark Green
-      headerColor = 0x87F0;
-      header = "[ SENT TO HERMES & TELEGRAM ]";
+      pillBg = 0x03E0; // Green
+      pillText = 0xFFFF;
+      pillStr = "[ RESPONSE RECEIVED ]";
       break;
 
     case VOICE_UI_ERROR:
-      borderColor = 0xF800; // Red
-      bgColor = 0x3000;
-      headerColor = 0xFA40;
-      header = "[ TRANSMISSION FAILED ]";
+      pillBg = 0x8000; // Red
+      pillText = 0xFFFF;
+      pillStr = "[ TRANSMISSION FAILED ]";
       break;
   }
 
-  // Draw card panel
-  _tft.fillRoundRect(x, y, w, h, 6, bgColor);
-  _tft.drawRoundRect(x, y, w, h, 6, borderColor);
-  _tft.drawRoundRect(x + 1, y + 1, w - 2, h - 2, 5, borderColor);
+  // Draw pill banner
+  _tft.fillRoundRect(x + 6, y + 6, w - 12, 20, 4, pillBg);
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(pillText, pillBg);
+  _tft.drawString(pillStr, x + w / 2, y + 16, 2);
 
-  // Card Header
-  _tft.setTextDatum(TC_DATUM);
-  _tft.setTextColor(headerColor, bgColor);
-  _tft.drawString(header, x + w / 2, y + 8, 2);
+  // Divider line below pill
+  _tft.drawFastHLine(x + 6, y + 30, w - 12, 0x2965);
 
-  // Status Message
-  _tft.setTextColor(0xFFFF, bgColor);
-  _tft.drawString(statusMsg ? statusMsg : "", x + w / 2, y + 32, 2);
+  if (state == VOICE_UI_SUCCESS) {
+    // 1. Question (Transcript)
+    _tft.setTextDatum(TL_DATUM);
+    _tft.setTextColor(0x07FF, bgColor); // Cyan
+    _tft.drawString("You:", x + 10, y + 36, 2);
+    drawWrappedText(_tft, statusMsg ? statusMsg : "", x + 46, y + 36, w - 56, 2, 0xFFFF, bgColor, 2);
 
-  // Detail / Transcript (wrapped or clamped)
-  _tft.setTextColor(C_TEXT_MUTED, bgColor);
-  String detail = detailMsg ? String(detailMsg) : "";
-  if (detail.length() > 38) {
-    detail = detail.substring(0, 35) + "...";
+    // Divider between question and reply
+    _tft.drawFastHLine(x + 10, y + 74, w - 20, 0x2965);
+
+    // 2. Answer (Hermes response)
+    _tft.setTextDatum(TL_DATUM);
+    _tft.setTextColor(0x07E0, bgColor); // Green
+    _tft.drawString("Hermes:", x + 10, y + 80, 2);
+    drawWrappedText(_tft, detailMsg ? detailMsg : "", x + 10, y + 98, w - 20, 3, 0xFFFF, bgColor, 2);
   }
-  _tft.drawString(detail.c_str(), x + w / 2, y + 56, 2);
-
-  // Server hint at bottom
-  _tft.setTextColor(0x7BEF, bgColor);
-  _tft.drawString("Hermes Cloudflare Gateway", x + w / 2, y + 78, 1);
+  else if (state == VOICE_UI_RECORDING) {
+    _tft.setTextDatum(MC_DATUM);
+    _tft.setTextColor(0xFFFF, bgColor);
+    _tft.drawString("Listening to your voice...", x + w / 2, y + 64, 2);
+    _tft.setTextColor(0x8410, bgColor);
+    _tft.drawString("Release button when done speaking", x + w / 2, y + 92, 2);
+  }
+  else if (state == VOICE_UI_SENDING) {
+    _tft.setTextDatum(MC_DATUM);
+    _tft.setTextColor(0xFFE0, bgColor);
+    _tft.drawString("Uploading audio to Hermes...", x + w / 2, y + 64, 2);
+    _tft.setTextColor(0x8410, bgColor);
+    _tft.drawString(detailMsg ? detailMsg : "Transcribing with Whisper AI...", x + w / 2, y + 92, 2);
+  }
+  else if (state == VOICE_UI_ERROR) {
+    _tft.setTextDatum(MC_DATUM);
+    _tft.setTextColor(0xF800, bgColor);
+    _tft.drawString(statusMsg ? statusMsg : "Transmission Failed", x + w / 2, y + 54, 2);
+    _tft.setTextColor(0xFA40, bgColor);
+    drawWrappedText(_tft, detailMsg ? detailMsg : "", x + 10, y + 78, w - 20, 3, 0xFA40, bgColor, 2);
+  }
+  else { // VOICE_UI_IDLE
+    _tft.setTextDatum(MC_DATUM);
+    _tft.setTextColor(0xCE7F, bgColor);
+    _tft.drawString("Hold button above to record voice.", x + w / 2, y + 64, 2);
+    _tft.setTextColor(0x8410, bgColor);
+    _tft.drawString("Question & answer will appear here.", x + w / 2, y + 92, 2);
+  }
 }
 
 void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
@@ -203,7 +276,7 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
     drawButton(currentPage, i, false);
   }
   if (currentPage == PAGE_VOICE) {
-    drawVoiceCard(VOICE_UI_IDLE, "Hermes Satellite Ready", "Hold button above to record voice message");
+    drawVoiceCard(VOICE_UI_IDLE, "", "");
   }
 }
 
