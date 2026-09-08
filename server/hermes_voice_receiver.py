@@ -39,6 +39,8 @@ OLLAMA_MODELS = [
 ]
 
 API_SERVER_KEY = os.environ.get("API_SERVER_KEY")
+VOICE_RECEIVER_TOKEN = os.environ.get("VOICE_RECEIVER_TOKEN")
+OLLAMA_KEEP_ALIVE = os.environ.get("OLLAMA_KEEP_ALIVE", "8h" if RECEIVER_ENV == "work" else "5m")
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 DISABLE_TELEGRAM = os.environ.get("DISABLE_TELEGRAM", "").lower() in ("1", "true", "yes")
@@ -63,6 +65,10 @@ for env_path in hermes_env_candidates:
                     v = v.strip()
                     if k == "API_SERVER_KEY" and not API_SERVER_KEY:
                         API_SERVER_KEY = v
+                    elif k == "VOICE_RECEIVER_TOKEN" and not VOICE_RECEIVER_TOKEN:
+                        VOICE_RECEIVER_TOKEN = v
+                    elif k == "OLLAMA_KEEP_ALIVE" and "OLLAMA_KEEP_ALIVE" not in os.environ:
+                        OLLAMA_KEEP_ALIVE = v
                     elif k == "TELEGRAM_BOT_TOKEN" and not TELEGRAM_BOT_TOKEN:
                         TELEGRAM_BOT_TOKEN = v
                     elif k == "TELEGRAM_ALLOWED_USERS" and not TELEGRAM_CHAT_ID and v:
@@ -72,12 +78,17 @@ for env_path in hermes_env_candidates:
         except Exception as e:
             print(f"[Config] Note: Could not parse {env_path}: {e}")
 
+# Phase 18 & 19: Enforce strict Work privacy hardening
+if RECEIVER_ENV.lower() == "work":
+    DISABLE_TELEGRAM = True
+
 print(f"[Config] Environment    : {RECEIVER_ENV.upper()}")
 print(f"[Config] Receiver Port  : {PORT} (host: {HOST})")
+print(f"[Config] Receiver Token : {'Enforced (Bearer auth enabled)' if VOICE_RECEIVER_TOKEN else 'None (Open access / unauthenticated)'}")
 print(f"[Config] Hermes Gateway : {GATEWAY_URL}")
 print(f"[Config] API Server Key : {'Configured (' + API_SERVER_KEY[:8] + '...)' if API_SERVER_KEY else 'MISSING (Set API_SERVER_KEY or ~/.hermes/.env)'}")
-print(f"[Config] Ollama Host    : {OLLAMA_HOST}")
-print(f"[Config] Telegram Mirror: {'Disabled' if DISABLE_TELEGRAM else ('Configured' if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID else 'Not configured')}")
+print(f"[Config] Ollama Host    : {OLLAMA_HOST} (keep_alive: {OLLAMA_KEEP_ALIVE})")
+print(f"[Config] Telegram Mirror: {'Disabled (Work Mode / Privacy Hardened)' if RECEIVER_ENV.lower() == 'work' else ('Disabled' if DISABLE_TELEGRAM else ('Configured' if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID else 'Not configured'))}")
 
 # Concise system prompt tailored for the ESP32 MacroPad LCD display
 ESP32_SYSTEM_PROMPT = (
@@ -268,6 +279,29 @@ def probe_hermes_health() -> dict:
         "error": err
     }
 
+def warmup_ollama_model():
+    """Phase 17: Preload the active Ollama model into GPU VRAM to prevent first-query cold load delays."""
+    if not OLLAMA_MODELS:
+        return
+    model = OLLAMA_MODELS[0]
+    try:
+        req_data = json.dumps({
+            "model": model,
+            "keep_alive": OLLAMA_KEEP_ALIVE
+        }).encode("utf-8")
+        url = f"{OLLAMA_HOST.rstrip('/')}/api/generate"
+        req = urllib.request.Request(
+            url,
+            data=req_data,
+            headers={"Content-Type": "application/json"}
+        )
+        print(f"[Ollama] Preloading model '{model}' (keep_alive: {OLLAMA_KEEP_ALIVE})...")
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            if resp.status == 200:
+                print(f"[Ollama] Model '{model}' successfully warmed up in VRAM!")
+    except Exception as e:
+        print(f"[Ollama] Note: Model preload note / deferred: {e}")
+
 def probe_ollama_health() -> dict:
     """Probes local Ollama for service reachability and model VRAM residency."""
     ready = False
@@ -302,6 +336,8 @@ def probe_ollama_health() -> dict:
         "host": OLLAMA_HOST,
         "ready": ready,
         "warm": warm,
+        "model": OLLAMA_MODELS[0] if OLLAMA_MODELS else "unknown",
+        "keep_alive": OLLAMA_KEEP_ALIVE,
         "warm_models": running_models,
         "available_models": installed_models[:6],
         "error": err
@@ -358,11 +394,32 @@ def get_composite_status() -> dict:
 
 # ── 9. HTTP Request Handler (Concurrent) ──────────────────────────────
 class VoiceRequestHandler(BaseHTTPRequestHandler):
+    def check_auth(self) -> bool:
+        """Phase 20: Validate Authorization: Bearer <VOICE_RECEIVER_TOKEN> if configured."""
+        if not VOICE_RECEIVER_TOKEN:
+            return True
+        auth_header = self.headers.get("Authorization", "")
+        if not auth_header.startswith("Bearer "):
+            return False
+        token = auth_header[7:].strip()
+        return token == VOICE_RECEIVER_TOKEN
+
+    def send_unauthorized(self):
+        self.send_response(401)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("WWW-Authenticate", 'Bearer realm="HermesVoiceReceiver"')
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+        self.wfile.write(json.dumps({
+            "status": "error",
+            "message": "Unauthorized: Invalid or missing bearer token"
+        }).encode("utf-8"))
+
     def do_GET(self):
         url_parts = urllib.parse.urlparse(self.path)
         path = url_parts.path.rstrip('/')
 
-        # 1. Lightweight health check (Phase 3)
+        # 1. Lightweight health check (Phase 3) - unauthenticated for fast liveness probing
         if path == "/health":
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
@@ -371,8 +428,11 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"status": "ok"}).encode("utf-8"))
             return
 
-        # 2. Composite Health Authority status (Phase 3 & 4)
+        # 2. Composite Health Authority status (Phase 3 & 4) - protected by Bearer token
         if path == "/status":
+            if not self.check_auth():
+                self.send_unauthorized()
+                return
             composite = get_composite_status()
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
@@ -407,6 +467,11 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
         if self.path not in ["/voice", "/voice/", "/"]:
             self.send_response(404)
             self.end_headers()
+            return
+
+        # Check Bearer Authentication (Phase 20)
+        if not self.check_auth():
+            self.send_unauthorized()
             return
 
         # Enforce audio lock: allow only one active voice inference at a time
@@ -573,6 +638,9 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
 def main():
     # Warm up Whisper model in background
     get_whisper_model()
+
+    # Phase 17: Pre-warm Ollama model in background thread to prevent cold start latency
+    threading.Thread(target=warmup_ollama_model, daemon=True).start()
 
     server = ThreadingHTTPServer((HOST, PORT), VoiceRequestHandler)
     server.daemon_threads = True

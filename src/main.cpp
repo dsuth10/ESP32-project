@@ -175,23 +175,16 @@ void loop() {
   if (currentPage == PAGE_DASHBOARD && !recorder.isRecording()) {
     static uint32_t lastDashUpdate = 0;
     uint32_t now = millis();
-    if (now - lastDashUpdate > 2500) {
+    if (now - lastDashUpdate > 3000) {
       lastDashUpdate = now;
       DashboardStatus status;
-      status.wifi = netManager.isConnected() ? HEALTH_READY : HEALTH_FAILED;
-      status.wifiSsid = netManager.getConnectedSSID();
-      status.wifiRssi = netManager.getRSSI();
-      status.ipAddress = netManager.getIpAddress();
       status.ble = currentBleState ? HEALTH_READY : HEALTH_FAILED;
       status.bleConnected = currentBleState;
-      status.voiceHost = netManager.isConnected() ? HEALTH_READY : HEALTH_UNKNOWN;
-      status.voiceHostReady = netManager.isConnected();
-      status.hermes = netManager.isConnected() ? HEALTH_READY : HEALTH_UNKNOWN;
-      status.hermesReady = netManager.isConnected();
-      status.aiBackend = netManager.isConnected() ? HEALTH_READY : HEALTH_UNKNOWN;
-      status.aiBackendName = (envManager.getMode() == ENV_WORK) ? "Local Ollama" : "Hermes Gateway";
+      status.expectedBleHost = envManager.getActiveProfile().expectedBleHost;
       status.macropadReady = currentBleState;
-      status.voiceReady = netManager.isConnected();
+
+      // Deep probe: fetches composite status from receiver :8787/status with Bearer token
+      netManager.fetchCompositeStatus(status);
 
       gui.drawDashboard(status, envManager.getMode());
     }

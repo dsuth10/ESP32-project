@@ -13,15 +13,20 @@ A high-performance, multifunctional firmware and hardware suite for the **ES3C28
 3. [Firmware Features](#firmware-features)
    - [BLE HID Keyboard Profiles (Pages 1–4)](#ble-hid-keyboard-profiles-pages-14)
    - [Hermes AI Voice Satellite (Page 5)](#hermes-ai-voice-satellite-page-5)
+   - [System Telemetry Dashboard & Profile Switcher (Page 6)](#system-telemetry-dashboard--profile-switcher-page-6)
    - [RGB Status LED Indicators](#rgb-status-led-indicators)
 4. [Hermes Voice Receiver Server](#hermes-voice-receiver-server)
+   - [Architecture & Concurrent Health Authority](#architecture--concurrent-health-authority)
+   - [Security Model: Token Separation](#security-model-token-separation)
+   - [Workplace Privacy Hardening](#workplace-privacy-hardening)
 5. [3D Enclosure & Mechanical Design](#3d-enclosure--mechanical-design)
 6. [Getting Started & Configuration](#getting-started--configuration)
-   - [Wi-Fi & Server Setup](#1-wi-fi--server-setup)
+   - [Home & Work Environment Setup](#1-home--work-environment-setup)
    - [Building and Flashing with PlatformIO](#2-building-and-flashing-with-platformio)
    - [Running the Hermes Voice Receiver](#3-running-the-hermes-voice-receiver)
    - [Factory Firmware Flasher (flash.py)](#4-factory-firmware-flasher-flashpy)
 7. [Repository File Tree](#repository-file-tree)
+8. [Comprehensive Architecture Guide (docs/home-work-architecture.md)](docs/home-work-architecture.md)
 
 ---
 
@@ -84,7 +89,7 @@ This repository solves the common hardware misidentification surrounding this bo
 
 ## Firmware Features
 
-The primary firmware is built on PlatformIO using Arduino + ESP-IDF frameworks. It operates as a combined wireless Bluetooth macro keyboard and an internet-connected voice satellite.
+The primary firmware is built on PlatformIO using Arduino + ESP-IDF frameworks. It operates as a combined wireless Bluetooth macro keyboard, an internet-connected voice satellite, and a portable environment manager.
 
 ### BLE HID Keyboard Profiles (Pages 1–4)
 
@@ -123,8 +128,15 @@ Turns the touch pad into a physical AI voice satellite:
 - **Push-to-Talk Operation:** Hold down the on-screen "Push to Talk" button while speaking.
 - **Dynamic Feedback:** Live second timer (`Recording [3 s]...`), audio peak meters (`L:xxx R:xxx`), and visual state transitions.
 - **PCM WAV Generation:** Records 16-bit 16 kHz audio into internal PSRAM buffer and wraps it with a proper standard 44-byte WAV header upon release.
-- **HTTP Transmission:** Dispatches audio payload over Wi-Fi to the local receiver or remote Cloudflare Tunnel endpoint.
+- **HTTP Transmission:** Dispatches audio payload over Wi-Fi to the local receiver service.
 - **Status Card Display:** Shows live transcription and the Hermes AI reply directly on the 2.8" LCD.
+
+### System Telemetry Dashboard & Profile Switcher (Page 6)
+
+A dedicated telemetry and management view (`< [6/6] >`):
+- **Live Diagnostics**: Monitors Wi-Fi (SSID + RSSI), Internet reachability, Bluetooth host pairing, Voice Host readiness, persistent Hermes Gateway (:8642), and local Ollama model residency.
+- **Zero-Reflash Portability**: Touch `[ SWITCH TO HOME ]` or `[ SWITCH TO WORK ]` to instantly reconfigure Wi-Fi, endpoint URLs, auth tokens, and timeouts. Selections are persisted in ESP32 Non-Volatile Storage (NVS via Arduino `Preferences`) across power cycles.
+- **Subsystem Decoupling**: MacroPad readiness (BLE) and Voice readiness (Wi-Fi + AI) are evaluated independently; the terminal never marks itself failed if mobile internet is toggled off on your hotspot.
 
 ### RGB Status LED Indicators
 
@@ -142,13 +154,25 @@ Turns the touch pad into a physical AI voice satellite:
 
 ## Hermes Voice Receiver Server
 
-Located in `server/`, this lightweight Python service acts as the bridge between the ESP32 and the local AI system:
+Located in `server/`, this lightweight Python service acts as the authoritative bridge between the ESP32 terminal and Hermes:
 
-- **Audio Intake:** HTTP server on port `8787` accepting multipart or raw WAV payloads at `/voice`.
-- **Local Transcription:** Uses `faster-whisper` (`base` model, `int8` quantization) for rapid speech-to-text with zero external cloud cost.
-- **Hermes CLI Dispatch:** Pipes the transcribed text directly into `hermes.exe -z "<prompt>"`.
-- **Telegram Mirroring:** Automatically mirrors both your spoken message and Hermes's response to your Telegram chat channel.
-- **LCD Feedback:** Returns a JSON response containing the transcription and truncated reply for the 2.8" screen.
+- **Audio Intake & Threading Concurrency:** Built with Python's `ThreadingHTTPServer` on port `8787`. Background health probes (`GET /health`, `GET /status`) return in $<50\text{ ms}$ concurrently even during active Whisper transcription or LLM inference. Competing audio uploads are rejected with HTTP 429 (Busy).
+- **Persistent Hermes Gateway:** Queries Hermes directly at `http://127.0.0.1:8642/v1/chat/completions` using low-latency session reuse, bypassing slow one-shot process spawns.
+- **Local Transcription:** Uses `faster-whisper` (`base` model, `int8` quantization, `beam_size=1`, VAD filtering) for rapid, low-latency speech-to-text.
+- **TFT Display Sanitization:** Automatically strips markdown formatting, bold markers, bullets, and emojis before sending responses to the ESP32.
+- **Deep Health Authority (`GET /status`):** Probes Hermes detailed readiness, Ollama VRAM model residency, Whisper readiness, and returns structured execution timing (`whisper_ms`, `hermes_ms`, `server_ms`).
+
+### Security Model: Token Separation
+
+The receiver separates network tokens from master agent keys:
+- **`VOICE_RECEIVER_TOKEN`**: Shared bearer secret between the ESP32 and Voice Receiver over the local network / hotspot. Validated on `POST /voice` and `GET /status`.
+- **`API_SERVER_KEY`**: Stored locally on the host (`~/.hermes/.env`) and used exclusively on loopback (`127.0.0.1:8642`) to authenticate against Hermes.
+
+### Workplace Privacy Hardening
+
+- **Local GPU Inference**: At School/Work, Hermes is paired with local Ollama (`127.0.0.1:11434`), ensuring zero cloud dependencies.
+- **Telegram Mirror Suppression**: When `RECEIVER_ENV=work`, Telegram mirroring is automatically suppressed so no voice transcripts leave the workstation.
+- **GPU Warmup & Keep-Alive**: Launches with `OLLAMA_KEEP_ALIVE=8h` and issues an automated startup preload probe so the model remains warm in VRAM.
 
 ---
 
@@ -171,27 +195,39 @@ A complete 3D printable enclosure has been modeled specifically for the ES3C28P 
 
 ## Getting Started & Configuration
 
-### 1. Wi-Fi & Server Setup
+### 1. Home & Work Environment Setup
 
-To keep your private network credentials secure, configuration is separated from version control:
+To keep private network credentials secure, configuration is separated from version control:
 
 1. Copy `src/wifi_config.h.example` to `src/wifi_config.h`:
    ```bash
    cp src/wifi_config.h.example src/wifi_config.h
    ```
-2. Open `src/wifi_config.h` and configure your settings:
+2. Open `src/wifi_config.h` and configure both composite profiles:
    ```c
    #pragma once
 
-   // Local Wi-Fi credentials:
-   #define WIFI_SSID           "Your_WiFi_Network"
-   #define WIFI_PASSWORD       "Your_WiFi_Password"
+   // HOME Profile (Home Linux Server & Home Wi-Fi)
+   #define HOME_ENV_NAME          "HOME"
+   #define HOME_WIFI_SSID         "Your_Home_SSID"
+   #define HOME_WIFI_PASSWORD     "Your_Home_Password"
+   #define HOME_RECEIVER_URL      "http://192.168.0.45:8787/voice"
+   #define HOME_STATUS_URL        "http://192.168.0.45:8787/status"
+   #define HOME_AUTH_TOKEN        "your_home_receiver_token"
+   #define HOME_BLE_HOST          "Home Desktop"
+   #define HOME_VOICE_TIMEOUT_MS  25000
 
-   // Hermes Voice Gateway (Local LAN IP or Cloudflare Tunnel):
-   #define HERMES_SERVER_URL   "http://192.168.1.100:8787/voice"
-   #define HERMES_AUTH_TOKEN   "optional_token_if_used"
+   // WORK Profile (School Windows PC & Phone Hotspot)
+   #define WORK_ENV_NAME          "WORK"
+   #define WORK_WIFI_SSID         "Your_Hotspot_SSID"
+   #define WORK_WIFI_PASSWORD     "Your_Hotspot_Password"
+   #define WORK_RECEIVER_URL      "http://10.170.101.33:8787/voice"
+   #define WORK_STATUS_URL        "http://10.170.101.33:8787/status"
+   #define WORK_AUTH_TOKEN        "your_work_receiver_token"
+   #define WORK_BLE_HOST          "School Desktop"
+   #define WORK_VOICE_TIMEOUT_MS  65000
    ```
-   *(Note: `*wifi_config.h` is excluded by `.gitignore` and will not be pushed to GitHub.)*
+   *(Note: `src/wifi_config.h` is excluded by `.gitignore` and will not be committed.)*
 
 ### 2. Building and Flashing with PlatformIO
 
@@ -267,6 +303,8 @@ ESP32 project/
 │   ├── dimensions/               # Enclosure renders, drawings, and CAD models
 │   │   ├── 3d_model/             # Official ES3C28P STEP 3D CAD model
 │   │   └── case_stl/             # 3D printable STL files (Top, Bottom, Assembly)
+│   ├── Dashboard-plan.md         # Home/Work architecture engineering roadmap
+│   ├── home-work-architecture.md # Comprehensive portable setup and deployment guide
 │   ├── schematic.pdf             # Complete hardware schematic
 │   └── pinout_allocation.xlsx    # Full pin allocation workbook
 ├── lib/                          # Driver libraries
@@ -275,15 +313,20 @@ ESP32 project/
 │   ├── FT6336/                   # FocalTech FT6336G capacitive touch driver
 │   └── TFT_eSPI/                 # High-speed SPI display driver (ILI9341V)
 ├── server/                       # Host AI receiver service
-│   ├── hermes_voice_receiver.py  # Voice receiver, faster-whisper & Hermes bridge
-│   └── start_receiver.bat        # Windows quick-start launcher
+│   ├── hermes_voice_receiver.py  # Concurrent ThreadingHTTPServer, Whisper, & Hermes bridge
+│   ├── start_receiver.bat        # Windows launcher (Work mode, Ollama keep-alive)
+│   ├── start_receiver.sh         # Linux launcher (Home server hosting)
+│   ├── receiver.env.example      # Environment configuration template
+│   └── benchmark_hermes_standalone.py # CLI vs persistent gateway benchmark utility
 └── src/                          # Firmware source code
     ├── main.cpp                  # Main loop, BLE setup, and event dispatcher
-    ├── macropad_config.h / .cpp  # Macro profiles, key combos, and color palette
-    ├── gui.h / .cpp              # TFT_eSPI GUI engine and voice status cards
+    ├── macropad_config.h / .cpp  # 6-page macro profiles, key combos, and color palette
+    ├── gui.h / .cpp              # TFT_eSPI GUI engine, voice cards, & Page 6 dashboard
+    ├── environment_manager.h/.cpp# Composite profiles & NVS Preferences persistence
+    ├── system_status.h           # HealthState & DashboardStatus telemetry structures
     ├── audio_recorder.h / .cpp   # I2S DMA audio capture and WAV builder
     ├── es8311.h / .cpp           # Everest Semi ES8311 I2C codec driver
     ├── es8311_reg.h              # ES8311 register map
-    ├── network_manager.h / .cpp  # Wi-Fi management and HTTP audio uploader
-    └── wifi_config.h.example     # Wi-Fi & gateway credentials template
+    ├── network_manager.h / .cpp  # Strict profile networking, composite health & audio upload
+    └── wifi_config.h.example     # HOME and WORK composite credentials template
 ```

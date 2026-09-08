@@ -335,13 +335,27 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
   }
   drawStatusRow(cardX + 4, rowY, cardW - 8, "Wi-Fi", wifiBuf, status.wifi);
 
-  // Row 2: IP Address
+  // Row 2: Internet Connectivity (Phase 13)
   rowY += rowH;
-  drawStatusRow(cardX + 4, rowY, cardW - 8, "IP Address", status.ipAddress.length() > 0 ? status.ipAddress.c_str() : "Disconnected", status.wifi);
+  const char* internetVal;
+  if (status.internet == HEALTH_READY) {
+    internetVal = "Online";
+  } else if (status.internet == HEALTH_DEGRADED) {
+    internetVal = "Local LAN Only";
+  } else {
+    internetVal = "Offline";
+  }
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Internet", internetVal, status.internet);
 
-  // Row 3: Bluetooth HID
+  // Row 3: Bluetooth HID + Expected Host (Phase 21)
   rowY += rowH;
-  drawStatusRow(cardX + 4, rowY, cardW - 8, "Bluetooth", status.bleConnected ? "Connected (Host Ready)" : "Advertising...", status.ble);
+  char bleBuf[40];
+  if (status.bleConnected) {
+    snprintf(bleBuf, sizeof(bleBuf), "Connected (%s)", status.expectedBleHost.c_str());
+  } else {
+    snprintf(bleBuf, sizeof(bleBuf), "Advertising...");
+  }
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Bluetooth", bleBuf, status.ble);
 
   // Row 4: Voice Host
   rowY += rowH;
@@ -349,7 +363,7 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
 
   // Row 5: Hermes Gateway
   rowY += rowH;
-  drawStatusRow(cardX + 4, rowY, cardW - 8, "Hermes", status.hermesReady ? "Persistent Gateway (:8642)" : "Offline", status.hermes);
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Hermes", status.hermesReady ? "Ready (:8642)" : (status.hermes == HEALTH_DEGRADED ? "Starting / Live" : "Offline"), status.hermes);
 
   // Row 6: AI Backend
   rowY += rowH;
@@ -417,8 +431,11 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
     status.wifiSsid = netManager.getConnectedSSID();
     status.wifiRssi = netManager.getRSSI();
     status.ipAddress = netManager.getIpAddress();
+    status.internet = netManager.isConnected() ? (netManager.checkInternet() ? HEALTH_READY : HEALTH_DEGRADED) : HEALTH_FAILED;
+    status.internetConnected = (status.internet == HEALTH_READY);
     status.ble = isConnected ? HEALTH_READY : HEALTH_FAILED;
     status.bleConnected = isConnected;
+    status.expectedBleHost = envManager.getActiveProfile().expectedBleHost;
     status.voiceHost = netManager.isConnected() ? HEALTH_READY : HEALTH_UNKNOWN;
     status.voiceHostReady = netManager.isConnected();
     status.hermes = netManager.isConnected() ? HEALTH_READY : HEALTH_UNKNOWN;

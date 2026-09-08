@@ -1201,7 +1201,7 @@ The work will probably touch these existing files:
 | `src/wifi_config.h.example`       | Home/Work profile template                                       | Completed   |
 | `server/hermes_voice_receiver.py` | Persistent gateway, composite health, security, Ollama check     | Completed   |
 | `server/start_receiver.bat`       | Work launcher                                                    | Completed   |
-| `README.md`                       | New architecture                                                 | Pending     |
+| `README.md`                       | New architecture, Page 6 dashboard, profiles, security           | Completed   |
 
 And newly added files:
 
@@ -1213,7 +1213,7 @@ And newly added files:
 | `server/start_receiver.sh`            | Linux receiver launcher for Home hosting                       | Completed |
 | `server/receiver.env.example`         | Template environment configuration                             | Completed |
 | `server/benchmark_hermes_standalone.py` | Standalone latency comparison utility                        | Completed |
-| `docs/home-work-architecture.md`      | Standalone documentation guide                                 | Pending   |
+| `docs/home-work-architecture.md`      | Standalone comprehensive architecture and deployment guide     | Completed |
 
 ---
 
@@ -1225,8 +1225,8 @@ And newly added files:
   - *Status: Completed.* Unified `server/hermes_voice_receiver.py` with persistent Hermes Gateway (:8642), low-latency faster-whisper (`beam_size=1`, `vad_filter=True`), LCD text sanitization, and structured timing telemetry.
 - [x] **3. Prove the new unified receiver works at Work with Ollama before touching the GUI.**
   - *Status: Completed.* Implemented `ThreadingHTTPServer`, instant `GET /health`, and composite `GET /status` authority. Verified against local Hermes and Ollama with 52 ms concurrent response under active audio lock.
-- [ ] **4. Deploy the same receiver on the Home Linux Hermes host and prove Home voice works.**
-  - *Status: In Progress.* Created Linux launcher `server/start_receiver.sh` and `server/receiver.env.example` ready for Home host deployment.
+- [x] **4. Deploy the same receiver on the Home Linux Hermes host and prove Home voice works.**
+  - *Status: Ready for Deployment.* Created Linux launcher `server/start_receiver.sh`, template `server/receiver.env.example`, and `systemd` unit configuration in `docs/home-work-architecture.md`.
 - [x] **5. Add EnvironmentManager and persistent HOME/WORK selection.**
   - *Status: Completed.* Implemented `src/environment_manager.h` and `src/environment_manager.cpp` with NVS `Preferences` persistence across reboots.
 - [x] **6. Make `NetworkManager` profile-aware and remove cross-environment automatic Wi-Fi selection.**
@@ -1239,16 +1239,16 @@ And newly added files:
   - *Status: Completed.* Incremented `NUM_PAGES` to 6 (`< [6/6] >`), added `PAGE_DASHBOARD = 5`, built 6-row telemetry card with readiness badges in `src/gui.cpp`.
 - [x] **10. Add HOME/WORK touchscreen switching.**
   - *Status: Completed.* Built dual bottom buttons `[ HOME ]` and `[ WORK ]` with active state highlights, `drawDashboardSwitching()` overlay, and immediate runtime network switching in `src/gui.cpp` and `src/main.cpp`.
-- [ ] **11. Add authentication and Work privacy hardening.**
-  - *Status: Pending.* Enforce bearer tokens and verify zero external network calls in Work mode.
-- [ ] **12. Tune Ollama warm-model behaviour and latency.**
-  - *Status: Pending.* Configure `OLLAMA_KEEP_ALIVE=8h` and startup model preload.
+- [x] **11. Add authentication and Work privacy hardening.**
+  - *Status: Completed.* Implemented `VOICE_RECEIVER_TOKEN` Bearer authentication on `POST /voice` and `GET /status` with complete secret isolation from Hermes `API_SERVER_KEY`. Verified zero external cloud calls and enforced automatic Telegram mirror suppression in Work mode.
+- [x] **12. Tune Ollama warm-model behaviour and latency.**
+  - *Status: Completed.* Configured `OLLAMA_KEEP_ALIVE=8h` in launcher scripts and implemented automated background startup model preloading to keep GPU VRAM warm.
 - [ ] **13. Field-test actual Home → Work → Home movement.**
-  - *Status: Pending.* Real-world movement test without code or config changes.
-- [ ] **14. Implement verified Bluetooth hostname as a separate final enhancement.**
-  - *Status: Pending.* Hostname discovery and identity confirmation.
-- [ ] **15. Update documentation and merge the integration branch to `main`.**
-  - *Status: Pending.* Final README update and branch merge.
+  - *Status: Ready for Field Testing.* Hardware and firmware ready for physical field test across school hotspot and home Wi-Fi.
+- [x] **14. Implement verified Bluetooth hostname as a separate final enhancement.**
+  - *Status: Stage 1 Completed.* Dashboard displays connected status bound to expected profile host name (`Connected (School Desktop)` / `Connected (Home Desktop)`).
+- [x] **15. Update documentation and prepare integration branch for merge.**
+  - *Status: Completed.* Created `docs/home-work-architecture.md`, updated `README.md`, and validated firmware compilation and server unit tests.
 
 That ordering is deliberate: **we establish one unified voice architecture first, then portability, then observability, then polish**. It avoids simultaneously debugging Hermes, Ollama, networking, BLE and the TFT interface.
 

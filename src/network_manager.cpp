@@ -49,7 +49,47 @@ static int extractJsonInt(const String& json, const String& key) {
     return -1;
 }
 
-NetworkManager::NetworkManager() : _lastReconnectAttempt(0), _wasConnected(false) {}
+static bool extractJsonBool(const String& json, const String& key, bool defaultVal = false) {
+    String searchKey = "\"" + key + "\":";
+    int start = json.indexOf(searchKey);
+    if (start == -1) {
+        searchKey = "\"" + key + "\": ";
+        start = json.indexOf(searchKey);
+        if (start == -1) return defaultVal;
+    }
+    start += searchKey.length();
+    while (start < (int)json.length() && json.charAt(start) == ' ') start++;
+    if (json.startsWith("true", start)) return true;
+    if (json.startsWith("false", start)) return false;
+    return defaultVal;
+}
+
+static String extractJsonObject(const String& json, const String& objKey) {
+    String searchKey = "\"" + objKey + "\":";
+    int start = json.indexOf(searchKey);
+    if (start == -1) {
+        searchKey = "\"" + objKey + "\": ";
+        start = json.indexOf(searchKey);
+        if (start == -1) return "";
+    }
+    int braceStart = json.indexOf('{', start);
+    if (braceStart == -1) return "";
+    int depth = 0;
+    for (int i = braceStart; i < (int)json.length(); i++) {
+        if (json.charAt(i) == '{') depth++;
+        else if (json.charAt(i) == '}') {
+            depth--;
+            if (depth == 0) {
+                return json.substring(braceStart, i + 1);
+            }
+        }
+    }
+    return "";
+}
+
+NetworkManager::NetworkManager() 
+    : _lastReconnectAttempt(0), _wasConnected(false),
+      _lastInternetCheck(0), _lastInternetState(false) {}
 
 void NetworkManager::begin() {
     WiFi.mode(WIFI_STA);
@@ -247,4 +287,133 @@ bool NetworkManager::checkReceiverHealth() {
     int code = http.GET();
     http.end();
     return (code == 200);
+}
+
+bool NetworkManager::checkInternet() {
+    if (!isConnected()) {
+        _lastInternetState = false;
+        return false;
+    }
+    uint32_t now = millis();
+    if (now - _lastInternetCheck < 30000 && _lastInternetCheck != 0) {
+        return _lastInternetState;
+    }
+    _lastInternetCheck = now;
+
+    // Use DNS resolution of a fast public resolver
+    IPAddress result;
+    int err = WiFi.hostByName("one.one.one.one", result);
+    if (err == 1) {
+        _lastInternetState = true;
+        return true;
+    }
+    err = WiFi.hostByName("google.com", result);
+    _lastInternetState = (err == 1);
+    return _lastInternetState;
+}
+
+bool NetworkManager::fetchCompositeStatus(DashboardStatus& outStatus) {
+    // Populate base network fields
+    bool connected = isConnected();
+    outStatus.wifi = connected ? HEALTH_READY : HEALTH_FAILED;
+    outStatus.wifiSsid = getConnectedSSID();
+    outStatus.wifiRssi = getRSSI();
+    outStatus.ipAddress = getIpAddress();
+
+    // Check Internet (Phase 13)
+    bool internetOk = checkInternet();
+    outStatus.internet = internetOk ? HEALTH_READY : (connected ? HEALTH_DEGRADED : HEALTH_FAILED);
+    outStatus.internetConnected = internetOk;
+
+    if (!connected) {
+        outStatus.voiceHost = HEALTH_UNKNOWN;
+        outStatus.voiceHostReady = false;
+        outStatus.hermes = HEALTH_UNKNOWN;
+        outStatus.hermesReady = false;
+        outStatus.aiBackend = HEALTH_UNKNOWN;
+        outStatus.aiBackendName = "Offline";
+        outStatus.voiceReady = false;
+        return false;
+    }
+
+    const EnvironmentProfile& prof = envManager.getActiveProfile();
+    const char* statusUrl = prof.statusUrl;
+    const char* authToken = prof.authToken;
+
+    HTTPClient http;
+    WiFiClientSecure secureClient;
+    secureClient.setInsecure();
+
+    if (String(statusUrl).startsWith("https://")) {
+        http.begin(secureClient, statusUrl);
+    } else {
+        http.begin(statusUrl);
+    }
+
+    http.addHeader("Connection", "close");
+    if (authToken && strlen(authToken) > 0) {
+        http.addHeader("Authorization", "Bearer " + String(authToken));
+    }
+
+    http.setTimeout(1500); // 1.5s fast timeout to prevent GUI stutter
+    int httpCode = http.GET();
+
+    if (httpCode == 200) {
+        String json = http.getString();
+        http.end();
+
+        // 1. Receiver
+        String receiverObj = extractJsonObject(json, "receiver");
+        bool recvReady = extractJsonBool(receiverObj, "ready", false);
+        outStatus.voiceHost = recvReady ? HEALTH_READY : HEALTH_FAILED;
+        outStatus.voiceHostReady = recvReady;
+
+        // 2. Hermes Gateway
+        String hermesObj = extractJsonObject(json, "hermes");
+        bool hermesLive = extractJsonBool(hermesObj, "live", false);
+        bool hermesReady = extractJsonBool(hermesObj, "ready", false);
+        if (hermesReady) {
+            outStatus.hermes = HEALTH_READY;
+            outStatus.hermesReady = true;
+        } else if (hermesLive) {
+            outStatus.hermes = HEALTH_DEGRADED;
+            outStatus.hermesReady = false;
+        } else {
+            outStatus.hermes = HEALTH_FAILED;
+            outStatus.hermesReady = false;
+        }
+
+        // 3. AI Backend
+        String backendObj = extractJsonObject(json, "backend");
+        bool backendReady = extractJsonBool(backendObj, "ready", false);
+        bool backendWarm = extractJsonBool(backendObj, "warm", false);
+        String backendType = extractJsonField(backendObj, "type");
+
+        if (backendReady) {
+            outStatus.aiBackend = HEALTH_READY;
+            if (backendType == "ollama") {
+                outStatus.aiBackendName = backendWarm ? "Ollama • Warm" : "Ollama • Cold";
+            } else {
+                outStatus.aiBackendName = "Hermes Gateway";
+            }
+        } else {
+            outStatus.aiBackend = (envManager.getMode() == ENV_WORK) ? HEALTH_FAILED : HEALTH_UNKNOWN;
+            outStatus.aiBackendName = (envManager.getMode() == ENV_WORK) ? "Ollama Offline" : "Hermes Offline";
+        }
+
+        // Voice subsystem readiness:
+        // Ready if Wi-Fi + Voice Host + (Hermes or Ollama) are functional
+        outStatus.voiceReady = outStatus.voiceHostReady && (outStatus.hermesReady || backendReady);
+        return true;
+    } else {
+        http.end();
+        outStatus.voiceHost = HEALTH_FAILED;
+        outStatus.voiceHostReady = false;
+        outStatus.hermes = HEALTH_UNKNOWN;
+        outStatus.hermesReady = false;
+        outStatus.aiBackend = HEALTH_UNKNOWN;
+        outStatus.aiBackendName = (httpCode == 401) ? "Auth Failed (401)" : "Unreachable";
+        outStatus.voiceReady = false;
+        return false;
+    }
 }
