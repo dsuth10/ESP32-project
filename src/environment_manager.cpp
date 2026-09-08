@@ -63,7 +63,7 @@ void EnvironmentManager::initProfiles() {
 #ifdef HOME_VOICE_TIMEOUT_MS
     _homeProfile.voiceTimeoutMs = HOME_VOICE_TIMEOUT_MS;
 #else
-    _homeProfile.voiceTimeoutMs = 25000;
+    _homeProfile.voiceTimeoutMs = 60000;
 #endif
 
     // Populate WORK profile

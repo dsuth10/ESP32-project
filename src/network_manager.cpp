@@ -251,12 +251,36 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
     } else {
         Serial.printf("[HTTP] POST failed, error code: %d (%s) after %u ms\n", 
                       httpCode, http.errorToString(httpCode).c_str(), (unsigned int)httpDuration);
+        String serverErrMsg = "";
         if (httpCode > 0) {
-            String errResponse = http.getString();
-            Serial.printf("[HTTP] Server error response: %s\n", errResponse.c_str());
+            serverErrMsg = http.getString();
+            Serial.printf("[HTTP] Server error response: %s\n", serverErrMsg.c_str());
         }
-        outTranscript = "HTTP Request Failed";
-        outReply = String("Code: ") + httpCode;
+
+        if (httpCode == HTTPC_ERROR_READ_TIMEOUT) {
+            outTranscript = "Response Timed Out";
+            outReply = "Server took too long to answer (> " + String(timeoutMs / 1000) + "s)";
+        } else if (httpCode == HTTPC_ERROR_CONNECTION_REFUSED) {
+            outTranscript = "Connection Refused";
+            outReply = "Receiver not running on host";
+        } else if (httpCode == 429) {
+            outTranscript = "Receiver Busy";
+            outReply = "Another voice task is processing";
+        } else if (httpCode == 401) {
+            outTranscript = "Auth Failed (401)";
+            outReply = "Check Bearer token in config";
+        } else if (httpCode == 500) {
+            outTranscript = "Server Error (500)";
+            String cleanMsg = extractJsonField(serverErrMsg, "message");
+            outReply = cleanMsg.length() > 0 ? cleanMsg : "Receiver exception occurred";
+        } else if (httpCode > 0) {
+            outTranscript = "HTTP Error " + String(httpCode);
+            outReply = http.errorToString(httpCode);
+        } else {
+            outTranscript = "Network Error (" + String(httpCode) + ")";
+            outReply = http.errorToString(httpCode);
+        }
+
         http.end();
         return false;
     }

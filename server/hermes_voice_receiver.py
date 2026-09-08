@@ -165,6 +165,20 @@ def send_telegram_message(text: str) -> bool:
         print(f"[Telegram] Error sending message: {e}")
         return False
 
+def dispatch_telegram_mirror(transcript: str, reply: str, backend: str):
+    """Phase 19: Asynchronously mirrors voice conversation to Telegram without blocking ESP32 response."""
+    if DISABLE_TELEGRAM or not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        return
+
+    def _async_send():
+        t_start = time.perf_counter()
+        ok1 = send_telegram_message(f"🎙️ *[ESP32 Voice Note]*\n🗣️ *You:* {transcript}")
+        ok2 = send_telegram_message(f"🤖 *Hermes ({backend}):*\n{reply}")
+        dur = time.perf_counter() - t_start
+        print(f"[Telegram] Async mirror completed in {dur:.2f}s (user: {ok1}, reply: {ok2})")
+
+    threading.Thread(target=_async_send, daemon=True).start()
+
 # ── 6. Hermes Gateway Dispatcher (Primary Architectural Path) ──────────
 def ask_hermes_gateway(prompt: str) -> tuple[str, bool]:
     """Dispatches prompt to persistent Hermes Gateway via HTTP."""
@@ -552,30 +566,11 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             t_hermes_end = time.perf_counter()
             hermes_s = t_hermes_end - t_hermes_start
 
+            # 5. Sanitize reply for embedded TFT display
+            clean_reply = sanitize_for_display(reply)
+
             t_server_end = time.perf_counter()
             server_total_s = t_server_end - t_req_start
-
-            # 5. Mirror to Telegram if enabled
-            if not DISABLE_TELEGRAM:
-                send_telegram_message(f"🎙️ *[ESP32 Voice Note]*\n🗣️ *You:* {transcript}")
-                send_telegram_message(f"🤖 *Hermes ({backend_used}):*\n{reply}")
-
-            # Structured console performance logging
-            print("\n========== VOICE REQUEST ==========")
-            print(f"WAV received  : {content_length} bytes from {self.client_address[0]}")
-            print(f"Backend used  : {backend_used}")
-            print(f"[PERF] body_read   : {body_read_s:6.2f} s")
-            print(f"[PERF] wav_write   : {wav_write_s:6.2f} s")
-            print(f"[PERF] whisper     : {whisper_s:6.2f} s")
-            print(f"[PERF] hermes/llm  : {hermes_s:6.2f} s")
-            print("-----------------------------------")
-            print(f"[PERF] SERVER TOTAL: {server_total_s:6.2f} s")
-            print(f"[STT ] {transcript}")
-            print(f"[AI  ] {reply}")
-            print("===================================\n")
-
-            # 6. Sanitize and update last_voice_record
-            clean_reply = sanitize_for_display(reply)
 
             timing_dict = {
                 "body_read_ms": int(body_read_s * 1000),
@@ -604,10 +599,33 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
                 "hermes_ms": int(hermes_s * 1000)
             }
 
+            # 6. Return JSON response to ESP32 IMMEDIATELY (flush socket)
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(json.dumps(response_payload).encode("utf-8"))
+            try:
+                self.wfile.flush()
+            except Exception:
+                pass
+
+            # 7. Asynchronously mirror to Telegram (Phase 19: never blocks ESP32 or affects server_ms)
+            dispatch_telegram_mirror(transcript, reply, backend_used)
+
+            # Structured console performance logging
+            print("\n========== VOICE REQUEST ==========")
+            print(f"WAV received  : {content_length} bytes from {self.client_address[0]}")
+            print(f"Backend used  : {backend_used}")
+            print(f"[PERF] body_read   : {body_read_s:6.2f} s")
+            print(f"[PERF] wav_write   : {wav_write_s:6.2f} s")
+            print(f"[PERF] whisper     : {whisper_s:6.2f} s")
+            print(f"[PERF] hermes/llm  : {hermes_s:6.2f} s")
+            print("-----------------------------------")
+            print(f"[PERF] SERVER TOTAL: {server_total_s:6.2f} s")
+            print(f"[STT ] {transcript}")
+            print(f"[AI  ] {clean_reply}")
+            print("===================================\n")
 
         except Exception as e:
             t_err_end = time.perf_counter()

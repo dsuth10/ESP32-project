@@ -422,8 +422,8 @@ void loop() {
             gui.drawVoiceCard(VOICE_UI_SUCCESS, transcript.c_str(), reply.c_str());
             setLedColor(0, 120, 30); // Bright Green
           } else {
-            Serial.println("[Voice] Failed to send audio to receiver");
-            gui.drawVoiceCard(VOICE_UI_ERROR, "Transmission Failed", reply.c_str());
+            Serial.printf("[Voice] Failed to send audio: %s | %s\n", transcript.c_str(), reply.c_str());
+            gui.drawVoiceCard(VOICE_UI_ERROR, transcript.c_str(), reply.c_str());
             setLedColor(120, 0, 0); // Red
           }
         } else {

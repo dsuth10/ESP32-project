@@ -360,7 +360,7 @@ void MacroPadGUI::redrawVoiceCard() {
     case VOICE_UI_ERROR:
       pillBg = 0x8000; // Red
       pillText = 0xFFFF;
-      pillStr = "[ TRANSMISSION FAILED ]";
+      pillStr = "[ REQUEST FAILED ]";
       break;
   }
 
@@ -393,7 +393,7 @@ void MacroPadGUI::redrawVoiceCard() {
   else if (_voiceState == VOICE_UI_ERROR) {
     _tft.setTextDatum(MC_DATUM);
     _tft.setTextColor(0xF800, bgColor);
-    _tft.drawString(_voiceStatusMsg.length() > 0 ? _voiceStatusMsg.c_str() : "Transmission Failed", x + w / 2, y + 54, 2);
+    _tft.drawString(_voiceStatusMsg.length() > 0 ? _voiceStatusMsg.c_str() : "Request Failed", x + w / 2, y + 54, 2);
     _tft.setTextColor(0xFA40, bgColor);
     drawWrappedText(_tft, _voiceDetailMsg.c_str(), x + 10, y + 78, w - 20, 3, 0xFA40, bgColor, 2);
   }
