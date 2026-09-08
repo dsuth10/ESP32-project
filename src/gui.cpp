@@ -1,4 +1,5 @@
 #include "gui.h"
+#include "network_manager.h"
 
 MacroPadGUI::MacroPadGUI(TFT_eSPI& tft) : _tft(tft) {}
 
@@ -268,9 +269,169 @@ void MacroPadGUI::drawVoiceCard(VoiceUIState state, const char* statusMsg, const
   }
 }
 
+void MacroPadGUI::drawStatusRow(int16_t x, int16_t y, int16_t w, const char* label, const char* value, HealthState health) {
+  uint16_t dotColor;
+  switch (health) {
+    case HEALTH_READY:    dotColor = 0x07E0; break; // Green
+    case HEALTH_DEGRADED: dotColor = 0xFDA0; break; // Amber
+    case HEALTH_FAILED:   dotColor = 0xF800; break; // Red
+    case HEALTH_UNKNOWN:
+    default:              dotColor = 0x7BEF; break; // Muted Grey
+  }
+
+  // Draw status dot
+  _tft.fillCircle(x + 8, y + 8, 4, dotColor);
+
+  // Draw Label (Left aligned)
+  _tft.setTextDatum(ML_DATUM);
+  _tft.setTextColor(C_TEXT_MUTED, 0x0842);
+  _tft.drawString(label, x + 18, y + 8, 2);
+
+  // Draw Value (Right aligned)
+  _tft.setTextDatum(MR_DATUM);
+  _tft.setTextColor(C_TEXT_WHITE, 0x0842);
+  _tft.drawString(value, x + w - 8, y + 8, 2);
+}
+
+void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode) {
+  int16_t cardX = 8;
+  int16_t cardY = 36;
+  int16_t cardW = 304;
+  int16_t cardH = 144;
+
+  // Background card
+  _tft.fillRoundRect(cardX, cardY, cardW, cardH, 6, 0x0842);
+  _tft.drawRoundRect(cardX, cardY, cardW, cardH, 6, 0x3186);
+
+  // Header banner inside card
+  _tft.fillRoundRect(cardX + 4, cardY + 4, cardW - 8, 22, 4, 0x18C3);
+  _tft.setTextDatum(ML_DATUM);
+  _tft.setTextColor(0xFFFF, 0x18C3);
+  _tft.drawString("SYSTEM TELEMETRY", cardX + 12, cardY + 15, 2);
+
+  // Subsystem readiness badges on header right
+  _tft.setTextDatum(MR_DATUM);
+  if (status.macropadReady && status.voiceReady) {
+    _tft.setTextColor(0x07E0, 0x18C3);
+    _tft.drawString("ALL SYSTEMS READY", cardX + cardW - 10, cardY + 15, 2);
+  } else if (status.macropadReady) {
+    _tft.setTextColor(0xFDA0, 0x18C3);
+    _tft.drawString("MACROPAD READY", cardX + cardW - 10, cardY + 15, 2);
+  } else {
+    _tft.setTextColor(0xFBA0, 0x18C3);
+    _tft.drawString("INITIALIZING...", cardX + cardW - 10, cardY + 15, 2);
+  }
+
+  // Row heights: 18px per row
+  int16_t rowY = cardY + 30;
+  int16_t rowH = 18;
+
+  // Row 1: Wi-Fi SSID + RSSI
+  char wifiBuf[32];
+  if (status.wifi == HEALTH_READY) {
+    snprintf(wifiBuf, sizeof(wifiBuf), "%s (%d dBm)", status.wifiSsid.c_str(), status.wifiRssi);
+  } else {
+    snprintf(wifiBuf, sizeof(wifiBuf), "%s", status.wifiSsid.c_str());
+  }
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Wi-Fi", wifiBuf, status.wifi);
+
+  // Row 2: IP Address
+  rowY += rowH;
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "IP Address", status.ipAddress.length() > 0 ? status.ipAddress.c_str() : "Disconnected", status.wifi);
+
+  // Row 3: Bluetooth HID
+  rowY += rowH;
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Bluetooth", status.bleConnected ? "Connected (Host Ready)" : "Advertising...", status.ble);
+
+  // Row 4: Voice Host
+  rowY += rowH;
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Voice Host", status.voiceHostReady ? "Online (:8787)" : "Unreachable", status.voiceHost);
+
+  // Row 5: Hermes Gateway
+  rowY += rowH;
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Hermes", status.hermesReady ? "Persistent Gateway (:8642)" : "Offline", status.hermes);
+
+  // Row 6: AI Backend
+  rowY += rowH;
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "AI Model", status.aiBackendName.c_str(), status.aiBackend);
+
+  // Bottom Section: Environment Switcher Buttons
+  int16_t btnY = 186;
+  int16_t btnH = 46;
+  int16_t btnW = 146;
+
+  bool homeActive = (currentMode == ENV_HOME);
+  uint16_t homeBg = homeActive ? 0x0B4E : 0x1084;
+  uint16_t homeBorder = homeActive ? 0x07E0 : 0x4228;
+  _tft.fillRoundRect(cardX, btnY, btnW, btnH, 6, homeBg);
+  _tft.drawRoundRect(cardX, btnY, btnW, btnH, 6, homeBorder);
+  if (homeActive) {
+    _tft.drawRoundRect(cardX + 1, btnY + 1, btnW - 2, btnH - 2, 5, homeBorder);
+  }
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(homeActive ? 0xFFFF : C_TEXT_MUTED, homeBg);
+  _tft.drawString(homeActive ? "HOME [ ACTIVE ]" : "SWITCH TO HOME", cardX + btnW / 2, btnY + btnH / 2, 2);
+
+  // Right Button: WORK
+  int16_t workX = cardX + btnW + 12;
+  bool workActive = (currentMode == ENV_WORK);
+  uint16_t workBg = workActive ? 0x3194 : 0x1084;
+  uint16_t workBorder = workActive ? 0x07E0 : 0x4228;
+  _tft.fillRoundRect(workX, btnY, btnW, btnH, 6, workBg);
+  _tft.drawRoundRect(workX, btnY, btnW, btnH, 6, workBorder);
+  if (workActive) {
+    _tft.drawRoundRect(workX + 1, btnY + 1, btnW - 2, btnH - 2, 5, workBorder);
+  }
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(workActive ? 0xFFFF : C_TEXT_MUTED, workBg);
+  _tft.drawString(workActive ? "WORK [ ACTIVE ]" : "SWITCH TO WORK", workX + btnW / 2, btnY + btnH / 2, 2);
+}
+
+void MacroPadGUI::drawDashboardSwitching(const char* targetModeName) {
+  int16_t cardX = 20;
+  int16_t cardY = 70;
+  int16_t cardW = 280;
+  int16_t cardH = 100;
+
+  _tft.fillRoundRect(cardX, cardY, cardW, cardH, 8, 0x1084);
+  _tft.drawRoundRect(cardX, cardY, cardW, cardH, 8, 0xFDA0);
+  _tft.drawRoundRect(cardX + 1, cardY + 1, cardW - 2, cardH - 2, 7, 0xFDA0);
+
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(0xFFFF, 0x1084);
+  char buf[48];
+  snprintf(buf, sizeof(buf), "Switching to %s Profile...", targetModeName);
+  _tft.drawString(buf, 160, cardY + 32, 2);
+
+  _tft.setTextColor(0xFDA0, 0x1084);
+  _tft.drawString("Reconnecting Wi-Fi & Services...", 160, cardY + 65, 2);
+}
+
 void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
   _tft.fillScreen(C_BG);
   drawStatusBar(isConnected, currentPage);
+
+  if (currentPage == PAGE_DASHBOARD) {
+    DashboardStatus status;
+    status.wifi = netManager.isConnected() ? HEALTH_READY : HEALTH_FAILED;
+    status.wifiSsid = netManager.getConnectedSSID();
+    status.wifiRssi = netManager.getRSSI();
+    status.ipAddress = netManager.getIpAddress();
+    status.ble = isConnected ? HEALTH_READY : HEALTH_FAILED;
+    status.bleConnected = isConnected;
+    status.voiceHost = netManager.isConnected() ? HEALTH_READY : HEALTH_UNKNOWN;
+    status.voiceHostReady = netManager.isConnected();
+    status.hermes = netManager.isConnected() ? HEALTH_READY : HEALTH_UNKNOWN;
+    status.hermesReady = netManager.isConnected();
+    status.aiBackend = netManager.isConnected() ? HEALTH_READY : HEALTH_UNKNOWN;
+    status.aiBackendName = (envManager.getMode() == ENV_WORK) ? "Local Ollama" : "Hermes Gateway";
+    status.macropadReady = isConnected;
+    status.voiceReady = netManager.isConnected();
+
+    drawDashboard(status, envManager.getMode());
+    return;
+  }
+
   uint8_t count = PROFILES[currentPage].numButtons;
   for (uint8_t i = 0; i < count; i++) {
     drawButton(currentPage, i, false);
@@ -285,10 +446,23 @@ int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
   if (y >= 0 && y <= (STATUS_BAR_H + 4)) {
     // Left arrow area
     if (x >= 180 && x < 255) return TOUCH_PREV_PAGE;
-    // Page indicator ("X/5") and Right arrow area
+    // Page indicator ("X/6") and Right arrow area
     if (x >= 255 && x <= 320) return TOUCH_NEXT_PAGE;
     // Tapping the profile title in the center also advances to next page
     if (x >= 80 && x < 180) return TOUCH_NEXT_PAGE;
+    return -1;
+  }
+
+  // Check Page 6 Dashboard buttons
+  if (currentPage == PAGE_DASHBOARD) {
+    // HOME button: cardX (8) to 8 + 146 = 154, y: 186 to 232
+    if (x >= 8 && x <= 156 && y >= 184 && y <= 236) {
+      return TOUCH_DASH_HOME;
+    }
+    // WORK button: workX (166) to 166 + 146 = 312, y: 186 to 232
+    if (x >= 164 && x <= 314 && y >= 184 && y <= 236) {
+      return TOUCH_DASH_WORK;
+    }
     return -1;
   }
 

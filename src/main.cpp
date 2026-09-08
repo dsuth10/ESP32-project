@@ -171,7 +171,33 @@ void loop() {
     }
   }
 
-  // 4. Touch Handling
+  // 4. Periodic Dashboard Telemetry Update (Page 6)
+  if (currentPage == PAGE_DASHBOARD && !recorder.isRecording()) {
+    static uint32_t lastDashUpdate = 0;
+    uint32_t now = millis();
+    if (now - lastDashUpdate > 2500) {
+      lastDashUpdate = now;
+      DashboardStatus status;
+      status.wifi = netManager.isConnected() ? HEALTH_READY : HEALTH_FAILED;
+      status.wifiSsid = netManager.getConnectedSSID();
+      status.wifiRssi = netManager.getRSSI();
+      status.ipAddress = netManager.getIpAddress();
+      status.ble = currentBleState ? HEALTH_READY : HEALTH_FAILED;
+      status.bleConnected = currentBleState;
+      status.voiceHost = netManager.isConnected() ? HEALTH_READY : HEALTH_UNKNOWN;
+      status.voiceHostReady = netManager.isConnected();
+      status.hermes = netManager.isConnected() ? HEALTH_READY : HEALTH_UNKNOWN;
+      status.hermesReady = netManager.isConnected();
+      status.aiBackend = netManager.isConnected() ? HEALTH_READY : HEALTH_UNKNOWN;
+      status.aiBackendName = (envManager.getMode() == ENV_WORK) ? "Local Ollama" : "Hermes Gateway";
+      status.macropadReady = currentBleState;
+      status.voiceReady = netManager.isConnected();
+
+      gui.drawDashboard(status, envManager.getMode());
+    }
+  }
+
+  // 5. Touch Handling
   ts.read();
   if (ts.isTouched) {
     int16_t tx = ts.points[0].x;
@@ -207,6 +233,38 @@ void loop() {
       }
       if (currentBleState) setLedColor(0, 50, 15);
     } 
+    else if (target == TOUCH_DASH_HOME) {
+      if (envManager.getMode() != ENV_HOME) {
+        Serial.println("[Dashboard] User tapped SWITCH TO HOME");
+        setLedColor(0, 100, 100);
+        gui.drawDashboardSwitching("HOME");
+        envManager.setMode(ENV_HOME);
+        delay(400);
+        gui.drawAll(currentBleState, currentPage);
+        while (true) {
+          ts.read();
+          if (!ts.isTouched) break;
+          delay(20);
+        }
+        if (currentBleState) setLedColor(0, 50, 15);
+      }
+    }
+    else if (target == TOUCH_DASH_WORK) {
+      if (envManager.getMode() != ENV_WORK) {
+        Serial.println("[Dashboard] User tapped SWITCH TO WORK");
+        setLedColor(100, 0, 100);
+        gui.drawDashboardSwitching("WORK");
+        envManager.setMode(ENV_WORK);
+        delay(400);
+        gui.drawAll(currentBleState, currentPage);
+        while (true) {
+          ts.read();
+          if (!ts.isTouched) break;
+          delay(20);
+        }
+        if (currentBleState) setLedColor(0, 50, 15);
+      }
+    }
     else if (target >= 0 && target < PROFILES[currentPage].numButtons) {
       uint8_t btnIndex = (uint8_t)target;
       const MacroButton& btn = PROFILES[currentPage].buttons[btnIndex];
