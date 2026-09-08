@@ -31,6 +31,24 @@ static String extractJsonField(const String& json, const String& key) {
     return val;
 }
 
+static int extractJsonInt(const String& json, const String& key) {
+    String searchKey = "\"" + key + "\":";
+    int start = json.indexOf(searchKey);
+    if (start == -1) {
+        searchKey = "\"" + key + "\": ";
+        start = json.indexOf(searchKey);
+        if (start == -1) return -1;
+    }
+    start += searchKey.length();
+    while (start < (int)json.length() && json.charAt(start) == ' ') start++;
+    int end = start;
+    while (end < (int)json.length() && (isDigit(json.charAt(end)) || json.charAt(end) == '-')) end++;
+    if (end > start) {
+        return json.substring(start, end).toInt();
+    }
+    return -1;
+}
+
 NetworkManager::NetworkManager() : _lastReconnectAttempt(0), _wasConnected(false), _configuredNetworksCount(0) {}
 
 void NetworkManager::begin() {
@@ -164,6 +182,15 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
 
         if (outTranscript.length() == 0) outTranscript = "Audio Processed";
         if (outReply.length() == 0) outReply = "Received by Hermes";
+
+        int serverMs = extractJsonInt(response, "server_ms");
+        int whisperMs = extractJsonInt(response, "whisper_ms");
+        int hermesMs = extractJsonInt(response, "hermes_ms");
+        if (serverMs > 0) {
+            int netTransit = (int)httpDuration - serverMs;
+            Serial.printf("[PERF] Roundtrip: %u ms | Server: %d ms (Whisper: %d ms, Hermes: %d ms) | Network: %d ms\n",
+                          (unsigned int)httpDuration, serverMs, whisperMs, hermesMs, netTransit > 0 ? netTransit : 0);
+        }
 
         Serial.printf("[STT] \"%s\"\n", outTranscript.c_str());
         Serial.printf("[REPLY] \"%s\"\n", outReply.c_str());
