@@ -355,7 +355,7 @@ bool NetworkManager::fetchCompositeStatus(DashboardStatus& outStatus) {
         http.addHeader("Authorization", "Bearer " + String(authToken));
     }
 
-    http.setTimeout(1500); // 1.5s fast timeout to prevent GUI stutter
+    http.setTimeout(3000); // 3.0s timeout (runs safely in Core 0 FreeRTOS worker)
     int httpCode = http.GET();
 
     if (httpCode == 200) {
@@ -365,6 +365,11 @@ bool NetworkManager::fetchCompositeStatus(DashboardStatus& outStatus) {
         // 1. Receiver
         String receiverObj = extractJsonObject(json, "receiver");
         bool recvReady = extractJsonBool(receiverObj, "ready", false);
+        if (!recvReady && receiverObj.length() == 0) {
+            // Server returned HTTP 200 without a nested receiver block: receiver service is alive
+            String statusStr = extractJsonField(json, "status");
+            recvReady = (statusStr == "ok" || statusStr == "degraded" || statusStr.length() == 0);
+        }
         outStatus.voiceHost = recvReady ? HEALTH_READY : HEALTH_FAILED;
         outStatus.voiceHostReady = recvReady;
 
@@ -396,6 +401,10 @@ bool NetworkManager::fetchCompositeStatus(DashboardStatus& outStatus) {
             } else {
                 outStatus.aiBackendName = "Hermes Gateway";
             }
+        } else if (backendObj.length() == 0 && hermesReady) {
+            // In standalone/cloud setups where Hermes Gateway acts directly as the AI backend
+            outStatus.aiBackend = HEALTH_READY;
+            outStatus.aiBackendName = "Hermes Gateway";
         } else {
             outStatus.aiBackend = (envManager.getMode() == ENV_WORK) ? HEALTH_FAILED : HEALTH_UNKNOWN;
             outStatus.aiBackendName = (envManager.getMode() == ENV_WORK) ? "Ollama Offline" : "Hermes Offline";
