@@ -12,6 +12,7 @@ import os
 import sys
 import json
 import time
+import pathlib
 import threading
 import urllib.request
 import urllib.parse
@@ -180,6 +181,60 @@ def dispatch_telegram_mirror(transcript: str, reply: str, backend: str):
     threading.Thread(target=_async_send, daemon=True).start()
 
 # ── 6. Hermes Gateway Dispatcher (Primary Architectural Path) ──────────
+# ── 6b. Persistent Sessions API (ESP32 Voice Satellite = one durable chat) ──
+VOICE_SESSION_FILE = os.environ.get("VOICE_SESSION_FILE",
+                                    os.path.expanduser("~/.hermes-voice/voice_session.json"))
+VOICE_SESSION_TITLE = "ESP32 Voice Satellite"
+HERMES_SESSIONS_BASE = HERMES_BASE_URL.rstrip("/") + "/api/sessions"
+
+
+def _hermes_sessions_headers():
+    return {"Authorization": f"Bearer {API_SERVER_KEY}",
+            "Content-Type": "application/json"}
+
+
+def load_voice_session() -> str:
+    """Return the durable voice session ID, creating the session if needed."""
+    p = pathlib.Path(VOICE_SESSION_FILE)
+    if p.exists():
+        try:
+            sid = json.loads(p.read_text()).get("session_id", "")
+            if sid:
+                req = urllib.request.Request(f"{HERMES_SESSIONS_BASE}/{sid}",
+                                             headers=_hermes_sessions_headers())
+                with urllib.request.urlopen(req, timeout=8) as resp:
+                    if resp.status == 200:
+                        return sid
+        except urllib.error.HTTPError as e:
+            print(f"[Session] stored session unusable (HTTP {e.code}); creating new")
+        except Exception as e:
+            print(f"[Session] failed reading {p}: {e}")
+    body = json.dumps({"title": VOICE_SESSION_TITLE}).encode("utf-8")
+    req = urllib.request.Request(HERMES_SESSIONS_BASE, data=body,
+                                 headers=_hermes_sessions_headers(), method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            sid = json.loads(resp.read().decode("utf-8"))["session"]["id"]
+    except urllib.error.HTTPError as e:
+        # Title collision: the session already exists — find it by listing.
+        if e.code == 400:
+            req = urllib.request.Request(
+                f"{HERMES_SESSIONS_BASE}?limit=1&title={urllib.parse.quote(VOICE_SESSION_TITLE)}",
+                headers=_hermes_sessions_headers())
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                rows = json.loads(resp.read().decode("utf-8")).get("data", [])
+            if rows:
+                sid = rows[0]["id"]
+            else:
+                raise
+        else:
+            raise
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps({"session_id": sid, "title": VOICE_SESSION_TITLE}))
+    print(f"[Session] created persistent Hermes session {sid}")
+    return sid
+
+
 def ask_hermes_gateway(prompt: str) -> tuple[str, bool]:
     """Dispatches prompt to persistent Hermes Gateway via HTTP."""
     if not API_SERVER_KEY:
@@ -191,19 +246,20 @@ def ask_hermes_gateway(prompt: str) -> tuple[str, bool]:
     }
 
     payload = json.dumps({
-        "model": "hermes-agent",
-        "messages": [
-            {"role": "system", "content": ESP32_SYSTEM_PROMPT},
-            {"role": "user", "content": prompt}
-        ],
-        "max_tokens": 150
+        "input": prompt,
+        "instructions": ESP32_SYSTEM_PROMPT
     }).encode("utf-8")
 
-    req = urllib.request.Request(GATEWAY_URL, data=payload, headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
+        session_id = load_voice_session()
+    except Exception as e:
+        return (f"Hermes session setup failed: {e}", False)
+    url = f"{HERMES_SESSIONS_BASE}/{session_id}/chat"
+    req = urllib.request.Request(url, data=payload, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-            reply = data["choices"][0]["message"]["content"].strip()
+            reply = (data.get("message") or {}).get("content", "").strip()
             return (reply or "Command acknowledged.", True)
     except urllib.error.HTTPError as e:
         err_body = e.read().decode("utf-8", errors="ignore")
