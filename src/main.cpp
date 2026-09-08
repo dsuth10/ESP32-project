@@ -9,6 +9,7 @@
 #include "gui.h"
 #include "audio_recorder.h"
 #include "network_manager.h"
+#include "environment_manager.h"
 
 // Set to 1 for raw microphone isolation diagnostic (Wi-Fi, TLS & Hermes upload disabled).
 // Once genuine microphone PCM is proven, set to 0 to restore full network pipeline.
@@ -115,7 +116,14 @@ void setup() {
   recorder.begin();
 
 #if !AUDIO_DIAGNOSTIC_MODE
-  // Initialize Wi-Fi Network Manager
+  // Initialize Environment Manager (NVS preferences & profiles)
+  Serial.println("[Setup] Initializing Environment Manager...");
+  envManager.begin();
+  envManager.onEnvironmentChange([](EnvironmentMode newMode) {
+    netManager.applyEnvironment(newMode);
+  });
+
+  // Initialize Wi-Fi Network Manager strictly for active environment
   Serial.println("[Setup] Initializing Wi-Fi Connection...");
   netManager.begin();
 #else

@@ -1,28 +1,34 @@
 #pragma once
 
-// Set to 1 to enable multi-network auto-switching (recommended):
-#define USE_WIFI_MULTI 1
+// =============================================================================
+// Portable Home/Work Environment Profiles
+// =============================================================================
 
-// Multi-network list:
-// Add as many networks as you need (Home, Mobile Hotspot, Work/School).
-// The ESP32 will automatically scan and connect to whichever network is in range.
-struct WifiCredential {
-    const char* ssid;
-    const char* password;
-};
+// HOME Profile (Home Linux Server & Home Wi-Fi)
+#define HOME_ENV_NAME          "HOME"
+#define HOME_WIFI_SSID         "YOUR_HOME_SSID"
+#define HOME_WIFI_PASSWORD     "YOUR_HOME_PASSWORD"
+#define HOME_RECEIVER_URL      "http://192.168.0.45:8787/voice"
+#define HOME_STATUS_URL        "http://192.168.0.45:8787/status"
+#define HOME_AUTH_TOKEN        ""
+#define HOME_BLE_HOST          "Home Desktop"
+#define HOME_VOICE_TIMEOUT_MS  25000
 
-static const WifiCredential WIFI_NETWORKS[] = {
-    { "Galaxy A55 5G BF29", "YOUR_HOTSPOT_PASSWORD" }, // Mobile Hotspot (Make sure Hotspot is 2.4 GHz!)
-    { "YOUR_HOME_SSID",     "YOUR_HOME_PASSWORD" },    // Home Wi-Fi
-};
+// WORK Profile (School Windows PC & Phone Hotspot)
+#define WORK_ENV_NAME          "WORK"
+#define WORK_WIFI_SSID         "Galaxy A55 5G BF29"
+#define WORK_WIFI_PASSWORD     "YOUR_HOTSPOT_PASSWORD"
+#define WORK_RECEIVER_URL      "http://10.170.101.33:8787/voice"
+#define WORK_STATUS_URL        "http://10.170.101.33:8787/status"
+#define WORK_AUTH_TOKEN        ""
+#define WORK_BLE_HOST          "School Desktop"
+#define WORK_VOICE_TIMEOUT_MS  65000
 
-// Legacy single-network fallback (used if USE_WIFI_MULTI is 0):
-#define WIFI_SSID           "Galaxy A55 5G BF29"
-#define WIFI_PASSWORD       "YOUR_HOTSPOT_PASSWORD"
-
-// Hermes Voice Gateway over Internet (Cloudflare Tunnel or Local LAN IP):
-// Example School Hotspot LAN: "http://10.170.101.33:8787/voice"
-// Example Home LAN:          "http://192.168.0.45:8787/voice"
-// Example Cloudflare Tunnel: "https://your-tunnel-subdomain.trycloudflare.com/voice"
-#define HERMES_SERVER_URL   "http://10.170.101.33:8787/voice"
-#define HERMES_AUTH_TOKEN   ""
+// Legacy single-network fallback (used if profile names are not defined)
+#ifndef WIFI_SSID
+#define WIFI_SSID              HOME_WIFI_SSID
+#define WIFI_PASSWORD          HOME_WIFI_PASSWORD
+#endif
+#ifndef HERMES_SERVER_URL
+#define HERMES_SERVER_URL      HOME_RECEIVER_URL
+#endif

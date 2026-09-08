@@ -49,53 +49,50 @@ static int extractJsonInt(const String& json, const String& key) {
     return -1;
 }
 
-NetworkManager::NetworkManager() : _lastReconnectAttempt(0), _wasConnected(false), _configuredNetworksCount(0) {}
+NetworkManager::NetworkManager() : _lastReconnectAttempt(0), _wasConnected(false) {}
 
 void NetworkManager::begin() {
     WiFi.mode(WIFI_STA);
-    _configuredNetworksCount = 0;
+    WiFi.setAutoReconnect(false); // Strict profile isolation: do not roam to other environments
 
-#if defined(USE_WIFI_MULTI) && USE_WIFI_MULTI
-    size_t count = sizeof(WIFI_NETWORKS) / sizeof(WIFI_NETWORKS[0]);
-    for (size_t i = 0; i < count; i++) {
-        const char* ssid = WIFI_NETWORKS[i].ssid;
-        const char* pass = WIFI_NETWORKS[i].password;
-        if (ssid && strlen(ssid) > 0 && 
-            strcmp(ssid, "YOUR_WIFI_SSID") != 0 && 
-            strcmp(ssid, "YOUR_HOME_SSID") != 0) {
-            _wifiMulti.addAP(ssid, pass);
-            _configuredNetworksCount++;
-            Serial.printf("[WiFi] Registered network: %s\n", ssid);
-        }
-    }
-#endif
+    const EnvironmentProfile& prof = envManager.getActiveProfile();
+    _targetSSID = prof.ssid;
+    _targetPassword = prof.password;
 
-#if defined(WIFI_SSID)
-    if (_configuredNetworksCount == 0 && String(WIFI_SSID) != "YOUR_WIFI_SSID" && strlen(WIFI_SSID) > 0) {
-        _wifiMulti.addAP(WIFI_SSID, WIFI_PASSWORD);
-        _configuredNetworksCount++;
-        Serial.printf("[WiFi] Registered legacy network: %s\n", WIFI_SSID);
-    }
-#endif
+    Serial.printf("[WiFi] Initializing for environment: %s | Target SSID: %s\n", 
+                  prof.name, _targetSSID.c_str());
 
-    if (_configuredNetworksCount == 0) {
-        Serial.println("[WiFi] No valid networks configured in wifi_config.h. Wi-Fi idle.");
+    startConnection();
+}
+
+void NetworkManager::startConnection() {
+    if (_targetSSID.length() == 0 || 
+        _targetSSID == "YOUR_WIFI_SSID" || 
+        _targetSSID == "YOUR_HOME_SSID") {
+        Serial.println("[WiFi] No valid SSID configured for this environment.");
         return;
     }
 
-    Serial.printf("[WiFi] Searching & connecting across %u registered network(s)...\n", (unsigned int)_configuredNetworksCount);
-    // Initial connection attempt with timeout
-    if (_wifiMulti.run(5000) == WL_CONNECTED) {
-        _wasConnected = true;
-        Serial.printf("[WiFi] >>> CONNECTED to '%s'! IP: %s, RSSI: %d dBm <<<\n",
-                      WiFi.SSID().c_str(), WiFi.localIP().toString().c_str(), WiFi.RSSI());
-    } else {
-        Serial.println("[WiFi] Initial connection pending. Background scan will retry.");
-    }
+    Serial.printf("[WiFi] Connecting strictly to '%s' ...\n", _targetSSID.c_str());
+    WiFi.disconnect(true);
+    delay(100);
+    WiFi.begin(_targetSSID.c_str(), _targetPassword.c_str());
+    _lastReconnectAttempt = millis();
+    _wasConnected = false;
+}
+
+void NetworkManager::applyEnvironment(EnvironmentMode mode) {
+    const EnvironmentProfile& prof = envManager.getProfile(mode);
+    _targetSSID = prof.ssid;
+    _targetPassword = prof.password;
+
+    Serial.printf("[WiFi] Applying environment %s -> Target SSID: '%s'\n", 
+                  prof.name, _targetSSID.c_str());
+    startConnection();
 }
 
 void NetworkManager::update() {
-    if (_configuredNetworksCount == 0) return;
+    if (_targetSSID.length() == 0) return;
 
     bool connected = (WiFi.status() == WL_CONNECTED);
     if (connected && !_wasConnected) {
@@ -111,8 +108,9 @@ void NetworkManager::update() {
         uint32_t now = millis();
         if (now - _lastReconnectAttempt > 10000) {
             _lastReconnectAttempt = now;
-            Serial.println("[WiFi] Scanning & reconnecting via WiFiMulti...");
-            _wifiMulti.run(3000);
+            Serial.printf("[WiFi] Retrying connection to '%s'...\n", _targetSSID.c_str());
+            WiFi.disconnect();
+            WiFi.begin(_targetSSID.c_str(), _targetPassword.c_str());
         }
     }
 }
@@ -135,11 +133,18 @@ String NetworkManager::getConnectedSSID() {
     return "Disconnected";
 }
 
+int8_t NetworkManager::getRSSI() {
+    if (isConnected()) {
+        return WiFi.RSSI();
+    }
+    return 0;
+}
+
 bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply) {
     if (!isConnected()) {
         Serial.println("[HTTP] Cannot send voice: Wi-Fi not connected!");
         outTranscript = "Error: Wi-Fi Disconnected";
-        outReply = "Check Wi-Fi & Hotspot (2.4GHz)";
+        outReply = "Check Wi-Fi connection";
         return false;
     }
 
@@ -148,26 +153,32 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
         return false;
     }
 
+    const EnvironmentProfile& prof = envManager.getActiveProfile();
+    const char* serverUrl = prof.receiverUrl;
+    const char* authToken = prof.authToken;
+    uint32_t timeoutMs = prof.voiceTimeoutMs;
+
     HTTPClient http;
     WiFiClientSecure secureClient;
-    secureClient.setInsecure(); // Allow TLS without embedded CA bundle
+    secureClient.setInsecure(); // Allow TLS without embedded CA bundle if https
 
-    if (String(HERMES_SERVER_URL).startsWith("https://")) {
-        http.begin(secureClient, HERMES_SERVER_URL);
+    if (String(serverUrl).startsWith("https://")) {
+        http.begin(secureClient, serverUrl);
     } else {
-        http.begin(HERMES_SERVER_URL);
+        http.begin(serverUrl);
     }
 
     http.addHeader("Content-Type", "audio/wav");
     http.addHeader("Connection", "close");
-#ifdef HERMES_AUTH_TOKEN
-    if (strlen(HERMES_AUTH_TOKEN) > 0) {
-        http.addHeader("Authorization", "Bearer " + String(HERMES_AUTH_TOKEN));
-    }
-#endif
-    http.setTimeout(65000); // 65s max uint16_t timeout for transit + Whisper STT + Hermes LLM reasoning
 
-    Serial.printf("[HTTP] POSTing %u bytes to %s ...\n", (unsigned int)wavSize, HERMES_SERVER_URL);
+    if (authToken && strlen(authToken) > 0) {
+        http.addHeader("Authorization", "Bearer " + String(authToken));
+    }
+
+    http.setTimeout(timeoutMs);
+
+    Serial.printf("[HTTP] POSTing %u bytes to [%s] %s (timeout: %u ms)...\n", 
+                  (unsigned int)wavSize, prof.name, serverUrl, (unsigned int)timeoutMs);
 
     uint32_t httpStart = millis();
     int httpCode = http.POST((uint8_t*)wavData, wavSize);
@@ -209,4 +220,31 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
         http.end();
         return false;
     }
+}
+
+bool NetworkManager::checkReceiverHealth() {
+    if (!isConnected()) return false;
+
+    const EnvironmentProfile& prof = envManager.getActiveProfile();
+    String healthUrl = prof.statusUrl;
+    if (healthUrl.endsWith("/status")) {
+        healthUrl.replace("/status", "/health");
+    } else if (healthUrl.endsWith("/voice")) {
+        healthUrl.replace("/voice", "/health");
+    }
+
+    HTTPClient http;
+    WiFiClientSecure secureClient;
+    secureClient.setInsecure();
+
+    if (healthUrl.startsWith("https://")) {
+        http.begin(secureClient, healthUrl);
+    } else {
+        http.begin(healthUrl);
+    }
+
+    http.setTimeout(2000);
+    int code = http.GET();
+    http.end();
+    return (code == 200);
 }
