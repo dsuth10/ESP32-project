@@ -57,3 +57,30 @@ These rules represent proven architectural invariants established to prevent reg
   - Never commit `src/wifi_config.h` (enforced via `.gitignore`).
   - Always maintain 100% macro define parity in `src/wifi_config.h.example` whenever new configuration options are introduced.
   - Always tag known-good baseline states (`tag-<context>-baseline`) before performing major cross-branch architectural merges.
+
+---
+
+### Rule 8: Dual-Core Display Isolation (The Non-Blocking UI Invariant)
+- **Invariant**: The main Arduino `loop()` on Core 1 must remain 100% non-blocking and dedicated strictly to UI rendering, touch polling (`ts.read()`), and BLE keyboard handling (>50–100 Hz).
+- **Anti-Pattern**: Calling synchronous network operations (`WiFiClient`, `HTTPClient::GET`, `WiFi.hostByName`, or `checkInternet`) directly on Core 1. A slow or unreachable server blocks the main thread for 1.5–5.0 seconds, starving touch input and freezing navigation.
+- **Enforcement**:
+  - All periodic network telemetry, deep health checks, and DNS probes MUST run inside dedicated FreeRTOS worker tasks pinned to **Core 0** (e.g. `telemetryWorkerTask`).
+  - Core 1 only reads atomic/mutex-guarded cached status snapshots with zero wait time (`xSemaphoreTake(mutex, 0)`).
+
+---
+
+### Rule 9: Differential Screen Redraws (Zero-Flicker Telemetry)
+- **Invariant**: Never redraw structural UI containers, cards, static labels, or button outlines during periodic telemetry updates.
+- **Anti-Pattern**: Calling `fillRoundRect` or blanking entire cards every 3–5 seconds to update a few text values on SPI TFT displays without hardware framebuffers.
+- **Enforcement**:
+  - UI draw functions that display dynamic telemetry must take a `bool fullRedraw` parameter.
+  - Set `fullRedraw = true` ONLY on initial page entry or layout changes.
+  - When `fullRedraw = false`, overwrite strictly the minimal bounding box of dynamic text (`fillRect` over the value rectangle) and indicator dots in-place.
+
+---
+
+### Rule 10: Safe Cross-Core Concurrency & Bounded Touch Debounce
+- **Invariant**: Cross-core data sharing must use FreeRTOS mutexes when allocating memory; touch debouncing loops must never be unbounded.
+- **Enforcement**:
+  - Never use `portENTER_CRITICAL` spinlocks when copying structs containing dynamic heap allocations (such as Arduino `String`). Always guard shared state with `SemaphoreHandle_t` or use static C-style structs.
+  - All touch-release waiting loops (`while (ts.isTouched)`) MUST enforce an explicit safety timeout (e.g., `millis() - start < 1000`) to prevent hardware transients from locking the main loop.
