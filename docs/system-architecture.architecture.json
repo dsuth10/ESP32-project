@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "ESP32 MacroPad & Hermes Satellite Architecture",
+    "output": "system-architecture.html",
+    "quality_profile": "showcase",
+    "viewBox": [1260, 490],
+    "views": [
+      {
+        "id": "device-tools",
+        "label": "Device Tools & Interfaces",
+        "focus": ["device_ble", "device_voice", "device_dash", "env_mgr", "ble_host"],
+        "note": "BLE macros decouple from Wi-Fi; voice and dashboard rely on active NVS environment profile."
+      },
+      {
+        "id": "home-pipeline",
+        "label": "Home Environment Pipeline",
+        "focus": ["device_voice", "device_dash", "env_mgr", "home_receiver", "home_hermes", "home_cloud"],
+        "note": "Home profile routes audio via Home Wi-Fi LAN to Linux server with faster-whisper and cloud LLM."
+      },
+      {
+        "id": "work-pipeline",
+        "label": "Work Environment Pipeline",
+        "focus": ["device_voice", "device_dash", "env_mgr", "work_receiver", "work_hermes", "work_ollama"],
+        "note": "Work profile routes via hotspot to local PC GPU running Ollama with air-gapped zero-cloud privacy."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "device_ble",
+      "type": "frontend",
+      "label": "BLE MacroPad",
+      "sublabel": "Pages 1-4: Media & OS Keys",
+      "pos": [40, 50],
+      "size": [160, 54]
+    },
+    {
+      "id": "device_voice",
+      "type": "frontend",
+      "label": "Voice Satellite",
+      "sublabel": "Page 5: ES8311 Mic & I2S",
+      "pos": [40, 180],
+      "size": [160, 54]
+    },
+    {
+      "id": "device_dash",
+      "type": "frontend",
+      "label": "Telemetry Dashboard",
+      "sublabel": "Page 6: Live Health GUI",
+      "pos": [40, 360],
+      "size": [160, 54]
+    },
+    {
+      "id": "env_mgr",
+      "type": "security",
+      "label": "Environment Manager",
+      "sublabel": "NVS Composite Profiles",
+      "pos": [250, 270],
+      "size": [160, 64],
+      "tag": "Atomic Switch"
+    },
+    {
+      "id": "ble_host",
+      "type": "external",
+      "label": "Host Workstation",
+      "sublabel": "BLE Target (Home/Work PC)",
+      "pos": [520, 50],
+      "size": [160, 54]
+    },
+    {
+      "id": "home_receiver",
+      "type": "backend",
+      "label": "Home Voice Receiver",
+      "sublabel": "Port :8787 • faster-whisper",
+      "pos": [520, 180],
+      "size": [160, 54],
+      "tag": "LAN :8787"
+    },
+    {
+      "id": "home_hermes",
+      "type": "backend",
+      "label": "Home Hermes Gateway",
+      "sublabel": "Port :8642 • Persistent",
+      "pos": [770, 180],
+      "size": [160, 54]
+    },
+    {
+      "id": "home_cloud",
+      "type": "cloud",
+      "label": "Cloud LLM Provider",
+      "sublabel": "WAN API • Mirror Active",
+      "pos": [1020, 180],
+      "size": [160, 54]
+    },
+    {
+      "id": "work_receiver",
+      "type": "backend",
+      "label": "Work Voice Receiver",
+      "sublabel": "Port :8787 • faster-whisper",
+      "pos": [520, 360],
+      "size": [160, 54],
+      "tag": "Hotspot :8787"
+    },
+    {
+      "id": "work_hermes",
+      "type": "backend",
+      "label": "Work Hermes Gateway",
+      "sublabel": "Port :8642 • Privacy Guarded",
+      "pos": [770, 360],
+      "size": [160, 54]
+    },
+    {
+      "id": "work_ollama",
+      "type": "database",
+      "label": "Local Ollama (GPU)",
+      "sublabel": "Port :11434 • 100% Offline",
+      "pos": [1020, 360],
+      "size": [160, 54],
+      "tag": "VRAM Warm"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "ESP32-S3 Physical Device (ES3C28P)",
+      "wraps": ["device_ble", "device_voice", "device_dash", "env_mgr"]
+    },
+    {
+      "kind": "region",
+      "label": "Home Profile (Home Linux Server LAN)",
+      "wraps": ["home_receiver", "home_hermes", "home_cloud"]
+    },
+    {
+      "kind": "security-group",
+      "label": "Work Profile (School PC + Phone Hotspot)",
+      "wraps": ["work_receiver", "work_hermes", "work_ollama"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "ble-keystrokes",
+      "from": "device_ble",
+      "to": "ble_host",
+      "label": "BLE Keystrokes",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "voice-to-env",
+      "from": "device_voice",
+      "to": "env_mgr",
+      "label": "PCM Audio",
+      "fromSide": "right",
+      "toSide": "top"
+    },
+    {
+      "id": "dash-to-env",
+      "from": "device_dash",
+      "to": "env_mgr",
+      "label": "NVS Switch",
+      "variant": "security",
+      "fromSide": "right",
+      "toSide": "bottom"
+    },
+    {
+      "id": "home-audio-post",
+      "from": "env_mgr",
+      "to": "home_receiver",
+      "label": "POST /voice",
+      "variant": "default",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "home-hermes-chat",
+      "from": "home_receiver",
+      "to": "home_hermes",
+      "label": "HTTP :8642",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "home-llm-cloud",
+      "from": "home_hermes",
+      "to": "home_cloud",
+      "label": "Cloud LLM",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "work-audio-post",
+      "from": "env_mgr",
+      "to": "work_receiver",
+      "label": "POST /voice",
+      "variant": "security",
+      "fromSide": "right",
+      "toSide": "left",
+      "labelDy": 30
+    },
+    {
+      "id": "work-hermes-chat",
+      "from": "work_receiver",
+      "to": "work_hermes",
+      "label": "HTTP :8642",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "work-ollama-local",
+      "from": "work_hermes",
+      "to": "work_ollama",
+      "label": "GPU :11434",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "On-Device Macro & Voice Tools",
+      "items": [
+        "Pages 1-4: BLE HID keyboard injects media and OS shortcuts with zero Wi-Fi dependency",
+        "Page 5: ES8311 codec records 16kHz WAV speech; displays live AI reply card on 2.8\" LCD",
+        "Page 6: System telemetry tracks readiness; provides 1-touch atomic NVS profile switching"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Home Environment (LAN)",
+      "items": [
+        "Connects over Home Wi-Fi to Linux Server (:8787) using HOME_AUTH_TOKEN",
+        "Voice receiver transcribes speech via faster-whisper and relays prompt to Hermes (:8642)",
+        "Hermes Gateway orchestrates cloud LLM models with Telegram mirroring active"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Work Environment (Air-Gapped Privacy)",
+      "items": [
+        "Connects over phone hotspot to School/Work PC (:8787) using WORK_AUTH_TOKEN",
+        "Hermes routes queries strictly to local Ollama on GPU VRAM (127.0.0.1:11434)",
+        "Workplace privacy hardening: Telegram mirror suppressed, zero WAN route needed"
+      ]
+    }
+  ]
+}
