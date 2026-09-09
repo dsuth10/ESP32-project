@@ -70,6 +70,10 @@ for env_path in hermes_env_candidates:
                         VOICE_RECEIVER_TOKEN = v
                     elif k == "OLLAMA_KEEP_ALIVE" and "OLLAMA_KEEP_ALIVE" not in os.environ:
                         OLLAMA_KEEP_ALIVE = v
+                    elif k == "OLLAMA_MODEL" and "OLLAMA_MODEL" not in os.environ:
+                        if v in OLLAMA_MODELS:
+                            OLLAMA_MODELS.remove(v)
+                        OLLAMA_MODELS.insert(0, v)
                     elif k == "TELEGRAM_BOT_TOKEN" and not TELEGRAM_BOT_TOKEN:
                         TELEGRAM_BOT_TOKEN = v
                     elif k == "TELEGRAM_ALLOWED_USERS" and not TELEGRAM_CHAT_ID and v:
@@ -272,7 +276,21 @@ def ask_hermes_gateway(prompt: str) -> tuple[str, bool]:
 # ── 7. Local Ollama Fallback (Transparent Diagnostic Fallback) ─────────
 def query_ollama_fallback(prompt: str) -> tuple[str, bool]:
     """Diagnostic fallback querying local Ollama directly if Hermes Gateway is offline."""
-    for model in OLLAMA_MODELS:
+    models_to_try = list(OLLAMA_MODELS)
+    try:
+        ps_resp = urllib.request.urlopen(f"{OLLAMA_HOST.rstrip('/')}/api/ps", timeout=1.0)
+        if ps_resp.status == 200:
+            ps_data = json.loads(ps_resp.read().decode("utf-8"))
+            for m in reversed(ps_data.get("models", [])):
+                m_name = m.get("name")
+                if m_name:
+                    if m_name in models_to_try:
+                        models_to_try.remove(m_name)
+                    models_to_try.insert(0, m_name)
+    except Exception:
+        pass
+
+    for model in models_to_try:
         try:
             req_data = json.dumps({
                 "model": model,
