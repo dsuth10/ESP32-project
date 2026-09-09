@@ -92,8 +92,29 @@ NetworkManager::NetworkManager()
       _lastInternetCheck(0), _lastInternetState(false) {}
 
 void NetworkManager::begin() {
+    WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
+        switch (event) {
+            case ARDUINO_EVENT_WIFI_STA_START:
+                Serial.println("[WiFi Event] STA Started");
+                break;
+            case ARDUINO_EVENT_WIFI_STA_CONNECTED:
+                Serial.println("[WiFi Event] Associated with AP successfully");
+                break;
+            case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+                Serial.printf("[WiFi Event] Obtained IP: %s\n", 
+                              IPAddress(info.got_ip.ip_info.ip.addr).toString().c_str());
+                break;
+            case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+                Serial.printf("[WiFi Event] Disconnected from AP. Reason code: %d\n", 
+                              info.wifi_sta_disconnected.reason);
+                break;
+            default:
+                break;
+        }
+    });
+
     WiFi.mode(WIFI_STA);
-    WiFi.setAutoReconnect(false); // Strict profile isolation: do not roam to other environments
+    WiFi.setAutoReconnect(true); // Allow ESP-IDF background auto-reconnect to active SSID
 
     const EnvironmentProfile& prof = envManager.getActiveProfile();
     _targetSSID = prof.ssid;
@@ -114,8 +135,8 @@ void NetworkManager::startConnection() {
     }
 
     Serial.printf("[WiFi] Connecting strictly to '%s' ...\n", _targetSSID.c_str());
-    WiFi.disconnect(true);
-    delay(100);
+    WiFi.disconnect(false, false);
+    delay(50);
     WiFi.begin(_targetSSID.c_str(), _targetPassword.c_str());
     _lastReconnectAttempt = millis();
     _wasConnected = false;
@@ -146,10 +167,11 @@ void NetworkManager::update() {
 
     if (!connected) {
         uint32_t now = millis();
-        if (now - _lastReconnectAttempt > 10000) {
+        // Give association, 4-way handshake, and Telstra band-steering 25 seconds before retrying
+        if (now - _lastReconnectAttempt > 25000) {
             _lastReconnectAttempt = now;
-            Serial.printf("[WiFi] Retrying connection to '%s'...\n", _targetSSID.c_str());
-            WiFi.disconnect();
+            Serial.printf("[WiFi] Retrying connection to '%s' (status=%d)...\n", 
+                          _targetSSID.c_str(), (int)WiFi.status());
             WiFi.begin(_targetSSID.c_str(), _targetPassword.c_str());
         }
     }
@@ -418,17 +440,16 @@ bool NetworkManager::fetchCompositeStatus(DashboardStatus& outStatus) {
         bool backendWarm = extractJsonBool(backendObj, "warm", false);
         String backendType = extractJsonField(backendObj, "type");
 
-        if (backendReady) {
+        if (backendReady && backendType == "ollama") {
             outStatus.aiBackend = HEALTH_READY;
-            if (backendType == "ollama") {
-                outStatus.aiBackendName = backendWarm ? "Ollama • Warm" : "Ollama • Cold";
-            } else {
-                outStatus.aiBackendName = "Hermes Gateway";
-            }
-        } else if (backendObj.length() == 0 && hermesReady) {
-            // In standalone/cloud setups where Hermes Gateway acts directly as the AI backend
+            outStatus.aiBackendName = backendWarm ? "Ollama • Warm" : "Ollama • Cold";
+        } else if (hermesReady) {
+            // At Home: Hermes Gateway acts directly as the orchestrating AI agent
             outStatus.aiBackend = HEALTH_READY;
             outStatus.aiBackendName = "Hermes Gateway";
+        } else if (backendReady) {
+            outStatus.aiBackend = HEALTH_READY;
+            outStatus.aiBackendName = "Ollama Fallback";
         } else {
             outStatus.aiBackend = (envManager.getMode() == ENV_WORK) ? HEALTH_FAILED : HEALTH_UNKNOWN;
             outStatus.aiBackendName = (envManager.getMode() == ENV_WORK) ? "Ollama Offline" : "Hermes Offline";
@@ -437,9 +458,16 @@ bool NetworkManager::fetchCompositeStatus(DashboardStatus& outStatus) {
         // Voice subsystem readiness:
         // Ready if Wi-Fi + Voice Host + (Hermes or Ollama) are functional
         outStatus.voiceReady = outStatus.voiceHostReady && (outStatus.hermesReady || backendReady);
+
+        Serial.printf("[Telemetry] VoiceHost: %s | Hermes: %s | AI: %s | VoiceReady: %s\n",
+                      outStatus.voiceHost == HEALTH_READY ? "Online" : "Failed",
+                      outStatus.hermes == HEALTH_READY ? "Ready" : "Degraded/Failed",
+                      outStatus.aiBackendName.c_str(),
+                      outStatus.voiceReady ? "YES" : "NO");
         return true;
     } else {
         http.end();
+        Serial.printf("[Telemetry] Status probe failed: HTTP %d\n", httpCode);
         outStatus.voiceHost = HEALTH_FAILED;
         outStatus.voiceHostReady = false;
         outStatus.hermes = HEALTH_UNKNOWN;
