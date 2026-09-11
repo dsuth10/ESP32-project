@@ -13,6 +13,7 @@ __pycache__/
 *.pyo
 venv/
 .env
+graphify-out/cache/
 
 # Editor and IDE configurations
 .vscode/
