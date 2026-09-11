@@ -6,8 +6,6 @@ MacroPadGUI::MacroPadGUI(TFT_eSPI& tft)
     _voiceState(VOICE_UI_IDLE),
     _voiceStatusMsg(""),
     _voiceDetailMsg(""),
-    _voiceTranscript(""),
-    _voiceReply(""),
     _voiceScrollLine(0) {}
 
 void MacroPadGUI::init() {
@@ -218,24 +216,122 @@ static void wrapTextToChatLines(TFT_eSPI& tft, const char* text, int16_t maxW, u
   }
 }
 
-void MacroPadGUI::rebuildChatLines() {
+void MacroPadGUI::clearConversation() {
+  _history.clear();
   _chatLines.clear();
-  const int16_t textMaxW = 280;
+  _voiceScrollLine = 0;
+  _voiceState = VOICE_UI_IDLE;
+  _voiceStatusMsg = "";
+  _voiceDetailMsg = "";
+  redrawVoiceCard();
+}
 
-  if (_voiceTranscript.length() > 0) {
-    _chatLines.push_back({"You:", 0x07FF}); // Cyan
-    wrapTextToChatLines(_tft, _voiceTranscript.c_str(), textMaxW, 0xFFFF, _chatLines, 2);
-    _chatLines.push_back({"", 0xFFFF}); // Blank line separator
+void MacroPadGUI::addVoiceTurn(const String& transcript, const String& reply) {
+  if (transcript.length() > 0) {
+    _history.push_back({true, transcript});
+  }
+  if (reply.length() > 0) {
+    _history.push_back({false, reply});
   }
 
-  _chatLines.push_back({"Hermes:", 0x07E0}); // Green
-  wrapTextToChatLines(_tft, _voiceReply.c_str(), textMaxW, 0xFFFF, _chatLines, 2);
+  // Bound conversation history to last 20 messages (10 full turns)
+  const size_t maxHistory = 20;
+  if (_history.size() > maxHistory) {
+    _history.erase(_history.begin(), _history.begin() + (_history.size() - maxHistory));
+  }
+
+  rebuildChatLines();
+  scrollToLatestResponse();
+}
+
+void MacroPadGUI::rebuildChatLines() {
+  _chatLines.clear();
+  // Allow 258px width for text, leaving space for scrollbar & touch buttons on right
+  const int16_t textMaxW = 258;
+
+  for (size_t i = 0; i < _history.size(); i++) {
+    const ChatMessage& msg = _history[i];
+    if (msg.isUser) {
+      _chatLines.push_back({"You:", 0x07FF}); // Cyan
+      wrapTextToChatLines(_tft, msg.text.c_str(), textMaxW, 0xFFFF, _chatLines, 2);
+    } else {
+      _chatLines.push_back({"Hermes:", 0x07E0}); // Green
+      wrapTextToChatLines(_tft, msg.text.c_str(), textMaxW, 0xFFFF, _chatLines, 2);
+    }
+    if (i + 1 < _history.size()) {
+      _chatLines.push_back({"", 0xFFFF}); // Blank line separator between turns
+    }
+  }
+}
+
+void MacroPadGUI::scrollToBottom() {
+  const int visibleLines = 7;
+  int total = (int)_chatLines.size();
+  _voiceScrollLine = max(0, total - visibleLines);
+}
+
+void MacroPadGUI::scrollToLatestResponse() {
+  const int visibleLines = 7;
+  int total = (int)_chatLines.size();
+  if (total <= visibleLines) {
+    _voiceScrollLine = 0;
+    return;
+  }
+
+  // Find the last "Hermes:" header in _chatLines so user starts reading from the top of the answer
+  int lastHermesLine = -1;
+  for (int i = (int)_chatLines.size() - 1; i >= 0; i--) {
+    if (_chatLines[i].text == "Hermes:" && _chatLines[i].color == 0x07E0) {
+      lastHermesLine = i;
+      break;
+    }
+  }
+
+  if (lastHermesLine >= 0) {
+    int maxScroll = total - visibleLines;
+    _voiceScrollLine = constrain(lastHermesLine, 0, maxScroll);
+  } else {
+    _voiceScrollLine = max(0, total - visibleLines);
+  }
+}
+
+void MacroPadGUI::scrollToTop() {
+  _voiceScrollLine = 0;
+}
+
+bool MacroPadGUI::canScrollUp() const {
+  return (_voiceScrollLine > 0);
+}
+
+bool MacroPadGUI::canScrollDown() const {
+  const int visibleLines = 7;
+  int total = (int)_chatLines.size();
+  return (_voiceScrollLine + visibleLines < total);
+}
+
+bool MacroPadGUI::voiceChatScrollable() const {
+  return (_chatLines.size() > 7);
+}
+
+void MacroPadGUI::scrollVoiceChat(int deltaLines) {
+  const int visibleLines = 7;
+  int total = (int)_chatLines.size();
+  if (total <= visibleLines) {
+    return;
+  }
+
+  int maxScroll = total - visibleLines;
+  int newScroll = constrain(_voiceScrollLine + deltaLines, 0, maxScroll);
+  if (newScroll != _voiceScrollLine) {
+    _voiceScrollLine = newScroll;
+    renderVoiceChatViewport();
+  }
 }
 
 void MacroPadGUI::renderVoiceChatViewport() {
   const int16_t vpX = 14;
   const int16_t vpY = 115;
-  const int16_t vpW = 292;
+  const int16_t vpW = 262; // Text area width
   const int16_t vpH = 116;
   const uint16_t bgColor = 0x0842;
   const uint8_t font = 2;
@@ -243,7 +339,7 @@ void MacroPadGUI::renderVoiceChatViewport() {
   const int visibleLines = 7;
   const int total = (int)_chatLines.size();
 
-  // 1. Clear conversation text area and scrollbar track
+  // 1. Clear conversation text area (minimal differential fill - Rule 9)
   _tft.fillRect(vpX, vpY, vpW, vpH, bgColor);
 
   // 2. Render visible chat lines
@@ -258,58 +354,61 @@ void MacroPadGUI::renderVoiceChatViewport() {
     curY += lineHeight;
   }
 
-  // 3. Render vertical scrollbar if total lines exceed visible capacity
+  // 3. Render vertical scrollbar & on-screen controls if total lines exceed capacity
+  const int16_t ctrlX = 280;
+  const int16_t ctrlW = 26;
+
   if (total > visibleLines) {
-    const int16_t sbX = 302;
-    const int16_t sbY = vpY + 2;
-    const int16_t sbW = 4;
-    const int16_t sbH = vpH - 4; // 112px
+    bool upActive = canScrollUp();
+    bool downActive = canScrollDown();
 
-    // Track
-    _tft.fillRoundRect(sbX, sbY, sbW, sbH, 2, 0x18C3);
+    // Up Button [ ▲ ] (y: 116..142)
+    uint16_t upBg = upActive ? 0x18F4 : 0x1084;
+    uint16_t upBorder = upActive ? 0x8A3F : 0x2124;
+    uint16_t upTri = upActive ? 0xFFFF : 0x632C;
 
-    // Thumb
-    int16_t thumbH = (visibleLines * sbH) / total;
-    if (thumbH < 14) thumbH = 14;
+    _tft.fillRoundRect(ctrlX, vpY + 1, ctrlW, 26, 4, upBg);
+    _tft.drawRoundRect(ctrlX, vpY + 1, ctrlW, 26, 4, upBorder);
+    _tft.fillTriangle(ctrlX + 13, vpY + 7, ctrlX + 7, vpY + 19, ctrlX + 19, vpY + 19, upTri);
+
+    // Track & Thumb (y: 145..198, h: 54)
+    const int16_t trackX = 290;
+    const int16_t trackY = vpY + 30;
+    const int16_t trackW = 6;
+    const int16_t trackH = 54;
+
+    _tft.fillRoundRect(trackX, trackY, trackW, trackH, 3, 0x18C3);
+
+    int16_t thumbH = (visibleLines * trackH) / total;
+    if (thumbH < 10) thumbH = 10;
     int maxScroll = total - visibleLines;
-    int16_t thumbY = sbY + (_voiceScrollLine * (sbH - thumbH)) / maxScroll;
+    int16_t thumbY = trackY + (_voiceScrollLine * (trackH - thumbH)) / maxScroll;
 
-    _tft.fillRoundRect(sbX, thumbY, sbW, thumbH, 2, 0x8A3F); // Vibrant violet thumb
+    _tft.fillRoundRect(trackX, thumbY, trackW, thumbH, 3, 0x8A3F); // Vibrant Violet
+
+    // Down Button [ ▼ ] (y: 202..228)
+    uint16_t downBg = downActive ? 0x18F4 : 0x1084;
+    uint16_t downBorder = downActive ? 0x8A3F : 0x2124;
+    uint16_t downTri = downActive ? 0xFFFF : 0x632C;
+
+    _tft.fillRoundRect(ctrlX, vpY + 87, ctrlW, 26, 4, downBg);
+    _tft.drawRoundRect(ctrlX, vpY + 87, ctrlW, 26, 4, downBorder);
+    _tft.fillTriangle(ctrlX + 13, vpY + 107, ctrlX + 7, vpY + 95, ctrlX + 19, vpY + 95, downTri);
+  } else {
+    // Clear the control column if not scrollable
+    _tft.fillRect(ctrlX - 2, vpY, ctrlW + 6, vpH, bgColor);
   }
-}
-
-void MacroPadGUI::scrollVoiceChat(int deltaLines) {
-  const int visibleLines = 7;
-  int total = (int)_chatLines.size();
-  if (_voiceState != VOICE_UI_SUCCESS || total <= visibleLines) {
-    return;
-  }
-
-  int maxScroll = total - visibleLines;
-  int newScroll = constrain(_voiceScrollLine + deltaLines, 0, maxScroll);
-  if (newScroll != _voiceScrollLine) {
-    _voiceScrollLine = newScroll;
-    renderVoiceChatViewport();
-  }
-}
-
-bool MacroPadGUI::voiceChatScrollable() const {
-  return (_voiceState == VOICE_UI_SUCCESS && _chatLines.size() > 7);
 }
 
 void MacroPadGUI::drawVoiceCard(VoiceUIState state, const char* statusMsg, const char* detailMsg) {
   _voiceState = state;
+  _voiceStatusMsg = statusMsg ? statusMsg : "";
+  _voiceDetailMsg = detailMsg ? detailMsg : "";
 
   if (state == VOICE_UI_SUCCESS) {
-    _voiceTranscript = statusMsg ? statusMsg : "";
-    _voiceReply = detailMsg ? detailMsg : "";
-    _voiceScrollLine = 0;
-    rebuildChatLines();
-  } else {
-    _voiceStatusMsg = statusMsg ? statusMsg : "";
-    _voiceDetailMsg = detailMsg ? detailMsg : "";
-    _chatLines.clear();
-    _voiceScrollLine = 0;
+    if (statusMsg && detailMsg && (strlen(statusMsg) > 0 || strlen(detailMsg) > 0)) {
+      addVoiceTurn(statusMsg, detailMsg);
+    }
   }
 
   redrawVoiceCard();
@@ -342,13 +441,13 @@ void MacroPadGUI::redrawVoiceCard() {
     case VOICE_UI_RECORDING:
       pillBg = 0x9800; // Red
       pillText = 0xFFFF;
-      pillStr = "[ RECORDING AUDIO ]";
+      pillStr = _voiceStatusMsg.length() > 0 ? _voiceStatusMsg.c_str() : "[ RECORDING AUDIO ]";
       break;
 
     case VOICE_UI_SENDING:
       pillBg = 0xD3A0; // Amber
       pillText = 0x0000;
-      pillStr = "[ TRANSCRIBING & SENDING ]";
+      pillStr = _voiceStatusMsg.length() > 0 ? _voiceStatusMsg.c_str() : "[ TRANSCRIBING & SENDING ]";
       break;
 
     case VOICE_UI_SUCCESS:
@@ -360,20 +459,34 @@ void MacroPadGUI::redrawVoiceCard() {
     case VOICE_UI_ERROR:
       pillBg = 0x8000; // Red
       pillText = 0xFFFF;
-      pillStr = "[ REQUEST FAILED ]";
+      pillStr = _voiceStatusMsg.length() > 0 ? _voiceStatusMsg.c_str() : "[ REQUEST FAILED ]";
       break;
   }
 
   // Draw pill banner
-  _tft.fillRoundRect(x + 6, y + 6, w - 12, 20, 4, pillBg);
+  bool hasHistory = !_history.empty();
+  int16_t pillW = hasHistory ? (w - 56) : (w - 12);
+  _tft.fillRoundRect(x + 6, y + 6, pillW, 20, 4, pillBg);
   _tft.setTextDatum(MC_DATUM);
   _tft.setTextColor(pillText, pillBg);
-  _tft.drawString(pillStr, x + w / 2, y + 16, 2);
+  _tft.drawString(pillStr, x + 6 + pillW / 2, y + 16, 2);
+
+  // Draw Clear Button [CLR] if conversation history exists
+  if (hasHistory) {
+    int16_t clrX = x + w - 46;
+    int16_t clrY = y + 6;
+    _tft.fillRoundRect(clrX, clrY, 40, 20, 4, 0x3186);
+    _tft.drawRoundRect(clrX, clrY, 40, 20, 4, 0x632C);
+    _tft.setTextDatum(MC_DATUM);
+    _tft.setTextColor(0xCE7F, 0x3186);
+    _tft.drawString("CLR", clrX + 20, clrY + 10, 2);
+  }
 
   // Divider line below pill
   _tft.drawFastHLine(x + 6, y + 30, w - 12, 0x2965);
 
-  if (_voiceState == VOICE_UI_SUCCESS) {
+  if (hasHistory) {
+    // Always render scrollable conversation history if we have messages!
     renderVoiceChatViewport();
   }
   else if (_voiceState == VOICE_UI_RECORDING) {
@@ -397,7 +510,7 @@ void MacroPadGUI::redrawVoiceCard() {
     _tft.setTextColor(0xFA40, bgColor);
     drawWrappedText(_tft, _voiceDetailMsg.c_str(), x + 10, y + 78, w - 20, 3, 0xFA40, bgColor, 2);
   }
-  else { // VOICE_UI_IDLE
+  else { // VOICE_UI_IDLE and no history yet
     _tft.setTextDatum(MC_DATUM);
     _tft.setTextColor(0xCE7F, bgColor);
     _tft.drawString(_voiceStatusMsg.length() > 0 ? _voiceStatusMsg.c_str() : "Hold button above to record voice.", x + w / 2, y + 64, 2);
@@ -614,8 +727,26 @@ int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
     return TOUCH_NEXT_PAGE;
   }
 
-  // Check Page 5 Voice scroll area (inside conversation card)
+  // Check Page 5 Voice scroll area & controls
   if (currentPage == PAGE_VOICE) {
+    // 1. Check Clear Button (top right of card header)
+    if (!_history.empty() && x >= 254 && x <= 312 && y >= 82 && y <= 112) {
+      return TOUCH_VOICE_CLEAR;
+    }
+
+    // 2. Check Dedicated Scroll Buttons on right side if scrollable
+    if (_chatLines.size() > 7) {
+      // Up button area: x = 274..314, y = 114..148
+      if (x >= 274 && x <= 314 && y >= 114 && y <= 148) {
+        return TOUCH_VOICE_SCROLL_UP;
+      }
+      // Down button area: x = 274..314, y = 194..236
+      if (x >= 274 && x <= 314 && y >= 194 && y <= 236) {
+        return TOUCH_VOICE_SCROLL_DOWN;
+      }
+    }
+
+    // 3. Main conversation card touch down (for swipe drag or tap)
     if (x >= 10 && x <= 310 && y >= 112 && y <= 234) {
       return TOUCH_VOICE_CHAT;
     }

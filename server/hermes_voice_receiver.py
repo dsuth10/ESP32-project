@@ -97,9 +97,8 @@ print(f"[Config] Telegram Mirror: {'Disabled (Work Mode / Privacy Hardened)' if 
 
 # Concise system prompt tailored for the ESP32 MacroPad LCD display
 ESP32_SYSTEM_PROMPT = (
-    "You are responding to a voice query from a small ESP32 assistant display. "
-    "Answer directly and concisely in 1 or 2 short sentences without markdown, bullets, or emojis. "
-    "Keep ordinary factual answers under approximately 100-120 characters where practical."
+    "You are responding to a voice query from an ESP32 assistant with a scrollable display. "
+    "Answer directly, concisely, and conversationally in 2 or 3 sentences without markdown formatting, bullet points, or emojis."
 )
 
 # ── 2. Synchronization & Global State ─────────────────────────────────
@@ -274,6 +273,9 @@ def ask_hermes_gateway(prompt: str) -> tuple[str, bool]:
         return (f"Hermes Gateway error: {str(e)}", False)
 
 # ── 7. Local Ollama Fallback (Transparent Diagnostic Fallback) ─────────
+_ollama_history: list[tuple[str, str]] = []
+_ollama_history_lock = threading.Lock()
+
 def query_ollama_fallback(prompt: str) -> tuple[str, bool]:
     """Diagnostic fallback querying local Ollama directly if Hermes Gateway is offline."""
     models_to_try = list(OLLAMA_MODELS)
@@ -290,11 +292,20 @@ def query_ollama_fallback(prompt: str) -> tuple[str, bool]:
     except Exception:
         pass
 
+    with _ollama_history_lock:
+        history_lines = []
+        for u, a in _ollama_history[-4:]:
+            history_lines.append(f"User: {u}\nAssistant: {a}")
+        if history_lines:
+            conv_prompt = f"{ESP32_SYSTEM_PROMPT}\n\n" + "\n\n".join(history_lines) + f"\n\nUser: {prompt}\nAssistant:"
+        else:
+            conv_prompt = f"{ESP32_SYSTEM_PROMPT}\n\nUser: {prompt}\nAssistant:"
+
     for model in models_to_try:
         try:
             req_data = json.dumps({
                 "model": model,
-                "prompt": f"{ESP32_SYSTEM_PROMPT}\n\nUser: {prompt}\nAssistant:",
+                "prompt": conv_prompt,
                 "stream": False
             }).encode("utf-8")
             url = f"{OLLAMA_HOST.rstrip('/')}/api/generate"
@@ -307,6 +318,10 @@ def query_ollama_fallback(prompt: str) -> tuple[str, bool]:
                 data = json.loads(resp.read().decode("utf-8"))
                 reply = data.get("response", "").strip()
                 if reply:
+                    with _ollama_history_lock:
+                        _ollama_history.append((prompt, reply))
+                        if len(_ollama_history) > 10:
+                            _ollama_history = _ollama_history[-10:]
                     return (reply, True)
         except Exception:
             continue
@@ -656,7 +671,7 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
 
             with last_voice_lock:
                 last_voice_record["transcript"] = transcript
-                last_voice_record["reply"] = clean_reply[:120]
+                last_voice_record["reply"] = clean_reply[:800]
                 last_voice_record["backend"] = backend_used
                 last_voice_record["success"] = True
                 last_voice_record["timestamp"] = time.time()
@@ -665,7 +680,7 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             response_payload = {
                 "status": "ok",
                 "transcript": transcript,
-                "reply": clean_reply[:120],
+                "reply": clean_reply[:800],
                 "backend": backend_used,
                 "timing": timing_dict,
                 "server_ms": int(server_total_s * 1000),

@@ -19,6 +19,11 @@ struct ChatLine {
   uint16_t color;
 };
 
+struct ChatMessage {
+  bool isUser;
+  String text;
+};
+
 class MacroPadGUI {
 public:
   MacroPadGUI(TFT_eSPI& tft);
@@ -29,7 +34,14 @@ public:
   void drawVoiceCard(VoiceUIState state, const char* statusMsg, const char* detailMsg);
   void redrawVoiceCard();
   void scrollVoiceChat(int deltaLines);
+  void scrollToBottom();
+  void scrollToTop();
+  void scrollToLatestResponse();
+  bool canScrollUp() const;
+  bool canScrollDown() const;
   bool voiceChatScrollable() const;
+  void addVoiceTurn(const String& transcript, const String& reply);
+  void clearConversation();
   void drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode, bool fullRedraw = true);
   void drawDashboardSwitching(const char* targetModeName);
   int8_t getTouchTarget(int16_t x, int16_t y, uint8_t currentPage);
@@ -41,9 +53,8 @@ private:
   VoiceUIState _voiceState;
   String _voiceStatusMsg;
   String _voiceDetailMsg;
-  String _voiceTranscript;
-  String _voiceReply;
   int _voiceScrollLine;
+  std::vector<ChatMessage> _history;
   std::vector<ChatLine> _chatLines;
 
   void getButtonRect(uint8_t pageIndex, uint8_t btnIndex, int16_t& x, int16_t& y, int16_t& w, int16_t& h);

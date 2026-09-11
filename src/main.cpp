@@ -32,6 +32,8 @@ int8_t pulseDirection = 1;
 // Non-blocking drag state for Page 5 Voice chat viewport (Rules 8 & 10)
 static bool s_voiceDragActive = false;
 static int16_t s_voiceLastTouchY = 0;
+static int16_t s_voiceDragStartY = 0;
+static uint32_t s_voiceDragStartTime = 0;
 
 // Background Telemetry Worker on Core 0 (Rule 3: Non-blocking asynchronous health probes)
 static DashboardStatus g_telemetryStatus;
@@ -257,14 +259,14 @@ void loop() {
     // Active drag tracking for Page 5 scrollable chat (non-blocking, Rules 8 & 10)
     if (s_voiceDragActive) {
       int16_t deltaY = ty - s_voiceLastTouchY;
-      if (abs(deltaY) >= 16) {
-        int lines = abs(deltaY) / 16;
+      if (abs(deltaY) >= 12) {
+        int lines = abs(deltaY) / 12;
         if (deltaY < 0) {
           gui.scrollVoiceChat(+lines); // Swipe up -> scroll towards later text
-          s_voiceLastTouchY -= lines * 16;
+          s_voiceLastTouchY -= lines * 12;
         } else {
           gui.scrollVoiceChat(-lines); // Swipe down -> scroll towards earlier text
-          s_voiceLastTouchY += lines * 16;
+          s_voiceLastTouchY += lines * 12;
         }
       }
       delay(10);
@@ -273,10 +275,49 @@ void loop() {
 
     int8_t target = gui.getTouchTarget(tx, ty, currentPage);
 
-    // Page 5 conversation card touch down
-    if (target == TOUCH_VOICE_CHAT) {
+    // Dedicated Page 5 Scroll Buttons
+    if (target == TOUCH_VOICE_SCROLL_UP) {
+      gui.scrollVoiceChat(-3);
+      delay(80);
+      uint32_t waitRelease = millis();
+      while (millis() - waitRelease < 500) {
+        ts.read();
+        if (!ts.isTouched) break;
+        delay(20);
+      }
+      return;
+    }
+    else if (target == TOUCH_VOICE_SCROLL_DOWN) {
+      gui.scrollVoiceChat(+3);
+      delay(80);
+      uint32_t waitRelease = millis();
+      while (millis() - waitRelease < 500) {
+        ts.read();
+        if (!ts.isTouched) break;
+        delay(20);
+      }
+      return;
+    }
+    else if (target == TOUCH_VOICE_CLEAR) {
+      Serial.println("[Voice] User tapped CLEAR conversation");
+      setLedColor(120, 60, 0); // Quick amber flash
+      gui.clearConversation();
+      delay(100);
+      uint32_t waitRelease = millis();
+      while (millis() - waitRelease < 500) {
+        ts.read();
+        if (!ts.isTouched) break;
+        delay(20);
+      }
+      if (currentBleState) setLedColor(0, 50, 15);
+      return;
+    }
+    // Page 5 conversation card touch down (drag or tap)
+    else if (target == TOUCH_VOICE_CHAT) {
       s_voiceDragActive = true;
       s_voiceLastTouchY = ty;
+      s_voiceDragStartY = ty;
+      s_voiceDragStartTime = millis();
       delay(10);
       return;
     }
@@ -462,7 +503,18 @@ void loop() {
       }
     }
   } else {
-    s_voiceDragActive = false;
+    if (s_voiceDragActive) {
+      int16_t totalDist = abs(s_voiceLastTouchY - s_voiceDragStartY);
+      if (totalDist < 10 && (millis() - s_voiceDragStartTime < 500)) {
+        // Tap gesture: tap upper half of card -> scroll up; tap lower half -> scroll down
+        if (s_voiceDragStartY < 173) {
+          gui.scrollVoiceChat(-3);
+        } else {
+          gui.scrollVoiceChat(+3);
+        }
+      }
+      s_voiceDragActive = false;
+    }
   }
 
   delay(10);
