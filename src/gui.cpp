@@ -445,9 +445,9 @@ void MacroPadGUI::redrawVoiceCard() {
       break;
 
     case VOICE_UI_SENDING:
-      pillBg = 0xD3A0; // Amber
+      pillBg = 0xFD60; // Bright Amber/Orange
       pillText = 0x0000;
-      pillStr = _voiceStatusMsg.length() > 0 ? _voiceStatusMsg.c_str() : "[ TRANSCRIBING & SENDING ]";
+      pillStr = "[ TRANSCRIBING & WAITING FOR AI ]";
       break;
 
     case VOICE_UI_SUCCESS:

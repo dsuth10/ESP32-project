@@ -39,10 +39,11 @@ static uint32_t s_voiceDragStartTime = 0;
 static DashboardStatus g_telemetryStatus;
 static bool g_telemetryDirty = false;
 static SemaphoreHandle_t g_telemetryMutex = NULL;
+static volatile bool g_voiceBusy = false;
 
 void telemetryWorkerTask(void* pvParameters) {
   while (true) {
-    if (!recorder.isRecording()) {
+    if (!recorder.isRecording() && !g_voiceBusy) {
       DashboardStatus temp;
       temp.expectedBleHost = envManager.getActiveProfile().expectedBleHost;
 
@@ -390,6 +391,7 @@ void loop() {
 
       if (btn.type == ACTION_VOICE) {
         // === HERMES VOICE RECORD & SEND FLOW ===
+        g_voiceBusy = true;
         Serial.println("[Voice] >>> Touch down: Starting Voice Recording <<<");
         gui.drawButton(currentPage, btnIndex, true);
         gui.drawVoiceCard(VOICE_UI_RECORDING, "Listening...", "Keep holding while speaking");
@@ -418,6 +420,10 @@ void loop() {
 
         size_t wavBytes = recorder.stopRecording();
         gui.drawButton(currentPage, btnIndex, false);
+
+        // Immediate visual feedback upon release
+        gui.drawVoiceCard(VOICE_UI_SENDING, "Uploading to Gateway...", "Transcribing speech...");
+        setLedColor(120, 80, 0); // Amber / Yellow
 
         // Always log full per-channel diagnostics and codec registers
         recorder.logDiagnostics();
@@ -451,9 +457,6 @@ void loop() {
                         recorder.getMonoStats().getClipPct());
 
           Serial.printf("[Voice] Recording finished (%u bytes). Sending to receiver...\n", (unsigned int)wavBytes);
-          char statsBuf[64];
-          gui.drawVoiceCard(VOICE_UI_SENDING, "Uploading to Gateway...", "Transcribing speech...");
-          setLedColor(120, 80, 0); // Amber / Yellow
 
           String transcript, reply;
           bool success = netManager.sendVoiceAudio(recorder.getWavBuffer(), wavBytes, transcript, reply);
@@ -474,6 +477,7 @@ void loop() {
         }
 #endif
 
+        g_voiceBusy = false;
         gui.drawButton(currentPage, btnIndex, false);
         if (currentBleState) {
           setLedColor(0, 50, 15);
