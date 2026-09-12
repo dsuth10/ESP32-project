@@ -60,9 +60,9 @@
     "semantic_hash": "3c4e8d4dbf1f0d7d3561f4d5a3bc60c2"
   },
   "server/hermes_voice_receiver.py": {
-    "mtime": 1789196965.3705683,
-    "seen": 1789196974.365165,
-    "ast_hash": "0c0c3c37a7c7de69ebea5d257a852735",
+    "mtime": 1789197421.9249291,
+    "seen": 1789197443.4446397,
+    "ast_hash": "34c77316f9b2952c9cef1c83f57b38d5",
     "semantic_hash": ""
   },
   "server/start_receiver.sh": {
@@ -453,6 +453,12 @@
     "mtime": 1789135368.4627557,
     "seen": 1789135390.7331822,
     "ast_hash": "8eaf96443c389a79ed937ec6d71779c9",
+    "semantic_hash": ""
+  },
+  ".agents/scratch_tts_test.py": {
+    "mtime": 1789197381.8318453,
+    "seen": 1789197443.444624,
+    "ast_hash": "7db31924a02c721104a830dcd0be49e1",
     "semantic_hash": ""
   }
 }

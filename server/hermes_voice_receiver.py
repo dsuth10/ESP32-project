@@ -60,8 +60,9 @@ DISABLE_TELEGRAM = os.environ.get("DISABLE_TELEGRAM", "").lower() in ("1", "true
 # Local TTS (Voicebox) Configuration
 ENABLE_TTS = os.environ.get("ENABLE_TTS", "1").lower() in ("1", "true", "yes")
 VOICEBOX_URL = os.environ.get("VOICEBOX_URL", "http://127.0.0.1:17493").rstrip("/")
-VOICEBOX_PROFILE_NAME = os.environ.get("VOICEBOX_PROFILE_NAME", "Doug's Best Voice")
+VOICEBOX_PROFILE_NAME = os.environ.get("VOICEBOX_PROFILE_NAME", "Kokoro Heart")
 VOICEBOX_PROFILE_ID = os.environ.get("VOICEBOX_PROFILE_ID", "")
+VOICEBOX_ENGINE = os.environ.get("VOICEBOX_ENGINE", "kokoro")
 VOICEBOX_MODEL_SIZE = os.environ.get("VOICEBOX_MODEL_SIZE", "1.7B")
 
 # Look for credentials across standard cross-platform Hermes locations
@@ -106,6 +107,8 @@ for env_path in hermes_env_candidates:
                         VOICEBOX_PROFILE_NAME = v
                     elif k == "VOICEBOX_PROFILE_ID":
                         VOICEBOX_PROFILE_ID = v
+                    elif k == "VOICEBOX_ENGINE":
+                        VOICEBOX_ENGINE = v
                     elif k == "VOICEBOX_MODEL_SIZE":
                         VOICEBOX_MODEL_SIZE = v
         except Exception as e:
@@ -121,7 +124,7 @@ print(f"[Config] Receiver Token : {'Enforced (Bearer auth enabled)' if VOICE_REC
 print(f"[Config] Hermes Gateway : {GATEWAY_URL}")
 print(f"[Config] API Server Key : {'Configured (' + API_SERVER_KEY[:8] + '...)' if API_SERVER_KEY else 'MISSING (Set API_SERVER_KEY or ~/.hermes/.env)'}")
 print(f"[Config] Ollama Host    : {OLLAMA_HOST} (keep_alive: {OLLAMA_KEEP_ALIVE})")
-tts_status_str = f"Enabled ({VOICEBOX_URL} | Profile: '{VOICEBOX_PROFILE_NAME}')" if ENABLE_TTS else "Disabled"
+tts_status_str = f"Enabled ({VOICEBOX_URL} | Engine: '{VOICEBOX_ENGINE or 'default'}' | Profile: '{VOICEBOX_PROFILE_NAME}')" if ENABLE_TTS else "Disabled"
 print(f"[Config] Local TTS      : {tts_status_str}")
 print(f"[Config] Telegram Mirror: {'Disabled (Work Mode / Privacy Hardened)' if RECEIVER_ENV.lower() == 'work' else ('Disabled' if DISABLE_TELEGRAM else ('Configured' if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID else 'Not configured'))}")
 
@@ -300,11 +303,15 @@ def synthesize_speech_voicebox(text: str) -> bytes:
 
     t0 = time.perf_counter()
     try:
-        req_body = json.dumps({
+        payload = {
             "profile_id": profile_id,
-            "text": tts_text,
-            "model_size": VOICEBOX_MODEL_SIZE
-        }).encode("utf-8")
+            "text": tts_text
+        }
+        if VOICEBOX_ENGINE:
+            payload["engine"] = VOICEBOX_ENGINE
+        else:
+            payload["model_size"] = VOICEBOX_MODEL_SIZE
+        req_body = json.dumps(payload).encode("utf-8")
         req = urllib.request.Request(
             f"{VOICEBOX_URL}/generate/stream",
             data=req_body,

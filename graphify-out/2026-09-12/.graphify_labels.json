@@ -26,5 +26,8 @@
   "24": "Workflow: /graph-query",
   "25": "Workflow: /graph-update",
   "26": "Workflow: /graph-visualize",
-  "27": "graph.ps1"
+  "27": "graph.ps1",
+  "28": "scratch_tts_test.py",
+  "29": "DashboardStatus",
+  "30": "EnvironmentMode"
 }

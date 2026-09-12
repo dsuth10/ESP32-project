@@ -53,7 +53,7 @@
       "file_type": "code",
       "norm_label": "voicerequesthandler",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L732"
+      "source_location": "L745"
     },
     {
       "id": "src_environment_manager_environmentmanager",
@@ -217,7 +217,7 @@
       "file_type": "code",
       "norm_label": "ask_hermes_gateway()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L421"
+      "source_location": "L434"
     },
     {
       "id": "server_hermes_voice_receiver_check_voicebox_online",
@@ -229,7 +229,7 @@
       "file_type": "code",
       "norm_label": "check_voicebox_online()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L170"
+      "source_location": "L172"
     },
     {
       "id": "server_hermes_voice_receiver_convert_24k_mono_to_16k_stereo_wav",
@@ -241,7 +241,7 @@
       "file_type": "code",
       "norm_label": "convert_24k_mono_to_16k_stereo_wav()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L208"
+      "source_location": "L210"
     },
     {
       "id": "server_hermes_voice_receiver_dispatch_telegram_mirror",
@@ -253,7 +253,7 @@
       "file_type": "code",
       "norm_label": "dispatch_telegram_mirror()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L350"
+      "source_location": "L363"
     },
     {
       "id": "server_hermes_voice_receiver_dispatch_telegram_mirror_async_send",
@@ -265,7 +265,7 @@
       "file_type": "code",
       "norm_label": "_async_send()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L355"
+      "source_location": "L368"
     },
     {
       "id": "server_hermes_voice_receiver_get_composite_status",
@@ -277,7 +277,7 @@
       "file_type": "code",
       "norm_label": "get_composite_status()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L674"
+      "source_location": "L687"
     },
     {
       "id": "server_hermes_voice_receiver_get_whisper_model",
@@ -289,7 +289,7 @@
       "file_type": "code",
       "norm_label": "get_whisper_model()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L314"
+      "source_location": "L327"
     },
     {
       "id": "server_hermes_voice_receiver_hermes_sessions_headers",
@@ -301,7 +301,7 @@
       "file_type": "code",
       "norm_label": "_hermes_sessions_headers()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L372"
+      "source_location": "L385"
     },
     {
       "id": "server_hermes_voice_receiver_load_voice_session",
@@ -313,7 +313,7 @@
       "file_type": "code",
       "norm_label": "load_voice_session()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L377"
+      "source_location": "L390"
     },
     {
       "id": "server_hermes_voice_receiver_main",
@@ -325,7 +325,7 @@
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L1038"
+      "source_location": "L1051"
     },
     {
       "id": "server_hermes_voice_receiver_probe_hermes_health",
@@ -337,7 +337,7 @@
       "file_type": "code",
       "norm_label": "probe_hermes_health()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L534"
+      "source_location": "L547"
     },
     {
       "id": "server_hermes_voice_receiver_probe_ollama_health",
@@ -349,7 +349,7 @@
       "file_type": "code",
       "norm_label": "probe_ollama_health()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L633"
+      "source_location": "L646"
     },
     {
       "id": "server_hermes_voice_receiver_query_ollama_fallback",
@@ -361,7 +361,7 @@
       "file_type": "code",
       "norm_label": "query_ollama_fallback()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L467"
+      "source_location": "L480"
     },
     {
       "id": "server_hermes_voice_receiver_resolve_voicebox_profile_id",
@@ -373,7 +373,7 @@
       "file_type": "code",
       "norm_label": "resolve_voicebox_profile_id()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L186"
+      "source_location": "L188"
     },
     {
       "id": "server_hermes_voice_receiver_sanitize_for_display",
@@ -385,7 +385,7 @@
       "file_type": "code",
       "norm_label": "sanitize_for_display()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L156"
+      "source_location": "L158"
     },
     {
       "id": "server_hermes_voice_receiver_sanitize_for_tts",
@@ -397,7 +397,7 @@
       "file_type": "code",
       "norm_label": "sanitize_for_tts()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L252"
+      "source_location": "L254"
     },
     {
       "id": "server_hermes_voice_receiver_send_telegram_message",
@@ -409,7 +409,7 @@
       "file_type": "code",
       "norm_label": "send_telegram_message()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L327"
+      "source_location": "L340"
     },
     {
       "id": "server_hermes_voice_receiver_synthesize_speech_voicebox",
@@ -421,7 +421,7 @@
       "file_type": "code",
       "norm_label": "synthesize_speech_voicebox()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L276"
+      "source_location": "L289"
     },
     {
       "id": "server_hermes_voice_receiver_voicerequesthandler_check_auth",
@@ -433,7 +433,7 @@
       "file_type": "code",
       "norm_label": ".check_auth()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L733"
+      "source_location": "L746"
     },
     {
       "id": "server_hermes_voice_receiver_voicerequesthandler_do_get",
@@ -445,7 +445,7 @@
       "file_type": "code",
       "norm_label": ".do_get()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L754"
+      "source_location": "L767"
     },
     {
       "id": "server_hermes_voice_receiver_voicerequesthandler_do_post",
@@ -457,7 +457,7 @@
       "file_type": "code",
       "norm_label": ".do_post()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L822"
+      "source_location": "L835"
     },
     {
       "id": "server_hermes_voice_receiver_voicerequesthandler_send_unauthorized",
@@ -469,7 +469,7 @@
       "file_type": "code",
       "norm_label": ".send_unauthorized()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L743"
+      "source_location": "L756"
     },
     {
       "id": "server_hermes_voice_receiver_warmup_ollama_model",
@@ -481,7 +481,7 @@
       "file_type": "code",
       "norm_label": "warmup_ollama_model()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L588"
+      "source_location": "L601"
     },
     {
       "id": "server_benchmark_hermes_standalone_main",
@@ -554,6 +554,18 @@
       "norm_label": "environmentmanager::environmentmanager()",
       "source_file": "src/environment_manager.cpp",
       "source_location": "L5"
+    },
+    {
+      "id": "agents_scratch_tts_test_sanitize_for_tts",
+      "label": "sanitize_for_tts()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 28,
+      "community_name": "scratch_tts_test.py",
+      "file_type": "code",
+      "norm_label": "sanitize_for_tts()",
+      "source_file": ".agents/scratch_tts_test.py",
+      "source_location": "L3"
     },
     {
       "id": "src_audio_recorder_audiorecorder_audiorecorder",
@@ -2183,6 +2195,28 @@
       "source_location": "L54"
     },
     {
+      "id": "src_macropad_config_cpp_src_macropad_config",
+      "label": "macropad_config.cpp",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "macropad_config.cpp",
+      "source_file": "src/macropad_config.cpp",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_macropad_config_h_src_macropad_config",
+      "label": "macropad_config.h",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "macropad_config.h",
+      "source_file": "src/macropad_config.h",
+      "source_location": "L1"
+    },
+    {
       "id": "src_system_status",
       "label": "system_status.h",
       "_origin": "ast",
@@ -2227,7 +2261,7 @@
       "source_location": "L1"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_157",
+      "id": "server_hermes_voice_receiver_rationale_159",
       "label": "Strips markdown and unsupported characters for clean display on ST7789 TFT\u2026",
       "_origin": "ast",
       "community": 1,
@@ -2235,10 +2269,10 @@
       "file_type": "rationale",
       "norm_label": "strips markdown and unsupported characters for clean display on st7789 tft...",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L157"
+      "source_location": "L159"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_209",
+      "id": "server_hermes_voice_receiver_rationale_211",
       "label": "Converts 24kHz mono 16-bit PCM WAV to 16kHz stereo 16-bit PCM WAV for ESP32 I2S.",
       "_origin": "ast",
       "community": 1,
@@ -2246,10 +2280,10 @@
       "file_type": "rationale",
       "norm_label": "converts 24khz mono 16-bit pcm wav to 16khz stereo 16-bit pcm wav for esp32 i2s.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L209"
+      "source_location": "L211"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_253",
+      "id": "server_hermes_voice_receiver_rationale_255",
       "label": "Prepare text for TTS pronunciation and ensure optimal generation length.",
       "_origin": "ast",
       "community": 1,
@@ -2257,10 +2291,10 @@
       "file_type": "rationale",
       "norm_label": "prepare text for tts pronunciation and ensure optimal generation length.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L253"
+      "source_location": "L255"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_277",
+      "id": "server_hermes_voice_receiver_rationale_290",
       "label": "Generate audio via Voicebox and format for ESP32 playback.",
       "_origin": "ast",
       "community": 1,
@@ -2268,10 +2302,10 @@
       "file_type": "rationale",
       "norm_label": "generate audio via voicebox and format for esp32 playback.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L277"
+      "source_location": "L290"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_351",
+      "id": "server_hermes_voice_receiver_rationale_364",
       "label": "Phase 19: Asynchronously mirrors voice conversation to Telegram without\u2026",
       "_origin": "ast",
       "community": 1,
@@ -2279,10 +2313,10 @@
       "file_type": "rationale",
       "norm_label": "phase 19: asynchronously mirrors voice conversation to telegram without...",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L351"
+      "source_location": "L364"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_378",
+      "id": "server_hermes_voice_receiver_rationale_391",
       "label": "Return the durable voice session ID, creating the session if needed.",
       "_origin": "ast",
       "community": 1,
@@ -2290,10 +2324,10 @@
       "file_type": "rationale",
       "norm_label": "return the durable voice session id, creating the session if needed.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L378"
+      "source_location": "L391"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_422",
+      "id": "server_hermes_voice_receiver_rationale_435",
       "label": "Dispatches prompt to persistent Hermes Gateway via HTTP.",
       "_origin": "ast",
       "community": 1,
@@ -2301,10 +2335,10 @@
       "file_type": "rationale",
       "norm_label": "dispatches prompt to persistent hermes gateway via http.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L422"
+      "source_location": "L435"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_468",
+      "id": "server_hermes_voice_receiver_rationale_481",
       "label": "Diagnostic fallback querying local Ollama directly if Hermes Gateway is offline.",
       "_origin": "ast",
       "community": 1,
@@ -2312,10 +2346,10 @@
       "file_type": "rationale",
       "norm_label": "diagnostic fallback querying local ollama directly if hermes gateway is offline.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L468"
+      "source_location": "L481"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_535",
+      "id": "server_hermes_voice_receiver_rationale_548",
       "label": "Probes Hermes Gateway for liveness and detailed readiness.",
       "_origin": "ast",
       "community": 1,
@@ -2323,10 +2357,10 @@
       "file_type": "rationale",
       "norm_label": "probes hermes gateway for liveness and detailed readiness.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L535"
+      "source_location": "L548"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_589",
+      "id": "server_hermes_voice_receiver_rationale_602",
       "label": "Phase 17: Preload the active Ollama model into GPU VRAM to prevent first-query\u2026",
       "_origin": "ast",
       "community": 1,
@@ -2334,10 +2368,10 @@
       "file_type": "rationale",
       "norm_label": "phase 17: preload the active ollama model into gpu vram to prevent first-query...",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L589"
+      "source_location": "L602"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_634",
+      "id": "server_hermes_voice_receiver_rationale_647",
       "label": "Probes local Ollama for service reachability and model VRAM residency.",
       "_origin": "ast",
       "community": 1,
@@ -2345,10 +2379,10 @@
       "file_type": "rationale",
       "norm_label": "probes local ollama for service reachability and model vram residency.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L634"
+      "source_location": "L647"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_675",
+      "id": "server_hermes_voice_receiver_rationale_688",
       "label": "Returns composite health authority state, cached for 2.5 seconds to minimize\u2026",
       "_origin": "ast",
       "community": 1,
@@ -2356,10 +2390,10 @@
       "file_type": "rationale",
       "norm_label": "returns composite health authority state, cached for 2.5 seconds to minimize...",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L675"
+      "source_location": "L688"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_734",
+      "id": "server_hermes_voice_receiver_rationale_747",
       "label": "Phase 20: Validate Authorization: Bearer <VOICE_RECEIVER_TOKEN> if configured.",
       "_origin": "ast",
       "community": 1,
@@ -2367,7 +2401,7 @@
       "file_type": "rationale",
       "norm_label": "phase 20: validate authorization: bearer <voice_receiver_token> if configured.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L734"
+      "source_location": "L747"
     },
     {
       "id": "server_benchmark_hermes_standalone",
@@ -4179,6 +4213,28 @@
       "source_location": "L1"
     },
     {
+      "id": "agents_scratch_tts_test",
+      "label": "scratch_tts_test.py",
+      "_origin": "ast",
+      "community": 28,
+      "community_name": "scratch_tts_test.py",
+      "file_type": "code",
+      "norm_label": "scratch_tts_test.py",
+      "source_file": ".agents/scratch_tts_test.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_network_manager_cpp_dashboardstatus",
+      "label": "DashboardStatus",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "DashboardStatus",
+      "file_type": "code",
+      "norm_label": "dashboardstatus",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "src_audio_recorder_audiorecorder_update",
       "label": "update",
       "_origin": "ast",
@@ -4582,17 +4638,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_es8311_h_src_es8311",
-      "label": "es8311.h",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": "es8311.h",
-      "source_file": "src/es8311.h",
-      "source_location": "L1"
-    },
-    {
       "id": "stream",
       "label": "Stream",
       "_origin": "ast",
@@ -4600,6 +4645,17 @@
       "community_name": "AudioRecorder",
       "file_type": "code",
       "norm_label": "stream",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_network_manager_cpp_environmentmode",
+      "label": "EnvironmentMode",
+      "_origin": "ast",
+      "community": 30,
+      "community_name": "EnvironmentMode",
+      "file_type": "code",
+      "norm_label": "environmentmode",
       "source_file": "",
       "source_location": ""
     },
@@ -5215,7 +5271,7 @@
       "source_location": "L12"
     },
     {
-      "id": "src_network_manager_cpp_dashboardstatus",
+      "id": "dashboardstatus",
       "label": "DashboardStatus",
       "_origin": "ast",
       "community": 4,
@@ -5226,7 +5282,7 @@
       "source_location": ""
     },
     {
-      "id": "src_network_manager_cpp_environmentmode",
+      "id": "environmentmode",
       "label": "EnvironmentMode",
       "_origin": "ast",
       "community": 4,
@@ -5457,28 +5513,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_macropad_config_cpp_src_macropad_config",
-      "label": "macropad_config.cpp",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": "macropad_config.cpp",
-      "source_file": "src/macropad_config.cpp",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_macropad_config_h_src_macropad_config",
-      "label": "macropad_config.h",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": "macropad_config.h",
-      "source_file": "src/macropad_config.h",
-      "source_location": "L1"
-    },
-    {
       "id": "src_main",
       "label": "main.cpp",
       "_origin": "ast",
@@ -5652,6 +5686,17 @@
       "file_type": "code",
       "norm_label": "es8311.cpp",
       "source_file": "src/es8311.cpp",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_es8311_h_src_es8311",
+      "label": "es8311.h",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "es8311.h",
+      "source_file": "src/es8311.h",
       "source_location": "L1"
     },
     {
@@ -6119,7 +6164,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L437",
+      "source_location": "L450",
       "weight": 1.0
     },
     {
@@ -6131,7 +6176,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L357",
+      "source_location": "L370",
       "weight": 1.0
     },
     {
@@ -6143,7 +6188,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L687",
+      "source_location": "L700",
       "weight": 1.0
     },
     {
@@ -6155,7 +6200,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L688",
+      "source_location": "L701",
       "weight": 1.0
     },
     {
@@ -6167,7 +6212,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L703",
+      "source_location": "L716",
       "weight": 1.0
     },
     {
@@ -6179,7 +6224,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L385",
+      "source_location": "L398",
       "weight": 1.0
     },
     {
@@ -6191,7 +6236,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L1040",
+      "source_location": "L1053",
       "weight": 1.0
     },
     {
@@ -6203,7 +6248,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L280",
+      "source_location": "L293",
       "weight": 1.0
     },
     {
@@ -6215,7 +6260,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L284",
+      "source_location": "L297",
       "weight": 1.0
     },
     {
@@ -6227,7 +6272,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L306",
+      "source_location": "L319",
       "weight": 1.0
     },
     {
@@ -6239,7 +6284,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L769",
+      "source_location": "L782",
       "weight": 1.0
     },
     {
@@ -6251,7 +6296,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L770",
+      "source_location": "L783",
       "weight": 1.0
     },
     {
@@ -6263,103 +6308,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L772",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_voicerequesthandler_check_auth",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L832",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_voicerequesthandler_send_unauthorized",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L833",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_get_whisper_model",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L880",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_query_ollama_fallback",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L899",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_ask_hermes_gateway",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L904",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_sanitize_for_display",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L923",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_check_voicebox_online",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L929",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_synthesize_speech_voicebox",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L931",
+      "source_location": "L785",
       "weight": 1.0
     },
     {
@@ -6371,7 +6320,103 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L991",
+      "source_location": "L1004",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_voicerequesthandler_check_auth",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L845",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_voicerequesthandler_send_unauthorized",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L846",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_get_whisper_model",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L893",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_query_ollama_fallback",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L912",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_ask_hermes_gateway",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L917",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_sanitize_for_display",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L936",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_check_voicebox_online",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L942",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_synthesize_speech_voicebox",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L944",
       "weight": 1.0
     },
     {
@@ -8499,18 +8544,6 @@
       "weight": 1.0
     },
     {
-      "source": "src_audio_recorder_cpp_src_audio_recorder",
-      "target": "src_es8311_h_src_es8311",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/audio_recorder.cpp",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
       "source": "src_environment_manager_cpp_src_environment_manager",
       "target": "src_environment_manager_h_src_environment_manager",
       "relation": "imports",
@@ -8691,54 +8724,6 @@
       "weight": 1.0
     },
     {
-      "source": "src_main",
-      "target": "src_environment_manager_h_src_environment_manager",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/main.cpp",
-      "source_location": "L12",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_gui_h_tft_espi",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/main.cpp",
-      "source_location": "L3",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_macropad_config_h_src_macropad_config",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/main.cpp",
-      "source_location": "L8",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_gui_h_src_gui",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/main.cpp",
-      "source_location": "L9",
-      "weight": 1.0
-    },
-    {
       "source": "src_network_manager_cpp_src_network_manager",
       "target": "src_network_manager_h_src_network_manager",
       "relation": "imports",
@@ -8760,18 +8745,6 @@
       "context": "import",
       "source_file": "src/network_manager.cpp",
       "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "src_network_manager_h_src_network_manager",
-      "target": "src_environment_manager_h_src_environment_manager",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/network_manager.h",
-      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -9544,7 +9517,7 @@
     },
     {
       "source": "src_network_manager_networkmanager_applyenvironment",
-      "target": "src_network_manager_cpp_environmentmode",
+      "target": "environmentmode",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9556,7 +9529,7 @@
     },
     {
       "source": "src_network_manager_networkmanager_fetchcompositestatus",
-      "target": "src_network_manager_cpp_dashboardstatus",
+      "target": "dashboardstatus",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9995,6 +9968,17 @@
       "confidence_score": 1.0,
       "source_file": ".agents/rules/graphify.md",
       "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_scratch_tts_test",
+      "target": "agents_scratch_tts_test_sanitize_for_tts",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/scratch_tts_test.py",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -11336,7 +11320,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L1038",
+      "source_location": "L1051",
       "weight": 1.0
     },
     {
@@ -11347,7 +11331,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L156",
+      "source_location": "L158",
       "weight": 1.0
     },
     {
@@ -11358,7 +11342,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L170",
+      "source_location": "L172",
       "weight": 1.0
     },
     {
@@ -11369,7 +11353,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L186",
+      "source_location": "L188",
       "weight": 1.0
     },
     {
@@ -11380,7 +11364,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L208",
+      "source_location": "L210",
       "weight": 1.0
     },
     {
@@ -11391,7 +11375,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L252",
+      "source_location": "L254",
       "weight": 1.0
     },
     {
@@ -11402,7 +11386,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L276",
+      "source_location": "L289",
       "weight": 1.0
     },
     {
@@ -11413,7 +11397,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L314",
+      "source_location": "L327",
       "weight": 1.0
     },
     {
@@ -11424,7 +11408,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L327",
+      "source_location": "L340",
       "weight": 1.0
     },
     {
@@ -11435,7 +11419,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L350",
+      "source_location": "L363",
       "weight": 1.0
     },
     {
@@ -11446,7 +11430,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L372",
+      "source_location": "L385",
       "weight": 1.0
     },
     {
@@ -11457,7 +11441,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L377",
+      "source_location": "L390",
       "weight": 1.0
     },
     {
@@ -11468,7 +11452,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L421",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -11479,7 +11463,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L467",
+      "source_location": "L480",
       "weight": 1.0
     },
     {
@@ -11490,7 +11474,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L534",
+      "source_location": "L547",
       "weight": 1.0
     },
     {
@@ -11501,7 +11485,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L588",
+      "source_location": "L601",
       "weight": 1.0
     },
     {
@@ -11512,7 +11496,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L633",
+      "source_location": "L646",
       "weight": 1.0
     },
     {
@@ -11523,7 +11507,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L674",
+      "source_location": "L687",
       "weight": 1.0
     },
     {
@@ -11534,7 +11518,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L732",
+      "source_location": "L745",
       "weight": 1.0
     },
     {
@@ -12568,7 +12552,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L732",
+      "source_location": "L745",
       "weight": 1.0
     },
     {
@@ -12579,7 +12563,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L733",
+      "source_location": "L746",
       "weight": 1.0
     },
     {
@@ -12590,7 +12574,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L743",
+      "source_location": "L756",
       "weight": 1.0
     },
     {
@@ -12601,7 +12585,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L754",
+      "source_location": "L767",
       "weight": 1.0
     },
     {
@@ -12612,7 +12596,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L822",
+      "source_location": "L835",
       "weight": 1.0
     },
     {
@@ -12759,146 +12743,146 @@
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_157",
+      "source": "server_hermes_voice_receiver_rationale_159",
       "target": "server_hermes_voice_receiver_sanitize_for_display",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L157",
+      "source_location": "L159",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_209",
+      "source": "server_hermes_voice_receiver_rationale_211",
       "target": "server_hermes_voice_receiver_convert_24k_mono_to_16k_stereo_wav",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L209",
+      "source_location": "L211",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_253",
+      "source": "server_hermes_voice_receiver_rationale_255",
       "target": "server_hermes_voice_receiver_sanitize_for_tts",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L253",
+      "source_location": "L255",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_277",
+      "source": "server_hermes_voice_receiver_rationale_290",
       "target": "server_hermes_voice_receiver_synthesize_speech_voicebox",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L277",
+      "source_location": "L290",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_351",
+      "source": "server_hermes_voice_receiver_rationale_364",
       "target": "server_hermes_voice_receiver_dispatch_telegram_mirror",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L351",
+      "source_location": "L364",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_378",
+      "source": "server_hermes_voice_receiver_rationale_391",
       "target": "server_hermes_voice_receiver_load_voice_session",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L378",
+      "source_location": "L391",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_422",
+      "source": "server_hermes_voice_receiver_rationale_435",
       "target": "server_hermes_voice_receiver_ask_hermes_gateway",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L422",
+      "source_location": "L435",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_468",
+      "source": "server_hermes_voice_receiver_rationale_481",
       "target": "server_hermes_voice_receiver_query_ollama_fallback",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L468",
+      "source_location": "L481",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_535",
+      "source": "server_hermes_voice_receiver_rationale_548",
       "target": "server_hermes_voice_receiver_probe_hermes_health",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L535",
+      "source_location": "L548",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_589",
+      "source": "server_hermes_voice_receiver_rationale_602",
       "target": "server_hermes_voice_receiver_warmup_ollama_model",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L589",
+      "source_location": "L602",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_634",
+      "source": "server_hermes_voice_receiver_rationale_647",
       "target": "server_hermes_voice_receiver_probe_ollama_health",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L634",
+      "source_location": "L647",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_675",
+      "source": "server_hermes_voice_receiver_rationale_688",
       "target": "server_hermes_voice_receiver_get_composite_status",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L675",
+      "source_location": "L688",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_734",
+      "source": "server_hermes_voice_receiver_rationale_747",
       "target": "server_hermes_voice_receiver_voicerequesthandler_check_auth",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L734",
+      "source_location": "L747",
       "weight": 1.0
     },
     {
@@ -12921,7 +12905,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L362",
+      "source_location": "L375",
       "weight": 1.0
     },
     {
@@ -12933,7 +12917,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L1043",
+      "source_location": "L1056",
       "weight": 1.0
     },
     {
@@ -13406,5 +13390,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "37411d0182ad917a8eb57d0b760c84ea99db25b2"
+  "built_at_commit": "ec10f93395cc4a89a2be8897878237db5b7eaa91"
 }
