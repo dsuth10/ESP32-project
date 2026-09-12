@@ -293,3 +293,192 @@ void AudioRecorder::writeWavHeader(size_t pcmBytes) {
     h[42] = (uint8_t)((pcmBytes >> 16) & 0xFF);
     h[43] = (uint8_t)((pcmBytes >> 24) & 0xFF);
 }
+
+void AudioRecorder::playTone(float freqHz, uint32_t durationMs, float volume) {
+    if (freqHz <= 0.0f || durationMs == 0) return;
+    if (volume < 0.0f) volume = 0.0f;
+    if (volume > 1.0f) volume = 1.0f;
+
+    Serial.printf("[Audio] Playing %.1f Hz tone for %u ms (vol=%.2f)...\n", freqHz, (unsigned int)durationMs, volume);
+
+    // 1. Enable FM8002 Power Amplifier (Active-LOW on GPIO 1)
+    pinMode(PIN_PA_ENABLE, OUTPUT);
+    digitalWrite(PIN_PA_ENABLE, LOW);
+    delay(25); // Pop-suppression: allow FM8002 bypass reference cap to stabilize
+
+    const size_t sampleRate = AUDIO_SAMPLE_RATE;
+    const size_t totalSamples = (sampleRate * durationMs) / 1000;
+    const size_t rampSamples = min((size_t)(sampleRate * 0.005f), totalSamples / 4); // 5ms fade envelope
+    const float maxAmp = 32767.0f * volume;
+    const float phaseInc = 2.0f * (float)M_PI * freqHz / (float)sampleRate;
+
+    const size_t CHUNK_FRAMES = 128;
+    int16_t chunk[CHUNK_FRAMES * 2]; // 16-bit stereo (L + R)
+
+    float phase = 0.0f;
+    size_t samplesSent = 0;
+
+    while (samplesSent < totalSamples) {
+        size_t framesToGenerate = min(CHUNK_FRAMES, totalSamples - samplesSent);
+        for (size_t i = 0; i < framesToGenerate; i++) {
+            size_t sampleIdx = samplesSent + i;
+            float envelope = 1.0f;
+            if (rampSamples > 0) {
+                if (sampleIdx < rampSamples) {
+                    envelope = (float)sampleIdx / (float)rampSamples;
+                } else if (sampleIdx > (totalSamples - rampSamples)) {
+                    envelope = (float)(totalSamples - sampleIdx) / (float)rampSamples;
+                }
+            }
+
+            int16_t sampleVal = (int16_t)(sinf(phase) * maxAmp * envelope);
+            chunk[i * 2]     = sampleVal; // Left channel (DAC)
+            chunk[i * 2 + 1] = sampleVal; // Right channel (DAC)
+
+            phase += phaseInc;
+            if (phase >= 2.0f * (float)M_PI) {
+                phase -= 2.0f * (float)M_PI;
+            }
+        }
+
+        size_t bytesWritten = 0;
+        i2s_write(I2S_PORT, chunk, framesToGenerate * 2 * sizeof(int16_t), &bytesWritten, portMAX_DELAY);
+        samplesSent += framesToGenerate;
+    }
+
+    // Flush zeros to cleanly clear I2S DMA pipeline
+    memset(chunk, 0, sizeof(chunk));
+    size_t bw = 0;
+    i2s_write(I2S_PORT, chunk, sizeof(chunk), &bw, portMAX_DELAY);
+    delay(20);
+
+    // 2. Shut down FM8002 PA (Active-LOW, pull HIGH to mute and reduce current)
+    digitalWrite(PIN_PA_ENABLE, HIGH);
+    Serial.println("[Audio] Tone complete (amplifier muted).");
+}
+
+void AudioRecorder::playChime() {
+    Serial.println("[Audio] >>> Playing Speaker Test Chime (C5-E5-G5-C6) <<<");
+
+    // Enable amplifier for the entire sequence to prevent click artifacts between notes
+    pinMode(PIN_PA_ENABLE, OUTPUT);
+    digitalWrite(PIN_PA_ENABLE, LOW);
+    delay(30);
+
+    const float notes[] = { 523.25f, 659.25f, 783.99f, 1046.50f }; // C5, E5, G5, C6
+    const uint32_t noteDurationMs = 120;
+    const float volume = 0.35f;
+    const size_t sampleRate = AUDIO_SAMPLE_RATE;
+    const float maxAmp = 32767.0f * volume;
+
+    const size_t CHUNK_FRAMES = 128;
+    int16_t chunk[CHUNK_FRAMES * 2];
+
+    for (size_t n = 0; n < sizeof(notes)/sizeof(notes[0]); n++) {
+        float freqHz = notes[n];
+        float phaseInc = 2.0f * (float)M_PI * freqHz / (float)sampleRate;
+        float phase = 0.0f;
+        size_t totalSamples = (sampleRate * noteDurationMs) / 1000;
+        size_t rampSamples = (size_t)(sampleRate * 0.008f); // 8ms envelope
+        size_t samplesSent = 0;
+
+        while (samplesSent < totalSamples) {
+            size_t frames = min(CHUNK_FRAMES, totalSamples - samplesSent);
+            for (size_t i = 0; i < frames; i++) {
+                size_t idx = samplesSent + i;
+                float env = 1.0f;
+                if (idx < rampSamples) {
+                    env = (float)idx / (float)rampSamples;
+                } else if (idx > (totalSamples - rampSamples)) {
+                    env = (float)(totalSamples - idx) / (float)rampSamples;
+                }
+                int16_t val = (int16_t)(sinf(phase) * maxAmp * env);
+                chunk[i * 2]     = val;
+                chunk[i * 2 + 1] = val;
+
+                phase += phaseInc;
+                if (phase >= 2.0f * (float)M_PI) phase -= 2.0f * (float)M_PI;
+            }
+
+            size_t bw = 0;
+            i2s_write(I2S_PORT, chunk, frames * 2 * sizeof(int16_t), &bw, portMAX_DELAY);
+            samplesSent += frames;
+        }
+
+        // Slight 15ms gap between notes
+        memset(chunk, 0, sizeof(chunk));
+        size_t gapSamples = (sampleRate * 15) / 1000;
+        size_t bw = 0;
+        i2s_write(I2S_PORT, chunk, min(gapSamples, CHUNK_FRAMES) * 2 * sizeof(int16_t), &bw, portMAX_DELAY);
+    }
+
+    // Clear DMA tail
+    memset(chunk, 0, sizeof(chunk));
+    size_t bw = 0;
+    i2s_write(I2S_PORT, chunk, sizeof(chunk), &bw, portMAX_DELAY);
+    delay(20);
+
+    // Mute FM8002 PA
+    digitalWrite(PIN_PA_ENABLE, HIGH);
+    Serial.println("[Audio] Speaker test chime finished.");
+}
+
+bool AudioRecorder::playAudioStream(Stream& stream, size_t totalBytes, std::function<bool()> shouldAbort) {
+    Serial.println("[Audio] >>> Starting Voice Stream Playback >>>");
+
+    // 1. Enable FM8002 Power Amplifier (Active-LOW on GPIO 1)
+    pinMode(PIN_PA_ENABLE, OUTPUT);
+    digitalWrite(PIN_PA_ENABLE, LOW);
+    delay(30); // Pop-suppression: allow FM8002 bypass reference cap to stabilize
+
+    // 2. Inspect & skip 44-byte WAV header if stream starts with 'RIFF'
+    uint8_t header[44];
+    size_t headerRead = stream.readBytes((char*)header, 44);
+    if (headerRead == 44 && memcmp(header, "RIFF", 4) != 0) {
+        // Not a standard RIFF header, write bytes directly to I2S
+        size_t bw = 0;
+        i2s_write(I2S_PORT, header, 44, &bw, portMAX_DELAY);
+    }
+
+    const size_t CHUNK_SIZE = 1024;
+    uint8_t buf[CHUNK_SIZE];
+    uint32_t lastDataTime = millis();
+    size_t totalBytesPlayed = 0;
+    bool aborted = false;
+
+    while (stream.available() > 0 || (millis() - lastDataTime < 1500)) {
+        if (shouldAbort && shouldAbort()) {
+            Serial.println("[Audio] Playback interrupted by user tap.");
+            aborted = true;
+            break;
+        }
+
+        size_t avail = stream.available();
+        if (avail > 0) {
+            size_t toRead = min(avail, CHUNK_SIZE);
+            size_t bytesRead = stream.readBytes((char*)buf, toRead);
+            if (bytesRead > 0) {
+                size_t bw = 0;
+                i2s_write(I2S_PORT, buf, bytesRead, &bw, portMAX_DELAY);
+                totalBytesPlayed += bytesRead;
+                lastDataTime = millis();
+            }
+        } else {
+            delay(5);
+        }
+    }
+
+    // 3. Clear DMA pipeline with zeros
+    memset(buf, 0, sizeof(buf));
+    size_t bw = 0;
+    i2s_write(I2S_PORT, buf, min((size_t)512, CHUNK_SIZE), &bw, portMAX_DELAY);
+    delay(25);
+
+    // 4. Mute FM8002 PA (Active-LOW, pull HIGH)
+    digitalWrite(PIN_PA_ENABLE, HIGH);
+    Serial.printf("[Audio] Playback finished (%u bytes streamed, aborted=%s)\n", 
+                  (unsigned int)totalBytesPlayed, aborted ? "true" : "false");
+    return !aborted;
+}
+
+

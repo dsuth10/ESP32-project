@@ -4,7 +4,7 @@
   "2": "EnvironmentManager",
   "3": "AudioRecorder",
   "4": "NetworkManager",
-  "5": "main.cpp",
+  "5": "ChannelStats",
   "6": "es8311_bsp.c",
   "7": "es8311.cpp",
   "8": "_coeff_div",
@@ -26,5 +26,6 @@
   "24": "Workflow: /graph-query",
   "25": "Workflow: /graph-update",
   "26": "Workflow: /graph-visualize",
-  "27": "graph.ps1"
+  "27": "graph.ps1",
+  "28": "scratch_tts_test.py"
 }

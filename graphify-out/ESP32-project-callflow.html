@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>ESP32 project — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 395 nodes, 626 edges, 28 communities. Commit: 5486fd2</p>
+<p class="subtitle">Generated from graphify knowledge graph: 412 nodes, 656 edges, 29 communities. Commit: 37411d0</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -72,8 +72,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#security-global">Security &amp; Global Graph</a>
     <a href="#tests-fixtures">Tests &amp; Fixtures</a>
     <a href="#macropadgui">MacroPadGUI</a>
-    <a href="#environmentmanager">EnvironmentManager</a>
     <a href="#networkmanager">NetworkManager</a>
+    <a href="#environmentmanager">EnvironmentManager</a>
     <a href="#coeff-div">_coeff_div</a>
     <a href="#esp32-portable-macropad-hermes-satellite-core-en">ESP32 Portable MacroPad &amp; Hermes Satellite: Core Engineering Rules</a>
     <a href="#create-enclosure">create_enclosure</a>
@@ -90,24 +90,24 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 flowchart LR
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>10 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>37 nodes</small>")
+    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>45 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
-    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>29 nodes</small>")
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>8 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>44 nodes</small>")
+    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>58 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
     SERVE_API_35EC8E86("Serving API<br/><small>51 nodes</small>")
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>37 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>37 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>39 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
-    MACROPADGUI_41F3827F("MacroPadGUI<br/><small>41 nodes</small>")
+    MACROPADGUI_41F3827F("MacroPadGUI<br/><small>52 nodes</small>")
     class MACROPADGUI_41F3827F module;
+    NETWORKMANAGER_DDEB3002("NetworkManager<br/><small>32 nodes</small>")
+    class NETWORKMANAGER_DDEB3002 module;
     ENVIRONMENTMANAGER_5897C7D1("EnvironmentManager<br/><small>31 nodes</small>")
     class ENVIRONMENTMANAGER_5897C7D1 module;
-    NETWORKMANAGER_DDEB3002("NetworkManager<br/><small>29 nodes</small>")
-    class NETWORKMANAGER_DDEB3002 module;
     COEFF_DIV_FE703E77("_coeff_div<br/><small>13 nodes</small>")
     class COEFF_DIV_FE703E77 module;
     ESP32_PORTABLE_MACROPAD_HERMES_SATELLITE_CORE_EN_C073BDF9("ESP32 Portable MacroPad &amp; Hermes Satellite: Core Engineering Rules<br/><small>12 nodes</small>")
@@ -118,16 +118,18 @@ flowchart LR
     class FLASH_PY_CE123BA8 module;
     OTHER_D0941E68("Other<br/><small>13 nodes</small>")
     class OTHER_D0941E68 module;
-    MACROPADGUI_41F3827F -->|references x8| CLI_SKILLS_9964CBB8
-    CLI_SKILLS_9964CBB8 -->|imports x3| ENVIRONMENTMANAGER_5897C7D1
     INGEST_CACHE_UPDATE_FF457338 -->|calls x2| SERVE_API_35EC8E86
-    SERVE_API_35EC8E86 -->|imports x2| CLI_SKILLS_9964CBB8
-    NETWORKMANAGER_DDEB3002 -->|imports| CLI_SKILLS_9964CBB8
-    CLI_SKILLS_9964CBB8 -->|contains| MACROPADGUI_41F3827F
-    CLI_SKILLS_9964CBB8 -->|imports| INGEST_CACHE_UPDATE_FF457338
-    CLI_SKILLS_9964CBB8 -->|contains| NETWORKMANAGER_DDEB3002
+    INGEST_CACHE_UPDATE_FF457338 -->|imports x2| MACROPADGUI_41F3827F
+    SERVE_API_35EC8E86 -->|imports x2| MACROPADGUI_41F3827F
+    MACROPADGUI_41F3827F -->|imports| NETWORKMANAGER_DDEB3002
+    MACROPADGUI_41F3827F -->|imports| INGEST_CACHE_UPDATE_FF457338
+    MACROPADGUI_41F3827F -->|imports| ENVIRONMENTMANAGER_5897C7D1
+    NETWORKMANAGER_DDEB3002 -->|imports| INGEST_CACHE_UPDATE_FF457338
+    NETWORKMANAGER_DDEB3002 -->|imports| ENVIRONMENTMANAGER_5897C7D1
+    NETWORKMANAGER_DDEB3002 -->|imports| MACROPADGUI_41F3827F
+    INGEST_CACHE_UPDATE_FF457338 -->|imports| NETWORKMANAGER_DDEB3002
+    INGEST_CACHE_UPDATE_FF457338 -->|imports| ENVIRONMENTMANAGER_5897C7D1
     SERVE_API_35EC8E86 -->|imports| INGEST_CACHE_UPDATE_FF457338
-    SERVE_API_35EC8E86 -->|contains| COEFF_DIV_FE703E77
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -144,24 +146,24 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Graph Build</td><td>10</td><td><code>24, 25, 26, 27</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>37</td><td><code>1, 10</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>29</td><td><code>5, 23</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>44</td><td><code>3</code></td></tr><tr><td>Serving API</td><td>51</td><td><code>6, 7</code></td></tr><tr><td>Security &amp; Global Graph</td><td>37</td><td><code>16</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>37</td><td><code>15</code></td></tr><tr><td>MacroPadGUI</td><td>41</td><td><code>0</code></td></tr><tr><td>EnvironmentManager</td><td>31</td><td><code>2</code></td></tr><tr><td>NetworkManager</td><td>29</td><td><code>4</code></td></tr><tr><td>_coeff_div</td><td>13</td><td><code>8</code></td></tr><tr><td>ESP32 Portable MacroPad &amp; Hermes Satellite: Core Engineering Rules</td><td>12</td><td><code>17</code></td></tr><tr><td>create_enclosure</td><td>8</td><td><code>9</code></td></tr><tr><td>flash.py</td><td>3</td><td><code>11</code></td></tr><tr><td>Other</td><td>13</td><td><code>12, 13, 20, 21, 22, 14, 18, 19</code></td></tr>
+      <tr><td>Graph Build</td><td>10</td><td><code>24, 25, 26, 27</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>45</td><td><code>1, 10</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>8</td><td><code>23</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>58</td><td><code>3, 5</code></td></tr><tr><td>Serving API</td><td>51</td><td><code>6, 7</code></td></tr><tr><td>Security &amp; Global Graph</td><td>37</td><td><code>16</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>39</td><td><code>15, 28</code></td></tr><tr><td>MacroPadGUI</td><td>52</td><td><code>0</code></td></tr><tr><td>NetworkManager</td><td>32</td><td><code>4</code></td></tr><tr><td>EnvironmentManager</td><td>31</td><td><code>2</code></td></tr><tr><td>_coeff_div</td><td>13</td><td><code>8</code></td></tr><tr><td>ESP32 Portable MacroPad &amp; Hermes Satellite: Core Engineering Rules</td><td>12</td><td><code>17</code></td></tr><tr><td>create_enclosure</td><td>8</td><td><code>9</code></td></tr><tr><td>flash.py</td><td>3</td><td><code>11</code></td></tr><tr><td>Other</td><td>13</td><td><code>12, 13, 20, 21, 22, 14, 18, 19</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Graph Build -&gt; Analysis &amp; Clustering -&gt; CLI &amp; Skill Installers -&gt; EnvironmentManager -&gt; Ingestion &amp; Updates -&gt; Serving API -&gt; _coeff_div</div>
+    <div class="arrow-chain">Graph Build -&gt; Analysis &amp; Clustering -&gt; CLI &amp; Skill Installers -&gt; Ingestion &amp; Updates -&gt; Serving API -&gt; MacroPadGUI -&gt; NetworkManager</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>395 nodes · 626 edges · 28 communities (14 shown, 9 thin omitted)</li>
-      <li>Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 40 edges (avg confidence: 0.85)</li>
+      <li>412 nodes · 656 edges · 29 communities (14 shown, 9 thin omitted)</li>
+      <li>Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 41 edges (avg confidence: 0.85)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `MacroPadGUI` - 35 edges</li>
-      <li>2. `AudioRecorder` - 28 edges</li>
-      <li>3. `NetworkManager` - 20 edges</li>
+      <li>2. `AudioRecorder` - 31 edges</li>
+      <li>3. `NetworkManager` - 21 edges</li>
     </ul>
   </div>
 </div>
@@ -329,30 +331,30 @@ flowchart LR
 
 <!-- ====== 3. Analysis & Clustering ====== -->
 <h2 id="analysis-clustering">3. Analysis &amp; Clustering</h2>
-<p>Analysis &amp; Clustering groups implementation around hermes, voice, server, receiverpy, mostly in server/hermes_voice_receiver.py, server/benchmark_hermes_standalone.py. This section covers 37 nodes and 54 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Analysis &amp; Clustering groups implementation around hermes, voice, server, receiverpy, mostly in server/hermes_voice_receiver.py, server/benchmark_hermes_standalone.py. This section covers 45 nodes and 68 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Analysis &amp; Clustering (37 nodes, 54 edges)
+    %% Section: Analysis &amp; Clustering (45 nodes, 68 edges)
     subgraph analysis_clustering_server_hermes_voice_receiver_3e56d821["server/hermes_voice_receiver.py"]
         server_hermes_voice_receiver_voicerequesthandler_ea10de55("do_POST()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_voicerequesthandler_67d41eb1("VoiceRequestHandler<br/><small>server/hermes_voice_receiver.py</small>")
-        server_hermes_voice_receiver_voicerequesthandler_b76eb503("do_GET()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_get_composite_statu_550ed9b9("get_composite_status()<br/><small>server/hermes_voice_receiver.py</small>")
-        server_hermes_voice_receiver_dispatch_telegram_m_350a13ea("_async_send()<br/><small>server/hermes_voice_receiver.py</small>")
+        server_hermes_voice_receiver_synthesize_speech_v_2fcd1fcc("synthesize_speech_voicebox()<br/><small>server/hermes_voice_receiver.py</small>")
+        server_hermes_voice_receiver_voicerequesthandler_b76eb503("do_GET()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_voicerequesthandler_be845a79("check_auth()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_voicerequesthandler_d68db465("send_unauthorized()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_ask_hermes_gateway_25949aca("ask_hermes_gateway()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_load_voice_session_ef7e17a3("load_voice_session()<br/><small>server/hermes_voice_receiver.py</small>")
+        server_hermes_voice_receiver_dispatch_telegram_m_350a13ea("_async_send()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_send_telegram_messa_aec6de54("send_telegram_message()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_probe_hermes_health_9deb93ca("probe_hermes_health()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_probe_ollama_health_febaa9ff("probe_ollama_health()<br/><small>server/hermes_voice_receiver.py</small>")
+        server_hermes_voice_receiver_check_voicebox_onli_0a836d0a("check_voicebox_online()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_hermes_sessions_hea_825835cd("_hermes_sessions_headers()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_main_a2dbaf08("main()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_get_whisper_model_5c88ee61("get_whisper_model()<br/><small>server/hermes_voice_receiver.py</small>")
-        server_hermes_voice_receiver_query_ollama_fallba_dbafdd02("query_ollama_fallback()<br/><small>server/hermes_voice_receiver.py</small>")
-        server_hermes_voice_receiver_sanitize_for_displa_b7b3b8ca("sanitize_for_display()<br/><small>server/hermes_voice_receiver.py</small>")
     end
     server_benchmark_hermes_standalone_main_eb4052a5("main()<br/><small>server/benchmark_hermes_standalone.py</small>")
     server_hermes_voice_receiver_voicerequesthandler_67d41eb1 -->|method| server_hermes_voice_receiver_voicerequesthandler_be845a79
@@ -363,6 +365,7 @@ flowchart LR
     server_hermes_voice_receiver_dispatch_telegram_m_350a13ea -->|calls| server_hermes_voice_receiver_send_telegram_messa_aec6de54
     server_hermes_voice_receiver_get_composite_statu_550ed9b9 -->|calls| server_hermes_voice_receiver_probe_hermes_health_9deb93ca
     server_hermes_voice_receiver_get_composite_statu_550ed9b9 -->|calls| server_hermes_voice_receiver_probe_ollama_health_febaa9ff
+    server_hermes_voice_receiver_get_composite_statu_550ed9b9 -->|calls| server_hermes_voice_receiver_check_voicebox_onli_0a836d0a
     server_hermes_voice_receiver_load_voice_session_ef7e17a3 -->|calls| server_hermes_voice_receiver_hermes_sessions_hea_825835cd
     server_hermes_voice_receiver_main_a2dbaf08 -->|calls| server_hermes_voice_receiver_get_whisper_model_5c88ee61
     server_hermes_voice_receiver_voicerequesthandler_b76eb503 -->|calls| server_hermes_voice_receiver_voicerequesthandler_be845a79
@@ -372,26 +375,26 @@ flowchart LR
     server_hermes_voice_receiver_voicerequesthandler_ea10de55 -->|calls| server_hermes_voice_receiver_voicerequesthandler_d68db465
     server_hermes_voice_receiver_voicerequesthandler_ea10de55 -->|calls| server_hermes_voice_receiver_get_whisper_model_5c88ee61
     server_hermes_voice_receiver_voicerequesthandler_ea10de55 -->|calls| server_hermes_voice_receiver_ask_hermes_gateway_25949aca
-    server_hermes_voice_receiver_voicerequesthandler_ea10de55 -->|calls| server_hermes_voice_receiver_query_ollama_fallba_dbafdd02
-    server_hermes_voice_receiver_voicerequesthandler_ea10de55 -->|calls| server_hermes_voice_receiver_sanitize_for_displa_b7b3b8ca
-    %% Omitted for readability: 19 nodes, 0 edges
+    server_hermes_voice_receiver_voicerequesthandler_ea10de55 -->|calls| server_hermes_voice_receiver_check_voicebox_onli_0a836d0a
+    server_hermes_voice_receiver_voicerequesthandler_ea10de55 -->|calls| server_hermes_voice_receiver_synthesize_speech_v_2fcd1fcc
+    %% Omitted for readability: 27 nodes, 0 edges
     class server_hermes_voice_receiver_voicerequesthandler_ea10de55 function;
     class server_hermes_voice_receiver_voicerequesthandler_67d41eb1 klass;
-    class server_hermes_voice_receiver_voicerequesthandler_b76eb503 function;
     class server_hermes_voice_receiver_get_composite_statu_550ed9b9 function;
-    class server_hermes_voice_receiver_dispatch_telegram_m_350a13ea async;
+    class server_hermes_voice_receiver_synthesize_speech_v_2fcd1fcc function;
+    class server_hermes_voice_receiver_voicerequesthandler_b76eb503 function;
     class server_hermes_voice_receiver_voicerequesthandler_be845a79 function;
     class server_hermes_voice_receiver_voicerequesthandler_d68db465 function;
     class server_hermes_voice_receiver_ask_hermes_gateway_25949aca function;
     class server_hermes_voice_receiver_load_voice_session_ef7e17a3 function;
+    class server_hermes_voice_receiver_dispatch_telegram_m_350a13ea async;
     class server_hermes_voice_receiver_send_telegram_messa_aec6de54 function;
     class server_hermes_voice_receiver_probe_hermes_health_9deb93ca function;
     class server_hermes_voice_receiver_probe_ollama_health_febaa9ff function;
+    class server_hermes_voice_receiver_check_voicebox_onli_0a836d0a function;
     class server_hermes_voice_receiver_hermes_sessions_hea_825835cd function;
     class server_hermes_voice_receiver_main_a2dbaf08 function;
     class server_hermes_voice_receiver_get_whisper_model_5c88ee61 function;
-    class server_hermes_voice_receiver_query_ollama_fallba_dbafdd02 function;
-    class server_hermes_voice_receiver_sanitize_for_displa_b7b3b8ca function;
     class server_benchmark_hermes_standalone_main_eb4052a5 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -432,6 +435,22 @@ flowchart LR
 </tr>
 <tr>
   <td>3</td>
+  <td><code>check_voicebox_online()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>do_POST()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>get_composite_status()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>check_voicebox_online() node in server/hermes_voice_receiver.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>convert_24k_mono_to_16k_stereo_wav()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>synthesize_speech_voicebox()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>convert_24k_mono_to_16k_stereo_wav() node in server/hermes_voice_receiver.py.</td>
+</tr>
+<tr>
+  <td>5</td>
   <td><code>dispatch_telegram_mirror()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>do_POST()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -439,7 +458,7 @@ flowchart LR
   <td>dispatch_telegram_mirror() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>6</td>
   <td><code>_async_send()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-async">Async</span></td>
   <td><code>dispatch_telegram_mirror()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -447,15 +466,15 @@ flowchart LR
   <td>_async_send() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>5</td>
+  <td>7</td>
   <td><code>get_composite_status()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>do_GET()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
-  <td><code>probe_hermes_health()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>probe_ollama_health()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td><code>check_voicebox_online()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>probe_hermes_health()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>probe_ollama_health()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td>get_composite_status() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>8</td>
   <td><code>get_whisper_model()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>do_POST()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>main()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -463,7 +482,7 @@ flowchart LR
   <td>get_whisper_model() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>9</td>
   <td><code>_hermes_sessions_headers()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>load_voice_session()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -471,7 +490,7 @@ flowchart LR
   <td>_hermes_sessions_headers() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>10</td>
   <td><code>load_voice_session()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>ask_hermes_gateway()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -479,7 +498,7 @@ flowchart LR
   <td>load_voice_session() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>11</td>
   <td><code>main()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -487,7 +506,7 @@ flowchart LR
   <td>main() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>12</td>
   <td><code>probe_hermes_health()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>get_composite_status()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -495,7 +514,7 @@ flowchart LR
   <td>probe_hermes_health() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>13</td>
   <td><code>probe_ollama_health()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>get_composite_status()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -503,7 +522,7 @@ flowchart LR
   <td>probe_ollama_health() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>14</td>
   <td><code>query_ollama_fallback()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>do_POST()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -511,7 +530,15 @@ flowchart LR
   <td>query_ollama_fallback() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>15</td>
+  <td><code>resolve_voicebox_profile_id()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>synthesize_speech_voicebox()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>resolve_voicebox_profile_id() node in server/hermes_voice_receiver.py.</td>
+</tr>
+<tr>
+  <td>16</td>
   <td><code>sanitize_for_display()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>do_POST()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -519,7 +546,15 @@ flowchart LR
   <td>sanitize_for_display() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>17</td>
+  <td><code>sanitize_for_tts()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>synthesize_speech_voicebox()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>sanitize_for_tts() node in server/hermes_voice_receiver.py.</td>
+</tr>
+<tr>
+  <td>18</td>
   <td><code>send_telegram_message()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_async_send()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -527,7 +562,15 @@ flowchart LR
   <td>send_telegram_message() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>19</td>
+  <td><code>synthesize_speech_voicebox()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>do_POST()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td><code>16k stereo wav()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>sanitize_for_tts()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>voicebox profile id()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td>synthesize_speech_voicebox() node in server/hermes_voice_receiver.py.</td>
+</tr>
+<tr>
+  <td>20</td>
   <td><code>.check_auth()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>do_GET()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>do_POST()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>VoiceRequestHandler</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -535,7 +578,7 @@ flowchart LR
   <td>.check_auth() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>21</td>
   <td><code>.do_GET()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>VoiceRequestHandler</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -543,15 +586,15 @@ flowchart LR
   <td>.do_GET() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>22</td>
   <td><code>.do_POST()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>VoiceRequestHandler</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
-  <td><code>ask_hermes_gateway()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>check_auth()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>dispatch_telegram_mirror()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br>+4 more</td>
+  <td><code>ask_hermes_gateway()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>check_auth()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>check_voicebox_online()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br>+6 more</td>
   <td>.do_POST() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>23</td>
   <td><code>.send_unauthorized()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>do_GET()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>do_POST()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small><br><code>VoiceRequestHandler</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -559,7 +602,7 @@ flowchart LR
   <td>.send_unauthorized() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>24</td>
   <td><code>warmup_ollama_model()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>main()</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
@@ -567,7 +610,7 @@ flowchart LR
   <td>warmup_ollama_model() node in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>25</td>
   <td><code>BaseHTTPRequestHandler</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -575,7 +618,7 @@ flowchart LR
   <td>BaseHTTPRequestHandler node in project.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>26</td>
   <td><code>hermes_voice_receiver.py</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td>External entry / no inbound edge</td>
@@ -583,7 +626,7 @@ flowchart LR
   <td>Module file in server/hermes_voice_receiver.py.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>27</td>
   <td><code>Hermes Voice Satellite Receiver Service (Concurrent Health Authority…</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -591,7 +634,7 @@ flowchart LR
   <td>Design note for Hermes Voice Satellite Receiver Service (Concurrent Health Authority….</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>28</td>
   <td><code>Strips markdown and unsupported characters for clean display on ST7789 TFT…</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -599,60 +642,20 @@ flowchart LR
   <td>Design note for Strips markdown and unsupported characters for clean display on ST7789 TFT….</td>
 </tr>
 <tr>
-  <td>24</td>
-  <td><code>Phase 19: Asynchronously mirrors voice conversation to Telegram without…</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Phase 19: Asynchronously mirrors voice conversation to Telegram without….</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>Return the durable voice session ID, creating the session if needed.</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Return the durable voice session ID, creating the session if needed..</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>Dispatches prompt to persistent Hermes Gateway via HTTP.</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Dispatches prompt to persistent Hermes Gateway via HTTP..</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>Diagnostic fallback querying local Ollama directly if Hermes Gateway is offline.</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Diagnostic fallback querying local Ollama directly if Hermes Gateway is offline..</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>Probes Hermes Gateway for liveness and detailed readiness.</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Probes Hermes Gateway for liveness and detailed readiness..</td>
-</tr>
-<tr>
   <td>29</td>
-  <td><code>Phase 17: Preload the active Ollama model into GPU VRAM to prevent first-query…</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td><code>Converts 24kHz mono 16-bit PCM WAV to 16kHz stereo 16-bit PCM WAV for ESP32 I2S.</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Design note for Phase 17: Preload the active Ollama model into GPU VRAM to prevent first-query….</td>
+  <td>Design note for Converts 24kHz mono 16-bit PCM WAV to 16kHz stereo 16-bit PCM WAV for ESP32 I2S..</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>Probes local Ollama for service reachability and model VRAM residency.</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
+  <td><code>Prepare text for TTS pronunciation and ensure optimal generation length.</code><br><small style="color:var(--muted)">server/hermes_voice_receiver.py</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Design note for Probes local Ollama for service reachability and model VRAM residency..</td>
+  <td>Design note for Prepare text for TTS pronunciation and ensure optimal generation length..</td>
 </tr>
 </table>
 
@@ -661,81 +664,48 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>server/hermes_voice_receiver.py</code></td><td>31 nodes</td></tr>
+      <tr><td><code>server/hermes_voice_receiver.py</code></td><td>39 nodes</td></tr>
 <tr><td><code>server/benchmark_hermes_standalone.py</code></td><td>5 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x18, contains x17, explains x12, method x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x24, contains x22, explains x15, method x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 4. CLI & Skill Installers ====== -->
 <h2 id="cli-skills">4. CLI &amp; Skill Installers</h2>
-<p>CLI &amp; Skill Installers groups implementation around skillmd, graphify, toolkit, guih, mostly in skills/graphify-toolkit/SKILL.md, src/gui.h, src/main.cpp. This section covers 29 nodes and 34 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>CLI &amp; Skill Installers groups implementation around skillmd, graphify, toolkit, agents, mostly in skills/graphify-toolkit/SKILL.md. This section covers 8 nodes and 7 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: CLI &amp; Skill Installers (29 nodes, 34 edges)
-    subgraph cli_skills_src_gui_h_fea5bf48["src/gui.h"]
-        src_gui_h_src_gui_a56c68cc("gui.h")
-        src_gui_chatline_54d81021("ChatLine<br/><small>src/gui.h</small>")
-        src_gui_chatmessage_ffe61fa7("ChatMessage<br/><small>src/gui.h</small>")
-        src_gui_chatline_color_cfb93085("color<br/><small>src/gui.h</small>")
-        src_gui_chatmessage_isuser_00028618("isUser<br/><small>src/gui.h</small>")
-    end
-    subgraph cli_skills_src_main_cpp_3614ce5c["src/main.cpp"]
-        src_main_3231ff52("main.cpp")
-        src_main_loop_b54b6114("loop()<br/><small>src/main.cpp</small>")
-        src_main_setup_d8061760("setup()<br/><small>src/main.cpp</small>")
-        src_main_setledcolor_32443aca("setLedColor()<br/><small>src/main.cpp</small>")
-        src_main_executemacro_3e61047d("executeMacro()<br/><small>src/main.cpp</small>")
-    end
-    subgraph cli_skills_External_generated_0c226fa1["External / generated"]
-        src_gui_h_tft_espi_a5e0095d("TFT_eSPI")
-        src_gui_h_vector_ccb54c95("vector")
-        macrobutton_0b223c61("MacroButton")
-        src_gui_h_string_f2f120a5("String")
-    end
-    src_macropad_config_cpp_src_macropad_config_64790c14("macropad_config.cpp")
-    src_macropad_config_h_src_macropad_config_1e1cd959("macropad_config.h")
-    src_network_manager_h_src_network_manager_f4b6ea17("network_manager.h")
-    src_system_status_a10ae04d("system_status.h")
-    src_main_loop_b54b6114 -->|calls| src_main_setledcolor_32443aca
-    src_main_loop_b54b6114 -->|calls| src_main_executemacro_3e61047d
-    src_main_setup_d8061760 -->|calls| src_main_setledcolor_32443aca
-    src_gui_h_src_gui_a56c68cc -->|imports| src_gui_h_tft_espi_a5e0095d
-    src_gui_h_src_gui_a56c68cc -->|imports| src_gui_h_vector_ccb54c95
-    src_gui_h_src_gui_a56c68cc -->|imports| src_macropad_config_h_src_macropad_config_1e1cd959
-    src_gui_h_src_gui_a56c68cc -->|imports| src_system_status_a10ae04d
-    src_macropad_config_cpp_src_macropad_config_64790c14 -->|imports| src_macropad_config_h_src_macropad_config_1e1cd959
-    src_main_3231ff52 -->|imports| src_network_manager_h_src_network_manager_f4b6ea17
-    src_main_3231ff52 -->|imports| src_gui_h_tft_espi_a5e0095d
-    src_main_3231ff52 -->|imports| src_macropad_config_h_src_macropad_config_1e1cd959
-    src_main_3231ff52 -->|imports| src_gui_h_src_gui_a56c68cc
-    src_network_manager_h_src_network_manager_f4b6ea17 -->|imports| src_system_status_a10ae04d
-    %% Omitted for readability: 11 nodes, 0 edges
-    class src_gui_h_src_gui_a56c68cc function;
-    class src_gui_chatline_54d81021 klass;
-    class src_gui_chatmessage_ffe61fa7 klass;
-    class src_gui_chatline_color_cfb93085 function;
-    class src_gui_chatmessage_isuser_00028618 function;
-    class src_main_3231ff52 function;
-    class src_main_loop_b54b6114 function;
-    class src_main_setup_d8061760 function;
-    class src_main_setledcolor_32443aca function;
-    class src_main_executemacro_3e61047d function;
-    class src_gui_h_tft_espi_a5e0095d klass;
-    class src_gui_h_vector_ccb54c95 function;
-    class macrobutton_0b223c61 klass;
-    class src_gui_h_string_f2f120a5 klass;
-    class src_macropad_config_cpp_src_macropad_config_64790c14 function;
-    class src_macropad_config_h_src_macropad_config_1e1cd959 function;
-    class src_network_manager_h_src_network_manager_f4b6ea17 function;
-    class src_system_status_a10ae04d function;
+    %% Section: CLI &amp; Skill Installers (8 nodes, 7 edges)
+    agents_skills_graphify_toolkit_skill_automated_b_f5cedca4("Automated Background Updating<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+    agents_skills_graphify_toolkit_skill_graphify_to_5fd80500("Graphify Toolkit &amp; Automation System<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+    agents_skills_graphify_toolkit_skill_22c1cad5("SKILL.md")
+    agents_skills_graphify_toolkit_skill_1_git_commi_fc12876c("1. Git Commit Hook (Zero-Touch)<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+    agents_skills_graphify_toolkit_skill_2_live_file_c34d10cf("2. Live File Watcher (Continuous Auto-U...<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+    agents_skills_graphify_toolkit_skill_3_antigravi_f8130f9c("3. Antigravity Agent Rule (Automated Tu...<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+    agents_skills_graphify_toolkit_skill_everyday_co_79ecdde6("Everyday Command Reference (.\graph.ps1)<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+    agents_skills_graphify_toolkit_skill_slash_comma_51bb2e3a("Slash Commands in Antigravity Chat<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+    agents_skills_graphify_toolkit_skill_22c1cad5 -->|contains| agents_skills_graphify_toolkit_skill_graphify_to_5fd80500
+    agents_skills_graphify_toolkit_skill_automated_b_f5cedca4 -->|contains| agents_skills_graphify_toolkit_skill_1_git_commi_fc12876c
+    agents_skills_graphify_toolkit_skill_automated_b_f5cedca4 -->|contains| agents_skills_graphify_toolkit_skill_2_live_file_c34d10cf
+    agents_skills_graphify_toolkit_skill_automated_b_f5cedca4 -->|contains| agents_skills_graphify_toolkit_skill_3_antigravi_f8130f9c
+    agents_skills_graphify_toolkit_skill_graphify_to_5fd80500 -->|contains| agents_skills_graphify_toolkit_skill_automated_b_f5cedca4
+    agents_skills_graphify_toolkit_skill_graphify_to_5fd80500 -->|contains| agents_skills_graphify_toolkit_skill_everyday_co_79ecdde6
+    agents_skills_graphify_toolkit_skill_graphify_to_5fd80500 -->|contains| agents_skills_graphify_toolkit_skill_slash_comma_51bb2e3a
+    class agents_skills_graphify_toolkit_skill_automated_b_f5cedca4 concept;
+    class agents_skills_graphify_toolkit_skill_graphify_to_5fd80500 concept;
+    class agents_skills_graphify_toolkit_skill_22c1cad5 concept;
+    class agents_skills_graphify_toolkit_skill_1_git_commi_fc12876c concept;
+    class agents_skills_graphify_toolkit_skill_2_live_file_c34d10cf concept;
+    class agents_skills_graphify_toolkit_skill_3_antigravi_f8130f9c concept;
+    class agents_skills_graphify_toolkit_skill_everyday_co_79ecdde6 concept;
+    class agents_skills_graphify_toolkit_skill_slash_comma_51bb2e3a concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -759,174 +729,6 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>ChatLine</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>ChatMessage</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>executeMacro()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td>No direct outbound edge</td>
-  <td>executeMacro() node in src/main.cpp.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>executeMacro()</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>setLedColor()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td>loop() node in src/main.cpp.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>setLedColor()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>setup()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td>No direct outbound edge</td>
-  <td>setLedColor() node in src/main.cpp.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>setup()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>setLedColor()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td>setup() node in src/main.cpp.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>telemetryWorkerTask()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>telemetryWorkerTask() node in src/main.cpp.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>MacroButton</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>MacroButton node in project.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>color</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>color node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>text</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>text node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>isUser</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>isUser node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>text</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>text node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>gui.cpp</code><br><small style="color:var(--muted)">src/gui.cpp</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td><code>environment_manager.h</code><br><small style="color:var(--muted)">src/environment_manager.h</small><br><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small><br><code>system_status.h</code><br><small style="color:var(--muted)">src/system_status.h</small><br>+2 more</td>
-  <td>gui.h node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>es8311.cpp</code><br><small style="color:var(--muted)">src/es8311.cpp</small><br><code>es8311_bsp.c</code><br><small style="color:var(--muted)">es8311_bsp.c</small></td>
-  <td>No direct outbound edge</td>
-  <td>String node in project.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>TFT_eSPI</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td>No direct outbound edge</td>
-  <td>TFT_eSPI node in project.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>vector</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>vector node in project.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>macropad_config.cpp</code><br><small style="color:var(--muted)">src/macropad_config.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small></td>
-  <td>Reads, resolves, or persists project configuration.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>macropad_config.cpp</code><br><small style="color:var(--muted)">src/macropad_config.cpp</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td>No direct outbound edge</td>
-  <td>Reads, resolves, or persists project configuration.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>audio_recorder.h</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br><code>environment_manager.h</code><br><small style="color:var(--muted)">src/environment_manager.h</small><br><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br>+3 more</td>
-  <td>main.cpp node in src/main.cpp.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>gui.cpp</code><br><small style="color:var(--muted)">src/gui.cpp</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>network_manager.cpp</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
-  <td><code>environment_manager.h</code><br><small style="color:var(--muted)">src/environment_manager.h</small><br><code>system_status.h</code><br><small style="color:var(--muted)">src/system_status.h</small></td>
-  <td>network_manager.h node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>system_status.h</code><br><small style="color:var(--muted)">src/system_status.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>system_status.h node in src/system_status.h.</td>
-</tr>
-<tr>
-  <td>22</td>
   <td><code>SKILL.md</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -934,7 +736,7 @@ flowchart LR
   <td>Documentation node describing SKILL.md.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>2</td>
   <td><code>1. Git Commit Hook (Zero-Touch)</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -942,7 +744,7 @@ flowchart LR
   <td>Documentation node describing 1. Git Commit Hook (Zero-Touch).</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>3</td>
   <td><code>2. Live File Watcher (Continuous Auto-Update on Save)</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -950,7 +752,7 @@ flowchart LR
   <td>Documentation node describing 2. Live File Watcher (Continuous Auto-Update on Save).</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>4</td>
   <td><code>3. Antigravity Agent Rule (Automated Turn-End Maintenance)</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -958,7 +760,7 @@ flowchart LR
   <td>Documentation node describing 3. Antigravity Agent Rule (Automated Turn-End Maintenance).</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>5</td>
   <td><code>Automated Background Updating</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -966,7 +768,7 @@ flowchart LR
   <td>Documentation node describing Automated Background Updating.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>6</td>
   <td><code>Everyday Command Reference (`.\graph.ps1`)</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -974,7 +776,7 @@ flowchart LR
   <td>Documentation node describing Everyday Command Reference (`.\graph.ps1`).</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>7</td>
   <td><code>Graphify Toolkit &amp; Automation System</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -982,7 +784,7 @@ flowchart LR
   <td>Documentation node describing Graphify Toolkit &amp; Automation System.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>8</td>
   <td><code>Slash Commands in Antigravity Chat</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -997,34 +799,27 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>skills/graphify-toolkit/SKILL.md</code></td><td>8 nodes</td></tr>
-<tr><td><code>src/gui.h</code></td><td>7 nodes</td></tr>
-<tr><td><code>src/main.cpp</code></td><td>6 nodes</td></tr>
-<tr><td><code>src/macropad_config.cpp</code></td><td>1 nodes</td></tr>
-<tr><td><code>src/macropad_config.h</code></td><td>1 nodes</td></tr>
-<tr><td><code>src/network_manager.h</code></td><td>1 nodes</td></tr>
-<tr><td><code>src/system_status.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x14, imports x10, defines x4, references x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x7. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 5. Ingestion & Updates ====== -->
 <h2 id="ingest-cache-update">5. Ingestion &amp; Updates</h2>
-<p>Ingestion &amp; Updates groups implementation around audio, recorderh, recordercpp, es8311h, mostly in src/audio_recorder.h, src/audio_recorder.cpp, src/es8311.h. This section covers 44 nodes and 52 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Ingestion &amp; Updates groups implementation around audio, recorderh, maincpp, macropad, mostly in src/audio_recorder.h, src/main.cpp, src/audio_recorder.cpp. This section covers 58 nodes and 72 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Ingestion &amp; Updates (44 nodes, 52 edges)
+    %% Section: Ingestion &amp; Updates (58 nodes, 72 edges)
     subgraph ingest_cache_update_src_audio_recorder_h_ad2e6707["src/audio_recorder.h"]
         src_audio_recorder_audiorecorder_b4022ebd("AudioRecorder<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_channelstats_b437c15e("ChannelStats<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_audiorecorder_update_43ac1eab("update<br/><small>src/audio_recorder.h</small>")
-        src_audio_recorder_audiorecorder_stoprecording_00ea97de("stopRecording<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_audiorecorder_isrecording_3baca3b6("isRecording()<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_audiorecorder_getrecorddurati_7af30ad5("getRecordDurationMs()<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_audiorecorder_getwavbuffer_898064a8("getWavBuffer()<br/><small>src/audio_recorder.h</small>")
@@ -1036,10 +831,13 @@ flowchart LR
         src_audio_recorder_channelstats_getrms_144b137d("getRms()<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_channelstats_getnonzeropct_b7c18466("getNonZeroPct()<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_channelstats_getclippct_5ab7f089("getClipPct()<br/><small>src/audio_recorder.h</small>")
-        src_audio_recorder_h_src_audio_recorder_079da71f("audio_recorder.h")
+    end
+    subgraph ingest_cache_update_src_main_cpp_dee88e33["src/main.cpp"]
+        src_main_3231ff52("main.cpp")
+        src_main_loop_b54b6114("loop()<br/><small>src/main.cpp</small>")
+        src_main_setledcolor_32443aca("setLedColor()<br/><small>src/main.cpp</small>")
     end
     src_audio_recorder_cpp_src_audio_recorder_9215fedd("audio_recorder.cpp")
-    src_es8311_h_src_es8311_a96b8a50("es8311.h")
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_isrecording_3baca3b6
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getrecorddurati_7af30ad5
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getwavbuffer_898064a8
@@ -1051,14 +849,11 @@ flowchart LR
     src_audio_recorder_channelstats_b437c15e -->|method| src_audio_recorder_channelstats_getrms_144b137d
     src_audio_recorder_channelstats_b437c15e -->|method| src_audio_recorder_channelstats_getnonzeropct_b7c18466
     src_audio_recorder_channelstats_b437c15e -->|method| src_audio_recorder_channelstats_getclippct_5ab7f089
-    src_audio_recorder_cpp_src_audio_recorder_9215fedd -->|imports| src_audio_recorder_h_src_audio_recorder_079da71f
-    src_audio_recorder_cpp_src_audio_recorder_9215fedd -->|imports| src_es8311_h_src_es8311_a96b8a50
-    src_audio_recorder_audiorecorder_update_43ac1eab -->|calls| src_audio_recorder_audiorecorder_stoprecording_00ea97de
-    %% Omitted for readability: 26 nodes, 0 edges
+    src_main_loop_b54b6114 -->|calls| src_main_setledcolor_32443aca
+    %% Omitted for readability: 40 nodes, 0 edges
     class src_audio_recorder_audiorecorder_b4022ebd klass;
     class src_audio_recorder_channelstats_b437c15e klass;
     class src_audio_recorder_audiorecorder_update_43ac1eab function;
-    class src_audio_recorder_audiorecorder_stoprecording_00ea97de function;
     class src_audio_recorder_audiorecorder_isrecording_3baca3b6 function;
     class src_audio_recorder_audiorecorder_getrecorddurati_7af30ad5 function;
     class src_audio_recorder_audiorecorder_getwavbuffer_898064a8 function;
@@ -1070,9 +865,10 @@ flowchart LR
     class src_audio_recorder_channelstats_getrms_144b137d function;
     class src_audio_recorder_channelstats_getnonzeropct_b7c18466 function;
     class src_audio_recorder_channelstats_getclippct_5ab7f089 entry;
-    class src_audio_recorder_h_src_audio_recorder_079da71f function;
+    class src_main_3231ff52 function;
+    class src_main_loop_b54b6114 function;
+    class src_main_setledcolor_32443aca function;
     class src_audio_recorder_cpp_src_audio_recorder_9215fedd function;
-    class src_es8311_h_src_es8311_a96b8a50 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1104,14 +900,6 @@ flowchart LR
 </tr>
 <tr>
   <td>2</td>
-  <td><code>ChannelStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>getClipPct()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br><code>getMean()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br><code>getNonZeroPct()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br>+2 more</td>
-  <td>ChannelStats node in src/audio_recorder.h.</td>
-</tr>
-<tr>
-  <td>3</td>
   <td><code>AudioRecorder::AudioRecorder()</code><br><small style="color:var(--muted)">src/audio_recorder.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1119,7 +907,7 @@ flowchart LR
   <td>AudioRecorder::AudioRecorder() node in src/audio_recorder.cpp.</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>3</td>
   <td><code>.getMaxLeft()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AudioRecorder</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -1127,7 +915,7 @@ flowchart LR
   <td>.getMaxLeft() node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>5</td>
+  <td>4</td>
   <td><code>.getMaxRight()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AudioRecorder</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -1135,7 +923,7 @@ flowchart LR
   <td>.getMaxRight() node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>5</td>
   <td><code>.getRecordDurationMs()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AudioRecorder</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -1143,7 +931,7 @@ flowchart LR
   <td>.getRecordDurationMs() node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>6</td>
   <td><code>.getWavBuffer()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AudioRecorder</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -1151,7 +939,7 @@ flowchart LR
   <td>.getWavBuffer() node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>7</td>
   <td><code>.getWavSize()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AudioRecorder</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -1159,7 +947,7 @@ flowchart LR
   <td>.getWavSize() node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>8</td>
   <td><code>.isRecording()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AudioRecorder</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -1167,47 +955,7 @@ flowchart LR
   <td>.isRecording() node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>10</td>
-  <td><code>.getClipPct()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td><span class="tag tag-cmd">Entry</span></td>
-  <td><code>ChannelStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>.getClipPct() node in src/audio_recorder.h.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>.getMean()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ChannelStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>.getMean() node in src/audio_recorder.h.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>.getNonZeroPct()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ChannelStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>.getNonZeroPct() node in src/audio_recorder.h.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>.getRms()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ChannelStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>.getRms() node in src/audio_recorder.h.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>.reset()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ChannelStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>.reset() node in src/audio_recorder.h.</td>
-</tr>
-<tr>
-  <td>15</td>
+  <td>9</td>
   <td><code>update</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1215,7 +963,7 @@ flowchart LR
   <td>update node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>10</td>
   <td><code>stopRecording</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>update</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -1223,7 +971,7 @@ flowchart LR
   <td>stopRecording node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>11</td>
   <td><code>logDiagnostics</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1231,7 +979,7 @@ flowchart LR
   <td>logDiagnostics node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>12</td>
   <td><code>begin</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1239,7 +987,7 @@ flowchart LR
   <td>begin node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>13</td>
   <td><code>writeWavHeader</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>stopRecording</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -1247,7 +995,31 @@ flowchart LR
   <td>writeWavHeader node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>14</td>
+  <td><code>playTone</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>playTone node in src/audio_recorder.h.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>playChime</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>playChime node in src/audio_recorder.h.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>playAudioStream</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>playAudioStream node in src/audio_recorder.h.</td>
+</tr>
+<tr>
+  <td>17</td>
   <td><code>startRecording</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1255,7 +1027,7 @@ flowchart LR
   <td>startRecording node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>18</td>
   <td><code>_lastRecordDurationMs</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1263,7 +1035,7 @@ flowchart LR
   <td>_lastRecordDurationMs node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>19</td>
   <td><code>_leftStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1271,7 +1043,7 @@ flowchart LR
   <td>_leftStats node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>20</td>
   <td><code>_maxLeftPeak</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1279,7 +1051,7 @@ flowchart LR
   <td>_maxLeftPeak node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>21</td>
   <td><code>_maxRightPeak</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1287,7 +1059,7 @@ flowchart LR
   <td>_maxRightPeak node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>22</td>
   <td><code>_monoStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1295,7 +1067,7 @@ flowchart LR
   <td>_monoStats node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>23</td>
   <td><code>_pcmBytesRecorded</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1303,7 +1075,7 @@ flowchart LR
   <td>_pcmBytesRecorded node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>24</td>
   <td><code>_previewCount</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1311,7 +1083,7 @@ flowchart LR
   <td>_previewCount node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>25</td>
   <td><code>_previewLeft</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1319,7 +1091,7 @@ flowchart LR
   <td>_previewLeft node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>26</td>
   <td><code>_previewMono</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1327,12 +1099,36 @@ flowchart LR
   <td>_previewMono node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>27</td>
   <td><code>_previewRight</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>_previewRight node in src/audio_recorder.h.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>_psramBuffer</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_psramBuffer node in src/audio_recorder.h.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>_recordStartTime</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_recordStartTime node in src/audio_recorder.h.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>_rightStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_rightStats node in src/audio_recorder.h.</td>
 </tr>
 </table>
 
@@ -1341,14 +1137,17 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/audio_recorder.h</code></td><td>41 nodes</td></tr>
+      <tr><td><code>src/audio_recorder.h</code></td><td>44 nodes</td></tr>
+<tr><td><code>src/main.cpp</code></td><td>6 nodes</td></tr>
 <tr><td><code>src/audio_recorder.cpp</code></td><td>2 nodes</td></tr>
 <tr><td><code>src/es8311.h</code></td><td>1 nodes</td></tr>
+<tr><td><code>src/macropad_config.cpp</code></td><td>1 nodes</td></tr>
+<tr><td><code>src/macropad_config.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: defines x27, method x11, contains x9, calls x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: defines x30, contains x17, method x11, calls x5. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2052,34 +1851,37 @@ flowchart LR
 
 <!-- ====== 8. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">8. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around dashboard, planmd, docs, phase, mostly in docs/Dashboard-plan.md. This section covers 37 nodes and 36 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around dashboard, planmd, docs, phase, mostly in docs/Dashboard-plan.md, .agents/scratch_tts_test.py. This section covers 39 nodes and 37 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (37 nodes, 36 edges)
-    docs_dashboard_plan_9beeb198("Dashboard-plan.md")
-    docs_dashboard_plan_phase_11_separate_macro_read_6b263a6b("Phase 11 — Separate Macro readiness fro...<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_27_failure_testing_1e99265d("Phase 27 — Failure testing<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_28_home_to_work_field_92ea9524("Phase 28 — Home-to-Work field test<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_29_performance_accepta_b86f9a33("Phase 29 — Performance acceptance<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_30_repository_clean_up_0ca9799b("Phase 30 — Repository clean-up and docu...<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_macropad_readiness_074f4cdc("MacroPad readiness<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_0_protect_what_current_c3f710b1("Phase 0 — Protect what currently works<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_1_reconcile_the_two_vo_adc58b8d("Phase 1 — Reconcile the two voice archi...<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_10_define_proper_statu_197ca15b("Phase 10 — Define proper status semantics<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_12_wi_fi_health_inform_a5930e2d("Phase 12 — Wi-Fi health information<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_13_add_a_genuine_inter_27b2ee3f("Phase 13 — Add a genuine Internet test<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_14_avoid_dashboard_pro_9e52d424("Phase 14 — Avoid dashboard probes inter...<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_15_make_the_python_rec_2561cf98("Phase 15 — Make the Python receiver con...<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_16_preserve_the_latenc_0d2bdab5("Phase 16 — Preserve the latency improve...<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_17_tune_work_ollama_47a16444("Phase 17 — Tune Work Ollama<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_18_make_work_genuinely_1dcb407b("Phase 18 — Make Work genuinely private<br/><small>docs/Dashboard-plan.md</small>")
-    docs_dashboard_plan_phase_19_optional_telegram_m_4655834a("Phase 19 — Optional Telegram mirroring...<br/><small>docs/Dashboard-plan.md</small>")
+    %% Section: Tests &amp; Fixtures (39 nodes, 37 edges)
+    subgraph tests_fixtures_docs_Dashboard_plan_md_23365c0c["docs/Dashboard-plan.md"]
+        docs_dashboard_plan_9beeb198("Dashboard-plan.md")
+        docs_dashboard_plan_phase_11_separate_macro_read_6b263a6b("Phase 11 — Separate Macro readiness fro...<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_27_failure_testing_1e99265d("Phase 27 — Failure testing<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_28_home_to_work_field_92ea9524("Phase 28 — Home-to-Work field test<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_29_performance_accepta_b86f9a33("Phase 29 — Performance acceptance<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_macropad_readiness_074f4cdc("MacroPad readiness<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_0_protect_what_current_c3f710b1("Phase 0 — Protect what currently works<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_1_reconcile_the_two_vo_adc58b8d("Phase 1 — Reconcile the two voice archi...<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_10_define_proper_statu_197ca15b("Phase 10 — Define proper status semantics<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_12_wi_fi_health_inform_a5930e2d("Phase 12 — Wi-Fi health information<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_13_add_a_genuine_inter_27b2ee3f("Phase 13 — Add a genuine Internet test<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_14_avoid_dashboard_pro_9e52d424("Phase 14 — Avoid dashboard probes inter...<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_15_make_the_python_rec_2561cf98("Phase 15 — Make the Python receiver con...<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_16_preserve_the_latenc_0d2bdab5("Phase 16 — Preserve the latency improve...<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_17_tune_work_ollama_47a16444("Phase 17 — Tune Work Ollama<br/><small>docs/Dashboard-plan.md</small>")
+        docs_dashboard_plan_phase_18_make_work_genuinely_1dcb407b("Phase 18 — Make Work genuinely private<br/><small>docs/Dashboard-plan.md</small>")
+    end
+    subgraph tests_fixtures_agents_scratch_tts_test_py_da2e1de2[".agents/scratch_tts_test.py"]
+        agents_scratch_tts_test_e549aae8("scratch_tts_test.py")
+        agents_scratch_tts_test_sanitize_for_tts_ff30dece("sanitize_for_tts()<br/><small>.agents/scratch_tts_test.py</small>")
+    end
     docs_dashboard_plan_9beeb198 -->|contains| docs_dashboard_plan_phase_27_failure_testing_1e99265d
     docs_dashboard_plan_9beeb198 -->|contains| docs_dashboard_plan_phase_28_home_to_work_field_92ea9524
     docs_dashboard_plan_9beeb198 -->|contains| docs_dashboard_plan_phase_29_performance_accepta_b86f9a33
-    docs_dashboard_plan_9beeb198 -->|contains| docs_dashboard_plan_phase_30_repository_clean_up_0ca9799b
     docs_dashboard_plan_9beeb198 -->|contains| docs_dashboard_plan_phase_0_protect_what_current_c3f710b1
     docs_dashboard_plan_9beeb198 -->|contains| docs_dashboard_plan_phase_10_define_proper_statu_197ca15b
     docs_dashboard_plan_9beeb198 -->|contains| docs_dashboard_plan_phase_11_separate_macro_read_6b263a6b
@@ -2091,15 +1893,14 @@ flowchart LR
     docs_dashboard_plan_9beeb198 -->|contains| docs_dashboard_plan_phase_16_preserve_the_latenc_0d2bdab5
     docs_dashboard_plan_9beeb198 -->|contains| docs_dashboard_plan_phase_17_tune_work_ollama_47a16444
     docs_dashboard_plan_9beeb198 -->|contains| docs_dashboard_plan_phase_18_make_work_genuinely_1dcb407b
-    docs_dashboard_plan_9beeb198 -->|contains| docs_dashboard_plan_phase_19_optional_telegram_m_4655834a
     docs_dashboard_plan_phase_11_separate_macro_read_6b263a6b -->|contains| docs_dashboard_plan_macropad_readiness_074f4cdc
-    %% Omitted for readability: 19 nodes, 0 edges
+    agents_scratch_tts_test_e549aae8 -->|contains| agents_scratch_tts_test_sanitize_for_tts_ff30dece
+    %% Omitted for readability: 21 nodes, 0 edges
     class docs_dashboard_plan_9beeb198 concept;
     class docs_dashboard_plan_phase_11_separate_macro_read_6b263a6b concept;
     class docs_dashboard_plan_phase_27_failure_testing_1e99265d concept;
     class docs_dashboard_plan_phase_28_home_to_work_field_92ea9524 concept;
     class docs_dashboard_plan_phase_29_performance_accepta_b86f9a33 concept;
-    class docs_dashboard_plan_phase_30_repository_clean_up_0ca9799b concept;
     class docs_dashboard_plan_macropad_readiness_074f4cdc concept;
     class docs_dashboard_plan_phase_0_protect_what_current_c3f710b1 concept;
     class docs_dashboard_plan_phase_1_reconcile_the_two_vo_adc58b8d concept;
@@ -2111,7 +1912,8 @@ flowchart LR
     class docs_dashboard_plan_phase_16_preserve_the_latenc_0d2bdab5 concept;
     class docs_dashboard_plan_phase_17_tune_work_ollama_47a16444 concept;
     class docs_dashboard_plan_phase_18_make_work_genuinely_1dcb407b concept;
-    class docs_dashboard_plan_phase_19_optional_telegram_m_4655834a concept;
+    class agents_scratch_tts_test_e549aae8 test;
+    class agents_scratch_tts_test_sanitize_for_tts_ff30dece test;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2381,47 +2183,54 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>docs/Dashboard-plan.md</code></td><td>37 nodes</td></tr>
+<tr><td><code>.agents/scratch_tts_test.py</code></td><td>2 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x36. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x37. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 9. MacroPadGUI ====== -->
 <h2 id="macropadgui">9. MacroPadGUI</h2>
-<p>MacroPadGUI groups implementation around guih, guicpp, voiceuistate, macropadgui, mostly in src/gui.h, src/gui.cpp. This section covers 41 nodes and 81 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>MacroPadGUI groups implementation around guih, guicpp, text, string, mostly in src/gui.h, src/gui.cpp, src/system_status.h. This section covers 52 nodes and 100 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: MacroPadGUI (41 nodes, 81 edges)
+    %% Section: MacroPadGUI (52 nodes, 100 edges)
     subgraph macropadgui_src_gui_h_2c3c6594["src/gui.h"]
         src_gui_macropadgui_drawall_e8dc4428("drawAll<br/><small>src/gui.h</small>")
+        src_gui_h_src_gui_a56c68cc("gui.h")
         src_gui_macropadgui_drawvoicecard_6821a110("drawVoiceCard<br/><small>src/gui.h</small>")
         src_gui_macropadgui_addvoiceturn_f13a64b6("addVoiceTurn<br/><small>src/gui.h</small>")
         src_gui_macropadgui_clearconversation_172e13bc("clearConversation<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_gettouchtarget_f1b368b6("getTouchTarget<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_scrollvoicechat_164d0276("scrollVoiceChat<br/><small>src/gui.h</small>")
         src_gui_macropadgui_rebuildchatlines_6bc3773b("rebuildChatLines<br/><small>src/gui.h</small>")
         src_gui_macropadgui_redrawvoicecard_0ed21610("redrawVoiceCard<br/><small>src/gui.h</small>")
         src_gui_macropadgui_scrolltolatestresponse_cb695a79("scrollToLatestResponse<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_scrollvoicechat_164d0276("scrollVoiceChat<br/><small>src/gui.h</small>")
         src_gui_macropadgui_rendervoicechatviewport_1b802434("renderVoiceChatViewport<br/><small>src/gui.h</small>")
         src_gui_macropadgui_canscrollup_034a72fb("canScrollUp<br/><small>src/gui.h</small>")
         src_gui_macropadgui_canscrolldown_966e68b5("canScrollDown<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawdashboard_878f9c4f("drawDashboard<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawstatusrow_ad3e4a08("drawStatusRow<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawstatusbar_c81376cb("drawStatusBar<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawbutton_f732c89d("drawButton<br/><small>src/gui.h</small>")
     end
     subgraph macropadgui_src_gui_cpp_3e4ba9ed["src/gui.cpp"]
+        src_gui_cpp_src_gui_6ce0e73a("gui.cpp")
         src_gui_wraptexttochatlines_c755b01b("wrapTextToChatLines()<br/><small>src/gui.cpp</small>")
         src_gui_drawwrappedtext_94ada9de("drawWrappedText()<br/><small>src/gui.cpp</small>")
     end
+    subgraph macropadgui_External_generated_74b06092["External / generated"]
+        src_gui_h_tft_espi_a5e0095d("TFT_eSPI")
+        src_gui_h_vector_ccb54c95("vector")
+    end
+    src_system_status_a10ae04d("system_status.h")
     src_gui_macropadgui_rebuildchatlines_6bc3773b -->|calls| src_gui_wraptexttochatlines_c755b01b
     src_gui_macropadgui_redrawvoicecard_0ed21610 -->|calls| src_gui_drawwrappedtext_94ada9de
+    src_gui_cpp_src_gui_6ce0e73a -->|imports| src_gui_h_src_gui_a56c68cc
+    src_gui_h_src_gui_a56c68cc -->|imports| src_gui_h_tft_espi_a5e0095d
+    src_gui_h_src_gui_a56c68cc -->|imports| src_gui_h_vector_ccb54c95
+    src_gui_h_src_gui_a56c68cc -->|imports| src_system_status_a10ae04d
     src_gui_macropadgui_clearconversation_172e13bc -->|calls| src_gui_macropadgui_redrawvoicecard_0ed21610
     src_gui_macropadgui_addvoiceturn_f13a64b6 -->|calls| src_gui_macropadgui_rebuildchatlines_6bc3773b
     src_gui_macropadgui_addvoiceturn_f13a64b6 -->|calls| src_gui_macropadgui_scrolltolatestresponse_cb695a79
@@ -2431,30 +2240,26 @@ flowchart LR
     src_gui_macropadgui_drawvoicecard_6821a110 -->|calls| src_gui_macropadgui_addvoiceturn_f13a64b6
     src_gui_macropadgui_drawvoicecard_6821a110 -->|calls| src_gui_macropadgui_redrawvoicecard_0ed21610
     src_gui_macropadgui_redrawvoicecard_0ed21610 -->|calls| src_gui_macropadgui_rendervoicechatviewport_1b802434
-    src_gui_macropadgui_drawdashboard_878f9c4f -->|calls| src_gui_macropadgui_drawstatusrow_ad3e4a08
-    src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawstatusbar_c81376cb
-    src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawdashboard_878f9c4f
-    src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawbutton_f732c89d
     src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_redrawvoicecard_0ed21610
-    %% Omitted for readability: 23 nodes, 0 edges
+    %% Omitted for readability: 34 nodes, 0 edges
     class src_gui_macropadgui_drawall_e8dc4428 function;
+    class src_gui_h_src_gui_a56c68cc function;
     class src_gui_macropadgui_drawvoicecard_6821a110 function;
     class src_gui_macropadgui_addvoiceturn_f13a64b6 function;
     class src_gui_macropadgui_clearconversation_172e13bc function;
-    class src_gui_macropadgui_gettouchtarget_f1b368b6 function;
-    class src_gui_macropadgui_scrollvoicechat_164d0276 function;
     class src_gui_macropadgui_rebuildchatlines_6bc3773b function;
     class src_gui_macropadgui_redrawvoicecard_0ed21610 function;
     class src_gui_macropadgui_scrolltolatestresponse_cb695a79 function;
+    class src_gui_macropadgui_scrollvoicechat_164d0276 function;
     class src_gui_macropadgui_rendervoicechatviewport_1b802434 function;
     class src_gui_macropadgui_canscrollup_034a72fb function;
     class src_gui_macropadgui_canscrolldown_966e68b5 function;
-    class src_gui_macropadgui_drawdashboard_878f9c4f function;
-    class src_gui_macropadgui_drawstatusrow_ad3e4a08 function;
-    class src_gui_macropadgui_drawstatusbar_c81376cb function;
-    class src_gui_macropadgui_drawbutton_f732c89d function;
+    class src_gui_cpp_src_gui_6ce0e73a function;
     class src_gui_wraptexttochatlines_c755b01b function;
     class src_gui_drawwrappedtext_94ada9de function;
+    class src_gui_h_tft_espi_a5e0095d klass;
+    class src_gui_h_vector_ccb54c95 function;
+    class src_system_status_a10ae04d function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2478,6 +2283,22 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
+  <td><code>ChatLine</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>ChatMessage</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>3</td>
   <td><code>MacroPadGUI</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -2485,7 +2306,7 @@ flowchart LR
   <td>MacroPadGUI node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>2</td>
+  <td>4</td>
   <td><code>drawWrappedText()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2493,7 +2314,7 @@ flowchart LR
   <td>drawWrappedText() node in src/gui.cpp.</td>
 </tr>
 <tr>
-  <td>3</td>
+  <td>5</td>
   <td><code>MacroPadGUI::MacroPadGUI()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2501,7 +2322,7 @@ flowchart LR
   <td>MacroPadGUI::MacroPadGUI() node in src/gui.cpp.</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>6</td>
   <td><code>wrapTextToChatLines()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>rebuildChatLines</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2509,7 +2330,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>5</td>
+  <td>7</td>
   <td><code>init</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2517,7 +2338,7 @@ flowchart LR
   <td>init node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>8</td>
   <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>getTouchTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2525,7 +2346,7 @@ flowchart LR
   <td>getButtonRect node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>9</td>
   <td><code>clearConversation</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2533,7 +2354,7 @@ flowchart LR
   <td>clearConversation node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>10</td>
   <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2541,7 +2362,7 @@ flowchart LR
   <td>addVoiceTurn node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>11</td>
   <td><code>rebuildChatLines</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2549,7 +2370,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>12</td>
   <td><code>scrollToBottom</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2557,7 +2378,7 @@ flowchart LR
   <td>scrollToBottom node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>13</td>
   <td><code>scrollToLatestResponse</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2565,7 +2386,7 @@ flowchart LR
   <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>14</td>
   <td><code>scrollToTop</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2573,7 +2394,7 @@ flowchart LR
   <td>scrollToTop node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>15</td>
   <td><code>canScrollUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2581,7 +2402,7 @@ flowchart LR
   <td>canScrollUp node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>16</td>
   <td><code>canScrollDown</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2589,7 +2410,7 @@ flowchart LR
   <td>canScrollDown node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>17</td>
   <td><code>voiceChatScrollable</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2597,7 +2418,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>18</td>
   <td><code>scrollVoiceChat</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2605,7 +2426,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>19</td>
   <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>scrollVoiceChat</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2613,7 +2434,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>20</td>
   <td><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2621,7 +2442,7 @@ flowchart LR
   <td>drawVoiceCard node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>21</td>
   <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>clearConversation</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2629,7 +2450,7 @@ flowchart LR
   <td>redrawVoiceCard node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>22</td>
   <td><code>drawStatusBar</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2637,7 +2458,7 @@ flowchart LR
   <td>drawStatusBar node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>23</td>
   <td><code>drawStatusRow</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2645,7 +2466,7 @@ flowchart LR
   <td>drawStatusRow node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>24</td>
   <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2653,7 +2474,7 @@ flowchart LR
   <td>drawDashboard node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>25</td>
   <td><code>drawDashboardSwitching</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2661,7 +2482,7 @@ flowchart LR
   <td>drawDashboardSwitching node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>26</td>
   <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2669,7 +2490,7 @@ flowchart LR
   <td>drawAll node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>27</td>
   <td><code>getTouchTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2677,7 +2498,7 @@ flowchart LR
   <td>getTouchTarget node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>28</td>
   <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2685,7 +2506,7 @@ flowchart LR
   <td>drawButton node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>29</td>
   <td><code>HealthState</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -2693,28 +2514,12 @@ flowchart LR
   <td>HealthState node in project.</td>
 </tr>
 <tr>
-  <td>28</td>
-  <td><code>DashboardStatus</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>DashboardStatus node in project.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>EnvironmentMode</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>EnvironmentMode node in project.</td>
-</tr>
-<tr>
   <td>30</td>
-  <td><code>gui.cpp</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
+  <td><code>color</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>gui.cpp node in src/gui.cpp.</td>
+  <td>No direct outbound edge</td>
+  <td>color node in src/gui.h.</td>
 </tr>
 </table>
 
@@ -2723,19 +2528,369 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/gui.h</code></td><td>29 nodes</td></tr>
+      <tr><td><code>src/gui.h</code></td><td>36 nodes</td></tr>
 <tr><td><code>src/gui.cpp</code></td><td>4 nodes</td></tr>
+<tr><td><code>src/system_status.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: defines x28, contains x25, calls x18, references x10. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: defines x32, contains x28, references x18, calls x18. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 10. EnvironmentManager ====== -->
-<h2 id="environmentmanager">10. EnvironmentManager</h2>
+<!-- ====== 10. NetworkManager ====== -->
+<h2 id="networkmanager">10. NetworkManager</h2>
+<p>NetworkManager groups implementation around network, managerh, managercpp, string, mostly in src/network_manager.h, src/network_manager.cpp. This section covers 32 nodes and 71 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: NetworkManager (32 nodes, 71 edges)
+    subgraph networkmanager_src_network_manager_h_b8026d41["src/network_manager.h"]
+        src_network_manager_networkmanager_fetchcomposit_409e78b8("fetchCompositeStatus<br/><small>src/network_manager.h</small>")
+        src_network_manager_networkmanager_sendvoiceaudi_27eb2920("sendVoiceAudio<br/><small>src/network_manager.h</small>")
+        src_network_manager_networkmanager_applyenvironm_1fcc8dc0("applyEnvironment<br/><small>src/network_manager.h</small>")
+        src_network_manager_networkmanager_begin_5ab86173("begin<br/><small>src/network_manager.h</small>")
+        src_network_manager_networkmanager_checkreceiver_ad818aa1("checkReceiverHealth<br/><small>src/network_manager.h</small>")
+        src_network_manager_h_src_network_manager_f4b6ea17("network_manager.h")
+        src_network_manager_networkmanager_startconnecti_0052fbd8("startConnection<br/><small>src/network_manager.h</small>")
+        src_network_manager_networkmanager_getipaddress_ead67b67("getIpAddress<br/><small>src/network_manager.h</small>")
+        src_network_manager_networkmanager_isconnected_a62d7582("isConnected<br/><small>src/network_manager.h</small>")
+        src_network_manager_networkmanager_getconnecteds_8ad215ed("getConnectedSSID<br/><small>src/network_manager.h</small>")
+        src_network_manager_networkmanager_getrssi_9745c173("getRSSI<br/><small>src/network_manager.h</small>")
+        src_network_manager_networkmanager_playvoiceaudi_4238dfc9("playVoiceAudioReply<br/><small>src/network_manager.h</small>")
+        src_network_manager_networkmanager_checkinternet_2821e5eb("checkInternet<br/><small>src/network_manager.h</small>")
+    end
+    subgraph networkmanager_src_network_manager_cpp_2695de7b["src/network_manager.cpp"]
+        src_network_manager_cpp_src_network_manager_fc796c4c("network_manager.cpp")
+        src_network_manager_extractjsonfield_e1050fdd("extractJsonField()<br/><small>src/network_manager.cpp</small>")
+        src_network_manager_extractjsonbool_b649f566("extractJsonBool()<br/><small>src/network_manager.cpp</small>")
+        src_network_manager_extractjsonint_9e88f47f("extractJsonInt()<br/><small>src/network_manager.cpp</small>")
+        src_network_manager_extractjsonobject_dff68fa5("extractJsonObject()<br/><small>src/network_manager.cpp</small>")
+    end
+    src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonfield_e1050fdd
+    src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonbool_b649f566
+    src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonint_9e88f47f
+    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonobject_dff68fa5
+    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonbool_b649f566
+    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonfield_e1050fdd
+    src_network_manager_cpp_src_network_manager_fc796c4c -->|imports| src_network_manager_h_src_network_manager_f4b6ea17
+    src_network_manager_networkmanager_applyenvironm_1fcc8dc0 -->|calls| src_network_manager_networkmanager_startconnecti_0052fbd8
+    src_network_manager_networkmanager_getipaddress_ead67b67 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
+    src_network_manager_networkmanager_getconnecteds_8ad215ed -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
+    src_network_manager_networkmanager_getrssi_9745c173 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
+    src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
+    src_network_manager_networkmanager_playvoiceaudi_4238dfc9 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
+    src_network_manager_networkmanager_checkreceiver_ad818aa1 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
+    src_network_manager_networkmanager_checkinternet_2821e5eb -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
+    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
+    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getconnecteds_8ad215ed
+    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getrssi_9745c173
+    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getipaddress_ead67b67
+    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_checkinternet_2821e5eb
+    src_network_manager_networkmanager_begin_5ab86173 -->|calls| src_network_manager_networkmanager_startconnecti_0052fbd8
+    %% Omitted for readability: 14 nodes, 0 edges
+    class src_network_manager_networkmanager_fetchcomposit_409e78b8 function;
+    class src_network_manager_networkmanager_sendvoiceaudi_27eb2920 function;
+    class src_network_manager_networkmanager_applyenvironm_1fcc8dc0 function;
+    class src_network_manager_networkmanager_begin_5ab86173 function;
+    class src_network_manager_networkmanager_checkreceiver_ad818aa1 function;
+    class src_network_manager_h_src_network_manager_f4b6ea17 function;
+    class src_network_manager_networkmanager_startconnecti_0052fbd8 function;
+    class src_network_manager_networkmanager_getipaddress_ead67b67 function;
+    class src_network_manager_networkmanager_isconnected_a62d7582 function;
+    class src_network_manager_networkmanager_getconnecteds_8ad215ed function;
+    class src_network_manager_networkmanager_getrssi_9745c173 function;
+    class src_network_manager_networkmanager_playvoiceaudi_4238dfc9 function;
+    class src_network_manager_networkmanager_checkinternet_2821e5eb function;
+    class src_network_manager_cpp_src_network_manager_fc796c4c function;
+    class src_network_manager_extractjsonfield_e1050fdd function;
+    class src_network_manager_extractjsonbool_b649f566 function;
+    class src_network_manager_extractjsonint_9e88f47f function;
+    class src_network_manager_extractjsonobject_dff68fa5 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>NetworkManager</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>NetworkManager node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>extractJsonBool()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>sendVoiceAudio</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>extractJsonBool() node in src/network_manager.cpp.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>extractJsonField()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>sendVoiceAudio</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>extractJsonField() node in src/network_manager.cpp.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>extractJsonInt()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>sendVoiceAudio</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>extractJsonInt() node in src/network_manager.cpp.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>extractJsonObject()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>extractJsonObject() node in src/network_manager.cpp.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>NetworkManager::NetworkManager()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>NetworkManager::NetworkManager() node in src/network_manager.cpp.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>startConnection</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>applyEnvironment</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>begin</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>startConnection node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>applyEnvironment</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>startConnection</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>applyEnvironment node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>update</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>update node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>checkInternet</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>checkReceiverHealth</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small><br>+5 more</td>
+  <td>No direct outbound edge</td>
+  <td>isConnected node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>getIpAddress</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>getIpAddress node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>getConnectedSSID</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>getConnectedSSID node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>getRSSI</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>getRSSI node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>sendVoiceAudio</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>extractJsonBool()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small><br><code>extractJsonField()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small><br><code>extractJsonInt()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small><br>+1 more</td>
+  <td>sendVoiceAudio node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>playVoiceAudioReply</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>playVoiceAudioReply node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>checkReceiverHealth</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>checkReceiverHealth node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>checkInternet</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>checkInternet node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>checkInternet</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>extractJsonBool()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small><br><code>extractJsonField()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small><br>+5 more</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>begin</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>startConnection</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>begin node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>DashboardStatus</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>DashboardStatus node in project.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>EnvironmentMode</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EnvironmentMode node in project.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>function</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>function node in project.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>network_manager.cpp</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>audio_recorder.h</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>network_manager.cpp node in src/network_manager.cpp.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>String node in project.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gui.cpp</code><br><small style="color:var(--muted)">src/gui.cpp</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>network_manager.cpp</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
+  <td><code>environment_manager.h</code><br><small style="color:var(--muted)">src/environment_manager.h</small><br><code>system_status.h</code><br><small style="color:var(--muted)">src/system_status.h</small></td>
+  <td>network_manager.h node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>String node in project.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>_lastInternetCheck</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_lastInternetCheck node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>_lastInternetState</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_lastInternetState node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>_lastReconnectAttempt</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_lastReconnectAttempt node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>_targetPassword</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_targetPassword node in src/network_manager.h.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/network_manager.h</code></td><td>21 nodes</td></tr>
+<tr><td><code>src/network_manager.cpp</code></td><td>6 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x20, defines x19, contains x19, references x12. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 11. EnvironmentManager ====== -->
+<h2 id="environmentmanager">11. EnvironmentManager</h2>
 <p>EnvironmentManager groups implementation around environment, managerh, managercpp, environmentchangecallback, mostly in src/environment_manager.h, src/environment_manager.cpp. This section covers 31 nodes and 46 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3067,346 +3222,6 @@ flowchart LR
   <div class="card">
     <h4>Design Notes</h4>
     <p>This section comes from graphify community clustering. Relationship summary: defines x21, contains x10, references x8, calls x5. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 11. NetworkManager ====== -->
-<h2 id="networkmanager">11. NetworkManager</h2>
-<p>NetworkManager groups implementation around network, managerh, managercpp, string, mostly in src/network_manager.h, src/network_manager.cpp. This section covers 29 nodes and 63 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: NetworkManager (29 nodes, 63 edges)
-    subgraph networkmanager_src_network_manager_h_b8026d41["src/network_manager.h"]
-        src_network_manager_networkmanager_fetchcomposit_409e78b8("fetchCompositeStatus<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_sendvoiceaudi_27eb2920("sendVoiceAudio<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_applyenvironm_1fcc8dc0("applyEnvironment<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_begin_5ab86173("begin<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_checkreceiver_ad818aa1("checkReceiverHealth<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_checkinternet_2821e5eb("checkInternet<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_startconnecti_0052fbd8("startConnection<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_getipaddress_ead67b67("getIpAddress<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_isconnected_a62d7582("isConnected<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_getconnecteds_8ad215ed("getConnectedSSID<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_getrssi_9745c173("getRSSI<br/><small>src/network_manager.h</small>")
-    end
-    subgraph networkmanager_src_network_manager_cpp_2695de7b["src/network_manager.cpp"]
-        src_network_manager_extractjsonfield_e1050fdd("extractJsonField()<br/><small>src/network_manager.cpp</small>")
-        src_network_manager_extractjsonint_9e88f47f("extractJsonInt()<br/><small>src/network_manager.cpp</small>")
-        src_network_manager_extractjsonobject_dff68fa5("extractJsonObject()<br/><small>src/network_manager.cpp</small>")
-        src_network_manager_extractjsonbool_b649f566("extractJsonBool()<br/><small>src/network_manager.cpp</small>")
-    end
-    subgraph networkmanager_External_generated_d3d79e67["External / generated"]
-        src_network_manager_cpp_dashboardstatus_7cb6607a("DashboardStatus")
-        src_network_manager_cpp_environmentmode_54868e10("EnvironmentMode")
-        src_network_manager_cpp_string_db597c2f("String")
-    end
-    src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonfield_e1050fdd
-    src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonint_9e88f47f
-    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonobject_dff68fa5
-    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonbool_b649f566
-    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonfield_e1050fdd
-    src_network_manager_networkmanager_applyenvironm_1fcc8dc0 -->|calls| src_network_manager_networkmanager_startconnecti_0052fbd8
-    src_network_manager_networkmanager_getipaddress_ead67b67 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
-    src_network_manager_networkmanager_getconnecteds_8ad215ed -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
-    src_network_manager_networkmanager_getrssi_9745c173 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
-    src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
-    src_network_manager_networkmanager_checkreceiver_ad818aa1 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
-    src_network_manager_networkmanager_checkinternet_2821e5eb -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
-    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
-    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getconnecteds_8ad215ed
-    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getrssi_9745c173
-    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getipaddress_ead67b67
-    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_checkinternet_2821e5eb
-    src_network_manager_networkmanager_begin_5ab86173 -->|calls| src_network_manager_networkmanager_startconnecti_0052fbd8
-    %% Omitted for readability: 11 nodes, 0 edges
-    class src_network_manager_networkmanager_fetchcomposit_409e78b8 function;
-    class src_network_manager_networkmanager_sendvoiceaudi_27eb2920 function;
-    class src_network_manager_networkmanager_applyenvironm_1fcc8dc0 function;
-    class src_network_manager_networkmanager_begin_5ab86173 function;
-    class src_network_manager_networkmanager_checkreceiver_ad818aa1 function;
-    class src_network_manager_networkmanager_checkinternet_2821e5eb function;
-    class src_network_manager_networkmanager_startconnecti_0052fbd8 function;
-    class src_network_manager_networkmanager_getipaddress_ead67b67 function;
-    class src_network_manager_networkmanager_isconnected_a62d7582 function;
-    class src_network_manager_networkmanager_getconnecteds_8ad215ed function;
-    class src_network_manager_networkmanager_getrssi_9745c173 function;
-    class src_network_manager_extractjsonfield_e1050fdd function;
-    class src_network_manager_extractjsonint_9e88f47f function;
-    class src_network_manager_extractjsonobject_dff68fa5 function;
-    class src_network_manager_extractjsonbool_b649f566 function;
-    class src_network_manager_cpp_dashboardstatus_7cb6607a klass;
-    class src_network_manager_cpp_environmentmode_54868e10 klass;
-    class src_network_manager_cpp_string_db597c2f klass;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>NetworkManager</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>NetworkManager node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>extractJsonBool()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>extractJsonBool() node in src/network_manager.cpp.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>extractJsonField()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>sendVoiceAudio</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>extractJsonField() node in src/network_manager.cpp.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>extractJsonInt()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>sendVoiceAudio</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>extractJsonInt() node in src/network_manager.cpp.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>extractJsonObject()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>extractJsonObject() node in src/network_manager.cpp.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>NetworkManager::NetworkManager()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>NetworkManager::NetworkManager() node in src/network_manager.cpp.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>startConnection</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>applyEnvironment</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>begin</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>startConnection node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>applyEnvironment</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>startConnection</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>applyEnvironment node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>update</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>update node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>checkInternet</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>checkReceiverHealth</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small><br>+4 more</td>
-  <td>No direct outbound edge</td>
-  <td>isConnected node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>getIpAddress</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>getIpAddress node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>getConnectedSSID</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>getConnectedSSID node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>getRSSI</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>getRSSI node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>sendVoiceAudio</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>extractJsonField()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small><br><code>extractJsonInt()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small><br><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>sendVoiceAudio node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>checkReceiverHealth</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>checkReceiverHealth node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>checkInternet</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>checkInternet node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>checkInternet</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>extractJsonBool()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small><br><code>extractJsonField()</code><br><small style="color:var(--muted)">src/network_manager.cpp</small><br>+5 more</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>begin</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>startConnection</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>begin node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>DashboardStatus</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>DashboardStatus node in project.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>EnvironmentMode</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>EnvironmentMode node in project.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>network_manager.cpp</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>network_manager.cpp node in src/network_manager.cpp.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>String node in project.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>String node in project.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>_lastInternetCheck</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_lastInternetCheck node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>_lastInternetState</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_lastInternetState node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>_lastReconnectAttempt</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_lastReconnectAttempt node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>_targetPassword</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_targetPassword node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>_targetSSID</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_targetSSID node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>_wasConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_wasConnected node in src/network_manager.h.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/network_manager.h</code></td><td>19 nodes</td></tr>
-<tr><td><code>src/network_manager.cpp</code></td><td>6 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: defines x18, calls x18, contains x17, references x10. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4191,18 +4006,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>395</td></tr>
-      <tr><td>Edges</td><td>626</td></tr>
+      <tr><td>Nodes</td><td>412</td></tr>
+      <tr><td>Edges</td><td>656</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>28</td></tr>
+      <tr><td>Communities</td><td>29</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>586</td></tr>
-      <tr><td>INFERRED</td><td>40</td></tr>
+      <tr><td>EXTRACTED</td><td>615</td></tr>
+      <tr><td>INFERRED</td><td>41</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4210,7 +4025,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>ESP32 project — Architecture Documentation</p>
-  <p>Generated: 2026-09-11 14:03 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-09-12 07:17 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

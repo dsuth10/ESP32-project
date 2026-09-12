@@ -12,12 +12,23 @@ import os
 import sys
 import json
 import time
+import io
+import wave
+import math
+import re
 import pathlib
 import threading
 import urllib.request
 import urllib.parse
 import tempfile
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
+
+try:
+    import numpy as np
+    import scipy.signal
+    HAS_SCIPY = True
+except ImportError:
+    HAS_SCIPY = False
 
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(line_buffering=True, encoding='utf-8', errors='replace')
@@ -32,11 +43,11 @@ GATEWAY_URL = os.environ.get("HERMES_GATEWAY_URL", "http://127.0.0.1:8642/v1/cha
 HERMES_BASE_URL = os.environ.get("HERMES_BASE_URL", "http://127.0.0.1:8642")
 OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434")
 OLLAMA_MODELS = [
-    os.environ.get("OLLAMA_MODEL", "qwen3.5:latest"),
+    os.environ.get("OLLAMA_MODEL", "llama3.2:latest" if RECEIVER_ENV == "work" else "qwen3.5:latest"),
     "llama3.2:latest",
-    "gemma3:latest",
     "phi4-mini:3.8b",
-    "ministral-3:latest"
+    "qwen3.5:latest",
+    "mistral:latest"
 ]
 
 API_SERVER_KEY = os.environ.get("API_SERVER_KEY")
@@ -45,6 +56,13 @@ OLLAMA_KEEP_ALIVE = os.environ.get("OLLAMA_KEEP_ALIVE", "8h" if RECEIVER_ENV == 
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 DISABLE_TELEGRAM = os.environ.get("DISABLE_TELEGRAM", "").lower() in ("1", "true", "yes")
+
+# Local TTS (Voicebox) Configuration
+ENABLE_TTS = os.environ.get("ENABLE_TTS", "1").lower() in ("1", "true", "yes")
+VOICEBOX_URL = os.environ.get("VOICEBOX_URL", "http://127.0.0.1:17493").rstrip("/")
+VOICEBOX_PROFILE_NAME = os.environ.get("VOICEBOX_PROFILE_NAME", "Doug's Best Voice")
+VOICEBOX_PROFILE_ID = os.environ.get("VOICEBOX_PROFILE_ID", "")
+VOICEBOX_MODEL_SIZE = os.environ.get("VOICEBOX_MODEL_SIZE", "1.7B")
 
 # Look for credentials across standard cross-platform Hermes locations
 hermes_env_candidates = [
@@ -80,6 +98,16 @@ for env_path in hermes_env_candidates:
                         TELEGRAM_CHAT_ID = v.split(",")[0].strip()
                     elif k == "TELEGRAM_HOME_CHANNEL" and not TELEGRAM_CHAT_ID and v:
                         TELEGRAM_CHAT_ID = v
+                    elif k == "ENABLE_TTS":
+                        ENABLE_TTS = v.lower() in ("1", "true", "yes")
+                    elif k == "VOICEBOX_URL":
+                        VOICEBOX_URL = v.rstrip("/")
+                    elif k == "VOICEBOX_PROFILE_NAME":
+                        VOICEBOX_PROFILE_NAME = v
+                    elif k == "VOICEBOX_PROFILE_ID":
+                        VOICEBOX_PROFILE_ID = v
+                    elif k == "VOICEBOX_MODEL_SIZE":
+                        VOICEBOX_MODEL_SIZE = v
         except Exception as e:
             print(f"[Config] Note: Could not parse {env_path}: {e}")
 
@@ -93,16 +121,23 @@ print(f"[Config] Receiver Token : {'Enforced (Bearer auth enabled)' if VOICE_REC
 print(f"[Config] Hermes Gateway : {GATEWAY_URL}")
 print(f"[Config] API Server Key : {'Configured (' + API_SERVER_KEY[:8] + '...)' if API_SERVER_KEY else 'MISSING (Set API_SERVER_KEY or ~/.hermes/.env)'}")
 print(f"[Config] Ollama Host    : {OLLAMA_HOST} (keep_alive: {OLLAMA_KEEP_ALIVE})")
+tts_status_str = f"Enabled ({VOICEBOX_URL} | Profile: '{VOICEBOX_PROFILE_NAME}')" if ENABLE_TTS else "Disabled"
+print(f"[Config] Local TTS      : {tts_status_str}")
 print(f"[Config] Telegram Mirror: {'Disabled (Work Mode / Privacy Hardened)' if RECEIVER_ENV.lower() == 'work' else ('Disabled' if DISABLE_TELEGRAM else ('Configured' if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID else 'Not configured'))}")
 
-# Concise system prompt tailored for the ESP32 MacroPad LCD display
+# System prompt tailored for ESP32 voice assistant: conversational, concise, but complete
 ESP32_SYSTEM_PROMPT = (
-    "You are responding to a voice query from an ESP32 assistant with a scrollable display. "
-    "Answer directly, concisely, and conversationally in 2 or 3 sentences without markdown formatting, bullet points, or emojis."
+    "You are an AI voice assistant communicating via an ESP32 speaker and compact display. "
+    "Be direct, conversational, and complete. Keep responses concise (1 to 3 sentences, or a single standard 5-line limerick if asked for a poem or limerick). "
+    "Never use conversational filler or preambles (do not say 'Here is a witty one for you:' or 'Certainly!'). Dive straight into the answer or limerick. "
+    "Do not use markdown formatting, asterisks, bullet points, quotes, or emojis."
 )
 
 # ── 2. Synchronization & Global State ─────────────────────────────────
 voice_lock = threading.Lock()
+
+_last_tts_wav = None
+_tts_lock = threading.Lock()
 
 last_voice_record = {
     "transcript": "",
@@ -129,6 +164,162 @@ def sanitize_for_display(text: str) -> str:
     text = " ".join(text.split())
     clean = "".join(c for c in text if ord(c) < 128 or c.isalnum() or c in " .,!?'\"-")
     return clean.strip()
+
+# ── 3b. Local Voicebox Speech Synthesis (TTS) ──────────────────────────
+_voicebox_online_cache = False
+_voicebox_online_time = 0.0
+
+def check_voicebox_online(force_probe: bool = False) -> bool:
+    global _voicebox_online_cache, _voicebox_online_time
+    if not ENABLE_TTS or not VOICEBOX_URL:
+        return False
+    now = time.time()
+    if not force_probe and (now - _voicebox_online_time < 3.0):
+        return _voicebox_online_cache
+    try:
+        req = urllib.request.Request(f"{VOICEBOX_URL}/health", headers={"User-Agent": "HermesReceiver/1.0"})
+        with urllib.request.urlopen(req, timeout=0.5) as resp:
+            _voicebox_online_cache = (resp.getcode() == 200)
+    except Exception:
+        _voicebox_online_cache = False
+    _voicebox_online_time = now
+    return _voicebox_online_cache
+
+def resolve_voicebox_profile_id() -> str:
+    global VOICEBOX_PROFILE_ID
+    if VOICEBOX_PROFILE_ID:
+        return VOICEBOX_PROFILE_ID
+    try:
+        req = urllib.request.Request(f"{VOICEBOX_URL}/profiles", headers={"User-Agent": "HermesReceiver/1.0"})
+        with urllib.request.urlopen(req, timeout=1.0) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            if isinstance(data, list):
+                for p in data:
+                    if p.get("name", "").strip().lower() == VOICEBOX_PROFILE_NAME.strip().lower():
+                        VOICEBOX_PROFILE_ID = p.get("id")
+                        print(f"[TTS] Resolved Voicebox profile '{VOICEBOX_PROFILE_NAME}' -> {VOICEBOX_PROFILE_ID}")
+                        return VOICEBOX_PROFILE_ID
+                if data:
+                    VOICEBOX_PROFILE_ID = data[0].get("id")
+                    print(f"[TTS] Defaulted to first Voicebox profile -> {VOICEBOX_PROFILE_ID}")
+                    return VOICEBOX_PROFILE_ID
+    except Exception as e:
+        print(f"[TTS] Could not resolve Voicebox profile: {e}")
+    return ""
+
+def convert_24k_mono_to_16k_stereo_wav(raw_wav_bytes: bytes) -> bytes:
+    """Converts 24kHz mono 16-bit PCM WAV to 16kHz stereo 16-bit PCM WAV for ESP32 I2S."""
+    try:
+        with wave.open(io.BytesIO(raw_wav_bytes), 'rb') as w_in:
+            in_rate = w_in.getframerate()
+            in_channels = w_in.getnchannels()
+            in_frames = w_in.readframes(w_in.getnframes())
+
+        samples = np.frombuffer(in_frames, dtype=np.int16)
+        if in_channels == 2:
+            samples = samples[::2]
+
+        if HAS_SCIPY:
+            if in_rate == 24000:
+                resampled = scipy.signal.resample_poly(samples.astype(np.float32), 2, 3).astype(np.int16)
+            elif in_rate != 16000:
+                gcd = math.gcd(16000, in_rate)
+                resampled = scipy.signal.resample_poly(samples.astype(np.float32), 16000 // gcd, in_rate // gcd).astype(np.int16)
+            else:
+                resampled = samples
+        elif in_rate != 16000:
+            # Fallback using numpy linear interpolation if scipy is not installed
+            num_out = int(len(samples) * 16000 / in_rate)
+            x_old = np.linspace(0, 1, len(samples), endpoint=False)
+            x_new = np.linspace(0, 1, num_out, endpoint=False)
+            resampled = np.interp(x_new, x_old, samples).astype(np.int16)
+        else:
+            resampled = samples
+
+        # Duplicate into stereo (L and R channels)
+        stereo_samples = np.column_stack((resampled, resampled)).flatten()
+
+        out_buf = io.BytesIO()
+        with wave.open(out_buf, 'wb') as w_out:
+            w_out.setnchannels(2)
+            w_out.setsampwidth(2)
+            w_out.setframerate(16000)
+            w_out.writeframes(stereo_samples.tobytes())
+
+        return out_buf.getvalue()
+    except Exception as e:
+        print(f"[TTS] Resampling failed: {e}")
+        return raw_wav_bytes
+
+def sanitize_for_tts(text: str) -> str:
+    """Prepare text for TTS pronunciation and ensure optimal generation length."""
+    if not text:
+        return ""
+    # Strip dangerous punctuation for Qwen-TTS (colons & semicolons cause phonemizer loops)
+    text = text.replace(":", ", ").replace(";", ", ")
+    text = text.replace("ESP32", "ESP 32").replace("esp32", "ESP 32")
+    # Clean up non-pronounceable markdown / technical symbols
+    for ch in ['*', '#', '`', '[', ']', '(', ')', '{', '}', '<', '>', '|', '\\', '/', '"', '_', '~']:
+        text = text.replace(ch, " ")
+    # Normalize multiple whitespace
+    text = re.sub(r'\s+', ' ', text).strip()
+
+    # Bound text to configurable max (default 260 chars, enough for a 5-line limerick or 2-3 sentences)
+    max_chars = int(os.environ.get("TTS_MAX_CHARS", "260"))
+    if len(text) > max_chars:
+        best_cut = -1
+        for sep in [". ", "! ", "? "]:
+            pos = 0
+            while True:
+                idx = text.find(sep, pos)
+                if idx == -1:
+                    break
+                cut_idx = idx + 1
+                if 100 <= cut_idx <= max_chars:
+                    if cut_idx > best_cut:
+                        best_cut = cut_idx
+                pos = idx + 1
+        if best_cut != -1:
+            text = text[:best_cut]
+        else:
+            parts = text[:max_chars].rsplit(" ", 1)
+            text = (parts[0] if len(parts) > 1 else text[:max_chars]) + "."
+    return text.strip()
+
+def synthesize_speech_voicebox(text: str) -> bytes:
+    """Generate audio via Voicebox and format for ESP32 playback."""
+    if not ENABLE_TTS or not text:
+        return b""
+    profile_id = resolve_voicebox_profile_id()
+    if not profile_id:
+        return b""
+
+    tts_text = sanitize_for_tts(text)
+    if not tts_text:
+        return b""
+
+    t0 = time.perf_counter()
+    try:
+        req_body = json.dumps({
+            "profile_id": profile_id,
+            "text": tts_text,
+            "model_size": VOICEBOX_MODEL_SIZE
+        }).encode("utf-8")
+        req = urllib.request.Request(
+            f"{VOICEBOX_URL}/generate/stream",
+            data=req_body,
+            headers={"Content-Type": "application/json", "User-Agent": "HermesReceiver/1.0"}
+        )
+        with urllib.request.urlopen(req, timeout=80) as resp:
+            raw_wav = resp.read()
+
+        t_gen = time.perf_counter() - t0
+        print(f"[TTS] Voicebox generated {len(raw_wav)} bytes in {t_gen:.2f}s using '{VOICEBOX_PROFILE_NAME}'")
+
+        return convert_24k_mono_to_16k_stereo_wav(raw_wav)
+    except Exception as e:
+        print(f"[TTS] Voicebox generation failed: {e}")
+        return b""
 
 # ── 4. Whisper Model Loading (beam_size=1, VAD filtered, int8) ────────
 whisper_model = None
@@ -238,6 +429,8 @@ def load_voice_session() -> str:
     return sid
 
 
+HERMES_TIMEOUT = int(os.environ.get("HERMES_TIMEOUT_S", "4" if RECEIVER_ENV == "work" else "25"))
+
 def ask_hermes_gateway(prompt: str) -> tuple[str, bool]:
     """Dispatches prompt to persistent Hermes Gateway via HTTP."""
     if not API_SERVER_KEY:
@@ -260,16 +453,24 @@ def ask_hermes_gateway(prompt: str) -> tuple[str, bool]:
     url = f"{HERMES_SESSIONS_BASE}/{session_id}/chat"
     req = urllib.request.Request(url, data=payload, headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=120) as resp:
+        with urllib.request.urlopen(req, timeout=HERMES_TIMEOUT) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             reply = (data.get("message") or {}).get("content", "").strip()
+            # Detect provider billing/credit exhaustion errors returned by the agent
+            lower_reply = reply.lower()
+            if any(err_phrase in lower_reply for err_phrase in [
+                "billing or credits exhausted", "credits exhausted",
+                "requires a subscription or usage credits",
+                "rate limit exceeded", "account entitlement is exhausted",
+                "no available provider", "payment / credit error"
+            ]):
+                print(f"[Hermes] Gateway reported provider credit/billing error: {reply[:100]}...")
+                return (reply, False)
             return (reply or "Command acknowledged.", True)
     except urllib.error.HTTPError as e:
         err_body = e.read().decode("utf-8", errors="ignore")
         return (f"Hermes Gateway HTTP {e.code}: {err_body[:100]}", False)
-    except urllib.error.URLError as e:
-        return (f"Hermes Gateway unreachable: {e.reason}", False)
-    except Exception as e:
+    except (urllib.error.URLError, TimeoutError, Exception) as e:
         return (f"Hermes Gateway error: {str(e)}", False)
 
 # ── 7. Local Ollama Fallback (Transparent Diagnostic Fallback) ─────────
@@ -278,6 +479,7 @@ _ollama_history_lock = threading.Lock()
 
 def query_ollama_fallback(prompt: str) -> tuple[str, bool]:
     """Diagnostic fallback querying local Ollama directly if Hermes Gateway is offline."""
+    global _ollama_history
     models_to_try = list(OLLAMA_MODELS)
     try:
         ps_resp = urllib.request.urlopen(f"{OLLAMA_HOST.rstrip('/')}/api/ps", timeout=1.0)
@@ -303,10 +505,18 @@ def query_ollama_fallback(prompt: str) -> tuple[str, bool]:
 
     for model in models_to_try:
         try:
+            print(f"[Ollama] Fallback querying model '{model}'...")
+            t_start = time.perf_counter()
             req_data = json.dumps({
                 "model": model,
                 "prompt": conv_prompt,
-                "stream": False
+                "stream": False,
+                "keep_alive": OLLAMA_KEEP_ALIVE,
+                "options": {
+                    "num_ctx": 2048,
+                    "num_predict": 40,
+                    "temperature": 0.7
+                }
             }).encode("utf-8")
             url = f"{OLLAMA_HOST.rstrip('/')}/api/generate"
             req = urllib.request.Request(
@@ -314,16 +524,22 @@ def query_ollama_fallback(prompt: str) -> tuple[str, bool]:
                 data=req_data,
                 headers={"Content-Type": "application/json"}
             )
-            with urllib.request.urlopen(req, timeout=25) as resp:
+            with urllib.request.urlopen(req, timeout=30) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
                 reply = data.get("response", "").strip()
+                t_dur = time.perf_counter() - t_start
                 if reply:
+                    print(f"[Ollama] Model '{model}' responded in {t_dur:.2f}s: {reply[:60]}...")
                     with _ollama_history_lock:
                         _ollama_history.append((prompt, reply))
                         if len(_ollama_history) > 10:
                             _ollama_history = _ollama_history[-10:]
                     return (reply, True)
-        except Exception:
+        except Exception as e:
+            print(f"[Ollama] Model '{model}' query error: {e}")
+            if isinstance(e, (TimeoutError, urllib.error.URLError)) and "timed out" in str(e).lower():
+                print(f"[Ollama] Skipping cold model cascade due to timeout.")
+                break
             continue
     return ("Ollama unreachable or model not found", False)
 
@@ -388,9 +604,31 @@ def warmup_ollama_model():
         return
     model = OLLAMA_MODELS[0]
     try:
+        # Check if model is already loaded with oversized context length (>2048)
+        ps_url = f"{OLLAMA_HOST.rstrip('/')}/api/ps"
+        try:
+            with urllib.request.urlopen(ps_url, timeout=1.5) as ps_resp:
+                if ps_resp.status == 200:
+                    ps_data = json.loads(ps_resp.read().decode("utf-8"))
+                    for m in ps_data.get("models", []):
+                        if m.get("name") == model and m.get("context_length", 0) > 2048:
+                            print(f"[Ollama] Unloading oversized model instance (ctx={m.get('context_length')})...")
+                            unload_req = urllib.request.Request(
+                                f"{OLLAMA_HOST.rstrip('/')}/api/generate",
+                                data=json.dumps({"model": model, "keep_alive": 0}).encode("utf-8"),
+                                headers={"Content-Type": "application/json"}
+                            )
+                            urllib.request.urlopen(unload_req, timeout=5)
+                            break
+        except Exception:
+            pass
+
         req_data = json.dumps({
             "model": model,
-            "keep_alive": OLLAMA_KEEP_ALIVE
+            "prompt": "Hello",
+            "stream": False,
+            "keep_alive": OLLAMA_KEEP_ALIVE,
+            "options": {"num_ctx": 2048, "num_predict": 5}
         }).encode("utf-8")
         url = f"{OLLAMA_HOST.rstrip('/')}/api/generate"
         req = urllib.request.Request(
@@ -399,7 +637,7 @@ def warmup_ollama_model():
             headers={"Content-Type": "application/json"}
         )
         print(f"[Ollama] Preloading model '{model}' (keep_alive: {OLLAMA_KEEP_ALIVE})...")
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=30) as resp:
             if resp.status == 200:
                 print(f"[Ollama] Model '{model}' successfully warmed up in VRAM!")
     except Exception as e:
@@ -475,6 +713,8 @@ def get_composite_status() -> dict:
     with last_voice_lock:
         lv = dict(last_voice_record)
 
+    tts_online = check_voicebox_online()
+
     status_data = {
         "status": overall_status,
         "environment": RECEIVER_ENV,
@@ -483,6 +723,12 @@ def get_composite_status() -> dict:
             "whisper": whisper_model is not None,
             "voice_in_progress": voice_lock.locked(),
             "port": PORT
+        },
+        "tts": {
+            "enabled": ENABLE_TTS,
+            "provider": "voicebox",
+            "ready": tts_online,
+            "profile": VOICEBOX_PROFILE_NAME
         },
         "hermes": hermes_info,
         "backend": ollama_info,
@@ -544,7 +790,28 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(composite, indent=2).encode("utf-8"))
             return
 
-        # 3. Root index / summary
+        # 3. Audio Stream Endpoint for ESP32 Speaker Playback
+        if path == "/voice/audio":
+            if not self.check_auth():
+                self.send_unauthorized()
+                return
+            with _tts_lock:
+                audio_bytes = _last_tts_wav
+            if not audio_bytes:
+                self.send_response(404)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "not_found", "message": "No audio available"}).encode("utf-8"))
+                return
+            self.send_response(200)
+            self.send_header("Content-Type", "audio/wav")
+            self.send_header("Content-Length", str(len(audio_bytes)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(audio_bytes)
+            return
+
+        # 4. Root index / summary
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -557,6 +824,7 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             "endpoints": [
                 "GET /health",
                 "GET /status",
+                "GET /voice/audio",
                 "POST /voice"
             ],
             "whisper_loaded": whisper_model is not None,
@@ -565,6 +833,7 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(resp, indent=2).encode("utf-8"))
 
     def do_POST(self):
+        global _last_tts_wav
         t_req_start = time.perf_counter()
 
         if self.path not in ["/voice", "/voice/", "/"]:
@@ -637,26 +906,54 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             if not transcript:
                 transcript = "(unrecognized speech)"
 
-            # 4. Query Persistent Hermes Gateway (Primary Path)
+            # 4. Query LLM Backend (Work mode: Local Ollama primary; Home mode: Hermes Gateway primary)
             t_hermes_start = time.perf_counter()
-            reply, hermes_ok = ask_hermes_gateway(transcript)
-            backend_used = "hermes-gateway"
-
-            if not hermes_ok:
-                print(f"[WARN] Hermes Gateway unavailable ({reply}). Attempting Ollama fallback...")
+            if RECEIVER_ENV.lower() == "work":
                 ollama_reply, ollama_ok = query_ollama_fallback(transcript)
                 if ollama_ok:
                     reply = ollama_reply
-                    backend_used = "ollama-direct-fallback"
-                    print(f"[WARN] Used local Ollama fallback for prompt.")
+                    backend_used = "ollama-local"
                 else:
-                    print(f"[WARN] Both Hermes Gateway and Ollama failed.")
+                    reply, hermes_ok = ask_hermes_gateway(transcript)
+                    backend_used = "hermes-gateway" if hermes_ok else "none"
+            else:
+                reply, hermes_ok = ask_hermes_gateway(transcript)
+                backend_used = "hermes-gateway"
+                if not hermes_ok:
+                    print(f"[WARN] Hermes Gateway unavailable ({reply}). Attempting Ollama fallback...")
+                    ollama_reply, ollama_ok = query_ollama_fallback(transcript)
+                    if ollama_ok:
+                        reply = ollama_reply
+                        backend_used = "ollama-direct-fallback"
+                        print(f"[WARN] Used local Ollama fallback for prompt.")
+                    else:
+                        print(f"[WARN] Both Hermes Gateway and Ollama failed.")
 
             t_hermes_end = time.perf_counter()
             hermes_s = t_hermes_end - t_hermes_start
 
             # 5. Sanitize reply for embedded TFT display
             clean_reply = sanitize_for_display(reply)
+
+            # 6. Generate Local Voice (Voicebox TTS) if enabled, reachable, and LLM succeeded
+            tts_s = 0.0
+            audio_available = False
+            llm_succeeded = backend_used not in ("none", "")
+            if ENABLE_TTS and llm_succeeded and check_voicebox_online():
+                t_tts_start = time.perf_counter()
+                tts_wav = synthesize_speech_voicebox(clean_reply)
+                t_tts_end = time.perf_counter()
+                tts_s = t_tts_end - t_tts_start
+                if tts_wav:
+                    with _tts_lock:
+                        _last_tts_wav = tts_wav
+                    audio_available = True
+                else:
+                    with _tts_lock:
+                        _last_tts_wav = None
+            else:
+                with _tts_lock:
+                    _last_tts_wav = None
 
             t_server_end = time.perf_counter()
             server_total_s = t_server_end - t_req_start
@@ -666,6 +963,7 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
                 "wav_write_ms": int(wav_write_s * 1000),
                 "whisper_ms": int(whisper_s * 1000),
                 "hermes_ms": int(hermes_s * 1000),
+                "tts_ms": int(tts_s * 1000),
                 "server_ms": int(server_total_s * 1000)
             }
 
@@ -682,13 +980,16 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
                 "transcript": transcript,
                 "reply": clean_reply[:800],
                 "backend": backend_used,
+                "audio_available": audio_available,
+                "audio_url": "/voice/audio" if audio_available else "",
                 "timing": timing_dict,
                 "server_ms": int(server_total_s * 1000),
                 "whisper_ms": int(whisper_s * 1000),
-                "hermes_ms": int(hermes_s * 1000)
+                "hermes_ms": int(hermes_s * 1000),
+                "tts_ms": int(tts_s * 1000)
             }
 
-            # 6. Return JSON response to ESP32 IMMEDIATELY (flush socket)
+            # 7. Return JSON response to ESP32 IMMEDIATELY (flush socket)
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Access-Control-Allow-Origin", "*")
@@ -699,17 +1000,19 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             except Exception:
                 pass
 
-            # 7. Asynchronously mirror to Telegram (Phase 19: never blocks ESP32 or affects server_ms)
+            # 8. Asynchronously mirror to Telegram (Phase 19: never blocks ESP32 or affects server_ms)
             dispatch_telegram_mirror(transcript, reply, backend_used)
 
             # Structured console performance logging
             print("\n========== VOICE REQUEST ==========")
             print(f"WAV received  : {content_length} bytes from {self.client_address[0]}")
             print(f"Backend used  : {backend_used}")
+            print(f"TTS audio     : {'Generated (16kHz stereo WAV)' if audio_available else 'None / Offline'}")
             print(f"[PERF] body_read   : {body_read_s:6.2f} s")
             print(f"[PERF] wav_write   : {wav_write_s:6.2f} s")
             print(f"[PERF] whisper     : {whisper_s:6.2f} s")
             print(f"[PERF] hermes/llm  : {hermes_s:6.2f} s")
+            print(f"[PERF] voicebox/tts: {tts_s:6.2f} s")
             print("-----------------------------------")
             print(f"[PERF] SERVER TOTAL: {server_total_s:6.2f} s")
             print(f"[STT ] {transcript}")
@@ -725,14 +1028,17 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
                 last_voice_record["reply"] = str(e)[:100]
                 last_voice_record["timestamp"] = time.time()
 
-            self.send_response(500)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({
-                "status": "error",
-                "message": str(e),
-                "server_ms": int((t_err_end - t_req_start) * 1000)
-            }).encode("utf-8"))
+            try:
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "status": "error",
+                    "message": str(e),
+                    "server_ms": int((t_err_end - t_req_start) * 1000)
+                }).encode("utf-8"))
+            except Exception:
+                pass
 
         finally:
             if tmp_wav_path and os.path.exists(tmp_wav_path):

@@ -7,7 +7,7 @@
 #define MAX_RECORD_SECONDS    15
 #define MAX_AUDIO_BUFFER_SIZE (AUDIO_SAMPLE_RATE * sizeof(int16_t) * MAX_RECORD_SECONDS + 44)
 
-#include <math.h>
+#include <functional>
 
 struct ChannelStats {
     size_t count;
@@ -42,6 +42,11 @@ public:
     void update(); // Call in loop() while recording
     size_t stopRecording(); // Returns total WAV bytes
     void logDiagnostics(); // Print full per-channel analysis and codec registers
+    
+    // Speaker Audio Playback / Test Methods
+    void playTone(float freqHz, uint32_t durationMs, float volume = 0.35f);
+    void playChime();
+    bool playAudioStream(Stream& stream, size_t totalBytes = 0, std::function<bool()> shouldAbort = nullptr);
     
     bool isRecording() const { return _isRecording; }
     uint32_t getRecordDurationMs() const {

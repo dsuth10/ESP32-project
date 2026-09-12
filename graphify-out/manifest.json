@@ -60,10 +60,10 @@
     "semantic_hash": "3c4e8d4dbf1f0d7d3561f4d5a3bc60c2"
   },
   "server/hermes_voice_receiver.py": {
-    "mtime": 1789131377.8364427,
-    "seen": 1789134143.524665,
-    "ast_hash": "a6ae34eea3564b7262ba6090f5e970bf",
-    "semantic_hash": "a6ae34eea3564b7262ba6090f5e970bf"
+    "mtime": 1789197421.9249291,
+    "seen": 1789197443.4446397,
+    "ast_hash": "34c77316f9b2952c9cef1c83f57b38d5",
+    "semantic_hash": ""
   },
   "server/start_receiver.sh": {
     "mtime": 1788857105.7199209,
@@ -72,16 +72,16 @@
     "semantic_hash": "8a52e85332fb1be90a35ab3c4ae1ab97"
   },
   "src/audio_recorder.cpp": {
-    "mtime": 1788778357.4244246,
-    "seen": 1789134143.524666,
-    "ast_hash": "b7138d016d237a761ae1638efa2f1428",
-    "semantic_hash": "b7138d016d237a761ae1638efa2f1428"
+    "mtime": 1789176708.5220034,
+    "seen": 1789176912.5440516,
+    "ast_hash": "1f694a4c871b51593d97eefda34a9c04",
+    "semantic_hash": ""
   },
   "src/audio_recorder.h": {
-    "mtime": 1788778304.8228483,
-    "seen": 1789134143.5246665,
-    "ast_hash": "21348aa92008f1084581322404599ee1",
-    "semantic_hash": "21348aa92008f1084581322404599ee1"
+    "mtime": 1789176690.5171523,
+    "seen": 1789176912.5440521,
+    "ast_hash": "db1a9c47c3d0dea2c404da6552da69d3",
+    "semantic_hash": ""
   },
   "src/environment_manager.cpp": {
     "mtime": 1788866554.8017259,
@@ -138,22 +138,22 @@
     "semantic_hash": "079b97fbe07b6bf6adae16d0e5a11569"
   },
   "src/main.cpp": {
-    "mtime": 1789133503.491503,
-    "seen": 1789134143.5246723,
-    "ast_hash": "d943fa349ba409b7f0bb714db3de1c3a",
-    "semantic_hash": "d943fa349ba409b7f0bb714db3de1c3a"
+    "mtime": 1789176798.2302005,
+    "seen": 1789176912.544059,
+    "ast_hash": "e25f88812cb4174a3d57572bd338367b",
+    "semantic_hash": ""
   },
   "src/network_manager.cpp": {
-    "mtime": 1788944157.3494256,
-    "seen": 1789134143.5246727,
-    "ast_hash": "b25e5d5d7c956012c75bd8e5fba8ef85",
-    "semantic_hash": "b25e5d5d7c956012c75bd8e5fba8ef85"
+    "mtime": 1789176770.4153476,
+    "seen": 1789176912.54406,
+    "ast_hash": "6b586eab633ec82e8b379841429c856f",
+    "semantic_hash": ""
   },
   "src/network_manager.h": {
-    "mtime": 1788857105.7260711,
-    "seen": 1789134143.5246732,
-    "ast_hash": "8986e434e10937b0ebc1cfda90b0c725",
-    "semantic_hash": "8986e434e10937b0ebc1cfda90b0c725"
+    "mtime": 1789176723.6069567,
+    "seen": 1789176912.5440605,
+    "ast_hash": "0b80e8f290088e4e2d5909eb81424092",
+    "semantic_hash": ""
   },
   "src/system_status.h": {
     "mtime": 1788857105.7275748,
@@ -453,6 +453,12 @@
     "mtime": 1789135368.4627557,
     "seen": 1789135390.7331822,
     "ast_hash": "8eaf96443c389a79ed937ec6d71779c9",
+    "semantic_hash": ""
+  },
+  ".agents/scratch_tts_test.py": {
+    "mtime": 1789197381.8318453,
+    "seen": 1789197443.444624,
+    "ast_hash": "7db31924a02c721104a830dcd0be49e1",
     "semantic_hash": ""
   }
 }

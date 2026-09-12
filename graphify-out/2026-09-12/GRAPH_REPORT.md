@@ -1,16 +1,16 @@
 # Graph Report - ESP32 project  (2026-09-12)
 
 ## Corpus Check
-- 34 files · ~507,394 words
+- 39 files · ~511,078 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 377 nodes · 613 edges · 23 communities (13 shown, 6 thin omitted)
-- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 40 edges (avg confidence: 0.85)
+- 410 nodes · 655 edges · 28 communities (14 shown, 9 thin omitted)
+- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 41 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5486fd22`
+- Built from commit: `37411d01`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -20,7 +20,7 @@
 - EnvironmentManager
 - AudioRecorder
 - NetworkManager
-- main.cpp
+- ChannelStats
 - es8311_bsp.c
 - es8311.cpp
 - _coeff_div
@@ -34,11 +34,15 @@
 - rules/graphify.md
 - workflows/graphify.md
 - pinout_allocation_f58fa43e.md
+- Automated Background Updating
+- Workflow: /graph-query
+- Workflow: /graph-update
+- Workflow: /graph-visualize
 
 ## God Nodes (most connected - your core abstractions)
 1. `MacroPadGUI` - 35 edges
-2. `AudioRecorder` - 28 edges
-3. `NetworkManager` - 20 edges
+2. `AudioRecorder` - 31 edges
+3. `NetworkManager` - 21 edges
 4. `EnvironmentManager` - 17 edges
 5. `ChannelStats` - 14 edges
 6. `es8311_write_reg()` - 13 edges
@@ -62,31 +66,31 @@
 ## Import Cycles
 - None detected.
 
-## Communities (23 total, 6 thin omitted)
+## Communities (28 total, 9 thin omitted)
 
 ### Community 0 - "MacroPadGUI"
 Cohesion: 0.08
 Nodes (49): HealthState, ChatLine, color, text, ChatMessage, isUser, text, DashboardStatus (+41 more)
 
 ### Community 1 - "hermes_voice_receiver.py"
-Cohesion: 0.10
-Nodes (27): BaseHTTPRequestHandler, ask_hermes_gateway(), dispatch_telegram_mirror(), _async_send(), get_composite_status(), get_whisper_model(), _hermes_sessions_headers(), load_voice_session() (+19 more)
+Cohesion: 0.08
+Nodes (35): BaseHTTPRequestHandler, ask_hermes_gateway(), check_voicebox_online(), convert_24k_mono_to_16k_stereo_wav(), dispatch_telegram_mirror(), _async_send(), get_composite_status(), get_whisper_model() (+27 more)
 
 ### Community 2 - "EnvironmentManager"
 Cohesion: 0.10
 Nodes (29): Preferences, EnvironmentChangeCallback, EnvironmentMode, EnvironmentManager, begin, _changeCallback, _currentMode, EnvironmentManager::EnvironmentManager() (+21 more)
 
 ### Community 3 - "AudioRecorder"
-Cohesion: 0.05
-Nodes (29): AudioRecorder, begin, _lastRecordDurationMs, _leftStats, logDiagnostics, _maxLeftPeak, _maxRightPeak, _monoStats (+21 more)
+Cohesion: 0.07
+Nodes (26): AudioRecorder, begin, _lastRecordDurationMs, _leftStats, logDiagnostics, _maxLeftPeak, _maxRightPeak, _monoStats (+18 more)
 
 ### Community 4 - "NetworkManager"
 Cohesion: 0.14
-Nodes (27): DashboardStatus, EnvironmentMode, String, extractJsonBool(), extractJsonField(), extractJsonInt(), extractJsonObject(), String (+19 more)
+Nodes (29): DashboardStatus, EnvironmentMode, function, String, extractJsonBool(), extractJsonField(), extractJsonInt(), extractJsonObject() (+21 more)
 
-### Community 5 - "main.cpp"
-Cohesion: 0.31
-Nodes (5): MacroButton, executeMacro(), loop(), setLedColor(), setup()
+### Community 5 - "ChannelStats"
+Cohesion: 0.10
+Nodes (13): MacroButton, ChannelStats, clipCount, count, maxVal, minVal, nonZeroCount, sum (+5 more)
 
 ### Community 6 - "es8311_bsp.c"
 Cohesion: 0.25
@@ -116,25 +120,29 @@ Nodes (35): 1. System Topology, 2. Component Directory, 3. Security Model: Secre
 Cohesion: 0.17
 Nodes (11): ESP32 Portable MacroPad & Hermes Satellite: Core Engineering Rules, Rule 10: Safe Cross-Core Concurrency & Bounded Touch Debounce, Rule 1: Strict Environment Binding (The Composite Profile Rule), Rule 2: The Contract Principle & Visible Degradation, Rule 3: Asynchronous Receiver Concurrency (The Audio Lock Rule), Rule 4: Host-Side Display Sanitization (TFT Buffer Defense), Rule 5: Decouple Subsystem Readiness (Degraded vs. Failed Semantics), Rule 6: Zero-Reflash Portability (NVS Persistence) (+3 more)
 
+### Community 23 - "Automated Background Updating"
+Cohesion: 0.25
+Nodes (7): 1. Git Commit Hook (Zero-Touch), 2. Live File Watcher (Continuous Auto-Update on Save), 3. Antigravity Agent Rule (Automated Turn-End Maintenance), Automated Background Updating, Everyday Command Reference (`.\graph.ps1`), Graphify Toolkit & Automation System, Slash Commands in Antigravity Chat
+
 ## Knowledge Gaps
-- **137 isolated node(s):** `start_receiver.sh script`, `count`, `minVal`, `maxVal`, `sum` (+132 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 201 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **145 isolated node(s):** `start_receiver.sh script`, `count`, `minVal`, `maxVal`, `sum` (+140 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 220 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
+- **Why does `AudioRecorder` connect `AudioRecorder` to `ChannelStats`?**
+  _High betweenness centrality (0.072) - this node is a cross-community bridge._
+- **Why does `ChannelStats` connect `ChannelStats` to `AudioRecorder`?**
+  _High betweenness centrality (0.033) - this node is a cross-community bridge._
 - **What connects `start_receiver.sh script`, `count`, `minVal` to the rest of the system?**
-  _137 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _145 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `MacroPadGUI` be split into smaller, more focused modules?**
-  _Cohesion score 0.07764705882352942 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07541478129713423 - nodes in this community are weakly interconnected._
 - **Should `hermes_voice_receiver.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.0967741935483871 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07948717948717948 - nodes in this community are weakly interconnected._
 - **Should `EnvironmentManager` be split into smaller, more focused modules?**
   _Cohesion score 0.0989247311827957 - nodes in this community are weakly interconnected._
 - **Should `AudioRecorder` be split into smaller, more focused modules?**
-  _Cohesion score 0.05496828752642706 - nodes in this community are weakly interconnected._
-- **Should `NetworkManager` be split into smaller, more focused modules?**
-  _Cohesion score 0.14193548387096774 - nodes in this community are weakly interconnected._
-- **Should `Dashboard-plan.md` be split into smaller, more focused modules?**
-  _Cohesion score 0.05405405405405406 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07394957983193277 - nodes in this community are weakly interconnected._

@@ -4,6 +4,32 @@
   "graph": {},
   "nodes": [
     {
+      "id": "src_gui_chatline",
+      "label": "ChatLine",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "chatline",
+      "source_file": "src/gui.h",
+      "source_location": "L17"
+    },
+    {
+      "id": "src_gui_chatmessage",
+      "label": "ChatMessage",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "chatmessage",
+      "source_file": "src/gui.h",
+      "source_location": "L22"
+    },
+    {
       "id": "src_gui_macropadgui",
       "label": "MacroPadGUI",
       "_callable": true,
@@ -27,7 +53,7 @@
       "file_type": "code",
       "norm_label": "voicerequesthandler",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L499"
+      "source_location": "L745"
     },
     {
       "id": "src_environment_manager_environmentmanager",
@@ -69,19 +95,6 @@
       "source_location": "L37"
     },
     {
-      "id": "src_audio_recorder_channelstats",
-      "label": "ChannelStats",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": "channelstats",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L12"
-    },
-    {
       "id": "src_network_manager_networkmanager",
       "label": "NetworkManager",
       "_callable": true,
@@ -92,33 +105,20 @@
       "file_type": "code",
       "norm_label": "networkmanager",
       "source_file": "src/network_manager.h",
-      "source_location": "L8"
+      "source_location": "L9"
     },
     {
-      "id": "src_gui_chatline",
-      "label": "ChatLine",
+      "id": "src_audio_recorder_channelstats",
+      "label": "ChannelStats",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
-      "norm_label": "chatline",
-      "source_file": "src/gui.h",
-      "source_location": "L17"
-    },
-    {
-      "id": "src_gui_chatmessage",
-      "label": "ChatMessage",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "main.cpp",
-      "file_type": "code",
-      "norm_label": "chatmessage",
-      "source_file": "src/gui.h",
-      "source_location": "L22"
+      "norm_label": "channelstats",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L12"
     },
     {
       "id": "src_es8311_coeff_div",
@@ -217,7 +217,31 @@
       "file_type": "code",
       "norm_label": "ask_hermes_gateway()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L241"
+      "source_location": "L434"
+    },
+    {
+      "id": "server_hermes_voice_receiver_check_voicebox_online",
+      "label": "check_voicebox_online()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "hermes_voice_receiver.py",
+      "file_type": "code",
+      "norm_label": "check_voicebox_online()",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L172"
+    },
+    {
+      "id": "server_hermes_voice_receiver_convert_24k_mono_to_16k_stereo_wav",
+      "label": "convert_24k_mono_to_16k_stereo_wav()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "hermes_voice_receiver.py",
+      "file_type": "code",
+      "norm_label": "convert_24k_mono_to_16k_stereo_wav()",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L210"
     },
     {
       "id": "server_hermes_voice_receiver_dispatch_telegram_mirror",
@@ -229,7 +253,7 @@
       "file_type": "code",
       "norm_label": "dispatch_telegram_mirror()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L172"
+      "source_location": "L363"
     },
     {
       "id": "server_hermes_voice_receiver_dispatch_telegram_mirror_async_send",
@@ -241,7 +265,7 @@
       "file_type": "code",
       "norm_label": "_async_send()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L177"
+      "source_location": "L368"
     },
     {
       "id": "server_hermes_voice_receiver_get_composite_status",
@@ -253,7 +277,7 @@
       "file_type": "code",
       "norm_label": "get_composite_status()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L449"
+      "source_location": "L687"
     },
     {
       "id": "server_hermes_voice_receiver_get_whisper_model",
@@ -265,7 +289,7 @@
       "file_type": "code",
       "norm_label": "get_whisper_model()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L136"
+      "source_location": "L327"
     },
     {
       "id": "server_hermes_voice_receiver_hermes_sessions_headers",
@@ -277,7 +301,7 @@
       "file_type": "code",
       "norm_label": "_hermes_sessions_headers()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L194"
+      "source_location": "L385"
     },
     {
       "id": "server_hermes_voice_receiver_load_voice_session",
@@ -289,7 +313,7 @@
       "file_type": "code",
       "norm_label": "load_voice_session()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L199"
+      "source_location": "L390"
     },
     {
       "id": "server_hermes_voice_receiver_main",
@@ -301,7 +325,7 @@
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L745"
+      "source_location": "L1051"
     },
     {
       "id": "server_hermes_voice_receiver_probe_hermes_health",
@@ -313,7 +337,7 @@
       "file_type": "code",
       "norm_label": "probe_hermes_health()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L331"
+      "source_location": "L547"
     },
     {
       "id": "server_hermes_voice_receiver_probe_ollama_health",
@@ -325,7 +349,7 @@
       "file_type": "code",
       "norm_label": "probe_ollama_health()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L408"
+      "source_location": "L646"
     },
     {
       "id": "server_hermes_voice_receiver_query_ollama_fallback",
@@ -337,7 +361,19 @@
       "file_type": "code",
       "norm_label": "query_ollama_fallback()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L279"
+      "source_location": "L480"
+    },
+    {
+      "id": "server_hermes_voice_receiver_resolve_voicebox_profile_id",
+      "label": "resolve_voicebox_profile_id()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "hermes_voice_receiver.py",
+      "file_type": "code",
+      "norm_label": "resolve_voicebox_profile_id()",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L188"
     },
     {
       "id": "server_hermes_voice_receiver_sanitize_for_display",
@@ -349,7 +385,19 @@
       "file_type": "code",
       "norm_label": "sanitize_for_display()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L123"
+      "source_location": "L158"
+    },
+    {
+      "id": "server_hermes_voice_receiver_sanitize_for_tts",
+      "label": "sanitize_for_tts()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "hermes_voice_receiver.py",
+      "file_type": "code",
+      "norm_label": "sanitize_for_tts()",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L254"
     },
     {
       "id": "server_hermes_voice_receiver_send_telegram_message",
@@ -361,7 +409,19 @@
       "file_type": "code",
       "norm_label": "send_telegram_message()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L149"
+      "source_location": "L340"
+    },
+    {
+      "id": "server_hermes_voice_receiver_synthesize_speech_voicebox",
+      "label": "synthesize_speech_voicebox()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "hermes_voice_receiver.py",
+      "file_type": "code",
+      "norm_label": "synthesize_speech_voicebox()",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L289"
     },
     {
       "id": "server_hermes_voice_receiver_voicerequesthandler_check_auth",
@@ -373,7 +433,7 @@
       "file_type": "code",
       "norm_label": ".check_auth()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L500"
+      "source_location": "L746"
     },
     {
       "id": "server_hermes_voice_receiver_voicerequesthandler_do_get",
@@ -385,7 +445,7 @@
       "file_type": "code",
       "norm_label": ".do_get()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L521"
+      "source_location": "L767"
     },
     {
       "id": "server_hermes_voice_receiver_voicerequesthandler_do_post",
@@ -397,7 +457,7 @@
       "file_type": "code",
       "norm_label": ".do_post()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L567"
+      "source_location": "L835"
     },
     {
       "id": "server_hermes_voice_receiver_voicerequesthandler_send_unauthorized",
@@ -409,7 +469,7 @@
       "file_type": "code",
       "norm_label": ".send_unauthorized()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L510"
+      "source_location": "L756"
     },
     {
       "id": "server_hermes_voice_receiver_warmup_ollama_model",
@@ -421,7 +481,7 @@
       "file_type": "code",
       "norm_label": "warmup_ollama_model()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L385"
+      "source_location": "L601"
     },
     {
       "id": "server_benchmark_hermes_standalone_main",
@@ -496,6 +556,18 @@
       "source_location": "L5"
     },
     {
+      "id": "agents_scratch_tts_test_sanitize_for_tts",
+      "label": "sanitize_for_tts()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 28,
+      "community_name": "scratch_tts_test.py",
+      "file_type": "code",
+      "norm_label": "sanitize_for_tts()",
+      "source_file": ".agents/scratch_tts_test.py",
+      "source_location": "L3"
+    },
+    {
       "id": "src_audio_recorder_audiorecorder_audiorecorder",
       "label": "AudioRecorder::AudioRecorder()",
       "_callable": true,
@@ -517,7 +589,7 @@
       "file_type": "code",
       "norm_label": ".getmaxleft()",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L52"
+      "source_location": "L57"
     },
     {
       "id": "src_audio_recorder_audiorecorder_getmaxright",
@@ -529,7 +601,7 @@
       "file_type": "code",
       "norm_label": ".getmaxright()",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L53"
+      "source_location": "L58"
     },
     {
       "id": "src_audio_recorder_audiorecorder_getrecorddurationms",
@@ -541,7 +613,7 @@
       "file_type": "code",
       "norm_label": ".getrecorddurationms()",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L47"
+      "source_location": "L52"
     },
     {
       "id": "src_audio_recorder_audiorecorder_getwavbuffer",
@@ -553,7 +625,7 @@
       "file_type": "code",
       "norm_label": ".getwavbuffer()",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L50"
+      "source_location": "L55"
     },
     {
       "id": "src_audio_recorder_audiorecorder_getwavsize",
@@ -565,7 +637,7 @@
       "file_type": "code",
       "norm_label": ".getwavsize()",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L51"
+      "source_location": "L56"
     },
     {
       "id": "src_audio_recorder_audiorecorder_isrecording",
@@ -577,67 +649,7 @@
       "file_type": "code",
       "norm_label": ".isrecording()",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L46"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_getclippct",
-      "label": ".getClipPct()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": ".getclippct()",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L34"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_getmean",
-      "label": ".getMean()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": ".getmean()",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L31"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_getnonzeropct",
-      "label": ".getNonZeroPct()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": ".getnonzeropct()",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L33"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_getrms",
-      "label": ".getRms()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": ".getrms()",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L32"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_reset",
-      "label": ".reset()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": ".reset()",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L21"
+      "source_location": "L51"
     },
     {
       "id": "src_network_manager_extractjsonbool",
@@ -653,31 +665,31 @@
             "callee": "indexOf",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L54"
+            "line": "L55"
           },
           {
             "callee": "length",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L60"
+            "line": "L61"
           },
           {
             "callee": "charAt",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L61"
+            "line": "L62"
           },
           {
             "callee": "startsWith",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L62"
+            "line": "L63"
           }
         ]
       },
       "norm_label": "extractjsonbool()",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L52"
+      "source_location": "L53"
     },
     {
       "id": "src_network_manager_extractjsonfield",
@@ -693,37 +705,37 @@
             "callee": "indexOf",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L9"
+            "line": "L10"
           },
           {
             "callee": "length",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L15"
+            "line": "L16"
           },
           {
             "callee": "charAt",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L21"
+            "line": "L22"
           },
           {
             "callee": "substring",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L28"
+            "line": "L29"
           },
           {
             "callee": "replace",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L29"
+            "line": "L30"
           }
         ]
       },
       "norm_label": "extractjsonfield()",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "src_network_manager_extractjsonint",
@@ -739,31 +751,31 @@
             "callee": "indexOf",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L36"
+            "line": "L37"
           },
           {
             "callee": "length",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L42"
+            "line": "L43"
           },
           {
             "callee": "charAt",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L43"
+            "line": "L44"
           },
           {
             "callee": "substring",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L47"
+            "line": "L48"
           }
         ]
       },
       "norm_label": "extractjsonint()",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L34"
+      "source_location": "L35"
     },
     {
       "id": "src_network_manager_extractjsonobject",
@@ -779,31 +791,31 @@
             "callee": "indexOf",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L69"
+            "line": "L70"
           },
           {
             "callee": "length",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L78"
+            "line": "L79"
           },
           {
             "callee": "charAt",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L79"
+            "line": "L80"
           },
           {
             "callee": "substring",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L83"
+            "line": "L84"
           }
         ]
       },
       "norm_label": "extractjsonobject()",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L67"
+      "source_location": "L68"
     },
     {
       "id": "src_network_manager_networkmanager_networkmanager",
@@ -815,7 +827,67 @@
       "file_type": "code",
       "norm_label": "networkmanager::networkmanager()",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L90"
+      "source_location": "L91"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_getclippct",
+      "label": ".getClipPct()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "ChannelStats",
+      "file_type": "code",
+      "norm_label": ".getclippct()",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L34"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_getmean",
+      "label": ".getMean()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "ChannelStats",
+      "file_type": "code",
+      "norm_label": ".getmean()",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L31"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_getnonzeropct",
+      "label": ".getNonZeroPct()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "ChannelStats",
+      "file_type": "code",
+      "norm_label": ".getnonzeropct()",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L33"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_getrms",
+      "label": ".getRms()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "ChannelStats",
+      "file_type": "code",
+      "norm_label": ".getrms()",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L32"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_reset",
+      "label": ".reset()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "ChannelStats",
+      "file_type": "code",
+      "norm_label": ".reset()",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L21"
     },
     {
       "id": "src_main_executemacro",
@@ -823,7 +895,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -851,13 +923,49 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
           {
+            "callee": "available",
+            "receiver_type": "Serial",
+            "lang": "cpp",
+            "line": "L197"
+          },
+          {
+            "callee": "readStringUntil",
+            "receiver_type": "Serial",
+            "lang": "cpp",
+            "line": "L198"
+          },
+          {
+            "callee": "trim",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L199"
+          },
+          {
+            "callee": "equalsIgnoreCase",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L200"
+          },
+          {
             "callee": "println",
             "receiver_type": "Serial",
+            "lang": "cpp",
+            "line": "L202"
+          },
+          {
+            "callee": "startsWith",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L204"
+          },
+          {
+            "callee": "substring",
+            "receiver_type": "String",
             "lang": "cpp",
             "line": "L205"
           },
@@ -865,13 +973,25 @@
             "callee": "printf",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L453"
+            "line": "L207"
+          },
+          {
+            "callee": "c_str",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L489"
+          },
+          {
+            "callee": "length",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L494"
           }
         ]
       },
       "norm_label": "loop()",
       "source_file": "src/main.cpp",
-      "source_location": "L191"
+      "source_location": "L195"
     },
     {
       "id": "src_main_setledcolor",
@@ -879,7 +999,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
       "norm_label": "setledcolor()",
       "source_file": "src/main.cpp",
@@ -891,7 +1011,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -937,7 +1057,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
       "norm_label": "telemetryworkertask()",
       "source_file": "src/main.cpp",
@@ -1833,6 +1953,50 @@
       "source_location": ""
     },
     {
+      "id": "src_gui_chatline_color",
+      "label": "color",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "color",
+      "source_file": "src/gui.h",
+      "source_location": "L19"
+    },
+    {
+      "id": "src_gui_chatline_text",
+      "label": "text",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "text",
+      "source_file": "src/gui.h",
+      "source_location": "L18"
+    },
+    {
+      "id": "src_gui_chatmessage_isuser",
+      "label": "isUser",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "isuser",
+      "source_file": "src/gui.h",
+      "source_location": "L23"
+    },
+    {
+      "id": "src_gui_chatmessage_text",
+      "label": "text",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "text",
+      "source_file": "src/gui.h",
+      "source_location": "L24"
+    },
+    {
       "id": "src_gui_cpp_dashboardstatus",
       "label": "DashboardStatus",
       "_origin": "ast",
@@ -1906,6 +2070,50 @@
       "community_name": "MacroPadGUI",
       "file_type": "code",
       "norm_label": "voiceuistate",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_gui_h_src_gui",
+      "label": "gui.h",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "gui.h",
+      "source_file": "src/gui.h",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_gui_h_string",
+      "label": "String",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "string",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_gui_h_tft_espi",
+      "label": "TFT_eSPI",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "tft_espi",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_gui_h_vector",
+      "label": "vector",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "vector",
       "source_file": "",
       "source_location": ""
     },
@@ -1987,6 +2195,17 @@
       "source_location": "L54"
     },
     {
+      "id": "src_system_status",
+      "label": "system_status.h",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "system_status.h",
+      "source_file": "src/system_status.h",
+      "source_location": "L1"
+    },
+    {
       "id": "basehttprequesthandler",
       "label": "BaseHTTPRequestHandler",
       "_origin": "ast",
@@ -2020,7 +2239,7 @@
       "source_location": "L1"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_124",
+      "id": "server_hermes_voice_receiver_rationale_159",
       "label": "Strips markdown and unsupported characters for clean display on ST7789 TFT\u2026",
       "_origin": "ast",
       "community": 1,
@@ -2028,10 +2247,43 @@
       "file_type": "rationale",
       "norm_label": "strips markdown and unsupported characters for clean display on st7789 tft...",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L124"
+      "source_location": "L159"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_173",
+      "id": "server_hermes_voice_receiver_rationale_211",
+      "label": "Converts 24kHz mono 16-bit PCM WAV to 16kHz stereo 16-bit PCM WAV for ESP32 I2S.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "hermes_voice_receiver.py",
+      "file_type": "rationale",
+      "norm_label": "converts 24khz mono 16-bit pcm wav to 16khz stereo 16-bit pcm wav for esp32 i2s.",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L211"
+    },
+    {
+      "id": "server_hermes_voice_receiver_rationale_255",
+      "label": "Prepare text for TTS pronunciation and ensure optimal generation length.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "hermes_voice_receiver.py",
+      "file_type": "rationale",
+      "norm_label": "prepare text for tts pronunciation and ensure optimal generation length.",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L255"
+    },
+    {
+      "id": "server_hermes_voice_receiver_rationale_290",
+      "label": "Generate audio via Voicebox and format for ESP32 playback.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "hermes_voice_receiver.py",
+      "file_type": "rationale",
+      "norm_label": "generate audio via voicebox and format for esp32 playback.",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L290"
+    },
+    {
+      "id": "server_hermes_voice_receiver_rationale_364",
       "label": "Phase 19: Asynchronously mirrors voice conversation to Telegram without\u2026",
       "_origin": "ast",
       "community": 1,
@@ -2039,10 +2291,10 @@
       "file_type": "rationale",
       "norm_label": "phase 19: asynchronously mirrors voice conversation to telegram without...",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L173"
+      "source_location": "L364"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_200",
+      "id": "server_hermes_voice_receiver_rationale_391",
       "label": "Return the durable voice session ID, creating the session if needed.",
       "_origin": "ast",
       "community": 1,
@@ -2050,10 +2302,10 @@
       "file_type": "rationale",
       "norm_label": "return the durable voice session id, creating the session if needed.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L200"
+      "source_location": "L391"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_242",
+      "id": "server_hermes_voice_receiver_rationale_435",
       "label": "Dispatches prompt to persistent Hermes Gateway via HTTP.",
       "_origin": "ast",
       "community": 1,
@@ -2061,10 +2313,10 @@
       "file_type": "rationale",
       "norm_label": "dispatches prompt to persistent hermes gateway via http.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L242"
+      "source_location": "L435"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_280",
+      "id": "server_hermes_voice_receiver_rationale_481",
       "label": "Diagnostic fallback querying local Ollama directly if Hermes Gateway is offline.",
       "_origin": "ast",
       "community": 1,
@@ -2072,10 +2324,10 @@
       "file_type": "rationale",
       "norm_label": "diagnostic fallback querying local ollama directly if hermes gateway is offline.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L280"
+      "source_location": "L481"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_332",
+      "id": "server_hermes_voice_receiver_rationale_548",
       "label": "Probes Hermes Gateway for liveness and detailed readiness.",
       "_origin": "ast",
       "community": 1,
@@ -2083,10 +2335,10 @@
       "file_type": "rationale",
       "norm_label": "probes hermes gateway for liveness and detailed readiness.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L332"
+      "source_location": "L548"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_386",
+      "id": "server_hermes_voice_receiver_rationale_602",
       "label": "Phase 17: Preload the active Ollama model into GPU VRAM to prevent first-query\u2026",
       "_origin": "ast",
       "community": 1,
@@ -2094,10 +2346,10 @@
       "file_type": "rationale",
       "norm_label": "phase 17: preload the active ollama model into gpu vram to prevent first-query...",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L386"
+      "source_location": "L602"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_409",
+      "id": "server_hermes_voice_receiver_rationale_647",
       "label": "Probes local Ollama for service reachability and model VRAM residency.",
       "_origin": "ast",
       "community": 1,
@@ -2105,10 +2357,10 @@
       "file_type": "rationale",
       "norm_label": "probes local ollama for service reachability and model vram residency.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L409"
+      "source_location": "L647"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_450",
+      "id": "server_hermes_voice_receiver_rationale_688",
       "label": "Returns composite health authority state, cached for 2.5 seconds to minimize\u2026",
       "_origin": "ast",
       "community": 1,
@@ -2116,10 +2368,10 @@
       "file_type": "rationale",
       "norm_label": "returns composite health authority state, cached for 2.5 seconds to minimize...",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L450"
+      "source_location": "L688"
     },
     {
-      "id": "server_hermes_voice_receiver_rationale_501",
+      "id": "server_hermes_voice_receiver_rationale_747",
       "label": "Phase 20: Validate Authorization: Bearer <VOICE_RECEIVER_TOKEN> if configured.",
       "_origin": "ast",
       "community": 1,
@@ -2127,7 +2379,7 @@
       "file_type": "rationale",
       "norm_label": "phase 20: validate authorization: bearer <voice_receiver_token> if configured.",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L501"
+      "source_location": "L747"
     },
     {
       "id": "server_benchmark_hermes_standalone",
@@ -3939,6 +4191,17 @@
       "source_location": "L1"
     },
     {
+      "id": "agents_scratch_tts_test",
+      "label": "scratch_tts_test.py",
+      "_origin": "ast",
+      "community": 28,
+      "community_name": "scratch_tts_test.py",
+      "file_type": "code",
+      "norm_label": "scratch_tts_test.py",
+      "source_file": ".agents/scratch_tts_test.py",
+      "source_location": "L1"
+    },
+    {
       "id": "src_audio_recorder_audiorecorder_update",
       "label": "update",
       "_origin": "ast",
@@ -4059,7 +4322,88 @@
       "file_type": "code",
       "norm_label": "writewavheader",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L78"
+      "source_location": "L83"
+    },
+    {
+      "id": "src_audio_recorder_audiorecorder_playtone",
+      "label": "playTone",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "definition_file": "src/audio_recorder.cpp",
+      "definition_location": "L297",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "printf",
+            "receiver_type": "Serial",
+            "lang": "cpp",
+            "line": "L302"
+          },
+          {
+            "callee": "println",
+            "receiver_type": "Serial",
+            "lang": "cpp",
+            "line": "L357"
+          }
+        ]
+      },
+      "norm_label": "playtone",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L47"
+    },
+    {
+      "id": "src_audio_recorder_audiorecorder_playchime",
+      "label": "playChime",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "definition_file": "src/audio_recorder.cpp",
+      "definition_location": "L360",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "println",
+            "receiver_type": "Serial",
+            "lang": "cpp",
+            "line": "L361"
+          }
+        ]
+      },
+      "norm_label": "playchime",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L48"
+    },
+    {
+      "id": "src_audio_recorder_audiorecorder_playaudiostream",
+      "label": "playAudioStream",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "definition_file": "src/audio_recorder.cpp",
+      "definition_location": "L426",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "println",
+            "receiver_type": "Serial",
+            "lang": "cpp",
+            "line": "L427"
+          },
+          {
+            "callee": "printf",
+            "receiver_type": "Serial",
+            "lang": "cpp",
+            "line": "L479"
+          }
+        ]
+      },
+      "norm_label": "playaudiostream",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L49"
     },
     {
       "id": "src_audio_recorder_audiorecorder_startrecording",
@@ -4093,7 +4437,7 @@
       "file_type": "code",
       "norm_label": "_lastrecorddurationms",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L65"
+      "source_location": "L70"
     },
     {
       "id": "src_audio_recorder_audiorecorder_leftstats",
@@ -4104,7 +4448,7 @@
       "file_type": "code",
       "norm_label": "_leftstats",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L69"
+      "source_location": "L74"
     },
     {
       "id": "src_audio_recorder_audiorecorder_maxleftpeak",
@@ -4115,7 +4459,7 @@
       "file_type": "code",
       "norm_label": "_maxleftpeak",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L66"
+      "source_location": "L71"
     },
     {
       "id": "src_audio_recorder_audiorecorder_maxrightpeak",
@@ -4126,7 +4470,7 @@
       "file_type": "code",
       "norm_label": "_maxrightpeak",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L67"
+      "source_location": "L72"
     },
     {
       "id": "src_audio_recorder_audiorecorder_monostats",
@@ -4137,7 +4481,7 @@
       "file_type": "code",
       "norm_label": "_monostats",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L71"
+      "source_location": "L76"
     },
     {
       "id": "src_audio_recorder_audiorecorder_pcmbytesrecorded",
@@ -4148,7 +4492,7 @@
       "file_type": "code",
       "norm_label": "_pcmbytesrecorded",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L61"
+      "source_location": "L66"
     },
     {
       "id": "src_audio_recorder_audiorecorder_previewcount",
@@ -4159,7 +4503,7 @@
       "file_type": "code",
       "norm_label": "_previewcount",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L76"
+      "source_location": "L81"
     },
     {
       "id": "src_audio_recorder_audiorecorder_previewleft",
@@ -4170,7 +4514,7 @@
       "file_type": "code",
       "norm_label": "_previewleft",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L73"
+      "source_location": "L78"
     },
     {
       "id": "src_audio_recorder_audiorecorder_previewmono",
@@ -4181,7 +4525,7 @@
       "file_type": "code",
       "norm_label": "_previewmono",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L75"
+      "source_location": "L80"
     },
     {
       "id": "src_audio_recorder_audiorecorder_previewright",
@@ -4192,7 +4536,7 @@
       "file_type": "code",
       "norm_label": "_previewright",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L74"
+      "source_location": "L79"
     },
     {
       "id": "src_audio_recorder_audiorecorder_psrambuffer",
@@ -4203,7 +4547,7 @@
       "file_type": "code",
       "norm_label": "_psrambuffer",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L60"
+      "source_location": "L65"
     },
     {
       "id": "src_audio_recorder_audiorecorder_recordstarttime",
@@ -4214,7 +4558,7 @@
       "file_type": "code",
       "norm_label": "_recordstarttime",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L64"
+      "source_location": "L69"
     },
     {
       "id": "src_audio_recorder_audiorecorder_rightstats",
@@ -4225,7 +4569,7 @@
       "file_type": "code",
       "norm_label": "_rightstats",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L70"
+      "source_location": "L75"
     },
     {
       "id": "src_audio_recorder_audiorecorder_totalwavbytes",
@@ -4236,84 +4580,18 @@
       "file_type": "code",
       "norm_label": "_totalwavbytes",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L62"
+      "source_location": "L67"
     },
     {
-      "id": "src_audio_recorder_channelstats_clipcount",
-      "label": "clipCount",
+      "id": "src_audio_recorder_cpp_function",
+      "label": "function",
       "_origin": "ast",
       "community": 3,
       "community_name": "AudioRecorder",
       "file_type": "code",
-      "norm_label": "clipcount",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L19"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_count",
-      "label": "count",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": "count",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L13"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_maxval",
-      "label": "maxVal",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": "maxval",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_minval",
-      "label": "minVal",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": "minval",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L14"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_nonzerocount",
-      "label": "nonZeroCount",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": "nonzerocount",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L18"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_sum",
-      "label": "sum",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": "sum",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L16"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_sumsq",
-      "label": "sumSq",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": "sumsq",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L17"
+      "norm_label": "function",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "src_audio_recorder_cpp_src_audio_recorder",
@@ -4324,17 +4602,6 @@
       "file_type": "code",
       "norm_label": "audio_recorder.cpp",
       "source_file": "src/audio_recorder.cpp",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_audio_recorder_h_src_audio_recorder",
-      "label": "audio_recorder.h",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "AudioRecorder",
-      "file_type": "code",
-      "norm_label": "audio_recorder.h",
-      "source_file": "src/audio_recorder.h",
       "source_location": "L1"
     },
     {
@@ -4349,13 +4616,24 @@
       "source_location": "L1"
     },
     {
+      "id": "stream",
+      "label": "Stream",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": "stream",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "src_network_manager_networkmanager_startconnection",
       "label": "startConnection",
       "_origin": "ast",
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L129",
+      "definition_location": "L130",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4363,31 +4641,31 @@
             "callee": "println",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L133"
+            "line": "L134"
           },
           {
             "callee": "printf",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L137"
+            "line": "L138"
           },
           {
             "callee": "disconnect",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L138"
+            "line": "L139"
           },
           {
             "callee": "begin",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L140"
+            "line": "L141"
           }
         ]
       },
       "norm_label": "startconnection",
       "source_file": "src/network_manager.h",
-      "source_location": "L42"
+      "source_location": "L47"
     },
     {
       "id": "src_network_manager_networkmanager_applyenvironment",
@@ -4396,7 +4674,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L145",
+      "definition_location": "L146",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4404,13 +4682,13 @@
             "callee": "printf",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L150"
+            "line": "L151"
           }
         ]
       },
       "norm_label": "applyenvironment",
       "source_file": "src/network_manager.h",
-      "source_location": "L19"
+      "source_location": "L20"
     },
     {
       "id": "src_network_manager_networkmanager_update",
@@ -4419,7 +4697,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L155",
+      "definition_location": "L156",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4427,49 +4705,49 @@
             "callee": "status",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L158"
+            "line": "L159"
           },
           {
             "callee": "printf",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L161"
+            "line": "L162"
           },
           {
             "callee": "SSID",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L162"
+            "line": "L163"
           },
           {
             "callee": "localIP",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L162"
+            "line": "L163"
           },
           {
             "callee": "RSSI",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L162"
+            "line": "L163"
           },
           {
             "callee": "println",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L165"
+            "line": "L166"
           },
           {
             "callee": "begin",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L175"
+            "line": "L176"
           }
         ]
       },
       "norm_label": "update",
       "source_file": "src/network_manager.h",
-      "source_location": "L12"
+      "source_location": "L13"
     },
     {
       "id": "src_network_manager_networkmanager_isconnected",
@@ -4478,7 +4756,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L180",
+      "definition_location": "L181",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4486,13 +4764,13 @@
             "callee": "status",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L181"
+            "line": "L182"
           }
         ]
       },
       "norm_label": "isconnected",
       "source_file": "src/network_manager.h",
-      "source_location": "L13"
+      "source_location": "L14"
     },
     {
       "id": "src_network_manager_networkmanager_getipaddress",
@@ -4501,7 +4779,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L184",
+      "definition_location": "L185",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4509,13 +4787,13 @@
             "callee": "localIP",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L186"
+            "line": "L187"
           }
         ]
       },
       "norm_label": "getipaddress",
       "source_file": "src/network_manager.h",
-      "source_location": "L14"
+      "source_location": "L15"
     },
     {
       "id": "src_network_manager_networkmanager_getconnectedssid",
@@ -4524,7 +4802,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L191",
+      "definition_location": "L192",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4532,13 +4810,13 @@
             "callee": "SSID",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L193"
+            "line": "L194"
           }
         ]
       },
       "norm_label": "getconnectedssid",
       "source_file": "src/network_manager.h",
-      "source_location": "L15"
+      "source_location": "L16"
     },
     {
       "id": "src_network_manager_networkmanager_getrssi",
@@ -4547,7 +4825,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L198",
+      "definition_location": "L199",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4555,13 +4833,13 @@
             "callee": "RSSI",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L200"
+            "line": "L201"
           }
         ]
       },
       "norm_label": "getrssi",
       "source_file": "src/network_manager.h",
-      "source_location": "L16"
+      "source_location": "L17"
     },
     {
       "id": "src_network_manager_networkmanager_sendvoiceaudio",
@@ -4570,7 +4848,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L205",
+      "definition_location": "L206",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4578,79 +4856,180 @@
             "callee": "println",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L207"
+            "line": "L211"
           },
           {
             "callee": "setInsecure",
             "receiver_type": "WiFiClientSecure",
             "lang": "cpp",
-            "line": "L225"
+            "line": "L229"
           },
           {
             "callee": "begin",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L228"
+            "line": "L232"
           },
           {
             "callee": "addHeader",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L233"
+            "line": "L237"
           },
           {
             "callee": "setTimeout",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L240"
+            "line": "L244"
           },
           {
             "callee": "printf",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L242"
+            "line": "L246"
           },
           {
             "callee": "POST",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L246"
+            "line": "L250"
           },
           {
             "callee": "getString",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L250"
+            "line": "L254"
           },
           {
             "callee": "c_str",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L251"
+            "line": "L255"
           },
           {
             "callee": "end",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L271"
+            "line": "L281"
           },
           {
             "callee": "errorToString",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L275"
+            "line": "L285"
           },
           {
             "callee": "length",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L297"
+            "line": "L307"
           }
         ]
       },
       "norm_label": "sendvoiceaudio",
       "source_file": "src/network_manager.h",
-      "source_location": "L22"
+      "source_location": "L23"
+    },
+    {
+      "id": "src_network_manager_networkmanager_playvoiceaudioreply",
+      "label": "playVoiceAudioReply",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "NetworkManager",
+      "definition_file": "src/network_manager.cpp",
+      "definition_location": "L327",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "indexOf",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L338"
+          },
+          {
+            "callee": "substring",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L340"
+          },
+          {
+            "callee": "printf",
+            "receiver_type": "Serial",
+            "lang": "cpp",
+            "line": "L346"
+          },
+          {
+            "callee": "c_str",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L346"
+          },
+          {
+            "callee": "setInsecure",
+            "receiver_type": "WiFiClientSecure",
+            "lang": "cpp",
+            "line": "L350"
+          },
+          {
+            "callee": "startsWith",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L352"
+          },
+          {
+            "callee": "begin",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L353"
+          },
+          {
+            "callee": "addHeader",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L359"
+          },
+          {
+            "callee": "setTimeout",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L361"
+          },
+          {
+            "callee": "GET",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L363"
+          },
+          {
+            "callee": "errorToString",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L365"
+          },
+          {
+            "callee": "end",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L366"
+          },
+          {
+            "callee": "getStreamPtr",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L370"
+          },
+          {
+            "callee": "getSize",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L371"
+          }
+        ]
+      },
+      "norm_label": "playvoiceaudioreply",
+      "source_file": "src/network_manager.h",
+      "source_location": "L27"
     },
     {
       "id": "src_network_manager_networkmanager_checkreceiverhealth",
@@ -4659,7 +5038,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L311",
+      "definition_location": "L378",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4667,95 +5046,25 @@
             "callee": "endsWith",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L316"
+            "line": "L383"
           },
           {
             "callee": "replace",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L317"
+            "line": "L384"
           },
-          {
-            "callee": "setInsecure",
-            "receiver_type": "WiFiClientSecure",
-            "lang": "cpp",
-            "line": "L324"
-          },
-          {
-            "callee": "startsWith",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L326"
-          },
-          {
-            "callee": "begin",
-            "receiver_type": "HTTPClient",
-            "lang": "cpp",
-            "line": "L327"
-          },
-          {
-            "callee": "setTimeout",
-            "receiver_type": "HTTPClient",
-            "lang": "cpp",
-            "line": "L332"
-          },
-          {
-            "callee": "GET",
-            "receiver_type": "HTTPClient",
-            "lang": "cpp",
-            "line": "L333"
-          },
-          {
-            "callee": "end",
-            "receiver_type": "HTTPClient",
-            "lang": "cpp",
-            "line": "L334"
-          }
-        ]
-      },
-      "norm_label": "checkreceiverhealth",
-      "source_file": "src/network_manager.h",
-      "source_location": "L25"
-    },
-    {
-      "id": "src_network_manager_networkmanager_checkinternet",
-      "label": "checkInternet",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "NetworkManager",
-      "definition_file": "src/network_manager.cpp",
-      "definition_location": "L338",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "hostByName",
-            "receiver_type": "WiFi",
-            "lang": "cpp",
-            "line": "L351"
-          }
-        ]
-      },
-      "norm_label": "checkinternet",
-      "source_file": "src/network_manager.h",
-      "source_location": "L31"
-    },
-    {
-      "id": "src_network_manager_networkmanager_fetchcompositestatus",
-      "label": "fetchCompositeStatus",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "NetworkManager",
-      "definition_file": "src/network_manager.cpp",
-      "definition_location": "L361",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
           {
             "callee": "setInsecure",
             "receiver_type": "WiFiClientSecure",
             "lang": "cpp",
             "line": "L391"
+          },
+          {
+            "callee": "startsWith",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L393"
           },
           {
             "callee": "begin",
@@ -4764,52 +5073,122 @@
             "line": "L394"
           },
           {
-            "callee": "addHeader",
+            "callee": "setTimeout",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
             "line": "L399"
           },
           {
-            "callee": "setTimeout",
-            "receiver_type": "HTTPClient",
-            "lang": "cpp",
-            "line": "L404"
-          },
-          {
             "callee": "GET",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L405"
-          },
-          {
-            "callee": "getString",
-            "receiver_type": "HTTPClient",
-            "lang": "cpp",
-            "line": "L408"
+            "line": "L400"
           },
           {
             "callee": "end",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L409"
+            "line": "L401"
+          }
+        ]
+      },
+      "norm_label": "checkreceiverhealth",
+      "source_file": "src/network_manager.h",
+      "source_location": "L30"
+    },
+    {
+      "id": "src_network_manager_networkmanager_checkinternet",
+      "label": "checkInternet",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "NetworkManager",
+      "definition_file": "src/network_manager.cpp",
+      "definition_location": "L405",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "hostByName",
+            "receiver_type": "WiFi",
+            "lang": "cpp",
+            "line": "L418"
+          }
+        ]
+      },
+      "norm_label": "checkinternet",
+      "source_file": "src/network_manager.h",
+      "source_location": "L36"
+    },
+    {
+      "id": "src_network_manager_networkmanager_fetchcompositestatus",
+      "label": "fetchCompositeStatus",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "NetworkManager",
+      "definition_file": "src/network_manager.cpp",
+      "definition_location": "L428",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "setInsecure",
+            "receiver_type": "WiFiClientSecure",
+            "lang": "cpp",
+            "line": "L458"
+          },
+          {
+            "callee": "begin",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L461"
+          },
+          {
+            "callee": "addHeader",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L466"
+          },
+          {
+            "callee": "setTimeout",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L471"
+          },
+          {
+            "callee": "GET",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L472"
+          },
+          {
+            "callee": "getString",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L475"
+          },
+          {
+            "callee": "end",
+            "receiver_type": "HTTPClient",
+            "lang": "cpp",
+            "line": "L476"
           },
           {
             "callee": "length",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L414"
+            "line": "L481"
           },
           {
             "callee": "printf",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L462"
+            "line": "L529"
           }
         ]
       },
       "norm_label": "fetchcompositestatus",
       "source_file": "src/network_manager.h",
-      "source_location": "L28"
+      "source_location": "L33"
     },
     {
       "id": "src_network_manager_networkmanager_begin",
@@ -4818,7 +5197,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L94",
+      "definition_location": "L95",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4826,37 +5205,37 @@
             "callee": "onEvent",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L95"
+            "line": "L96"
           },
           {
             "callee": "println",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L98"
+            "line": "L99"
           },
           {
             "callee": "printf",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L104"
+            "line": "L105"
           },
           {
             "callee": "mode",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L116"
+            "line": "L117"
           },
           {
             "callee": "setAutoReconnect",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L117"
+            "line": "L118"
           }
         ]
       },
       "norm_label": "begin",
       "source_file": "src/network_manager.h",
-      "source_location": "L11"
+      "source_location": "L12"
     },
     {
       "id": "src_network_manager_cpp_dashboardstatus",
@@ -4877,6 +5256,17 @@
       "community_name": "NetworkManager",
       "file_type": "code",
       "norm_label": "environmentmode",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_network_manager_cpp_function",
+      "label": "function",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "NetworkManager",
+      "file_type": "code",
+      "norm_label": "function",
       "source_file": "",
       "source_location": ""
     },
@@ -4903,6 +5293,17 @@
       "source_location": ""
     },
     {
+      "id": "src_network_manager_h_src_network_manager",
+      "label": "network_manager.h",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "NetworkManager",
+      "file_type": "code",
+      "norm_label": "network_manager.h",
+      "source_file": "src/network_manager.h",
+      "source_location": "L1"
+    },
+    {
       "id": "src_network_manager_h_string",
       "label": "String",
       "_origin": "ast",
@@ -4922,7 +5323,7 @@
       "file_type": "code",
       "norm_label": "_lastinternetcheck",
       "source_file": "src/network_manager.h",
-      "source_location": "L39"
+      "source_location": "L44"
     },
     {
       "id": "src_network_manager_networkmanager_lastinternetstate",
@@ -4933,7 +5334,7 @@
       "file_type": "code",
       "norm_label": "_lastinternetstate",
       "source_file": "src/network_manager.h",
-      "source_location": "L40"
+      "source_location": "L45"
     },
     {
       "id": "src_network_manager_networkmanager_lastreconnectattempt",
@@ -4944,7 +5345,7 @@
       "file_type": "code",
       "norm_label": "_lastreconnectattempt",
       "source_file": "src/network_manager.h",
-      "source_location": "L34"
+      "source_location": "L39"
     },
     {
       "id": "src_network_manager_networkmanager_targetpassword",
@@ -4955,7 +5356,7 @@
       "file_type": "code",
       "norm_label": "_targetpassword",
       "source_file": "src/network_manager.h",
-      "source_location": "L37"
+      "source_location": "L42"
     },
     {
       "id": "src_network_manager_networkmanager_targetssid",
@@ -4966,7 +5367,7 @@
       "file_type": "code",
       "norm_label": "_targetssid",
       "source_file": "src/network_manager.h",
-      "source_location": "L36"
+      "source_location": "L41"
     },
     {
       "id": "src_network_manager_networkmanager_wasconnected",
@@ -4977,113 +5378,113 @@
       "file_type": "code",
       "norm_label": "_wasconnected",
       "source_file": "src/network_manager.h",
-      "source_location": "L35"
+      "source_location": "L40"
     },
     {
       "id": "macrobutton",
       "label": "MacroButton",
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
       "norm_label": "macrobutton",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "src_gui_chatline_color",
-      "label": "color",
+      "id": "src_audio_recorder_channelstats_clipcount",
+      "label": "clipCount",
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
-      "norm_label": "color",
-      "source_file": "src/gui.h",
+      "norm_label": "clipcount",
+      "source_file": "src/audio_recorder.h",
       "source_location": "L19"
     },
     {
-      "id": "src_gui_chatline_text",
-      "label": "text",
+      "id": "src_audio_recorder_channelstats_count",
+      "label": "count",
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
-      "norm_label": "text",
-      "source_file": "src/gui.h",
+      "norm_label": "count",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_maxval",
+      "label": "maxVal",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "ChannelStats",
+      "file_type": "code",
+      "norm_label": "maxval",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_minval",
+      "label": "minVal",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "ChannelStats",
+      "file_type": "code",
+      "norm_label": "minval",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L14"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_nonzerocount",
+      "label": "nonZeroCount",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "ChannelStats",
+      "file_type": "code",
+      "norm_label": "nonzerocount",
+      "source_file": "src/audio_recorder.h",
       "source_location": "L18"
     },
     {
-      "id": "src_gui_chatmessage_isuser",
-      "label": "isUser",
+      "id": "src_audio_recorder_channelstats_sum",
+      "label": "sum",
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
-      "norm_label": "isuser",
-      "source_file": "src/gui.h",
-      "source_location": "L23"
+      "norm_label": "sum",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L16"
     },
     {
-      "id": "src_gui_chatmessage_text",
-      "label": "text",
+      "id": "src_audio_recorder_channelstats_sumsq",
+      "label": "sumSq",
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
-      "norm_label": "text",
-      "source_file": "src/gui.h",
-      "source_location": "L24"
+      "norm_label": "sumsq",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L17"
     },
     {
-      "id": "src_gui_h_src_gui",
-      "label": "gui.h",
+      "id": "src_audio_recorder_h_src_audio_recorder",
+      "label": "audio_recorder.h",
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
-      "norm_label": "gui.h",
-      "source_file": "src/gui.h",
+      "norm_label": "audio_recorder.h",
+      "source_file": "src/audio_recorder.h",
       "source_location": "L1"
-    },
-    {
-      "id": "src_gui_h_string",
-      "label": "String",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "main.cpp",
-      "file_type": "code",
-      "norm_label": "string",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_gui_h_tft_espi",
-      "label": "TFT_eSPI",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "main.cpp",
-      "file_type": "code",
-      "norm_label": "tft_espi",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_gui_h_vector",
-      "label": "vector",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "main.cpp",
-      "file_type": "code",
-      "norm_label": "vector",
-      "source_file": "",
-      "source_location": ""
     },
     {
       "id": "src_macropad_config_cpp_src_macropad_config",
       "label": "macropad_config.cpp",
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
       "norm_label": "macropad_config.cpp",
       "source_file": "src/macropad_config.cpp",
@@ -5094,7 +5495,7 @@
       "label": "macropad_config.h",
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
       "norm_label": "macropad_config.h",
       "source_file": "src/macropad_config.h",
@@ -5105,32 +5506,10 @@
       "label": "main.cpp",
       "_origin": "ast",
       "community": 5,
-      "community_name": "main.cpp",
+      "community_name": "ChannelStats",
       "file_type": "code",
       "norm_label": "main.cpp",
       "source_file": "src/main.cpp",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_network_manager_h_src_network_manager",
-      "label": "network_manager.h",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "main.cpp",
-      "file_type": "code",
-      "norm_label": "network_manager.h",
-      "source_file": "src/network_manager.h",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_system_status",
-      "label": "system_status.h",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "main.cpp",
-      "file_type": "code",
-      "norm_label": "system_status.h",
-      "source_file": "src/system_status.h",
       "source_location": "L1"
     },
     {
@@ -5763,7 +6142,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L257",
+      "source_location": "L450",
       "weight": 1.0
     },
     {
@@ -5775,7 +6154,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L179",
+      "source_location": "L370",
       "weight": 1.0
     },
     {
@@ -5787,7 +6166,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L462",
+      "source_location": "L700",
       "weight": 1.0
     },
     {
@@ -5799,7 +6178,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L463",
+      "source_location": "L701",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_get_composite_status",
+      "target": "server_hermes_voice_receiver_check_voicebox_online",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L716",
       "weight": 1.0
     },
     {
@@ -5811,7 +6202,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L207",
+      "source_location": "L398",
       "weight": 1.0
     },
     {
@@ -5823,7 +6214,43 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L747",
+      "source_location": "L1053",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_synthesize_speech_voicebox",
+      "target": "server_hermes_voice_receiver_resolve_voicebox_profile_id",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L293",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_synthesize_speech_voicebox",
+      "target": "server_hermes_voice_receiver_sanitize_for_tts",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L297",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_synthesize_speech_voicebox",
+      "target": "server_hermes_voice_receiver_convert_24k_mono_to_16k_stereo_wav",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L319",
       "weight": 1.0
     },
     {
@@ -5835,7 +6262,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L536",
+      "source_location": "L782",
       "weight": 1.0
     },
     {
@@ -5847,7 +6274,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L537",
+      "source_location": "L783",
       "weight": 1.0
     },
     {
@@ -5859,79 +6286,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L539",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_voicerequesthandler_check_auth",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L576",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_voicerequesthandler_send_unauthorized",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L577",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_get_whisper_model",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L624",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_ask_hermes_gateway",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L642",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_query_ollama_fallback",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L647",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
-      "target": "server_hermes_voice_receiver_sanitize_for_display",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L659",
+      "source_location": "L785",
       "weight": 1.0
     },
     {
@@ -5943,7 +6298,103 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L703",
+      "source_location": "L1004",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_voicerequesthandler_check_auth",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L845",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_voicerequesthandler_send_unauthorized",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L846",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_get_whisper_model",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L893",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_query_ollama_fallback",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L912",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_ask_hermes_gateway",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L917",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_sanitize_for_display",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L936",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_check_voicebox_online",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L942",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_voicerequesthandler_do_post",
+      "target": "server_hermes_voice_receiver_synthesize_speech_voicebox",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L944",
       "weight": 1.0
     },
     {
@@ -6291,7 +6742,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.cpp",
-      "source_location": "L206",
+      "source_location": "L227",
       "weight": 1.0
     },
     {
@@ -6303,7 +6754,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.cpp",
-      "source_location": "L491",
+      "source_location": "L525",
       "weight": 1.0
     },
     {
@@ -6327,7 +6778,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L412",
+      "source_location": "L479",
       "weight": 1.0
     },
     {
@@ -6339,7 +6790,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L413",
+      "source_location": "L480",
       "weight": 1.0
     },
     {
@@ -6351,7 +6802,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L416",
+      "source_location": "L483",
       "weight": 1.0
     },
     {
@@ -6363,7 +6814,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L253",
+      "source_location": "L257",
+      "weight": 1.0
+    },
+    {
+      "source": "src_network_manager_networkmanager_sendvoiceaudio",
+      "target": "src_network_manager_extractjsonbool",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/network_manager.cpp",
+      "source_location": "L259",
       "weight": 1.0
     },
     {
@@ -6375,7 +6838,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L259",
+      "source_location": "L268",
       "weight": 1.0
     },
     {
@@ -6512,55 +6975,43 @@
     },
     {
       "source": "src_audio_recorder_audiorecorder",
+      "target": "src_audio_recorder_audiorecorder_playtone",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "src_audio_recorder_audiorecorder",
+      "target": "src_audio_recorder_audiorecorder_playchime",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "src_audio_recorder_audiorecorder",
+      "target": "src_audio_recorder_audiorecorder_playaudiostream",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "src_audio_recorder_audiorecorder",
       "target": "src_audio_recorder_audiorecorder_psrambuffer",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L60",
-      "weight": 1.0
-    },
-    {
-      "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_pcmbytesrecorded",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L61",
-      "weight": 1.0
-    },
-    {
-      "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_totalwavbytes",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L62",
-      "weight": 1.0
-    },
-    {
-      "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_recordstarttime",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L64",
-      "weight": 1.0
-    },
-    {
-      "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_lastrecorddurationms",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6572,7 +7023,7 @@
     },
     {
       "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_maxleftpeak",
+      "target": "src_audio_recorder_audiorecorder_pcmbytesrecorded",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6584,7 +7035,7 @@
     },
     {
       "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_maxrightpeak",
+      "target": "src_audio_recorder_audiorecorder_totalwavbytes",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6596,7 +7047,7 @@
     },
     {
       "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_leftstats",
+      "target": "src_audio_recorder_audiorecorder_recordstarttime",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6608,7 +7059,7 @@
     },
     {
       "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_rightstats",
+      "target": "src_audio_recorder_audiorecorder_lastrecorddurationms",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6620,7 +7071,7 @@
     },
     {
       "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_monostats",
+      "target": "src_audio_recorder_audiorecorder_maxleftpeak",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6632,19 +7083,19 @@
     },
     {
       "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_previewleft",
+      "target": "src_audio_recorder_audiorecorder_maxrightpeak",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L73",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
       "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_previewright",
+      "target": "src_audio_recorder_audiorecorder_leftstats",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6656,7 +7107,7 @@
     },
     {
       "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_previewmono",
+      "target": "src_audio_recorder_audiorecorder_rightstats",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6668,7 +7119,7 @@
     },
     {
       "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_previewcount",
+      "target": "src_audio_recorder_audiorecorder_monostats",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6680,7 +7131,7 @@
     },
     {
       "source": "src_audio_recorder_audiorecorder",
-      "target": "src_audio_recorder_audiorecorder_writewavheader",
+      "target": "src_audio_recorder_audiorecorder_previewleft",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6688,6 +7139,54 @@
       "context": "field",
       "source_file": "src/audio_recorder.h",
       "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "src_audio_recorder_audiorecorder",
+      "target": "src_audio_recorder_audiorecorder_previewright",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "src_audio_recorder_audiorecorder",
+      "target": "src_audio_recorder_audiorecorder_previewmono",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "src_audio_recorder_audiorecorder",
+      "target": "src_audio_recorder_audiorecorder_previewcount",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "src_audio_recorder_audiorecorder",
+      "target": "src_audio_recorder_audiorecorder_writewavheader",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L83",
       "weight": 1.0
     },
     {
@@ -7563,7 +8062,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -7575,7 +8074,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -7587,7 +8086,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -7599,7 +8098,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -7611,7 +8110,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -7623,7 +8122,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -7635,7 +8134,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -7647,7 +8146,19 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L22",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "src_network_manager_networkmanager",
+      "target": "src_network_manager_networkmanager_playvoiceaudioreply",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/network_manager.h",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -7659,7 +8170,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L25",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -7671,7 +8182,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L28",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -7683,7 +8194,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L31",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -7695,7 +8206,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L34",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -7707,7 +8218,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L35",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -7719,7 +8230,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L36",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -7731,7 +8242,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L37",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -7743,7 +8254,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L39",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
@@ -7755,7 +8266,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L40",
+      "source_location": "L45",
       "weight": 1.0
     },
     {
@@ -7767,7 +8278,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L42",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -7779,7 +8290,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L46",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -7791,7 +8302,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/audio_recorder.h",
-      "source_location": "L69",
+      "source_location": "L74",
       "weight": 1.0
     },
     {
@@ -7935,7 +8446,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/network_manager.h",
-      "source_location": "L36",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -8263,6 +8774,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_network_manager_cpp_src_network_manager",
+      "target": "src_audio_recorder_h_src_audio_recorder",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/network_manager.cpp",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
       "source": "src_network_manager_h_src_network_manager",
       "target": "src_environment_manager_h_src_environment_manager",
       "relation": "imports",
@@ -8271,7 +8794,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/network_manager.h",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -8283,7 +8806,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/network_manager.h",
-      "source_location": "L6",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -8584,6 +9107,30 @@
       "context": "parameter_type",
       "source_file": "es8311_bsp.c",
       "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "src_audio_recorder_audiorecorder_playaudiostream",
+      "target": "src_audio_recorder_cpp_function",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "src/audio_recorder.cpp",
+      "source_location": "L426",
+      "weight": 1.0
+    },
+    {
+      "source": "src_audio_recorder_audiorecorder_playaudiostream",
+      "target": "stream",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "src/audio_recorder.cpp",
+      "source_location": "L426",
       "weight": 1.0
     },
     {
@@ -8979,7 +9526,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L52",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -8991,7 +9538,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -9003,7 +9550,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -9015,7 +9562,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L67",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -9027,7 +9574,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L145",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -9039,7 +9586,31 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L361",
+      "source_location": "L428",
+      "weight": 1.0
+    },
+    {
+      "source": "src_network_manager_networkmanager_playvoiceaudioreply",
+      "target": "src_network_manager_cpp_function",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "src/network_manager.cpp",
+      "source_location": "L327",
+      "weight": 1.0
+    },
+    {
+      "source": "src_network_manager_networkmanager_playvoiceaudioreply",
+      "target": "src_network_manager_cpp_string",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "src/network_manager.cpp",
+      "source_location": "L327",
       "weight": 1.0
     },
     {
@@ -9051,7 +9622,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L205",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -9423,7 +9994,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L191",
+      "source_location": "L192",
       "weight": 1.0
     },
     {
@@ -9435,7 +10006,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L184",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -9447,6 +10018,17 @@
       "confidence_score": 1.0,
       "source_file": ".agents/rules/graphify.md",
       "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_scratch_tts_test",
+      "target": "agents_scratch_tts_test_sanitize_for_tts",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/scratch_tts_test.py",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -10782,40 +11364,29 @@
     },
     {
       "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_main",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L1051",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
       "target": "server_hermes_voice_receiver_sanitize_for_display",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L123",
+      "source_location": "L158",
       "weight": 1.0
     },
     {
       "source": "server_hermes_voice_receiver",
-      "target": "server_hermes_voice_receiver_get_whisper_model",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L136",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver",
-      "target": "server_hermes_voice_receiver_send_telegram_message",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L149",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver",
-      "target": "server_hermes_voice_receiver_dispatch_telegram_mirror",
+      "target": "server_hermes_voice_receiver_check_voicebox_online",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10826,62 +11397,84 @@
     },
     {
       "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_resolve_voicebox_profile_id",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L188",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_convert_24k_mono_to_16k_stereo_wav",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L210",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_sanitize_for_tts",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L254",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_synthesize_speech_voicebox",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L289",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_get_whisper_model",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L327",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_send_telegram_message",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L340",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_dispatch_telegram_mirror",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L363",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
       "target": "server_hermes_voice_receiver_hermes_sessions_headers",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L194",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver",
-      "target": "server_hermes_voice_receiver_load_voice_session",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L199",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver",
-      "target": "server_hermes_voice_receiver_ask_hermes_gateway",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L241",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver",
-      "target": "server_hermes_voice_receiver_query_ollama_fallback",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L279",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver",
-      "target": "server_hermes_voice_receiver_probe_hermes_health",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L331",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver",
-      "target": "server_hermes_voice_receiver_warmup_ollama_model",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10892,13 +11485,68 @@
     },
     {
       "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_load_voice_session",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L390",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_ask_hermes_gateway",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L434",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_query_ollama_fallback",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L480",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_probe_hermes_health",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L547",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
+      "target": "server_hermes_voice_receiver_warmup_ollama_model",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L601",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver",
       "target": "server_hermes_voice_receiver_probe_ollama_health",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L408",
+      "source_location": "L646",
       "weight": 1.0
     },
     {
@@ -10909,23 +11557,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L449",
+      "source_location": "L687",
       "weight": 1.0
     },
     {
       "source": "server_hermes_voice_receiver",
       "target": "server_hermes_voice_receiver_voicerequesthandler",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L499",
-      "weight": 1.0
-    },
-    {
-      "source": "server_hermes_voice_receiver",
-      "target": "server_hermes_voice_receiver_main",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -11009,6 +11646,39 @@
       "confidence_score": 1.0,
       "source_file": "src/audio_recorder.cpp",
       "source_location": "L246",
+      "weight": 1.0
+    },
+    {
+      "source": "src_audio_recorder_cpp_src_audio_recorder",
+      "target": "src_audio_recorder_audiorecorder_playtone",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/audio_recorder.cpp",
+      "source_location": "L297",
+      "weight": 1.0
+    },
+    {
+      "source": "src_audio_recorder_cpp_src_audio_recorder",
+      "target": "src_audio_recorder_audiorecorder_playchime",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/audio_recorder.cpp",
+      "source_location": "L360",
+      "weight": 1.0
+    },
+    {
+      "source": "src_audio_recorder_cpp_src_audio_recorder",
+      "target": "src_audio_recorder_audiorecorder_playaudiostream",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/audio_recorder.cpp",
+      "source_location": "L426",
       "weight": 1.0
     },
     {
@@ -11679,7 +12349,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.cpp",
-      "source_location": "L191",
+      "source_location": "L195",
       "weight": 1.0
     },
     {
@@ -11723,7 +12393,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L129",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
@@ -11734,7 +12404,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L145",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -11745,7 +12415,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L155",
+      "source_location": "L156",
       "weight": 1.0
     },
     {
@@ -11756,7 +12426,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L180",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -11767,7 +12437,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L184",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -11778,7 +12448,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L191",
+      "source_location": "L192",
       "weight": 1.0
     },
     {
@@ -11789,7 +12459,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L198",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -11800,29 +12470,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L205",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
       "source": "src_network_manager_cpp_src_network_manager",
-      "target": "src_network_manager_networkmanager_checkreceiverhealth",
+      "target": "src_network_manager_networkmanager_playvoiceaudioreply",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L311",
-      "weight": 1.0
-    },
-    {
-      "source": "src_network_manager_cpp_src_network_manager",
-      "target": "src_network_manager_networkmanager_checkinternet",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/network_manager.cpp",
-      "source_location": "L338",
+      "source_location": "L327",
       "weight": 1.0
     },
     {
@@ -11833,7 +12492,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L34",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "src_network_manager_cpp_src_network_manager",
+      "target": "src_network_manager_networkmanager_checkreceiverhealth",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/network_manager.cpp",
+      "source_location": "L378",
+      "weight": 1.0
+    },
+    {
+      "source": "src_network_manager_cpp_src_network_manager",
+      "target": "src_network_manager_networkmanager_checkinternet",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/network_manager.cpp",
+      "source_location": "L405",
       "weight": 1.0
     },
     {
@@ -11844,7 +12525,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L361",
+      "source_location": "L428",
       "weight": 1.0
     },
     {
@@ -11855,7 +12536,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L52",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -11866,7 +12547,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L67",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -11877,7 +12558,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -11888,7 +12569,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L90",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -11899,7 +12580,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L94",
+      "source_location": "L95",
       "weight": 1.0
     },
     {
@@ -11910,7 +12591,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.h",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -11921,7 +12602,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L499",
+      "source_location": "L745",
       "weight": 1.0
     },
     {
@@ -11932,7 +12613,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L500",
+      "source_location": "L746",
       "weight": 1.0
     },
     {
@@ -11943,7 +12624,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L510",
+      "source_location": "L756",
       "weight": 1.0
     },
     {
@@ -11954,7 +12635,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L521",
+      "source_location": "L767",
       "weight": 1.0
     },
     {
@@ -11965,7 +12646,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L567",
+      "source_location": "L835",
       "weight": 1.0
     },
     {
@@ -11976,7 +12657,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/audio_recorder.h",
-      "source_location": "L47",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -11987,7 +12668,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/audio_recorder.h",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -11998,7 +12679,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/audio_recorder.h",
-      "source_location": "L51",
+      "source_location": "L56",
       "weight": 1.0
     },
     {
@@ -12009,7 +12690,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/audio_recorder.h",
-      "source_location": "L52",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -12020,7 +12701,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/audio_recorder.h",
-      "source_location": "L53",
+      "source_location": "L58",
       "weight": 1.0
     },
     {
@@ -12112,113 +12793,146 @@
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_124",
+      "source": "server_hermes_voice_receiver_rationale_159",
       "target": "server_hermes_voice_receiver_sanitize_for_display",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L124",
+      "source_location": "L159",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_173",
+      "source": "server_hermes_voice_receiver_rationale_211",
+      "target": "server_hermes_voice_receiver_convert_24k_mono_to_16k_stereo_wav",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L211",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_rationale_255",
+      "target": "server_hermes_voice_receiver_sanitize_for_tts",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L255",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_rationale_290",
+      "target": "server_hermes_voice_receiver_synthesize_speech_voicebox",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "server/hermes_voice_receiver.py",
+      "source_location": "L290",
+      "weight": 1.0
+    },
+    {
+      "source": "server_hermes_voice_receiver_rationale_364",
       "target": "server_hermes_voice_receiver_dispatch_telegram_mirror",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L173",
+      "source_location": "L364",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_200",
+      "source": "server_hermes_voice_receiver_rationale_391",
       "target": "server_hermes_voice_receiver_load_voice_session",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L200",
+      "source_location": "L391",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_242",
+      "source": "server_hermes_voice_receiver_rationale_435",
       "target": "server_hermes_voice_receiver_ask_hermes_gateway",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L242",
+      "source_location": "L435",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_280",
+      "source": "server_hermes_voice_receiver_rationale_481",
       "target": "server_hermes_voice_receiver_query_ollama_fallback",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L280",
+      "source_location": "L481",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_332",
+      "source": "server_hermes_voice_receiver_rationale_548",
       "target": "server_hermes_voice_receiver_probe_hermes_health",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L332",
+      "source_location": "L548",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_386",
+      "source": "server_hermes_voice_receiver_rationale_602",
       "target": "server_hermes_voice_receiver_warmup_ollama_model",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L386",
+      "source_location": "L602",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_409",
+      "source": "server_hermes_voice_receiver_rationale_647",
       "target": "server_hermes_voice_receiver_probe_ollama_health",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L409",
+      "source_location": "L647",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_450",
+      "source": "server_hermes_voice_receiver_rationale_688",
       "target": "server_hermes_voice_receiver_get_composite_status",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L450",
+      "source_location": "L688",
       "weight": 1.0
     },
     {
-      "source": "server_hermes_voice_receiver_rationale_501",
+      "source": "server_hermes_voice_receiver_rationale_747",
       "target": "server_hermes_voice_receiver_voicerequesthandler_check_auth",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L501",
+      "source_location": "L747",
       "weight": 1.0
     },
     {
@@ -12241,7 +12955,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L184",
+      "source_location": "L375",
       "weight": 1.0
     },
     {
@@ -12253,7 +12967,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L750",
+      "source_location": "L1056",
       "weight": 1.0
     },
     {
@@ -12565,7 +13279,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L152",
+      "source_location": "L153",
       "weight": 1.0
     },
     {
@@ -12577,7 +13291,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L126",
+      "source_location": "L127",
       "weight": 1.0
     },
     {
@@ -12589,7 +13303,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L339",
+      "source_location": "L406",
       "weight": 1.0
     },
     {
@@ -12601,7 +13315,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L312",
+      "source_location": "L379",
       "weight": 1.0
     },
     {
@@ -12613,7 +13327,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L363",
+      "source_location": "L430",
       "weight": 1.0
     },
     {
@@ -12625,7 +13339,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L365",
+      "source_location": "L432",
       "weight": 1.0
     },
     {
@@ -12637,7 +13351,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L366",
+      "source_location": "L433",
       "weight": 1.0
     },
     {
@@ -12649,7 +13363,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L367",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -12661,7 +13375,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L370",
+      "source_location": "L437",
       "weight": 1.0
     },
     {
@@ -12673,7 +13387,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L192",
+      "source_location": "L193",
       "weight": 1.0
     },
     {
@@ -12685,7 +13399,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L185",
+      "source_location": "L186",
       "weight": 1.0
     },
     {
@@ -12697,7 +13411,19 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L199",
+      "source_location": "L200",
+      "weight": 1.0
+    },
+    {
+      "source": "src_network_manager_networkmanager_playvoiceaudioreply",
+      "target": "src_network_manager_networkmanager_isconnected",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "src/network_manager.cpp",
+      "source_location": "L328",
       "weight": 1.0
     },
     {
@@ -12709,10 +13435,10 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L206",
+      "source_location": "L210",
       "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "5486fd2257796738010d9e0c04625ba2b5525cda"
+  "built_at_commit": "37411d0182ad917a8eb57d0b760c84ea99db25b2"
 }

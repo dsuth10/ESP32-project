@@ -1,4 +1,5 @@
 #include "network_manager.h"
+#include "audio_recorder.h"
 #include <WiFiClientSecure.h>
 #include <esp_task_wdt.h>
 
@@ -202,7 +203,10 @@ int8_t NetworkManager::getRSSI() {
     return 0;
 }
 
-bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply) {
+bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply, bool& outAudioAvailable, String& outAudioUrl) {
+    outAudioAvailable = false;
+    outAudioUrl = "";
+
     if (!isConnected()) {
         Serial.println("[HTTP] Cannot send voice: Wi-Fi not connected!");
         outTranscript = "Error: Wi-Fi Disconnected";
@@ -252,6 +256,11 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
 
         outTranscript = extractJsonField(response, "transcript");
         outReply = extractJsonField(response, "reply");
+        outAudioAvailable = extractJsonBool(response, "audio_available", false);
+        outAudioUrl = extractJsonField(response, "audio_url");
+        if (outAudioAvailable && outAudioUrl.length() == 0) {
+            outAudioUrl = "/voice/audio";
+        }
 
         if (outTranscript.length() == 0) outTranscript = "Audio Processed";
         if (outReply.length() == 0) outReply = "Received by Hermes";
@@ -259,10 +268,11 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
         int serverMs = extractJsonInt(response, "server_ms");
         int whisperMs = extractJsonInt(response, "whisper_ms");
         int hermesMs = extractJsonInt(response, "hermes_ms");
+        int ttsMs = extractJsonInt(response, "tts_ms");
         if (serverMs > 0) {
             int netTransit = (int)httpDuration - serverMs;
-            Serial.printf("[PERF] Roundtrip: %u ms | Server: %d ms (Whisper: %d ms, Hermes: %d ms) | Network: %d ms\n",
-                          (unsigned int)httpDuration, serverMs, whisperMs, hermesMs, netTransit > 0 ? netTransit : 0);
+            Serial.printf("[PERF] Roundtrip: %u ms | Server: %d ms (Whisper: %d ms, Hermes: %d ms, TTS: %d ms) | Audio: %s\n",
+                          (unsigned int)httpDuration, serverMs, whisperMs, hermesMs, ttsMs > 0 ? ttsMs : 0, outAudioAvailable ? "YES" : "NO");
         }
 
         Serial.printf("[STT] \"%s\"\n", outTranscript.c_str());
@@ -307,6 +317,63 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
         return false;
     }
 }
+
+bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply) {
+    bool dummyAudio = false;
+    String dummyUrl = "";
+    return sendVoiceAudio(wavData, wavSize, outTranscript, outReply, dummyAudio, dummyUrl);
+}
+
+bool NetworkManager::playVoiceAudioReply(const String& audioUrl, std::function<bool()> shouldAbort) {
+    if (!isConnected()) return false;
+
+    const EnvironmentProfile& prof = envManager.getActiveProfile();
+    const char* authToken = prof.authToken;
+
+    // Construct full URL from active profile receiver URL
+    String fullUrl = prof.receiverUrl;
+    if (audioUrl.startsWith("http://") || audioUrl.startsWith("https://")) {
+        fullUrl = audioUrl;
+    } else {
+        int idx = fullUrl.indexOf("/voice");
+        if (idx != -1) {
+            fullUrl = fullUrl.substring(0, idx) + (audioUrl.startsWith("/") ? audioUrl : "/" + audioUrl);
+        } else {
+            fullUrl = fullUrl + (audioUrl.startsWith("/") ? audioUrl : "/" + audioUrl);
+        }
+    }
+
+    Serial.printf("[HTTP] Fetching voice audio stream from: %s\n", fullUrl.c_str());
+
+    HTTPClient http;
+    WiFiClientSecure secureClient;
+    secureClient.setInsecure();
+
+    if (fullUrl.startsWith("https://")) {
+        http.begin(secureClient, fullUrl);
+    } else {
+        http.begin(fullUrl);
+    }
+
+    if (authToken && strlen(authToken) > 0) {
+        http.addHeader("Authorization", "Bearer " + String(authToken));
+    }
+    http.setTimeout(25000);
+
+    int httpCode = http.GET();
+    if (httpCode != HTTP_CODE_OK && httpCode != 200) {
+        Serial.printf("[HTTP] Failed to fetch audio stream: %d (%s)\n", httpCode, http.errorToString(httpCode).c_str());
+        http.end();
+        return false;
+    }
+
+    WiFiClient* stream = http.getStreamPtr();
+    size_t contentLen = http.getSize();
+    bool played = recorder.playAudioStream(*stream, contentLen, shouldAbort);
+    http.end();
+    return played;
+}
+
 
 bool NetworkManager::checkReceiverHealth() {
     if (!isConnected()) return false;

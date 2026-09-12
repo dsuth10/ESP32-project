@@ -4,7 +4,7 @@
   "2": "EnvironmentManager",
   "3": "AudioRecorder",
   "4": "NetworkManager",
-  "5": "main.cpp",
+  "5": "ChannelStats",
   "6": "es8311_bsp.c",
   "7": "es8311.cpp",
   "8": "_coeff_div",
@@ -21,5 +21,10 @@
   "19": "render_views.py",
   "20": "rules/graphify.md",
   "21": "workflows/graphify.md",
-  "22": "pinout_allocation_f58fa43e.md"
+  "22": "pinout_allocation_f58fa43e.md",
+  "23": "Automated Background Updating",
+  "24": "Workflow: /graph-query",
+  "25": "Workflow: /graph-update",
+  "26": "Workflow: /graph-visualize",
+  "27": "graph.ps1"
 }

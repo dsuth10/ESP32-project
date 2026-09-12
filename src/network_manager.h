@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <functional>
 #include "environment_manager.h"
 #include "system_status.h"
 
@@ -19,7 +20,11 @@ public:
     void applyEnvironment(EnvironmentMode mode);
 
     // Sends WAV audio to Hermes receiver for active environment and fills out transcript and reply
+    bool sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply, bool& outAudioAvailable, String& outAudioUrl);
     bool sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply);
+
+    // Streams synthesized voice audio from receiver (:8787/voice/audio) directly into I2S speaker
+    bool playVoiceAudioReply(const String& audioUrl = "/voice/audio", std::function<bool()> shouldAbort = nullptr);
 
     // Quick health probe to active receiver (:8787/health)
     bool checkReceiverHealth();
