@@ -840,6 +840,7 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(resp, indent=2).encode("utf-8"))
 
     def do_POST(self):
+        t_req_start = time.perf_counter()
         global _last_tts_wav
         url_parts = urllib.parse.urlparse(self.path)
         req_path = url_parts.path.rstrip('/')

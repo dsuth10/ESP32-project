@@ -2,6 +2,7 @@
 #include "audio_recorder.h"
 #include <WiFiClientSecure.h>
 #include <esp_task_wdt.h>
+#include <esp_wifi.h>
 
 NetworkManager netManager;
 
@@ -106,14 +107,16 @@ void NetworkManager::begin() {
                               IPAddress(info.got_ip.ip_info.ip.addr).toString().c_str());
                 break;
             case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-                Serial.printf("[WiFi Event] Disconnected from AP. Reason code: %d\n", 
-                              info.wifi_sta_disconnected.reason);
+                Serial.printf("[WiFi Event] Disconnected from AP. Reason code: %d (%s)\n", 
+                              info.wifi_sta_disconnected.reason,
+                              WiFi.disconnectReasonName((wifi_err_reason_t)info.wifi_sta_disconnected.reason));
                 break;
             default:
                 break;
         }
     });
 
+    WiFi.persistent(false);
     WiFi.mode(WIFI_STA);
     WiFi.setAutoReconnect(true); // Allow ESP-IDF background auto-reconnect to active SSID
 
@@ -136,8 +139,8 @@ void NetworkManager::startConnection() {
     }
 
     Serial.printf("[WiFi] Connecting strictly to '%s' ...\n", _targetSSID.c_str());
-    WiFi.disconnect(false, false);
-    delay(50);
+    WiFi.disconnect(false, true); // Erase cached AP credentials from NVS to purge stale transition mode parameters
+    delay(100);
     WiFi.begin(_targetSSID.c_str(), _targetPassword.c_str());
     _lastReconnectAttempt = millis();
     _wasConnected = false;
@@ -173,6 +176,8 @@ void NetworkManager::update() {
             _lastReconnectAttempt = now;
             Serial.printf("[WiFi] Retrying connection to '%s' (status=%d)...\n", 
                           _targetSSID.c_str(), (int)WiFi.status());
+            WiFi.disconnect(false, true); // Clear stale AP cache
+            delay(100);
             WiFi.begin(_targetSSID.c_str(), _targetPassword.c_str());
         }
     }
