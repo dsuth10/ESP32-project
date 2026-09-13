@@ -28,12 +28,5 @@
   "26": "Workflow: /graph-visualize",
   "27": "graph.ps1",
   "28": "scratch_tts_test.py",
-  "29": "bench_time_tts.py",
-  "30": "es8311_clock_config_t",
-  "31": "es8311_handle_t",
-  "32": "es8311_mic_gain_t",
-  "33": "es8311_resolution_t",
-  "34": "esp_err_t",
-  "35": "i2c_port_t",
-  "36": "function"
+  "29": "bench_time_tts.py"
 }

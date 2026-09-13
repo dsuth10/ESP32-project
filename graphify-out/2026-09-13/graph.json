@@ -902,6 +902,18 @@
       "source_location": "L91"
     },
     {
+      "id": "src_es8311_es8311_codec_set_voice_volume",
+      "label": "es8311_codec_set_voice_volume()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "main.cpp",
+      "file_type": "code",
+      "norm_label": "es8311_codec_set_voice_volume()",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L358"
+    },
+    {
       "id": "src_main_executemacro",
       "label": "executeMacro()",
       "_callable": true,
@@ -1376,18 +1388,6 @@
       "norm_label": "es8311_codec_init()",
       "source_file": "src/es8311.cpp",
       "source_location": "L321"
-    },
-    {
-      "id": "src_es8311_es8311_codec_set_voice_volume",
-      "label": "es8311_codec_set_voice_volume()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "es8311.cpp",
-      "file_type": "code",
-      "norm_label": "es8311_codec_set_voice_volume()",
-      "source_file": "src/es8311.cpp",
-      "source_location": "L358"
     },
     {
       "id": "src_es8311_es8311_create",
@@ -4796,6 +4796,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_es8311_h_src_es8311",
+      "label": "es8311.h",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": "es8311.h",
+      "source_file": "src/es8311.h",
+      "source_location": "L1"
+    },
+    {
       "id": "stream",
       "label": "Stream",
       "_origin": "ast",
@@ -4803,83 +4814,6 @@
       "community_name": "AudioRecorder",
       "file_type": "code",
       "norm_label": "stream",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_es8311_cpp_es8311_clock_config_t",
-      "label": "es8311_clock_config_t",
-      "_origin": "ast",
-      "community": 30,
-      "community_name": "es8311_clock_config_t",
-      "file_type": "code",
-      "norm_label": "es8311_clock_config_t",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_es8311_cpp_es8311_handle_t",
-      "label": "es8311_handle_t",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": "es8311_handle_t",
-      "file_type": "code",
-      "norm_label": "es8311_handle_t",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_es8311_cpp_es8311_mic_gain_t",
-      "label": "es8311_mic_gain_t",
-      "_origin": "ast",
-      "community": 32,
-      "community_name": "es8311_mic_gain_t",
-      "file_type": "code",
-      "norm_label": "es8311_mic_gain_t",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_es8311_cpp_es8311_resolution_t",
-      "label": "es8311_resolution_t",
-      "_origin": "ast",
-      "community": 33,
-      "community_name": "es8311_resolution_t",
-      "file_type": "code",
-      "norm_label": "es8311_resolution_t",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_es8311_cpp_esp_err_t",
-      "label": "esp_err_t",
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "esp_err_t",
-      "file_type": "code",
-      "norm_label": "esp_err_t",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_es8311_cpp_i2c_port_t",
-      "label": "i2c_port_t",
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "i2c_port_t",
-      "file_type": "code",
-      "norm_label": "i2c_port_t",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_network_manager_cpp_function",
-      "label": "function",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "function",
-      "file_type": "code",
-      "norm_label": "function",
       "source_file": "",
       "source_location": ""
     },
@@ -5495,17 +5429,6 @@
       "source_location": "L12"
     },
     {
-      "id": "function",
-      "label": "function",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "NetworkManager",
-      "file_type": "code",
-      "norm_label": "function",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "src_network_manager_cpp_dashboardstatus",
       "label": "DashboardStatus",
       "_origin": "ast",
@@ -5524,6 +5447,17 @@
       "community_name": "NetworkManager",
       "file_type": "code",
       "norm_label": "environmentmode",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_network_manager_cpp_function",
+      "label": "function",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "NetworkManager",
+      "file_type": "code",
+      "norm_label": "function",
       "source_file": "",
       "source_location": ""
     },
@@ -5660,17 +5594,6 @@
       "source_location": ""
     },
     {
-      "id": "src_es8311_h_src_es8311",
-      "label": "es8311.h",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "main.cpp",
-      "file_type": "code",
-      "norm_label": "es8311.h",
-      "source_file": "src/es8311.h",
-      "source_location": "L1"
-    },
-    {
       "id": "src_macropad_config_cpp_src_macropad_config",
       "label": "macropad_config.cpp",
       "_origin": "ast",
@@ -5792,18 +5715,7 @@
       "source_location": ""
     },
     {
-      "id": "src_es8311_reg",
-      "label": "es8311_reg.h",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "es8311_bsp.c",
-      "file_type": "code",
-      "norm_label": "es8311_reg.h",
-      "source_file": "src/es8311_reg.h",
-      "source_location": "L1"
-    },
-    {
-      "id": "es8311_clock_config_t",
+      "id": "src_es8311_cpp_es8311_clock_config_t",
       "label": "es8311_clock_config_t",
       "_origin": "ast",
       "community": 7,
@@ -5814,7 +5726,7 @@
       "source_location": ""
     },
     {
-      "id": "es8311_handle_t",
+      "id": "src_es8311_cpp_es8311_handle_t",
       "label": "es8311_handle_t",
       "_origin": "ast",
       "community": 7,
@@ -5825,7 +5737,7 @@
       "source_location": ""
     },
     {
-      "id": "es8311_mic_gain_t",
+      "id": "src_es8311_cpp_es8311_mic_gain_t",
       "label": "es8311_mic_gain_t",
       "_origin": "ast",
       "community": 7,
@@ -5836,7 +5748,7 @@
       "source_location": ""
     },
     {
-      "id": "es8311_resolution_t",
+      "id": "src_es8311_cpp_es8311_resolution_t",
       "label": "es8311_resolution_t",
       "_origin": "ast",
       "community": 7,
@@ -5847,7 +5759,7 @@
       "source_location": ""
     },
     {
-      "id": "esp_err_t",
+      "id": "src_es8311_cpp_esp_err_t",
       "label": "esp_err_t",
       "_origin": "ast",
       "community": 7,
@@ -5858,7 +5770,7 @@
       "source_location": ""
     },
     {
-      "id": "i2c_port_t",
+      "id": "src_es8311_cpp_i2c_port_t",
       "label": "i2c_port_t",
       "_origin": "ast",
       "community": 7,
@@ -5877,6 +5789,17 @@
       "file_type": "code",
       "norm_label": "es8311.cpp",
       "source_file": "src/es8311.cpp",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_es8311_reg",
+      "label": "es8311_reg.h",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "es8311_reg.h",
+      "source_file": "src/es8311_reg.h",
       "source_location": "L1"
     },
     {
@@ -8941,6 +8864,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_gui_h_src_gui",
+      "target": "src_environment_manager_h_src_environment_manager",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/gui.h",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
       "source": "src_macropad_config_cpp_src_macropad_config",
       "target": "src_macropad_config_h_src_macropad_config",
       "relation": "imports",
@@ -8966,6 +8901,18 @@
     },
     {
       "source": "src_main",
+      "target": "src_audio_recorder_h_src_audio_recorder",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/main.cpp",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
       "target": "src_es8311_h_src_es8311",
       "relation": "imports",
       "_origin": "ast",
@@ -8986,6 +8933,18 @@
       "context": "import",
       "source_file": "src/main.cpp",
       "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_environment_manager_h_src_environment_manager",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/main.cpp",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -9034,6 +8993,30 @@
       "context": "import",
       "source_file": "src/network_manager.cpp",
       "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_network_manager_cpp_src_network_manager",
+      "target": "src_audio_recorder_h_src_audio_recorder",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/network_manager.cpp",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_network_manager_h_src_network_manager",
+      "target": "src_environment_manager_h_src_environment_manager",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/network_manager.h",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -9398,7 +9381,7 @@
     },
     {
       "source": "src_es8311_es8311_clock_config",
-      "target": "es8311_clock_config_t",
+      "target": "src_es8311_cpp_es8311_clock_config_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9410,7 +9393,7 @@
     },
     {
       "source": "src_es8311_es8311_clock_config",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9422,7 +9405,7 @@
     },
     {
       "source": "src_es8311_es8311_clock_config",
-      "target": "es8311_resolution_t",
+      "target": "src_es8311_cpp_es8311_resolution_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9434,7 +9417,7 @@
     },
     {
       "source": "src_es8311_es8311_create",
-      "target": "i2c_port_t",
+      "target": "src_es8311_cpp_i2c_port_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9446,7 +9429,7 @@
     },
     {
       "source": "src_es8311_es8311_delete",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9458,7 +9441,7 @@
     },
     {
       "source": "src_es8311_es8311_fmt_config",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9470,7 +9453,7 @@
     },
     {
       "source": "src_es8311_es8311_fmt_config",
-      "target": "es8311_resolution_t",
+      "target": "src_es8311_cpp_es8311_resolution_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9482,7 +9465,7 @@
     },
     {
       "source": "src_es8311_es8311_init",
-      "target": "es8311_clock_config_t",
+      "target": "src_es8311_cpp_es8311_clock_config_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9494,7 +9477,7 @@
     },
     {
       "source": "src_es8311_es8311_init",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9506,7 +9489,7 @@
     },
     {
       "source": "src_es8311_es8311_init",
-      "target": "es8311_resolution_t",
+      "target": "src_es8311_cpp_es8311_resolution_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9518,7 +9501,7 @@
     },
     {
       "source": "src_es8311_es8311_microphone_config",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9530,7 +9513,7 @@
     },
     {
       "source": "src_es8311_es8311_microphone_gain_set",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9542,7 +9525,7 @@
     },
     {
       "source": "src_es8311_es8311_microphone_gain_set",
-      "target": "es8311_mic_gain_t",
+      "target": "src_es8311_cpp_es8311_mic_gain_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9554,7 +9537,7 @@
     },
     {
       "source": "src_es8311_es8311_read_reg",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9566,7 +9549,7 @@
     },
     {
       "source": "src_es8311_es8311_resolution_config",
-      "target": "es8311_resolution_t",
+      "target": "src_es8311_cpp_es8311_resolution_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9578,7 +9561,7 @@
     },
     {
       "source": "src_es8311_es8311_sample_frequency_config",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9590,7 +9573,7 @@
     },
     {
       "source": "src_es8311_es8311_voice_mute",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9602,7 +9585,7 @@
     },
     {
       "source": "src_es8311_es8311_voice_volume_get",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9614,7 +9597,7 @@
     },
     {
       "source": "src_es8311_es8311_voice_volume_set",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9626,7 +9609,7 @@
     },
     {
       "source": "src_es8311_es8311_write_reg",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9830,7 +9813,7 @@
     },
     {
       "source": "src_network_manager_networkmanager_playvoiceaudioreply",
-      "target": "function",
+      "target": "src_network_manager_cpp_function",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10058,7 +10041,7 @@
     },
     {
       "source": "src_es8311_es8311_clock_config",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10070,7 +10053,7 @@
     },
     {
       "source": "src_es8311_es8311_codec_init",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10082,7 +10065,7 @@
     },
     {
       "source": "src_es8311_es8311_codec_set_voice_volume",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10094,7 +10077,7 @@
     },
     {
       "source": "src_es8311_es8311_create",
-      "target": "es8311_handle_t",
+      "target": "src_es8311_cpp_es8311_handle_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10106,7 +10089,7 @@
     },
     {
       "source": "src_es8311_es8311_fmt_config",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10118,7 +10101,7 @@
     },
     {
       "source": "src_es8311_es8311_init",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10130,7 +10113,7 @@
     },
     {
       "source": "src_es8311_es8311_microphone_config",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10142,7 +10125,7 @@
     },
     {
       "source": "src_es8311_es8311_microphone_gain_set",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10154,7 +10137,7 @@
     },
     {
       "source": "src_es8311_es8311_read_reg",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10166,7 +10149,7 @@
     },
     {
       "source": "src_es8311_es8311_resolution_config",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10178,7 +10161,7 @@
     },
     {
       "source": "src_es8311_es8311_sample_frequency_config",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10190,7 +10173,7 @@
     },
     {
       "source": "src_es8311_es8311_voice_mute",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10202,7 +10185,7 @@
     },
     {
       "source": "src_es8311_es8311_voice_volume_get",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10214,7 +10197,7 @@
     },
     {
       "source": "src_es8311_es8311_voice_volume_set",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10226,7 +10209,7 @@
     },
     {
       "source": "src_es8311_es8311_write_reg",
-      "target": "esp_err_t",
+      "target": "src_es8311_cpp_esp_err_t",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -13805,5 +13788,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b3f882852d529a92358a75aa85eb362c96e4b8c3"
+  "built_at_commit": "f71cc9797a00abaf1eff7ead5cb45d26cda5745d"
 }
