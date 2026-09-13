@@ -231,6 +231,8 @@ es8311_handle_t es8311_create(const i2c_port_t port, const uint16_t dev_addr);
 void es8311_delete(es8311_handle_t dev);
 esp_err_t es8311_codec_init(void);
 void es8311_codec_dump_registers(void);
+esp_err_t es8311_codec_set_voice_volume(int volume);
+int es8311_codec_get_voice_volume(void);
 #ifdef __cplusplus
 }
 #endif

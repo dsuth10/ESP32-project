@@ -4,10 +4,12 @@
 #include <FT6336.h>
 #include <BleKeyboard.h>
 #include <Adafruit_NeoPixel.h>
+#include <Preferences.h>
 
 #include "macropad_config.h"
 #include "gui.h"
 #include "audio_recorder.h"
+#include "es8311.h"
 #include "network_manager.h"
 #include "environment_manager.h"
 
@@ -21,6 +23,12 @@ FT6336 ts = FT6336(PIN_TP_SDA, PIN_TP_SCL, PIN_TP_INT, PIN_TP_RST, 240, 320);
 BleKeyboard bleKeyboard("ESP32 MacroPad", "Spotpear", 100);
 Adafruit_NeoPixel pixel(1, PIN_RGB_LED, NEO_GRB + NEO_KHZ800);
 MacroPadGUI gui(tft);
+
+// Voice & Audio Configuration (NVS Persisted)
+static Preferences g_audioPrefs;
+static uint8_t g_voiceVolume = 80;
+static uint8_t g_voicePreMuteVolume = 80;
+static bool g_voiceAudioEnabled = true;
 
 // Application State
 uint8_t currentPage = 0;
@@ -160,6 +168,17 @@ void setup() {
   Serial.println("[Setup] Initializing Audio Recorder & ES8311 Codec...");
   recorder.begin();
 
+  // Load persisted voice volume and audio mode from NVS
+  g_audioPrefs.begin("audio_cfg", false);
+  g_voiceVolume = g_audioPrefs.getUChar("voice_vol", 80);
+  g_voiceAudioEnabled = g_audioPrefs.getBool("voice_audio", true);
+  if (g_voiceVolume > 100) g_voiceVolume = 80;
+  g_voicePreMuteVolume = (g_voiceVolume > 0) ? g_voiceVolume : 80;
+  es8311_codec_set_voice_volume(g_voiceVolume);
+  gui.setVoiceAudioEnabled(g_voiceAudioEnabled);
+  Serial.printf("[Setup] Audio Config: Volume=%d%%, AudioMode=%s\n", 
+                g_voiceVolume, g_voiceAudioEnabled ? "ON" : "TEXT-ONLY");
+
 #if !AUDIO_DIAGNOSTIC_MODE
   // Initialize Environment Manager (NVS preferences & profiles)
   Serial.println("[Setup] Initializing Environment Manager...");
@@ -243,7 +262,7 @@ void loop() {
     }
   }
 
-  // 4. Periodic Dashboard Telemetry Update (Page 6) - 100% non-blocking from Core 0 worker
+  // 4. Periodic Dashboard Telemetry Update (Page 1) - 100% non-blocking from Core 0 worker
   if (currentPage == PAGE_DASHBOARD && !recorder.isRecording()) {
     bool hasUpdate = false;
     DashboardStatus statusToDraw;
@@ -264,7 +283,7 @@ void loop() {
       statusToDraw.macropadReady = currentBleState;
 
       // In-place flicker-free telemetry update (fullRedraw = false)
-      gui.drawDashboard(statusToDraw, envManager.getMode(), false);
+      gui.drawDashboard(statusToDraw, envManager.getMode(), g_voiceVolume, false);
     }
   }
 
@@ -296,6 +315,25 @@ void loop() {
     }
 
     int8_t target = gui.getTouchTarget(tx, ty, currentPage);
+
+    // Dedicated Page 5 Audio Toggle Button
+    if (target == TOUCH_VOICE_AUDIO_TOGGLE) {
+      g_voiceAudioEnabled = !g_voiceAudioEnabled;
+      g_audioPrefs.putBool("voice_audio", g_voiceAudioEnabled);
+      gui.setVoiceAudioEnabled(g_voiceAudioEnabled);
+      Serial.printf("[Voice] User toggled Audio Mode -> %s\n", g_voiceAudioEnabled ? "AUDIO (Voice+Text)" : "TEXT ONLY");
+      gui.drawVoiceAudioToggle(true);
+      delay(80);
+      gui.drawVoiceAudioToggle(false);
+      gui.redrawVoiceCard();
+      uint32_t waitRelease = millis();
+      while (millis() - waitRelease < 500) {
+        ts.read();
+        if (!ts.isTouched) break;
+        delay(20);
+      }
+      return;
+    }
 
     // Dedicated Page 5 Scroll Buttons
     if (target == TOUCH_VOICE_SCROLL_UP) {
@@ -372,6 +410,62 @@ void loop() {
       }
       if (currentBleState) setLedColor(0, 50, 15);
     } 
+    else if (target == TOUCH_DASH_VOL_DOWN) {
+      if (g_voiceVolume > 0) {
+        g_voiceVolume = (g_voiceVolume >= 5) ? (g_voiceVolume - 5) : 0;
+      }
+      if (g_voiceVolume > 0) g_voicePreMuteVolume = g_voiceVolume;
+      es8311_codec_set_voice_volume(g_voiceVolume);
+      g_audioPrefs.putUChar("voice_vol", g_voiceVolume);
+      Serial.printf("[Dashboard] Volume Decreased -> %d%%\n", g_voiceVolume);
+      gui.drawDashboardVolume(g_voiceVolume, false);
+      delay(60);
+      uint32_t waitRelease = millis();
+      while (millis() - waitRelease < 400) {
+        ts.read();
+        if (!ts.isTouched) break;
+        delay(20);
+      }
+      return;
+    }
+    else if (target == TOUCH_DASH_VOL_UP) {
+      if (g_voiceVolume < 100) {
+        g_voiceVolume = (g_voiceVolume <= 95) ? (g_voiceVolume + 5) : 100;
+      }
+      g_voicePreMuteVolume = g_voiceVolume;
+      es8311_codec_set_voice_volume(g_voiceVolume);
+      g_audioPrefs.putUChar("voice_vol", g_voiceVolume);
+      Serial.printf("[Dashboard] Volume Increased -> %d%%\n", g_voiceVolume);
+      gui.drawDashboardVolume(g_voiceVolume, false);
+      delay(60);
+      uint32_t waitRelease = millis();
+      while (millis() - waitRelease < 400) {
+        ts.read();
+        if (!ts.isTouched) break;
+        delay(20);
+      }
+      return;
+    }
+    else if (target == TOUCH_DASH_VOL_MUTE) {
+      if (g_voiceVolume > 0) {
+        g_voicePreMuteVolume = g_voiceVolume;
+        g_voiceVolume = 0;
+      } else {
+        g_voiceVolume = (g_voicePreMuteVolume > 0) ? g_voicePreMuteVolume : 80;
+      }
+      es8311_codec_set_voice_volume(g_voiceVolume);
+      g_audioPrefs.putUChar("voice_vol", g_voiceVolume);
+      Serial.printf("[Dashboard] Volume Mute Toggled -> %d%%\n", g_voiceVolume);
+      gui.drawDashboardVolume(g_voiceVolume, false);
+      delay(80);
+      uint32_t waitRelease = millis();
+      while (millis() - waitRelease < 500) {
+        ts.read();
+        if (!ts.isTouched) break;
+        delay(20);
+      }
+      return;
+    }
     else if (target == TOUCH_DASH_HOME) {
       if (envManager.getMode() != ENV_HOME) {
         Serial.println("[Dashboard] User tapped SWITCH TO HOME");
@@ -482,7 +576,7 @@ void loop() {
           String transcript, reply;
           bool audioAvailable = false;
           String audioUrl = "";
-          bool success = netManager.sendVoiceAudio(recorder.getWavBuffer(), wavBytes, transcript, reply, audioAvailable, audioUrl);
+          bool success = netManager.sendVoiceAudio(recorder.getWavBuffer(), wavBytes, transcript, reply, audioAvailable, audioUrl, g_voiceAudioEnabled);
 
           if (success) {
             Serial.printf("[Voice] Success! Transcript: %s | Reply: %s | Audio: %s\n", 
@@ -490,8 +584,8 @@ void loop() {
             gui.drawVoiceCard(VOICE_UI_SUCCESS, transcript.c_str(), reply.c_str());
             setLedColor(0, 120, 30); // Bright Green
 
-            // If local TTS audio was generated by host, stream to speaker
-            if (audioAvailable && audioUrl.length() > 0) {
+            // If local TTS audio was generated by host and client enabled audio, stream to speaker
+            if (g_voiceAudioEnabled && audioAvailable && audioUrl.length() > 0) {
               delay(300);
               setLedColor(0, 100, 100); // Cyan speaking indicator
               netManager.playVoiceAudioReply(audioUrl, [&]() {

@@ -1,7 +1,22 @@
 #include "macropad_config.h"
 
 const MacroProfile PROFILES[NUM_PAGES] = {
-  // Page 0: Media & Volume
+  // Page 0: System Dashboard
+  {
+    "System Dashboard",
+    0x051D, // Cyan / Slate accent
+    0,      // Custom layout (drawn by drawDashboard)
+    {
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr }
+    }
+  },
+
+  // Page 1: Media & Volume
   {
     "Media & Audio",
     0x39BF, // Indigo accent
@@ -16,7 +31,7 @@ const MacroProfile PROFILES[NUM_PAGES] = {
     }
   },
 
-  // Page 1: Productivity & Editing
+  // Page 2: Productivity & Editing
   {
     "Productivity",
     0x04F2, // Emerald green accent
@@ -31,7 +46,7 @@ const MacroProfile PROFILES[NUM_PAGES] = {
     }
   },
 
-  // Page 2: Windows System & Utilities
+  // Page 3: Windows System & Utilities
   {
     "Windows Tools",
     0xFD20, // Warm amber accent
@@ -46,7 +61,7 @@ const MacroProfile PROFILES[NUM_PAGES] = {
     }
   },
 
-  // Page 3: Custom Keys (Only 3 Buttons)
+  // Page 4: Custom Keys (Only 3 Buttons)
   {
     "Custom Keys",
     0x07FF, // Vibrant Cyan accent
@@ -61,28 +76,13 @@ const MacroProfile PROFILES[NUM_PAGES] = {
     }
   },
 
-  // Page 4: Hermes Voice Assistant
+  // Page 5: Hermes Voice Assistant
   {
     "Hermes Voice",
     0x915F, // Vibrant Purple accent
     1,      // 1 dedicated Talk button
     {
       { "HOLD TO TALK", "Message Hermes", 0x18F4, 0x8A3F, ACTION_VOICE, nullptr, 0, 0, 0, 0, nullptr },
-      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
-      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
-      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
-      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
-      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr }
-    }
-  },
-
-  // Page 5: System Dashboard
-  {
-    "System Dashboard",
-    0x051D, // Cyan / Slate accent
-    0,      // Custom layout (drawn by drawDashboard)
-    {
-      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
       { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
       { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
       { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },

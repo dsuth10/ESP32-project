@@ -4,7 +4,7 @@
   "2": "EnvironmentManager",
   "3": "AudioRecorder",
   "4": "NetworkManager",
-  "5": "ChannelStats",
+  "5": "main.cpp",
   "6": "es8311_bsp.c",
   "7": "es8311.cpp",
   "8": "_coeff_div",

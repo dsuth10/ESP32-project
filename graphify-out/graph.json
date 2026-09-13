@@ -95,6 +95,19 @@
       "source_location": "L37"
     },
     {
+      "id": "src_audio_recorder_channelstats",
+      "label": "ChannelStats",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": "channelstats",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L12"
+    },
+    {
       "id": "src_network_manager_networkmanager",
       "label": "NetworkManager",
       "_callable": true,
@@ -106,19 +119,6 @@
       "norm_label": "networkmanager",
       "source_file": "src/network_manager.h",
       "source_location": "L9"
-    },
-    {
-      "id": "src_audio_recorder_channelstats",
-      "label": "ChannelStats",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": "channelstats",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L12"
     },
     {
       "id": "src_es8311_coeff_div",
@@ -147,19 +147,31 @@
             "callee": "length",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L146"
+            "line": "L203"
           },
           {
             "callee": "c_str",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L147"
+            "line": "L204"
           }
         ]
       },
       "norm_label": "drawwrappedtext()",
       "source_file": "src/gui.cpp",
-      "source_location": "L129"
+      "source_location": "L186"
+    },
+    {
+      "id": "src_gui_macropadgui_isvoiceaudioenabled",
+      "label": ".isVoiceAudioEnabled()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": ".isvoiceaudioenabled()",
+      "source_file": "src/gui.h",
+      "source_location": "L51"
     },
     {
       "id": "src_gui_macropadgui_macropadgui",
@@ -187,25 +199,25 @@
             "callee": "length",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L184"
+            "line": "L241"
           },
           {
             "callee": "c_str",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L184"
+            "line": "L241"
           },
           {
             "callee": "substring",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L186"
+            "line": "L243"
           }
         ]
       },
       "norm_label": "wraptexttochatlines()",
       "source_file": "src/gui.cpp",
-      "source_location": "L173"
+      "source_location": "L230"
     },
     {
       "id": "server_hermes_voice_receiver_ask_hermes_gateway",
@@ -325,7 +337,7 @@
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L1058"
+      "source_location": "L1070"
     },
     {
       "id": "server_hermes_voice_receiver_probe_hermes_health",
@@ -652,6 +664,66 @@
       "source_location": "L51"
     },
     {
+      "id": "src_audio_recorder_channelstats_getclippct",
+      "label": ".getClipPct()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": ".getclippct()",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L34"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_getmean",
+      "label": ".getMean()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": ".getmean()",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L31"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_getnonzeropct",
+      "label": ".getNonZeroPct()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": ".getnonzeropct()",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L33"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_getrms",
+      "label": ".getRms()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": ".getrms()",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L32"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_reset",
+      "label": ".reset()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": ".reset()",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L21"
+    },
+    {
       "id": "src_network_manager_extractjsonbool",
       "label": "extractJsonBool()",
       "_callable": true,
@@ -830,64 +902,16 @@
       "source_location": "L91"
     },
     {
-      "id": "src_audio_recorder_channelstats_getclippct",
-      "label": ".getClipPct()",
+      "id": "src_es8311_es8311_codec_set_voice_volume",
+      "label": "es8311_codec_set_voice_volume()",
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "ChannelStats",
+      "community_name": "main.cpp",
       "file_type": "code",
-      "norm_label": ".getclippct()",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L34"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_getmean",
-      "label": ".getMean()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": ".getmean()",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L31"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_getnonzeropct",
-      "label": ".getNonZeroPct()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": ".getnonzeropct()",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L33"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_getrms",
-      "label": ".getRms()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": ".getrms()",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L32"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_reset",
-      "label": ".reset()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": ".reset()",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L21"
+      "norm_label": "es8311_codec_set_voice_volume()",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L358"
     },
     {
       "id": "src_main_executemacro",
@@ -895,7 +919,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "ChannelStats",
+      "community_name": "main.cpp",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -903,19 +927,19 @@
             "callee": "printf",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L83"
+            "line": "L91"
           },
           {
             "callee": "println",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L86"
+            "line": "L94"
           }
         ]
       },
       "norm_label": "executemacro()",
       "source_file": "src/main.cpp",
-      "source_location": "L82"
+      "source_location": "L90"
     },
     {
       "id": "src_main_loop",
@@ -923,7 +947,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "ChannelStats",
+      "community_name": "main.cpp",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -931,67 +955,67 @@
             "callee": "available",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L197"
+            "line": "L216"
           },
           {
             "callee": "readStringUntil",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L198"
+            "line": "L217"
           },
           {
             "callee": "trim",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L199"
+            "line": "L218"
           },
           {
             "callee": "equalsIgnoreCase",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L200"
+            "line": "L219"
           },
           {
             "callee": "println",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L202"
+            "line": "L221"
           },
           {
             "callee": "startsWith",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L204"
+            "line": "L223"
           },
           {
             "callee": "substring",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L205"
+            "line": "L224"
           },
           {
             "callee": "printf",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L207"
+            "line": "L226"
           },
           {
             "callee": "c_str",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L489"
+            "line": "L583"
           },
           {
             "callee": "length",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L494"
+            "line": "L588"
           }
         ]
       },
       "norm_label": "loop()",
       "source_file": "src/main.cpp",
-      "source_location": "L195"
+      "source_location": "L214"
     },
     {
       "id": "src_main_setledcolor",
@@ -999,11 +1023,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "ChannelStats",
+      "community_name": "main.cpp",
       "file_type": "code",
       "norm_label": "setledcolor()",
       "source_file": "src/main.cpp",
-      "source_location": "L77"
+      "source_location": "L85"
     },
     {
       "id": "src_main_setup",
@@ -1011,7 +1035,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "ChannelStats",
+      "community_name": "main.cpp",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -1019,37 +1043,43 @@
             "callee": "begin",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L124"
+            "line": "L132"
           },
           {
             "callee": "println",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L126"
+            "line": "L134"
           },
           {
             "callee": "setAuthenticationMode",
             "receiver_type": "BLESecurity",
             "lang": "cpp",
-            "line": "L155"
+            "line": "L163"
           },
           {
             "callee": "setCapability",
             "receiver_type": "BLESecurity",
             "lang": "cpp",
-            "line": "L156"
+            "line": "L164"
           },
           {
             "callee": "setInitEncryptionKey",
             "receiver_type": "BLESecurity",
             "lang": "cpp",
-            "line": "L157"
+            "line": "L165"
+          },
+          {
+            "callee": "printf",
+            "receiver_type": "Serial",
+            "lang": "cpp",
+            "line": "L179"
           }
         ]
       },
       "norm_label": "setup()",
       "source_file": "src/main.cpp",
-      "source_location": "L118"
+      "source_location": "L126"
     },
     {
       "id": "src_main_telemetryworkertask",
@@ -1057,11 +1087,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "ChannelStats",
+      "community_name": "main.cpp",
       "file_type": "code",
       "norm_label": "telemetryworkertask()",
       "source_file": "src/main.cpp",
-      "source_location": "L44"
+      "source_location": "L52"
     },
     {
       "id": "es8311_bsp_es8311_clock_config",
@@ -1318,6 +1348,18 @@
       "norm_label": "es8311_codec_dump_registers()",
       "source_file": "src/es8311.cpp",
       "source_location": "L300"
+    },
+    {
+      "id": "src_es8311_es8311_codec_get_voice_volume",
+      "label": "es8311_codec_get_voice_volume()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "es8311_codec_get_voice_volume()",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L366"
     },
     {
       "id": "src_es8311_es8311_codec_init",
@@ -1662,11 +1704,37 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L11",
+      "definition_location": "L13",
       "file_type": "code",
       "norm_label": "init",
       "source_file": "src/gui.h",
       "source_location": "L30"
+    },
+    {
+      "id": "src_gui_macropadgui_drawvoiceaudiotoggle",
+      "label": "drawVoiceAudioToggle",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L144",
+      "file_type": "code",
+      "norm_label": "drawvoiceaudiotoggle",
+      "source_file": "src/gui.h",
+      "source_location": "L49"
+    },
+    {
+      "id": "src_gui_macropadgui_setvoiceaudioenabled",
+      "label": "setVoiceAudioEnabled",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L19",
+      "file_type": "code",
+      "norm_label": "setvoiceaudioenabled",
+      "source_file": "src/gui.h",
+      "source_location": "L50"
     },
     {
       "id": "src_gui_macropadgui_getbuttonrect",
@@ -1675,11 +1743,11 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L17",
+      "definition_location": "L23",
       "file_type": "code",
       "norm_label": "getbuttonrect",
       "source_file": "src/gui.h",
-      "source_location": "L60"
+      "source_location": "L67"
     },
     {
       "id": "src_gui_macropadgui_clearconversation",
@@ -1688,7 +1756,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L219",
+      "definition_location": "L276",
       "file_type": "code",
       "norm_label": "clearconversation",
       "source_file": "src/gui.h",
@@ -1701,7 +1769,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L229",
+      "definition_location": "L286",
       "file_type": "code",
       "norm_label": "addvoiceturn",
       "source_file": "src/gui.h",
@@ -1714,11 +1782,11 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L247",
+      "definition_location": "L304",
       "file_type": "code",
       "norm_label": "rebuildchatlines",
       "source_file": "src/gui.h",
-      "source_location": "L63"
+      "source_location": "L70"
     },
     {
       "id": "src_gui_macropadgui_scrolltobottom",
@@ -1727,7 +1795,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L267",
+      "definition_location": "L324",
       "file_type": "code",
       "norm_label": "scrolltobottom",
       "source_file": "src/gui.h",
@@ -1740,7 +1808,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L273",
+      "definition_location": "L330",
       "file_type": "code",
       "norm_label": "scrolltolatestresponse",
       "source_file": "src/gui.h",
@@ -1753,7 +1821,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L298",
+      "definition_location": "L355",
       "file_type": "code",
       "norm_label": "scrolltotop",
       "source_file": "src/gui.h",
@@ -1766,7 +1834,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L302",
+      "definition_location": "L359",
       "file_type": "code",
       "norm_label": "canscrollup",
       "source_file": "src/gui.h",
@@ -1779,7 +1847,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L306",
+      "definition_location": "L363",
       "file_type": "code",
       "norm_label": "canscrolldown",
       "source_file": "src/gui.h",
@@ -1792,7 +1860,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L312",
+      "definition_location": "L369",
       "file_type": "code",
       "norm_label": "voicechatscrollable",
       "source_file": "src/gui.h",
@@ -1805,7 +1873,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L316",
+      "definition_location": "L373",
       "file_type": "code",
       "norm_label": "scrollvoicechat",
       "source_file": "src/gui.h",
@@ -1818,11 +1886,11 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L331",
+      "definition_location": "L388",
       "file_type": "code",
       "norm_label": "rendervoicechatviewport",
       "source_file": "src/gui.h",
-      "source_location": "L62"
+      "source_location": "L69"
     },
     {
       "id": "src_gui_macropadgui_drawvoicecard",
@@ -1831,7 +1899,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L403",
+      "definition_location": "L460",
       "file_type": "code",
       "norm_label": "drawvoicecard",
       "source_file": "src/gui.h",
@@ -1844,7 +1912,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L417",
+      "definition_location": "L474",
       "file_type": "code",
       "norm_label": "redrawvoicecard",
       "source_file": "src/gui.h",
@@ -1857,7 +1925,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L43",
+      "definition_location": "L58",
       "file_type": "code",
       "norm_label": "drawstatusbar",
       "source_file": "src/gui.h",
@@ -1870,11 +1938,24 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L522",
+      "definition_location": "L585",
       "file_type": "code",
       "norm_label": "drawstatusrow",
       "source_file": "src/gui.h",
-      "source_location": "L61"
+      "source_location": "L68"
+    },
+    {
+      "id": "src_gui_macropadgui_drawdashboardvolume",
+      "label": "drawDashboardVolume",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L614",
+      "file_type": "code",
+      "norm_label": "drawdashboardvolume",
+      "source_file": "src/gui.h",
+      "source_location": "L47"
     },
     {
       "id": "src_gui_macropadgui_drawdashboard",
@@ -1883,7 +1964,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L551",
+      "definition_location": "L668",
       "file_type": "code",
       "norm_label": "drawdashboard",
       "source_file": "src/gui.h",
@@ -1896,11 +1977,11 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L664",
+      "definition_location": "L789",
       "file_type": "code",
       "norm_label": "drawdashboardswitching",
       "source_file": "src/gui.h",
-      "source_location": "L46"
+      "source_location": "L48"
     },
     {
       "id": "src_gui_macropadgui_drawall",
@@ -1909,7 +1990,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L684",
+      "definition_location": "L809",
       "file_type": "code",
       "norm_label": "drawall",
       "source_file": "src/gui.h",
@@ -1922,11 +2003,11 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L721",
+      "definition_location": "L847",
       "file_type": "code",
       "norm_label": "gettouchtarget",
       "source_file": "src/gui.h",
-      "source_location": "L47"
+      "source_location": "L52"
     },
     {
       "id": "src_gui_macropadgui_drawbutton",
@@ -1935,7 +2016,7 @@
       "community": 0,
       "community_name": "MacroPadGUI",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L84",
+      "definition_location": "L99",
       "file_type": "code",
       "norm_label": "drawbutton",
       "source_file": "src/gui.h",
@@ -2137,7 +2218,7 @@
       "file_type": "code",
       "norm_label": "_chatlines",
       "source_file": "src/gui.h",
-      "source_location": "L58"
+      "source_location": "L65"
     },
     {
       "id": "src_gui_macropadgui_history",
@@ -2148,7 +2229,29 @@
       "file_type": "code",
       "norm_label": "_history",
       "source_file": "src/gui.h",
-      "source_location": "L57"
+      "source_location": "L64"
+    },
+    {
+      "id": "src_gui_macropadgui_lastdrawnvolume",
+      "label": "_lastDrawnVolume",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "_lastdrawnvolume",
+      "source_file": "src/gui.h",
+      "source_location": "L63"
+    },
+    {
+      "id": "src_gui_macropadgui_voiceaudioenabled",
+      "label": "_voiceAudioEnabled",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "file_type": "code",
+      "norm_label": "_voiceaudioenabled",
+      "source_file": "src/gui.h",
+      "source_location": "L62"
     },
     {
       "id": "src_gui_macropadgui_voicedetailmsg",
@@ -2159,7 +2262,7 @@
       "file_type": "code",
       "norm_label": "_voicedetailmsg",
       "source_file": "src/gui.h",
-      "source_location": "L55"
+      "source_location": "L60"
     },
     {
       "id": "src_gui_macropadgui_voicescrollline",
@@ -2170,7 +2273,7 @@
       "file_type": "code",
       "norm_label": "_voicescrollline",
       "source_file": "src/gui.h",
-      "source_location": "L56"
+      "source_location": "L61"
     },
     {
       "id": "src_gui_macropadgui_voicestate",
@@ -2181,7 +2284,7 @@
       "file_type": "code",
       "norm_label": "_voicestate",
       "source_file": "src/gui.h",
-      "source_location": "L53"
+      "source_location": "L58"
     },
     {
       "id": "src_gui_macropadgui_voicestatusmsg",
@@ -2192,18 +2295,7 @@
       "file_type": "code",
       "norm_label": "_voicestatusmsg",
       "source_file": "src/gui.h",
-      "source_location": "L54"
-    },
-    {
-      "id": "src_system_status",
-      "label": "system_status.h",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "MacroPadGUI",
-      "file_type": "code",
-      "norm_label": "system_status.h",
-      "source_file": "src/system_status.h",
-      "source_location": "L1"
+      "source_location": "L59"
     },
     {
       "id": "basehttprequesthandler",
@@ -4594,6 +4686,83 @@
       "source_location": "L67"
     },
     {
+      "id": "src_audio_recorder_channelstats_clipcount",
+      "label": "clipCount",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": "clipcount",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L19"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_count",
+      "label": "count",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": "count",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_maxval",
+      "label": "maxVal",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": "maxval",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_minval",
+      "label": "minVal",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": "minval",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L14"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_nonzerocount",
+      "label": "nonZeroCount",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": "nonzerocount",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L18"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_sum",
+      "label": "sum",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": "sum",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L16"
+    },
+    {
+      "id": "src_audio_recorder_channelstats_sumsq",
+      "label": "sumSq",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": "sumsq",
+      "source_file": "src/audio_recorder.h",
+      "source_location": "L17"
+    },
+    {
       "id": "src_audio_recorder_cpp_function",
       "label": "function",
       "_origin": "ast",
@@ -4613,6 +4782,17 @@
       "file_type": "code",
       "norm_label": "audio_recorder.cpp",
       "source_file": "src/audio_recorder.cpp",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_audio_recorder_h_src_audio_recorder",
+      "label": "audio_recorder.h",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "AudioRecorder",
+      "file_type": "code",
+      "norm_label": "audio_recorder.h",
+      "source_file": "src/audio_recorder.h",
       "source_location": "L1"
     },
     {
@@ -4891,49 +5071,49 @@
             "callee": "setTimeout",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L244"
+            "line": "L248"
           },
           {
             "callee": "printf",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L246"
+            "line": "L250"
           },
           {
             "callee": "POST",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L250"
+            "line": "L254"
           },
           {
             "callee": "getString",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L254"
+            "line": "L258"
           },
           {
             "callee": "c_str",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L255"
+            "line": "L259"
           },
           {
             "callee": "end",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L281"
+            "line": "L285"
           },
           {
             "callee": "errorToString",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L285"
+            "line": "L289"
           },
           {
             "callee": "length",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L307"
+            "line": "L311"
           }
         ]
       },
@@ -4948,7 +5128,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L327",
+      "definition_location": "L331",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4956,85 +5136,85 @@
             "callee": "indexOf",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L338"
+            "line": "L342"
           },
           {
             "callee": "substring",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L340"
+            "line": "L344"
           },
           {
             "callee": "printf",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L346"
+            "line": "L350"
           },
           {
             "callee": "c_str",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L346"
+            "line": "L350"
           },
           {
             "callee": "setInsecure",
             "receiver_type": "WiFiClientSecure",
             "lang": "cpp",
-            "line": "L350"
+            "line": "L354"
           },
           {
             "callee": "startsWith",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L352"
+            "line": "L356"
           },
           {
             "callee": "begin",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L353"
+            "line": "L357"
           },
           {
             "callee": "addHeader",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L359"
+            "line": "L363"
           },
           {
             "callee": "setTimeout",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L361"
+            "line": "L365"
           },
           {
             "callee": "GET",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L363"
+            "line": "L367"
           },
           {
             "callee": "errorToString",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L365"
+            "line": "L369"
           },
           {
             "callee": "end",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L366"
+            "line": "L370"
           },
           {
             "callee": "getStreamPtr",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L370"
+            "line": "L374"
           },
           {
             "callee": "getSize",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L371"
+            "line": "L375"
           }
         ]
       },
@@ -5049,7 +5229,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L378",
+      "definition_location": "L382",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -5057,49 +5237,49 @@
             "callee": "endsWith",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L383"
+            "line": "L387"
           },
           {
             "callee": "replace",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L384"
+            "line": "L388"
           },
           {
             "callee": "setInsecure",
             "receiver_type": "WiFiClientSecure",
             "lang": "cpp",
-            "line": "L391"
+            "line": "L395"
           },
           {
             "callee": "startsWith",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L393"
+            "line": "L397"
           },
           {
             "callee": "begin",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L394"
+            "line": "L398"
           },
           {
             "callee": "setTimeout",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L399"
+            "line": "L403"
           },
           {
             "callee": "GET",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L400"
+            "line": "L404"
           },
           {
             "callee": "end",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L401"
+            "line": "L405"
           }
         ]
       },
@@ -5114,7 +5294,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L405",
+      "definition_location": "L409",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -5122,7 +5302,7 @@
             "callee": "hostByName",
             "receiver_type": "WiFi",
             "lang": "cpp",
-            "line": "L418"
+            "line": "L422"
           }
         ]
       },
@@ -5137,7 +5317,7 @@
       "community": 4,
       "community_name": "NetworkManager",
       "definition_file": "src/network_manager.cpp",
-      "definition_location": "L428",
+      "definition_location": "L432",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -5145,55 +5325,55 @@
             "callee": "setInsecure",
             "receiver_type": "WiFiClientSecure",
             "lang": "cpp",
-            "line": "L458"
+            "line": "L462"
           },
           {
             "callee": "begin",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L461"
+            "line": "L465"
           },
           {
             "callee": "addHeader",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L466"
+            "line": "L470"
           },
           {
             "callee": "setTimeout",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L471"
+            "line": "L475"
           },
           {
             "callee": "GET",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L472"
+            "line": "L476"
           },
           {
             "callee": "getString",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L475"
+            "line": "L479"
           },
           {
             "callee": "end",
             "receiver_type": "HTTPClient",
             "lang": "cpp",
-            "line": "L476"
+            "line": "L480"
           },
           {
             "callee": "length",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L481"
+            "line": "L485"
           },
           {
             "callee": "printf",
             "receiver_type": "Serial",
             "lang": "cpp",
-            "line": "L529"
+            "line": "L533"
           }
         ]
       },
@@ -5392,110 +5572,33 @@
       "source_location": "L40"
     },
     {
+      "id": "src_system_status",
+      "label": "system_status.h",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "NetworkManager",
+      "file_type": "code",
+      "norm_label": "system_status.h",
+      "source_file": "src/system_status.h",
+      "source_location": "L1"
+    },
+    {
       "id": "macrobutton",
       "label": "MacroButton",
       "_origin": "ast",
       "community": 5,
-      "community_name": "ChannelStats",
+      "community_name": "main.cpp",
       "file_type": "code",
       "norm_label": "macrobutton",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "src_audio_recorder_channelstats_clipcount",
-      "label": "clipCount",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": "clipcount",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L19"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_count",
-      "label": "count",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": "count",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L13"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_maxval",
-      "label": "maxVal",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": "maxval",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_minval",
-      "label": "minVal",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": "minval",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L14"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_nonzerocount",
-      "label": "nonZeroCount",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": "nonzerocount",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L18"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_sum",
-      "label": "sum",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": "sum",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L16"
-    },
-    {
-      "id": "src_audio_recorder_channelstats_sumsq",
-      "label": "sumSq",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": "sumsq",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L17"
-    },
-    {
-      "id": "src_audio_recorder_h_src_audio_recorder",
-      "label": "audio_recorder.h",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "ChannelStats",
-      "file_type": "code",
-      "norm_label": "audio_recorder.h",
-      "source_file": "src/audio_recorder.h",
-      "source_location": "L1"
-    },
-    {
       "id": "src_macropad_config_cpp_src_macropad_config",
       "label": "macropad_config.cpp",
       "_origin": "ast",
       "community": 5,
-      "community_name": "ChannelStats",
+      "community_name": "main.cpp",
       "file_type": "code",
       "norm_label": "macropad_config.cpp",
       "source_file": "src/macropad_config.cpp",
@@ -5506,7 +5609,7 @@
       "label": "macropad_config.h",
       "_origin": "ast",
       "community": 5,
-      "community_name": "ChannelStats",
+      "community_name": "main.cpp",
       "file_type": "code",
       "norm_label": "macropad_config.h",
       "source_file": "src/macropad_config.h",
@@ -5517,7 +5620,7 @@
       "label": "main.cpp",
       "_origin": "ast",
       "community": 5,
-      "community_name": "ChannelStats",
+      "community_name": "main.cpp",
       "file_type": "code",
       "norm_label": "main.cpp",
       "source_file": "src/main.cpp",
@@ -6225,7 +6328,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L1060",
+      "source_location": "L1072",
       "weight": 1.0
     },
     {
@@ -6309,7 +6412,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L1011",
+      "source_location": "L1023",
       "weight": 1.0
     },
     {
@@ -6321,7 +6424,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L852",
+      "source_location": "L862",
       "weight": 1.0
     },
     {
@@ -6333,7 +6436,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L853",
+      "source_location": "L863",
       "weight": 1.0
     },
     {
@@ -6345,7 +6448,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L900",
+      "source_location": "L910",
       "weight": 1.0
     },
     {
@@ -6357,7 +6460,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L919",
+      "source_location": "L929",
       "weight": 1.0
     },
     {
@@ -6369,7 +6472,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L924",
+      "source_location": "L934",
       "weight": 1.0
     },
     {
@@ -6381,7 +6484,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L943",
+      "source_location": "L953",
       "weight": 1.0
     },
     {
@@ -6393,7 +6496,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L949",
+      "source_location": "L959",
       "weight": 1.0
     },
     {
@@ -6405,7 +6508,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L951",
+      "source_location": "L961",
       "weight": 1.0
     },
     {
@@ -6454,6 +6557,18 @@
       "context": "call",
       "source_file": "src/es8311.cpp",
       "source_location": "L314",
+      "weight": 1.0
+    },
+    {
+      "source": "src_es8311_es8311_codec_get_voice_volume",
+      "target": "src_es8311_es8311_voice_volume_get",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L370",
       "weight": 1.0
     },
     {
@@ -6538,6 +6653,18 @@
       "context": "call",
       "source_file": "src/es8311.cpp",
       "source_location": "L353",
+      "weight": 1.0
+    },
+    {
+      "source": "src_es8311_es8311_codec_set_voice_volume",
+      "target": "src_es8311_es8311_voice_volume_set",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L363",
       "weight": 1.0
     },
     {
@@ -6729,7 +6856,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L256",
+      "source_location": "L313",
       "weight": 1.0
     },
     {
@@ -6741,7 +6868,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L511",
+      "source_location": "L574",
       "weight": 1.0
     },
     {
@@ -6753,7 +6880,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.cpp",
-      "source_location": "L227",
+      "source_location": "L246",
       "weight": 1.0
     },
     {
@@ -6765,7 +6892,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.cpp",
-      "source_location": "L525",
+      "source_location": "L619",
       "weight": 1.0
     },
     {
@@ -6777,7 +6904,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.cpp",
-      "source_location": "L137",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -6789,34 +6916,34 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L479",
-      "weight": 1.0
-    },
-    {
-      "source": "src_network_manager_networkmanager_fetchcompositestatus",
-      "target": "src_network_manager_extractjsonbool",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/network_manager.cpp",
-      "source_location": "L480",
-      "weight": 1.0
-    },
-    {
-      "source": "src_network_manager_networkmanager_fetchcompositestatus",
-      "target": "src_network_manager_extractjsonfield",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/network_manager.cpp",
       "source_location": "L483",
       "weight": 1.0
     },
     {
+      "source": "src_network_manager_networkmanager_fetchcompositestatus",
+      "target": "src_network_manager_extractjsonbool",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/network_manager.cpp",
+      "source_location": "L484",
+      "weight": 1.0
+    },
+    {
+      "source": "src_network_manager_networkmanager_fetchcompositestatus",
+      "target": "src_network_manager_extractjsonfield",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/network_manager.cpp",
+      "source_location": "L487",
+      "weight": 1.0
+    },
+    {
       "source": "src_network_manager_networkmanager_sendvoiceaudio",
       "target": "src_network_manager_extractjsonfield",
       "relation": "calls",
@@ -6825,7 +6952,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L257",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -6837,7 +6964,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L259",
+      "source_location": "L263",
       "weight": 1.0
     },
     {
@@ -6849,7 +6976,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L268",
+      "source_location": "L272",
       "weight": 1.0
     },
     {
@@ -7922,19 +8049,7 @@
     },
     {
       "source": "src_gui_macropadgui",
-      "target": "src_gui_macropadgui_drawdashboardswitching",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/gui.h",
-      "source_location": "L46",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_macropadgui",
-      "target": "src_gui_macropadgui_gettouchtarget",
+      "target": "src_gui_macropadgui_drawdashboardvolume",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -7946,67 +8061,55 @@
     },
     {
       "source": "src_gui_macropadgui",
+      "target": "src_gui_macropadgui_drawdashboardswitching",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/gui.h",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui",
+      "target": "src_gui_macropadgui_drawvoiceaudiotoggle",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/gui.h",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui",
+      "target": "src_gui_macropadgui_setvoiceaudioenabled",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/gui.h",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui",
+      "target": "src_gui_macropadgui_gettouchtarget",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/gui.h",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui",
       "target": "src_gui_macropadgui_voicestate",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/gui.h",
-      "source_location": "L53",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_macropadgui",
-      "target": "src_gui_macropadgui_voicestatusmsg",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/gui.h",
-      "source_location": "L54",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_macropadgui",
-      "target": "src_gui_macropadgui_voicedetailmsg",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/gui.h",
-      "source_location": "L55",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_macropadgui",
-      "target": "src_gui_macropadgui_voicescrollline",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/gui.h",
-      "source_location": "L56",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_macropadgui",
-      "target": "src_gui_macropadgui_history",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/gui.h",
-      "source_location": "L57",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_macropadgui",
-      "target": "src_gui_macropadgui_chatlines",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8018,7 +8121,19 @@
     },
     {
       "source": "src_gui_macropadgui",
-      "target": "src_gui_macropadgui_getbuttonrect",
+      "target": "src_gui_macropadgui_voicestatusmsg",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/gui.h",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui",
+      "target": "src_gui_macropadgui_voicedetailmsg",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8030,7 +8145,7 @@
     },
     {
       "source": "src_gui_macropadgui",
-      "target": "src_gui_macropadgui_drawstatusrow",
+      "target": "src_gui_macropadgui_voicescrollline",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8042,7 +8157,7 @@
     },
     {
       "source": "src_gui_macropadgui",
-      "target": "src_gui_macropadgui_rendervoicechatviewport",
+      "target": "src_gui_macropadgui_voiceaudioenabled",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8054,7 +8169,7 @@
     },
     {
       "source": "src_gui_macropadgui",
-      "target": "src_gui_macropadgui_rebuildchatlines",
+      "target": "src_gui_macropadgui_lastdrawnvolume",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8062,6 +8177,78 @@
       "context": "field",
       "source_file": "src/gui.h",
       "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui",
+      "target": "src_gui_macropadgui_history",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/gui.h",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui",
+      "target": "src_gui_macropadgui_chatlines",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/gui.h",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui",
+      "target": "src_gui_macropadgui_getbuttonrect",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/gui.h",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui",
+      "target": "src_gui_macropadgui_drawstatusrow",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/gui.h",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui",
+      "target": "src_gui_macropadgui_rendervoicechatviewport",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/gui.h",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui",
+      "target": "src_gui_macropadgui_rebuildchatlines",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "src/gui.h",
+      "source_location": "L70",
       "weight": 1.0
     },
     {
@@ -8409,7 +8596,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/gui.h",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -8421,7 +8608,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/gui.h",
-      "source_location": "L53",
+      "source_location": "L58",
       "weight": 1.0
     },
     {
@@ -8433,7 +8620,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/gui.h",
-      "source_location": "L54",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -8445,7 +8632,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/gui.h",
-      "source_location": "L57",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -8469,7 +8656,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gui.h",
-      "source_location": "L57",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -8481,7 +8668,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gui.h",
-      "source_location": "L58",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
@@ -8493,7 +8680,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gui.cpp",
-      "source_location": "L173",
+      "source_location": "L230",
       "weight": 1.0
     },
     {
@@ -8702,7 +8889,7 @@
     },
     {
       "source": "src_main",
-      "target": "src_audio_recorder_h_src_audio_recorder",
+      "target": "src_gui_h_src_gui",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8714,7 +8901,7 @@
     },
     {
       "source": "src_main",
-      "target": "src_network_manager_h_src_network_manager",
+      "target": "src_audio_recorder_h_src_audio_recorder",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8726,7 +8913,7 @@
     },
     {
       "source": "src_main",
-      "target": "src_environment_manager_h_src_environment_manager",
+      "target": "src_es8311_h_src_es8311",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8734,6 +8921,30 @@
       "context": "import",
       "source_file": "src/main.cpp",
       "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_network_manager_h_src_network_manager",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/main.cpp",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_environment_manager_h_src_environment_manager",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/main.cpp",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -8750,19 +8961,19 @@
     },
     {
       "source": "src_main",
-      "target": "src_macropad_config_h_src_macropad_config",
+      "target": "preferences",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/main.cpp",
-      "source_location": "L8",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
       "source": "src_main",
-      "target": "src_gui_h_src_gui",
+      "target": "src_macropad_config_h_src_macropad_config",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9417,7 +9628,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L129",
+      "source_location": "L186",
       "weight": 1.0
     },
     {
@@ -9429,7 +9640,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L229",
+      "source_location": "L286",
       "weight": 1.0
     },
     {
@@ -9441,7 +9652,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L551",
+      "source_location": "L668",
       "weight": 1.0
     },
     {
@@ -9453,7 +9664,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L551",
+      "source_location": "L668",
       "weight": 1.0
     },
     {
@@ -9465,7 +9676,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L522",
+      "source_location": "L585",
       "weight": 1.0
     },
     {
@@ -9477,7 +9688,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L403",
+      "source_location": "L460",
       "weight": 1.0
     },
     {
@@ -9501,7 +9712,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L173",
+      "source_location": "L230",
       "weight": 1.0
     },
     {
@@ -9513,7 +9724,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L173",
+      "source_location": "L230",
       "weight": 1.0
     },
     {
@@ -9525,7 +9736,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/main.cpp",
-      "source_location": "L82",
+      "source_location": "L90",
       "weight": 1.0
     },
     {
@@ -9597,7 +9808,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L428",
+      "source_location": "L432",
       "weight": 1.0
     },
     {
@@ -9609,7 +9820,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L327",
+      "source_location": "L331",
       "weight": 1.0
     },
     {
@@ -9621,7 +9832,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L327",
+      "source_location": "L331",
       "weight": 1.0
     },
     {
@@ -9850,6 +10061,18 @@
       "context": "return_type",
       "source_file": "src/es8311.cpp",
       "source_location": "L321",
+      "weight": 1.0
+    },
+    {
+      "source": "src_es8311_es8311_codec_set_voice_volume",
+      "target": "src_es8311_cpp_esp_err_t",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "return_type",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L358",
       "weight": 1.0
     },
     {
@@ -11381,7 +11604,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L1058",
+      "source_location": "L1070",
       "weight": 1.0
     },
     {
@@ -11991,6 +12214,28 @@
     },
     {
       "source": "src_es8311_cpp_src_es8311",
+      "target": "src_es8311_es8311_codec_set_voice_volume",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/es8311.cpp",
+      "source_location": "L358",
+      "weight": 1.0
+    },
+    {
+      "source": "src_es8311_cpp_src_es8311",
+      "target": "src_es8311_es8311_codec_get_voice_volume",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/es8311.cpp",
+      "source_location": "L366",
+      "weight": 1.0
+    },
+    {
+      "source": "src_es8311_cpp_src_es8311",
       "target": "src_es8311_es8311_write_reg",
       "relation": "contains",
       "_origin": "ast",
@@ -12041,7 +12286,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L11",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_drawvoiceaudiotoggle",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L144",
       "weight": 1.0
     },
     {
@@ -12052,7 +12308,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L129",
+      "source_location": "L186",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_setvoiceaudioenabled",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -12063,7 +12330,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L17",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -12074,7 +12341,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L173",
+      "source_location": "L230",
       "weight": 1.0
     },
     {
@@ -12085,7 +12352,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L219",
+      "source_location": "L276",
       "weight": 1.0
     },
     {
@@ -12096,7 +12363,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L229",
+      "source_location": "L286",
       "weight": 1.0
     },
     {
@@ -12107,7 +12374,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L247",
+      "source_location": "L304",
       "weight": 1.0
     },
     {
@@ -12118,7 +12385,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L267",
+      "source_location": "L324",
       "weight": 1.0
     },
     {
@@ -12129,7 +12396,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L273",
+      "source_location": "L330",
       "weight": 1.0
     },
     {
@@ -12140,7 +12407,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L298",
+      "source_location": "L355",
       "weight": 1.0
     },
     {
@@ -12151,7 +12418,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L302",
+      "source_location": "L359",
       "weight": 1.0
     },
     {
@@ -12162,7 +12429,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L306",
+      "source_location": "L363",
       "weight": 1.0
     },
     {
@@ -12173,7 +12440,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L312",
+      "source_location": "L369",
       "weight": 1.0
     },
     {
@@ -12184,7 +12451,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L316",
+      "source_location": "L373",
       "weight": 1.0
     },
     {
@@ -12195,7 +12462,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L331",
+      "source_location": "L388",
       "weight": 1.0
     },
     {
@@ -12217,7 +12484,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L403",
+      "source_location": "L460",
       "weight": 1.0
     },
     {
@@ -12228,7 +12495,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L417",
+      "source_location": "L474",
       "weight": 1.0
     },
     {
@@ -12239,7 +12506,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L43",
+      "source_location": "L58",
       "weight": 1.0
     },
     {
@@ -12250,7 +12517,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L522",
+      "source_location": "L585",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_drawdashboardvolume",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L614",
       "weight": 1.0
     },
     {
@@ -12261,7 +12539,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L551",
+      "source_location": "L668",
       "weight": 1.0
     },
     {
@@ -12272,7 +12550,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L664",
+      "source_location": "L789",
       "weight": 1.0
     },
     {
@@ -12283,7 +12561,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L684",
+      "source_location": "L809",
       "weight": 1.0
     },
     {
@@ -12294,7 +12572,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L721",
+      "source_location": "L847",
       "weight": 1.0
     },
     {
@@ -12305,7 +12583,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L84",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -12349,7 +12627,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.cpp",
-      "source_location": "L118",
+      "source_location": "L126",
       "weight": 1.0
     },
     {
@@ -12360,7 +12638,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.cpp",
-      "source_location": "L195",
+      "source_location": "L214",
       "weight": 1.0
     },
     {
@@ -12371,7 +12649,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.cpp",
-      "source_location": "L44",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -12382,7 +12660,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.cpp",
-      "source_location": "L77",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -12393,7 +12671,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.cpp",
-      "source_location": "L82",
+      "source_location": "L90",
       "weight": 1.0
     },
     {
@@ -12492,7 +12770,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L327",
+      "source_location": "L331",
       "weight": 1.0
     },
     {
@@ -12514,7 +12792,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L378",
+      "source_location": "L382",
       "weight": 1.0
     },
     {
@@ -12525,7 +12803,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L405",
+      "source_location": "L409",
       "weight": 1.0
     },
     {
@@ -12536,7 +12814,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/network_manager.cpp",
-      "source_location": "L428",
+      "source_location": "L432",
       "weight": 1.0
     },
     {
@@ -12771,6 +13049,17 @@
       "weight": 1.0
     },
     {
+      "source": "src_gui_macropadgui",
+      "target": "src_gui_macropadgui_isvoiceaudioenabled",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.h",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
       "source": "flash_rationale_1",
       "target": "flash",
       "relation": "rationale_for",
@@ -12978,7 +13267,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "server/hermes_voice_receiver.py",
-      "source_location": "L1063",
+      "source_location": "L1075",
       "weight": 1.0
     },
     {
@@ -13098,7 +13387,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L243",
+      "source_location": "L300",
       "weight": 1.0
     },
     {
@@ -13110,7 +13399,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L244",
+      "source_location": "L301",
       "weight": 1.0
     },
     {
@@ -13122,7 +13411,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L226",
+      "source_location": "L283",
       "weight": 1.0
     },
     {
@@ -13134,7 +13423,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L686",
+      "source_location": "L811",
       "weight": 1.0
     },
     {
@@ -13146,7 +13435,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L708",
+      "source_location": "L833",
       "weight": 1.0
     },
     {
@@ -13158,7 +13447,19 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L714",
+      "source_location": "L839",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui_drawall",
+      "target": "src_gui_macropadgui_drawvoiceaudiotoggle",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "src/gui.cpp",
+      "source_location": "L842",
       "weight": 1.0
     },
     {
@@ -13170,7 +13471,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L717",
+      "source_location": "L843",
       "weight": 1.0
     },
     {
@@ -13182,7 +13483,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L89",
+      "source_location": "L104",
       "weight": 1.0
     },
     {
@@ -13194,7 +13495,19 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L594",
+      "source_location": "L712",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui_drawdashboard",
+      "target": "src_gui_macropadgui_drawdashboardvolume",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "src/gui.cpp",
+      "source_location": "L749",
       "weight": 1.0
     },
     {
@@ -13206,7 +13519,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L410",
+      "source_location": "L467",
       "weight": 1.0
     },
     {
@@ -13218,7 +13531,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L414",
+      "source_location": "L471",
       "weight": 1.0
     },
     {
@@ -13230,7 +13543,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L772",
+      "source_location": "L915",
       "weight": 1.0
     },
     {
@@ -13242,7 +13555,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L490",
+      "source_location": "L553",
       "weight": 1.0
     },
     {
@@ -13254,7 +13567,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L362",
+      "source_location": "L419",
       "weight": 1.0
     },
     {
@@ -13266,7 +13579,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L363",
+      "source_location": "L420",
       "weight": 1.0
     },
     {
@@ -13278,7 +13591,31 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L327",
+      "source_location": "L384",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_loop",
+      "target": "src_es8311_es8311_codec_set_voice_volume",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "src/main.cpp",
+      "source_location": "L418",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_setup",
+      "target": "src_es8311_es8311_codec_set_voice_volume",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "src/main.cpp",
+      "source_location": "L177",
       "weight": 1.0
     },
     {
@@ -13314,7 +13651,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L406",
+      "source_location": "L410",
       "weight": 1.0
     },
     {
@@ -13326,7 +13663,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L379",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -13338,7 +13675,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L430",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -13350,7 +13687,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L432",
+      "source_location": "L436",
       "weight": 1.0
     },
     {
@@ -13362,7 +13699,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L433",
+      "source_location": "L437",
       "weight": 1.0
     },
     {
@@ -13374,7 +13711,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L434",
+      "source_location": "L438",
       "weight": 1.0
     },
     {
@@ -13386,7 +13723,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L437",
+      "source_location": "L441",
       "weight": 1.0
     },
     {
@@ -13434,7 +13771,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/network_manager.cpp",
-      "source_location": "L328",
+      "source_location": "L332",
       "weight": 1.0
     },
     {
@@ -13451,5 +13788,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ec10f93395cc4a89a2be8897878237db5b7eaa91"
+  "built_at_commit": "f71cc9797a00abaf1eff7ead5cb45d26cda5745d"
 }

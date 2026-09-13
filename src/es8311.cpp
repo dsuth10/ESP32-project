@@ -354,3 +354,22 @@ esp_err_t es8311_codec_init(void)
 
     return ESP_OK;
 }
+
+esp_err_t es8311_codec_set_voice_volume(int volume)
+{
+    if (!s_es_handle) return ESP_FAIL;
+    if (volume < 0) volume = 0;
+    if (volume > 100) volume = 100;
+    return es8311_voice_volume_set(s_es_handle, volume, NULL);
+}
+
+int es8311_codec_get_voice_volume(void)
+{
+    if (!s_es_handle) return 0;
+    int vol = 0;
+    if (es8311_voice_volume_get(s_es_handle, &vol) == ESP_OK) {
+        return vol;
+    }
+    return 0;
+}
+

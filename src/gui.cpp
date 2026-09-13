@@ -6,7 +6,9 @@ MacroPadGUI::MacroPadGUI(TFT_eSPI& tft)
     _voiceState(VOICE_UI_IDLE),
     _voiceStatusMsg(""),
     _voiceDetailMsg(""),
-    _voiceScrollLine(0) {}
+    _voiceScrollLine(0),
+    _voiceAudioEnabled(true),
+    _lastDrawnVolume(80) {}
 
 void MacroPadGUI::init() {
   _tft.init();
@@ -14,11 +16,24 @@ void MacroPadGUI::init() {
   _tft.fillScreen(C_BG);
 }
 
+void MacroPadGUI::setVoiceAudioEnabled(bool enabled) {
+  _voiceAudioEnabled = enabled;
+}
+
 void MacroPadGUI::getButtonRect(uint8_t pageIndex, uint8_t btnIndex, int16_t& x, int16_t& y, int16_t& w, int16_t& h) {
+  if (pageIndex == PAGE_VOICE) {
+    // Voice page: Main hold-to-talk button alongside audio toggle
+    w = 222;
+    h = 42;
+    x = 10;
+    y = 36;
+    return;
+  }
+
   uint8_t count = PROFILES[pageIndex].numButtons;
 
   if (count == 1) {
-    // Single compact button on Voice Page
+    // Single compact button
     w = 300;
     h = 42;
     x = 10;
@@ -124,6 +139,48 @@ void MacroPadGUI::drawButton(uint8_t pageIndex, uint8_t btnIndex, bool pressed) 
     _tft.setTextColor(textSub, bg);
     _tft.drawString(btn.subtitle, x + w / 2, y + h / 2 + 14, 2);
   }
+}
+
+void MacroPadGUI::drawVoiceAudioToggle(bool pressed) {
+  int16_t x = 238;
+  int16_t y = 36;
+  int16_t w = 72;
+  int16_t h = 42;
+
+  uint16_t bg;
+  uint16_t border;
+  uint16_t textPrimary;
+  uint16_t textSub;
+
+  if (pressed) {
+    bg = 0xFFFF;
+    border = 0xFFFF;
+    textPrimary = 0x0000;
+    textSub = 0x2965;
+  } else if (_voiceAudioEnabled) {
+    bg = 0x0B4E;          // Deep Green/Teal
+    border = 0x07E0;      // Bright Green
+    textPrimary = 0xFFFF; // White
+    textSub = 0x07E0;     // Green
+  } else {
+    bg = 0x2124;          // Dark Slate
+    border = 0xFDA0;      // Amber
+    textPrimary = 0xFFFF; // White
+    textSub = 0xFDA0;     // Amber
+  }
+
+  _tft.fillRoundRect(x, y, w, h, 8, bg);
+  _tft.drawRoundRect(x, y, w, h, 8, border);
+  if (!pressed) {
+    _tft.drawRoundRect(x + 1, y + 1, w - 2, h - 2, 7, border);
+  }
+
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(textPrimary, bg);
+  _tft.drawString("AUDIO", x + w / 2, y + 12, 2);
+
+  _tft.setTextColor(textSub, bg);
+  _tft.drawString(_voiceAudioEnabled ? "[ ON ]" : "[ OFF ]", x + w / 2, y + 28, 2);
 }
 
 static void drawWrappedText(TFT_eSPI& tft, const char* text, int16_t x, int16_t y, int16_t maxW, uint8_t maxLines, uint16_t color, uint16_t bg, uint8_t font = 2) {
@@ -433,9 +490,15 @@ void MacroPadGUI::redrawVoiceCard() {
 
   switch (_voiceState) {
     case VOICE_UI_IDLE:
-      pillBg = 0x18C3;
-      pillText = 0x8410;
-      pillStr = "READY - HOLD BUTTON TO SPEAK";
+      if (_voiceAudioEnabled) {
+        pillBg = 0x18C3;
+        pillText = 0x8410;
+        pillStr = "READY - HOLD BUTTON TO SPEAK";
+      } else {
+        pillBg = 0x2124;
+        pillText = 0xFDA0;
+        pillStr = "READY [TEXT ONLY] - HOLD TO TALK";
+      }
       break;
 
     case VOICE_UI_RECORDING:
@@ -447,13 +510,13 @@ void MacroPadGUI::redrawVoiceCard() {
     case VOICE_UI_SENDING:
       pillBg = 0xFD60; // Bright Amber/Orange
       pillText = 0x0000;
-      pillStr = "[ TRANSCRIBING & WAITING FOR AI ]";
+      pillStr = _voiceAudioEnabled ? "[ TRANSCRIBING & WAITING FOR AI ]" : "[ WAITING FOR TEXT REPLY ]";
       break;
 
     case VOICE_UI_SUCCESS:
       pillBg = 0x03E0; // Green
       pillText = 0xFFFF;
-      pillStr = "[ RESPONSE RECEIVED ]";
+      pillStr = _voiceAudioEnabled ? "[ RESPONSE RECEIVED ]" : "[ TEXT REPLY RECEIVED ]";
       break;
 
     case VOICE_UI_ERROR:
@@ -548,11 +611,66 @@ void MacroPadGUI::drawStatusRow(int16_t x, int16_t y, int16_t w, const char* lab
   _tft.drawString(value, x + w - 8, y + 8, 2);
 }
 
-void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode, bool fullRedraw) {
+void MacroPadGUI::drawDashboardVolume(uint8_t volume, bool fullRedraw) {
+  _lastDrawnVolume = volume;
+  const int16_t volY = 156;
+  const int16_t volH = 34;
+
+  if (fullRedraw) {
+    // 1. Minus Button [ - ] (x: 8..52, w: 44)
+    _tft.fillRoundRect(8, volY, 44, volH, 6, 0x1084);
+    _tft.drawRoundRect(8, volY, 44, volH, 6, 0x4228);
+    _tft.setTextDatum(MC_DATUM);
+    _tft.setTextColor(C_TEXT_WHITE, 0x1084);
+    _tft.drawString("-", 30, volY + volH / 2, 4);
+
+    // 2. Plus Button [ + ] (x: 268..312, w: 44)
+    _tft.fillRoundRect(268, volY, 44, volH, 6, 0x1084);
+    _tft.drawRoundRect(268, volY, 44, volH, 6, 0x4228);
+    _tft.setTextDatum(MC_DATUM);
+    _tft.setTextColor(C_TEXT_WHITE, 0x1084);
+    _tft.drawString("+", 290, volY + volH / 2, 4);
+
+    // 3. Center Box Container (x: 56..264, w: 208)
+    _tft.fillRoundRect(56, volY, 208, volH, 6, 0x0842);
+    _tft.drawRoundRect(56, volY, 208, volH, 6, 0x3186);
+  }
+
+  // Differential overwrite of center dynamic contents (Rule 9)
+  _tft.fillRect(58, volY + 2, 204, volH - 4, 0x0842);
+
+  _tft.setTextDatum(MC_DATUM);
+  char volStr[32];
+  if (volume == 0) {
+    snprintf(volStr, sizeof(volStr), "HERMES VOL: MUTED");
+    _tft.setTextColor(0xF800, 0x0842); // Red
+  } else {
+    snprintf(volStr, sizeof(volStr), "HERMES VOL: %d%%", volume);
+    _tft.setTextColor(0x07FF, 0x0842); // Cyan
+  }
+  _tft.drawString(volStr, 160, volY + 11, 2);
+
+  // Volume Bar Track (w = 180, h = 5, x = 70, y = volY + 22)
+  const int16_t trackX = 70;
+  const int16_t trackY = volY + 22;
+  const int16_t trackW = 180;
+  const int16_t trackH = 5;
+  _tft.fillRoundRect(trackX, trackY, trackW, trackH, 2, 0x18C3);
+
+  if (volume > 0) {
+    int16_t fillW = (trackW * volume) / 100;
+    if (fillW < 4) fillW = 4;
+    uint16_t barColor = (volume > 85) ? 0xFDA0 : 0x07E0; // Green, warning amber if high
+    _tft.fillRoundRect(trackX, trackY, fillW, trackH, 2, barColor);
+  }
+}
+
+void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode, uint8_t volume, bool fullRedraw) {
+  _lastDrawnVolume = volume;
   int16_t cardX = 8;
-  int16_t cardY = 36;
+  int16_t cardY = 34;
   int16_t cardW = 304;
-  int16_t cardH = 144;
+  int16_t cardH = 118;
 
   if (fullRedraw) {
     // Background card
@@ -560,29 +678,29 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
     _tft.drawRoundRect(cardX, cardY, cardW, cardH, 6, 0x3186);
 
     // Header banner inside card
-    _tft.fillRoundRect(cardX + 4, cardY + 4, cardW - 8, 22, 4, 0x18C3);
+    _tft.fillRoundRect(cardX + 4, cardY + 3, cardW - 8, 18, 4, 0x18C3);
     _tft.setTextDatum(ML_DATUM);
     _tft.setTextColor(0xFFFF, 0x18C3);
-    _tft.drawString("SYSTEM TELEMETRY", cardX + 12, cardY + 15, 2);
+    _tft.drawString("SYSTEM TELEMETRY", cardX + 10, cardY + 12, 2);
   }
 
   // Subsystem readiness badges on header right (clear badge box only)
-  _tft.fillRect(cardX + cardW - 145, cardY + 5, 140, 20, 0x18C3);
+  _tft.fillRect(cardX + cardW - 145, cardY + 4, 140, 16, 0x18C3);
   _tft.setTextDatum(MR_DATUM);
   if (status.macropadReady && status.voiceReady) {
     _tft.setTextColor(0x07E0, 0x18C3);
-    _tft.drawString("ALL SYSTEMS READY", cardX + cardW - 10, cardY + 15, 2);
+    _tft.drawString("ALL SYSTEMS READY", cardX + cardW - 10, cardY + 12, 2);
   } else if (status.macropadReady) {
     _tft.setTextColor(0xFDA0, 0x18C3);
-    _tft.drawString("MACROPAD READY", cardX + cardW - 10, cardY + 15, 2);
+    _tft.drawString("MACROPAD READY", cardX + cardW - 10, cardY + 12, 2);
   } else {
     _tft.setTextColor(0xFBA0, 0x18C3);
-    _tft.drawString("INITIALIZING...", cardX + cardW - 10, cardY + 15, 2);
+    _tft.drawString("INITIALIZING...", cardX + cardW - 10, cardY + 12, 2);
   }
 
-  // Row heights: 18px per row
-  int16_t rowY = cardY + 30;
-  int16_t rowH = 18;
+  // Row heights: 15px per row
+  int16_t rowY = cardY + 24;
+  int16_t rowH = 15;
 
   // Row 1: Wi-Fi SSID + RSSI
   char wifiBuf[32];
@@ -627,10 +745,13 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
   rowY += rowH;
   drawStatusRow(cardX + 4, rowY, cardW - 8, "AI Model", status.aiBackendName.c_str(), status.aiBackend, fullRedraw);
 
+  // Middle Section: Volume Control Bar (Rule 9: fullRedraw or differential)
+  drawDashboardVolume(volume, fullRedraw);
+
   // Bottom Section: Environment Switcher Buttons (only on fullRedraw)
   if (fullRedraw) {
-    int16_t btnY = 186;
-    int16_t btnH = 46;
+    int16_t btnY = 196;
+    int16_t btnH = 38;
     int16_t btnW = 146;
 
     bool homeActive = (currentMode == ENV_HOME);
@@ -659,6 +780,10 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
     _tft.setTextColor(workActive ? 0xFFFF : C_TEXT_MUTED, workBg);
     _tft.drawString(workActive ? "WORK [ ACTIVE ]" : "SWITCH TO WORK", workX + btnW / 2, btnY + btnH / 2, 2);
   }
+}
+
+void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode, bool fullRedraw) {
+  drawDashboard(status, currentMode, _lastDrawnVolume, fullRedraw);
 }
 
 void MacroPadGUI::drawDashboardSwitching(const char* targetModeName) {
@@ -705,7 +830,7 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
     status.macropadReady = isConnected;
     status.voiceReady = netManager.isConnected();
 
-    drawDashboard(status, envManager.getMode(), true); // fullRedraw = true on initial page entry
+    drawDashboard(status, envManager.getMode(), _lastDrawnVolume, true); // fullRedraw = true on initial page entry
     return;
   }
 
@@ -714,21 +839,27 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
     drawButton(currentPage, i, false);
   }
   if (currentPage == PAGE_VOICE) {
+    drawVoiceAudioToggle(false);
     redrawVoiceCard();
   }
 }
 
 int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
-  // Check Top Navigation Buttons (allow up to 45px for effortless finger touches)
-  if (y >= 0 && y <= 45) {
-    // Left side of top bar navigates to previous page (< arrow & title)
+  // Check Top Navigation Buttons (Status Bar: y = 0..32)
+  if (y >= 0 && y <= 32) {
+    // Left side navigates to previous page (< arrow & title)
     if (x < 260) return TOUCH_PREV_PAGE;
-    // Right side of top bar navigates to next page (> arrow)
+    // Right side navigates to next page (> arrow)
     return TOUCH_NEXT_PAGE;
   }
 
-  // Check Page 5 Voice scroll area & controls
+  // Check Page 6 Voice scroll area & controls
   if (currentPage == PAGE_VOICE) {
+    // Top audio toggle button: x = 232..316, y = 34..80
+    if (x >= 232 && x <= 316 && y >= 34 && y <= 80) {
+      return TOUCH_VOICE_AUDIO_TOGGLE;
+    }
+
     // 1. Check Clear Button (top right of card header)
     if (!_history.empty() && x >= 254 && x <= 312 && y >= 82 && y <= 112) {
       return TOUCH_VOICE_CLEAR;
@@ -752,14 +883,26 @@ int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
     }
   }
 
-  // Check Page 6 Dashboard buttons
+  // Check Page 1 Dashboard buttons
   if (currentPage == PAGE_DASHBOARD) {
-    // HOME button: left bottom area
-    if (x >= 4 && x <= 158 && y >= 180 && y <= 240) {
+    // Volume controls: y = 152..192
+    if (y >= 152 && y <= 192) {
+      if (x >= 4 && x <= 54) {
+        return TOUCH_DASH_VOL_DOWN;
+      }
+      if (x >= 266 && x <= 316) {
+        return TOUCH_DASH_VOL_UP;
+      }
+      if (x >= 55 && x <= 265) {
+        return TOUCH_DASH_VOL_MUTE;
+      }
+    }
+    // HOME button: left bottom area (y = 194..240)
+    if (x >= 4 && x <= 158 && y >= 194 && y <= 240) {
       return TOUCH_DASH_HOME;
     }
-    // WORK button: right bottom area
-    if (x >= 160 && x <= 316 && y >= 180 && y <= 240) {
+    // WORK button: right bottom area (y = 194..240)
+    if (x >= 160 && x <= 316 && y >= 194 && y <= 240) {
       return TOUCH_DASH_WORK;
     }
     return -1;

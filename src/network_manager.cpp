@@ -203,7 +203,7 @@ int8_t NetworkManager::getRSSI() {
     return 0;
 }
 
-bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply, bool& outAudioAvailable, String& outAudioUrl) {
+bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply, bool& outAudioAvailable, String& outAudioUrl, bool requestAudio) {
     outAudioAvailable = false;
     outAudioUrl = "";
 
@@ -236,6 +236,10 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
 
     http.addHeader("Content-Type", "audio/wav");
     http.addHeader("Connection", "close");
+
+    if (!requestAudio) {
+        http.addHeader("X-Audio-Output", "0");
+    }
 
     if (authToken && strlen(authToken) > 0) {
         http.addHeader("Authorization", "Bearer " + String(authToken));
@@ -318,10 +322,10 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
     }
 }
 
-bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply) {
+bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply, bool requestAudio) {
     bool dummyAudio = false;
     String dummyUrl = "";
-    return sendVoiceAudio(wavData, wavSize, outTranscript, outReply, dummyAudio, dummyUrl);
+    return sendVoiceAudio(wavData, wavSize, outTranscript, outReply, dummyAudio, dummyUrl, requestAudio);
 }
 
 bool NetworkManager::playVoiceAudioReply(const String& audioUrl, std::function<bool()> shouldAbort) {

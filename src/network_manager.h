@@ -20,8 +20,8 @@ public:
     void applyEnvironment(EnvironmentMode mode);
 
     // Sends WAV audio to Hermes receiver for active environment and fills out transcript and reply
-    bool sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply, bool& outAudioAvailable, String& outAudioUrl);
-    bool sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply);
+    bool sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply, bool& outAudioAvailable, String& outAudioUrl, bool requestAudio = true);
+    bool sendVoiceAudio(const uint8_t* wavData, size_t wavSize, String& outTranscript, String& outReply, bool requestAudio = true);
 
     // Streams synthesized voice audio from receiver (:8787/voice/audio) directly into I2S speaker
     bool playVoiceAudioReply(const String& audioUrl = "/voice/audio", std::function<bool()> shouldAbort = nullptr);

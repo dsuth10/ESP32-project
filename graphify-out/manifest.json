@@ -60,9 +60,9 @@
     "semantic_hash": "3c4e8d4dbf1f0d7d3561f4d5a3bc60c2"
   },
   "server/hermes_voice_receiver.py": {
-    "mtime": 1789207315.0794058,
-    "seen": 1789207342.4151223,
-    "ast_hash": "e56f243aa50a6b1f2e0a8023db2e5a1f",
+    "mtime": 1789208508.5153425,
+    "seen": 1789208926.6932347,
+    "ast_hash": "6f03faa423e76f245f333549d2ec9fde",
     "semantic_hash": ""
   },
   "server/start_receiver.sh": {
@@ -96,16 +96,16 @@
     "semantic_hash": "3929bd0f605efa192e67242966c502b7"
   },
   "src/es8311.cpp": {
-    "mtime": 1788775262.4217145,
-    "seen": 1789134143.5246682,
-    "ast_hash": "81baa0757843ff6aa0d8216a93f9087d",
-    "semantic_hash": "81baa0757843ff6aa0d8216a93f9087d"
+    "mtime": 1789208482.3524625,
+    "seen": 1789208926.6932402,
+    "ast_hash": "41b3b89fa3aa07b0aacc79b634637ed8",
+    "semantic_hash": ""
   },
   "src/es8311.h": {
-    "mtime": 1788775084.1541448,
-    "seen": 1789134143.524669,
-    "ast_hash": "73e547ecd1d0b691dc25cbf38a5fbb06",
-    "semantic_hash": "73e547ecd1d0b691dc25cbf38a5fbb06"
+    "mtime": 1789208472.286031,
+    "seen": 1789208926.693241,
+    "ast_hash": "0a318ff9244fb30fa7742f4f51794fd8",
+    "semantic_hash": ""
   },
   "src/es8311_reg.h": {
     "mtime": 1788684285.4925141,
@@ -114,45 +114,45 @@
     "semantic_hash": "8f431ae708b4aa78d3e98345d84663a7"
   },
   "src/gui.cpp": {
-    "mtime": 1789133515.756078,
-    "seen": 1789134143.5246696,
-    "ast_hash": "960970287af58a8edb9f8ff888af4f6b",
-    "semantic_hash": "960970287af58a8edb9f8ff888af4f6b"
+    "mtime": 1789297325.9331746,
+    "seen": 1789297359.2012792,
+    "ast_hash": "e0e8926904c9565061dd99771ae3d8e3",
+    "semantic_hash": ""
   },
   "src/gui.h": {
-    "mtime": 1789132413.0065458,
-    "seen": 1789134143.5246704,
-    "ast_hash": "8abe3da2a24ee5c1235a446d74956177",
-    "semantic_hash": "8abe3da2a24ee5c1235a446d74956177"
+    "mtime": 1789208564.0495718,
+    "seen": 1789208926.6932428,
+    "ast_hash": "035e370d08ed2f762bd2e503910d6d23",
+    "semantic_hash": ""
   },
   "src/macropad_config.cpp": {
-    "mtime": 1788857105.723515,
-    "seen": 1789134143.524671,
-    "ast_hash": "c515bb2fa99091ac74c18f97d87da993",
-    "semantic_hash": "c515bb2fa99091ac74c18f97d87da993"
+    "mtime": 1789297308.654462,
+    "seen": 1789297359.201281,
+    "ast_hash": "29725181c987d07a6216b277d6187d2a",
+    "semantic_hash": ""
   },
   "src/macropad_config.h": {
-    "mtime": 1789131100.5146368,
-    "seen": 1789134143.5246718,
-    "ast_hash": "079b97fbe07b6bf6adae16d0e5a11569",
-    "semantic_hash": "079b97fbe07b6bf6adae16d0e5a11569"
+    "mtime": 1789297292.4012191,
+    "seen": 1789297359.2012818,
+    "ast_hash": "4d89db63a1872d88781a40f439863c78",
+    "semantic_hash": ""
   },
   "src/main.cpp": {
-    "mtime": 1789176798.2302005,
-    "seen": 1789176912.544059,
-    "ast_hash": "e25f88812cb4174a3d57572bd338367b",
+    "mtime": 1789297315.9976006,
+    "seen": 1789297359.2012823,
+    "ast_hash": "2d867402ab5d33391ac74d466b32059f",
     "semantic_hash": ""
   },
   "src/network_manager.cpp": {
-    "mtime": 1789176770.4153476,
-    "seen": 1789176912.54406,
-    "ast_hash": "6b586eab633ec82e8b379841429c856f",
+    "mtime": 1789208553.5047097,
+    "seen": 1789208926.6932456,
+    "ast_hash": "1a1ec521fead91cc8b4c13347edc8007",
     "semantic_hash": ""
   },
   "src/network_manager.h": {
-    "mtime": 1789176723.6069567,
-    "seen": 1789176912.5440605,
-    "ast_hash": "0b80e8f290088e4e2d5909eb81424092",
+    "mtime": 1789208533.2858734,
+    "seen": 1789208926.6932464,
+    "ast_hash": "066c720e66c6dd42512103d590972b08",
     "semantic_hash": ""
   },
   "src/system_status.h": {

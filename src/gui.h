@@ -42,18 +42,25 @@ public:
   bool voiceChatScrollable() const;
   void addVoiceTurn(const String& transcript, const String& reply);
   void clearConversation();
+  void drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode, uint8_t volume, bool fullRedraw = true);
   void drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode, bool fullRedraw = true);
+  void drawDashboardVolume(uint8_t volume, bool fullRedraw = false);
   void drawDashboardSwitching(const char* targetModeName);
+  void drawVoiceAudioToggle(bool pressed = false);
+  void setVoiceAudioEnabled(bool enabled);
+  bool isVoiceAudioEnabled() const { return _voiceAudioEnabled; }
   int8_t getTouchTarget(int16_t x, int16_t y, uint8_t currentPage);
 
 private:
   TFT_eSPI& _tft;
 
-  // Page 5 Voice Assistant Chat State
+  // Page 5 Voice Assistant Chat & Audio State
   VoiceUIState _voiceState;
   String _voiceStatusMsg;
   String _voiceDetailMsg;
   int _voiceScrollLine;
+  bool _voiceAudioEnabled;
+  uint8_t _lastDrawnVolume;
   std::vector<ChatMessage> _history;
   std::vector<ChatLine> _chatLines;
 

@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>ESP32 project — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 413 nodes, 656 edges, 30 communities. Commit: ec10f93</p>
+<p class="subtitle">Generated from graphify knowledge graph: 421 nodes, 676 edges, 30 communities. Commit: f71cc97</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -92,19 +92,19 @@ flowchart LR
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>45 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
-    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>8 nodes</small>")
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>18 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>58 nodes</small>")
+    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>49 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
-    SERVE_API_35EC8E86("Serving API<br/><small>51 nodes</small>")
+    SERVE_API_35EC8E86("Serving API<br/><small>52 nodes</small>")
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>37 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
     TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>39 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
-    MACROPADGUI_41F3827F("MacroPadGUI<br/><small>52 nodes</small>")
+    MACROPADGUI_41F3827F("MacroPadGUI<br/><small>57 nodes</small>")
     class MACROPADGUI_41F3827F module;
-    NETWORKMANAGER_DDEB3002("NetworkManager<br/><small>32 nodes</small>")
+    NETWORKMANAGER_DDEB3002("NetworkManager<br/><small>33 nodes</small>")
     class NETWORKMANAGER_DDEB3002 module;
     ENVIRONMENTMANAGER_5897C7D1("EnvironmentManager<br/><small>31 nodes</small>")
     class ENVIRONMENTMANAGER_5897C7D1 module;
@@ -118,18 +118,18 @@ flowchart LR
     class FLASH_PY_CE123BA8 module;
     OTHER_D0941E68("Other<br/><small>14 nodes</small>")
     class OTHER_D0941E68 module;
+    CLI_SKILLS_9964CBB8 -->|calls x2| SERVE_API_35EC8E86
+    MACROPADGUI_41F3827F -->|imports x2| NETWORKMANAGER_DDEB3002
     INGEST_CACHE_UPDATE_FF457338 -->|calls x2| SERVE_API_35EC8E86
-    INGEST_CACHE_UPDATE_FF457338 -->|imports x2| MACROPADGUI_41F3827F
+    CLI_SKILLS_9964CBB8 -->|imports x2| MACROPADGUI_41F3827F
+    CLI_SKILLS_9964CBB8 -->|imports x2| INGEST_CACHE_UPDATE_FF457338
+    CLI_SKILLS_9964CBB8 -->|imports x2| ENVIRONMENTMANAGER_5897C7D1
     SERVE_API_35EC8E86 -->|imports x2| MACROPADGUI_41F3827F
-    MACROPADGUI_41F3827F -->|imports| NETWORKMANAGER_DDEB3002
-    MACROPADGUI_41F3827F -->|imports| INGEST_CACHE_UPDATE_FF457338
+    MACROPADGUI_41F3827F -->|imports| CLI_SKILLS_9964CBB8
     MACROPADGUI_41F3827F -->|imports| ENVIRONMENTMANAGER_5897C7D1
     NETWORKMANAGER_DDEB3002 -->|imports| INGEST_CACHE_UPDATE_FF457338
     NETWORKMANAGER_DDEB3002 -->|imports| ENVIRONMENTMANAGER_5897C7D1
-    NETWORKMANAGER_DDEB3002 -->|imports| MACROPADGUI_41F3827F
-    INGEST_CACHE_UPDATE_FF457338 -->|imports| NETWORKMANAGER_DDEB3002
-    INGEST_CACHE_UPDATE_FF457338 -->|imports| ENVIRONMENTMANAGER_5897C7D1
-    SERVE_API_35EC8E86 -->|imports| INGEST_CACHE_UPDATE_FF457338
+    CLI_SKILLS_9964CBB8 -->|imports| NETWORKMANAGER_DDEB3002
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,22 +146,22 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Graph Build</td><td>10</td><td><code>24, 25, 26, 27</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>45</td><td><code>1, 10</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>8</td><td><code>23</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>58</td><td><code>3, 5</code></td></tr><tr><td>Serving API</td><td>51</td><td><code>6, 7</code></td></tr><tr><td>Security &amp; Global Graph</td><td>37</td><td><code>16</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>39</td><td><code>15, 28</code></td></tr><tr><td>MacroPadGUI</td><td>52</td><td><code>0</code></td></tr><tr><td>NetworkManager</td><td>32</td><td><code>4</code></td></tr><tr><td>EnvironmentManager</td><td>31</td><td><code>2</code></td></tr><tr><td>_coeff_div</td><td>13</td><td><code>8</code></td></tr><tr><td>ESP32 Portable MacroPad &amp; Hermes Satellite: Core Engineering Rules</td><td>12</td><td><code>17</code></td></tr><tr><td>create_enclosure</td><td>8</td><td><code>9</code></td></tr><tr><td>flash.py</td><td>3</td><td><code>11</code></td></tr><tr><td>Other</td><td>14</td><td><code>12, 13, 20, 21, 22, 14, 18, 19, 29</code></td></tr>
+      <tr><td>Graph Build</td><td>10</td><td><code>24, 25, 26, 27</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>45</td><td><code>1, 10</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>18</td><td><code>5, 23</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>49</td><td><code>3</code></td></tr><tr><td>Serving API</td><td>52</td><td><code>6, 7</code></td></tr><tr><td>Security &amp; Global Graph</td><td>37</td><td><code>16</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>39</td><td><code>15, 28</code></td></tr><tr><td>MacroPadGUI</td><td>57</td><td><code>0</code></td></tr><tr><td>NetworkManager</td><td>33</td><td><code>4</code></td></tr><tr><td>EnvironmentManager</td><td>31</td><td><code>2</code></td></tr><tr><td>_coeff_div</td><td>13</td><td><code>8</code></td></tr><tr><td>ESP32 Portable MacroPad &amp; Hermes Satellite: Core Engineering Rules</td><td>12</td><td><code>17</code></td></tr><tr><td>create_enclosure</td><td>8</td><td><code>9</code></td></tr><tr><td>flash.py</td><td>3</td><td><code>11</code></td></tr><tr><td>Other</td><td>14</td><td><code>12, 13, 20, 21, 22, 14, 18, 19, 29</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Graph Build -&gt; Analysis &amp; Clustering -&gt; CLI &amp; Skill Installers -&gt; Ingestion &amp; Updates -&gt; Serving API -&gt; MacroPadGUI -&gt; NetworkManager</div>
+    <div class="arrow-chain">Graph Build -&gt; Analysis &amp; Clustering -&gt; CLI &amp; Skill Installers -&gt; Serving API -&gt; MacroPadGUI -&gt; NetworkManager -&gt; Ingestion &amp; Updates</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>413 nodes · 656 edges · 30 communities (14 shown, 9 thin omitted)</li>
-      <li>Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 41 edges (avg confidence: 0.85)</li>
+      <li>421 nodes · 676 edges · 30 communities (14 shown, 9 thin omitted)</li>
+      <li>Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 45 edges (avg confidence: 0.85)</li>
       <li>Token cost: 0 input · 0 output</li>
-      <li>1. `MacroPadGUI` - 35 edges</li>
+      <li>1. `MacroPadGUI` - 41 edges</li>
       <li>2. `AudioRecorder` - 31 edges</li>
       <li>3. `NetworkManager` - 21 edges</li>
     </ul>
@@ -677,35 +677,59 @@ flowchart LR
 
 <!-- ====== 4. CLI & Skill Installers ====== -->
 <h2 id="cli-skills">4. CLI &amp; Skill Installers</h2>
-<p>CLI &amp; Skill Installers groups implementation around skillmd, graphify, toolkit, agents, mostly in skills/graphify-toolkit/SKILL.md. This section covers 8 nodes and 7 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>CLI &amp; Skill Installers groups implementation around skillmd, graphify, toolkit, agents, mostly in skills/graphify-toolkit/SKILL.md, src/main.cpp, src/es8311.cpp. This section covers 18 nodes and 20 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: CLI &amp; Skill Installers (8 nodes, 7 edges)
-    agents_skills_graphify_toolkit_skill_automated_b_f5cedca4("Automated Background Updating<br/><small>skills/graphify-toolkit/SKILL.md</small>")
-    agents_skills_graphify_toolkit_skill_graphify_to_5fd80500("Graphify Toolkit &amp; Automation System<br/><small>skills/graphify-toolkit/SKILL.md</small>")
-    agents_skills_graphify_toolkit_skill_22c1cad5("SKILL.md")
-    agents_skills_graphify_toolkit_skill_1_git_commi_fc12876c("1. Git Commit Hook (Zero-Touch)<br/><small>skills/graphify-toolkit/SKILL.md</small>")
-    agents_skills_graphify_toolkit_skill_2_live_file_c34d10cf("2. Live File Watcher (Continuous Auto-U...<br/><small>skills/graphify-toolkit/SKILL.md</small>")
-    agents_skills_graphify_toolkit_skill_3_antigravi_f8130f9c("3. Antigravity Agent Rule (Automated Tu...<br/><small>skills/graphify-toolkit/SKILL.md</small>")
-    agents_skills_graphify_toolkit_skill_everyday_co_79ecdde6("Everyday Command Reference (.\graph.ps1)<br/><small>skills/graphify-toolkit/SKILL.md</small>")
-    agents_skills_graphify_toolkit_skill_slash_comma_51bb2e3a("Slash Commands in Antigravity Chat<br/><small>skills/graphify-toolkit/SKILL.md</small>")
-    agents_skills_graphify_toolkit_skill_22c1cad5 -->|contains| agents_skills_graphify_toolkit_skill_graphify_to_5fd80500
-    agents_skills_graphify_toolkit_skill_automated_b_f5cedca4 -->|contains| agents_skills_graphify_toolkit_skill_1_git_commi_fc12876c
-    agents_skills_graphify_toolkit_skill_automated_b_f5cedca4 -->|contains| agents_skills_graphify_toolkit_skill_2_live_file_c34d10cf
-    agents_skills_graphify_toolkit_skill_automated_b_f5cedca4 -->|contains| agents_skills_graphify_toolkit_skill_3_antigravi_f8130f9c
-    agents_skills_graphify_toolkit_skill_graphify_to_5fd80500 -->|contains| agents_skills_graphify_toolkit_skill_automated_b_f5cedca4
-    agents_skills_graphify_toolkit_skill_graphify_to_5fd80500 -->|contains| agents_skills_graphify_toolkit_skill_everyday_co_79ecdde6
-    agents_skills_graphify_toolkit_skill_graphify_to_5fd80500 -->|contains| agents_skills_graphify_toolkit_skill_slash_comma_51bb2e3a
-    class agents_skills_graphify_toolkit_skill_automated_b_f5cedca4 concept;
-    class agents_skills_graphify_toolkit_skill_graphify_to_5fd80500 concept;
-    class agents_skills_graphify_toolkit_skill_22c1cad5 concept;
+    %% Section: CLI &amp; Skill Installers (18 nodes, 20 edges)
+    subgraph cli_skills_skills_graphify_toolkit_SKILL_md_5a27ddde["skills/graphify-toolkit/SKILL.md"]
+        agents_skills_graphify_toolkit_skill_1_git_commi_fc12876c("1. Git Commit Hook (Zero-Touch)<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+        agents_skills_graphify_toolkit_skill_2_live_file_c34d10cf("2. Live File Watcher (Continuous Auto-U...<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+        agents_skills_graphify_toolkit_skill_3_antigravi_f8130f9c("3. Antigravity Agent Rule (Automated Tu...<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+        agents_skills_graphify_toolkit_skill_automated_b_f5cedca4("Automated Background Updating<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+        agents_skills_graphify_toolkit_skill_everyday_co_79ecdde6("Everyday Command Reference (.\graph.ps1)<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+        agents_skills_graphify_toolkit_skill_graphify_to_5fd80500("Graphify Toolkit &amp; Automation System<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+        agents_skills_graphify_toolkit_skill_22c1cad5("SKILL.md")
+        agents_skills_graphify_toolkit_skill_slash_comma_51bb2e3a("Slash Commands in Antigravity Chat<br/><small>skills/graphify-toolkit/SKILL.md</small>")
+    end
+    subgraph cli_skills_src_main_cpp_3614ce5c["src/main.cpp"]
+        src_main_loop_b54b6114("loop()<br/><small>src/main.cpp</small>")
+        src_main_setup_d8061760("setup()<br/><small>src/main.cpp</small>")
+        src_main_3231ff52("main.cpp")
+        src_main_setledcolor_32443aca("setLedColor()<br/><small>src/main.cpp</small>")
+        src_main_executemacro_3e61047d("executeMacro()<br/><small>src/main.cpp</small>")
+        src_main_telemetryworkertask_db9788b7("telemetryWorkerTask()<br/><small>src/main.cpp</small>")
+    end
+    macrobutton_0b223c61("MacroButton")
+    src_es8311_es8311_codec_set_voice_volume_2b0a9151("set voice volume()<br/><small>src/es8311.cpp</small>")
+    src_macropad_config_cpp_src_macropad_config_64790c14("macropad_config.cpp")
+    src_macropad_config_h_src_macropad_config_1e1cd959("macropad_config.h")
+    src_main_loop_b54b6114 -->|calls| src_main_setledcolor_32443aca
+    src_main_loop_b54b6114 -->|calls| src_main_executemacro_3e61047d
+    src_main_setup_d8061760 -->|calls| src_main_setledcolor_32443aca
+    src_macropad_config_cpp_src_macropad_config_64790c14 -->|imports| src_macropad_config_h_src_macropad_config_1e1cd959
+    src_main_3231ff52 -->|imports| src_macropad_config_h_src_macropad_config_1e1cd959
+    src_main_loop_b54b6114 -->|calls| src_es8311_es8311_codec_set_voice_volume_2b0a9151
+    src_main_setup_d8061760 -->|calls| src_es8311_es8311_codec_set_voice_volume_2b0a9151
     class agents_skills_graphify_toolkit_skill_1_git_commi_fc12876c concept;
     class agents_skills_graphify_toolkit_skill_2_live_file_c34d10cf concept;
     class agents_skills_graphify_toolkit_skill_3_antigravi_f8130f9c concept;
+    class agents_skills_graphify_toolkit_skill_automated_b_f5cedca4 concept;
     class agents_skills_graphify_toolkit_skill_everyday_co_79ecdde6 concept;
+    class agents_skills_graphify_toolkit_skill_graphify_to_5fd80500 concept;
+    class agents_skills_graphify_toolkit_skill_22c1cad5 concept;
     class agents_skills_graphify_toolkit_skill_slash_comma_51bb2e3a concept;
+    class src_main_loop_b54b6114 function;
+    class src_main_setup_d8061760 function;
+    class src_main_3231ff52 function;
+    class src_main_setledcolor_32443aca function;
+    class src_main_executemacro_3e61047d function;
+    class src_main_telemetryworkertask_db9788b7 function;
+    class macrobutton_0b223c61 klass;
+    class src_es8311_es8311_codec_set_voice_volume_2b0a9151 function;
+    class src_macropad_config_cpp_src_macropad_config_64790c14 function;
+    class src_macropad_config_h_src_macropad_config_1e1cd959 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -729,6 +753,86 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
+  <td><code>es8311_codec_set_voice_volume()</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>setup()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td><code>es8311_voice_volume_set()</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td>es8311_codec_set_voice_volume() node in src/es8311.cpp.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>executeMacro()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td>No direct outbound edge</td>
+  <td>executeMacro() node in src/main.cpp.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>executeMacro()</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>set voice volume()</code><br><small style="color:var(--muted)">src/es8311.cpp</small><br><code>setLedColor()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td>loop() node in src/main.cpp.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>setLedColor()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>setup()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td>No direct outbound edge</td>
+  <td>setLedColor() node in src/main.cpp.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>setup()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>set voice volume()</code><br><small style="color:var(--muted)">src/es8311.cpp</small><br><code>setLedColor()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td>setup() node in src/main.cpp.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>telemetryWorkerTask()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>telemetryWorkerTask() node in src/main.cpp.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>MacroButton</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>MacroButton node in project.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>macropad_config.cpp</code><br><small style="color:var(--muted)">src/macropad_config.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small></td>
+  <td>Reads, resolves, or persists project configuration.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>macropad_config.cpp</code><br><small style="color:var(--muted)">src/macropad_config.cpp</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td>No direct outbound edge</td>
+  <td>Reads, resolves, or persists project configuration.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>audio_recorder.h</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br><code>environment_manager.h</code><br><small style="color:var(--muted)">src/environment_manager.h</small><br><code>es8311.h</code><br><small style="color:var(--muted)">src/es8311.h</small><br>+5 more</td>
+  <td>main.cpp node in src/main.cpp.</td>
+</tr>
+<tr>
+  <td>11</td>
   <td><code>SKILL.md</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -736,7 +840,7 @@ flowchart LR
   <td>Documentation node describing SKILL.md.</td>
 </tr>
 <tr>
-  <td>2</td>
+  <td>12</td>
   <td><code>1. Git Commit Hook (Zero-Touch)</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -744,7 +848,7 @@ flowchart LR
   <td>Documentation node describing 1. Git Commit Hook (Zero-Touch).</td>
 </tr>
 <tr>
-  <td>3</td>
+  <td>13</td>
   <td><code>2. Live File Watcher (Continuous Auto-Update on Save)</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -752,7 +856,7 @@ flowchart LR
   <td>Documentation node describing 2. Live File Watcher (Continuous Auto-Update on Save).</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>14</td>
   <td><code>3. Antigravity Agent Rule (Automated Turn-End Maintenance)</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -760,7 +864,7 @@ flowchart LR
   <td>Documentation node describing 3. Antigravity Agent Rule (Automated Turn-End Maintenance).</td>
 </tr>
 <tr>
-  <td>5</td>
+  <td>15</td>
   <td><code>Automated Background Updating</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -768,7 +872,7 @@ flowchart LR
   <td>Documentation node describing Automated Background Updating.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>16</td>
   <td><code>Everyday Command Reference (`.\graph.ps1`)</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -776,7 +880,7 @@ flowchart LR
   <td>Documentation node describing Everyday Command Reference (`.\graph.ps1`).</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>17</td>
   <td><code>Graphify Toolkit &amp; Automation System</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -784,7 +888,7 @@ flowchart LR
   <td>Documentation node describing Graphify Toolkit &amp; Automation System.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>18</td>
   <td><code>Slash Commands in Antigravity Chat</code><br><small style="color:var(--muted)">skills/graphify-toolkit/SKILL.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -799,27 +903,32 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>skills/graphify-toolkit/SKILL.md</code></td><td>8 nodes</td></tr>
+<tr><td><code>src/main.cpp</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/es8311.cpp</code></td><td>1 nodes</td></tr>
+<tr><td><code>src/macropad_config.cpp</code></td><td>1 nodes</td></tr>
+<tr><td><code>src/macropad_config.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x7. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x12, calls x5, imports x2, references x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 5. Ingestion & Updates ====== -->
 <h2 id="ingest-cache-update">5. Ingestion &amp; Updates</h2>
-<p>Ingestion &amp; Updates groups implementation around audio, recorderh, maincpp, macropad, mostly in src/audio_recorder.h, src/main.cpp, src/audio_recorder.cpp. This section covers 58 nodes and 72 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Ingestion &amp; Updates groups implementation around audio, recorderh, recordercpp, es8311h, mostly in src/audio_recorder.h, src/audio_recorder.cpp, src/es8311.h. This section covers 49 nodes and 60 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Ingestion &amp; Updates (58 nodes, 72 edges)
+    %% Section: Ingestion &amp; Updates (49 nodes, 60 edges)
     subgraph ingest_cache_update_src_audio_recorder_h_ad2e6707["src/audio_recorder.h"]
         src_audio_recorder_audiorecorder_b4022ebd("AudioRecorder<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_channelstats_b437c15e("ChannelStats<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_audiorecorder_update_43ac1eab("update<br/><small>src/audio_recorder.h</small>")
+        src_audio_recorder_audiorecorder_stoprecording_00ea97de("stopRecording<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_audiorecorder_isrecording_3baca3b6("isRecording()<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_audiorecorder_getrecorddurati_7af30ad5("getRecordDurationMs()<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_audiorecorder_getwavbuffer_898064a8("getWavBuffer()<br/><small>src/audio_recorder.h</small>")
@@ -831,13 +940,10 @@ flowchart LR
         src_audio_recorder_channelstats_getrms_144b137d("getRms()<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_channelstats_getnonzeropct_b7c18466("getNonZeroPct()<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_channelstats_getclippct_5ab7f089("getClipPct()<br/><small>src/audio_recorder.h</small>")
-    end
-    subgraph ingest_cache_update_src_main_cpp_dee88e33["src/main.cpp"]
-        src_main_3231ff52("main.cpp")
-        src_main_loop_b54b6114("loop()<br/><small>src/main.cpp</small>")
-        src_main_setledcolor_32443aca("setLedColor()<br/><small>src/main.cpp</small>")
+        src_audio_recorder_h_src_audio_recorder_079da71f("audio_recorder.h")
     end
     src_audio_recorder_cpp_src_audio_recorder_9215fedd("audio_recorder.cpp")
+    src_es8311_h_src_es8311_a96b8a50("es8311.h")
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_isrecording_3baca3b6
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getrecorddurati_7af30ad5
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getwavbuffer_898064a8
@@ -849,11 +955,14 @@ flowchart LR
     src_audio_recorder_channelstats_b437c15e -->|method| src_audio_recorder_channelstats_getrms_144b137d
     src_audio_recorder_channelstats_b437c15e -->|method| src_audio_recorder_channelstats_getnonzeropct_b7c18466
     src_audio_recorder_channelstats_b437c15e -->|method| src_audio_recorder_channelstats_getclippct_5ab7f089
-    src_main_loop_b54b6114 -->|calls| src_main_setledcolor_32443aca
-    %% Omitted for readability: 40 nodes, 0 edges
+    src_audio_recorder_cpp_src_audio_recorder_9215fedd -->|imports| src_audio_recorder_h_src_audio_recorder_079da71f
+    src_audio_recorder_cpp_src_audio_recorder_9215fedd -->|imports| src_es8311_h_src_es8311_a96b8a50
+    src_audio_recorder_audiorecorder_update_43ac1eab -->|calls| src_audio_recorder_audiorecorder_stoprecording_00ea97de
+    %% Omitted for readability: 31 nodes, 0 edges
     class src_audio_recorder_audiorecorder_b4022ebd klass;
     class src_audio_recorder_channelstats_b437c15e klass;
     class src_audio_recorder_audiorecorder_update_43ac1eab function;
+    class src_audio_recorder_audiorecorder_stoprecording_00ea97de function;
     class src_audio_recorder_audiorecorder_isrecording_3baca3b6 function;
     class src_audio_recorder_audiorecorder_getrecorddurati_7af30ad5 function;
     class src_audio_recorder_audiorecorder_getwavbuffer_898064a8 function;
@@ -865,10 +974,9 @@ flowchart LR
     class src_audio_recorder_channelstats_getrms_144b137d function;
     class src_audio_recorder_channelstats_getnonzeropct_b7c18466 function;
     class src_audio_recorder_channelstats_getclippct_5ab7f089 entry;
-    class src_main_3231ff52 function;
-    class src_main_loop_b54b6114 function;
-    class src_main_setledcolor_32443aca function;
+    class src_audio_recorder_h_src_audio_recorder_079da71f function;
     class src_audio_recorder_cpp_src_audio_recorder_9215fedd function;
+    class src_es8311_h_src_es8311_a96b8a50 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -900,6 +1008,14 @@ flowchart LR
 </tr>
 <tr>
   <td>2</td>
+  <td><code>ChannelStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>getClipPct()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br><code>getMean()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br><code>getNonZeroPct()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br>+2 more</td>
+  <td>ChannelStats node in src/audio_recorder.h.</td>
+</tr>
+<tr>
+  <td>3</td>
   <td><code>AudioRecorder::AudioRecorder()</code><br><small style="color:var(--muted)">src/audio_recorder.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -907,7 +1023,7 @@ flowchart LR
   <td>AudioRecorder::AudioRecorder() node in src/audio_recorder.cpp.</td>
 </tr>
 <tr>
-  <td>3</td>
+  <td>4</td>
   <td><code>.getMaxLeft()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AudioRecorder</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -915,7 +1031,7 @@ flowchart LR
   <td>.getMaxLeft() node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>5</td>
   <td><code>.getMaxRight()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AudioRecorder</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -923,7 +1039,7 @@ flowchart LR
   <td>.getMaxRight() node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>5</td>
+  <td>6</td>
   <td><code>.getRecordDurationMs()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AudioRecorder</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -931,7 +1047,7 @@ flowchart LR
   <td>.getRecordDurationMs() node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>7</td>
   <td><code>.getWavBuffer()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AudioRecorder</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -939,7 +1055,7 @@ flowchart LR
   <td>.getWavBuffer() node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>8</td>
   <td><code>.getWavSize()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AudioRecorder</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -947,7 +1063,7 @@ flowchart LR
   <td>.getWavSize() node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>9</td>
   <td><code>.isRecording()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AudioRecorder</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -955,7 +1071,47 @@ flowchart LR
   <td>.isRecording() node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>10</td>
+  <td><code>.getClipPct()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td><span class="tag tag-cmd">Entry</span></td>
+  <td><code>ChannelStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>.getClipPct() node in src/audio_recorder.h.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>.getMean()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ChannelStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>.getMean() node in src/audio_recorder.h.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>.getNonZeroPct()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ChannelStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>.getNonZeroPct() node in src/audio_recorder.h.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>.getRms()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ChannelStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>.getRms() node in src/audio_recorder.h.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>.reset()</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ChannelStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>.reset() node in src/audio_recorder.h.</td>
+</tr>
+<tr>
+  <td>15</td>
   <td><code>update</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -963,7 +1119,7 @@ flowchart LR
   <td>update node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>16</td>
   <td><code>stopRecording</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>update</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -971,7 +1127,7 @@ flowchart LR
   <td>stopRecording node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>17</td>
   <td><code>logDiagnostics</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -979,7 +1135,7 @@ flowchart LR
   <td>logDiagnostics node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>18</td>
   <td><code>begin</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -987,7 +1143,7 @@ flowchart LR
   <td>begin node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>19</td>
   <td><code>writeWavHeader</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>stopRecording</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
@@ -995,7 +1151,7 @@ flowchart LR
   <td>writeWavHeader node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>20</td>
   <td><code>playTone</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1003,7 +1159,7 @@ flowchart LR
   <td>playTone node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>21</td>
   <td><code>playChime</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1011,7 +1167,7 @@ flowchart LR
   <td>playChime node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>22</td>
   <td><code>playAudioStream</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-async">Async</span></td>
   <td>External entry / no inbound edge</td>
@@ -1019,7 +1175,7 @@ flowchart LR
   <td>playAudioStream node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>23</td>
   <td><code>startRecording</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1027,7 +1183,7 @@ flowchart LR
   <td>startRecording node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>24</td>
   <td><code>_lastRecordDurationMs</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1035,7 +1191,7 @@ flowchart LR
   <td>_lastRecordDurationMs node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>25</td>
   <td><code>_leftStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1043,7 +1199,7 @@ flowchart LR
   <td>_leftStats node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>26</td>
   <td><code>_maxLeftPeak</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1051,7 +1207,7 @@ flowchart LR
   <td>_maxLeftPeak node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>27</td>
   <td><code>_maxRightPeak</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1059,7 +1215,7 @@ flowchart LR
   <td>_maxRightPeak node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>28</td>
   <td><code>_monoStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1067,7 +1223,7 @@ flowchart LR
   <td>_monoStats node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>29</td>
   <td><code>_pcmBytesRecorded</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1075,60 +1231,12 @@ flowchart LR
   <td>_pcmBytesRecorded node in src/audio_recorder.h.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>30</td>
   <td><code>_previewCount</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>_previewCount node in src/audio_recorder.h.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>_previewLeft</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_previewLeft node in src/audio_recorder.h.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>_previewMono</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_previewMono node in src/audio_recorder.h.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>_previewRight</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_previewRight node in src/audio_recorder.h.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>_psramBuffer</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_psramBuffer node in src/audio_recorder.h.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>_recordStartTime</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_recordStartTime node in src/audio_recorder.h.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>_rightStats</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_rightStats node in src/audio_recorder.h.</td>
 </tr>
 </table>
 
@@ -1138,28 +1246,25 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>src/audio_recorder.h</code></td><td>44 nodes</td></tr>
-<tr><td><code>src/main.cpp</code></td><td>6 nodes</td></tr>
 <tr><td><code>src/audio_recorder.cpp</code></td><td>2 nodes</td></tr>
 <tr><td><code>src/es8311.h</code></td><td>1 nodes</td></tr>
-<tr><td><code>src/macropad_config.cpp</code></td><td>1 nodes</td></tr>
-<tr><td><code>src/macropad_config.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: defines x30, contains x17, method x11, calls x5. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: defines x30, contains x12, method x11, references x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 6. Serving API ====== -->
 <h2 id="serve-api">6. Serving API</h2>
-<p>Serving API groups implementation around es8311, bspc, es8311cpp, config, mostly in es8311_bsp.c, src/es8311.cpp, src/es8311_reg.h. This section covers 51 nodes and 160 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Serving API groups implementation around es8311, bspc, es8311cpp, config, mostly in es8311_bsp.c, src/es8311.cpp, src/es8311_reg.h. This section covers 52 nodes and 162 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Serving API (51 nodes, 160 edges)
+    %% Section: Serving API (52 nodes, 162 edges)
     subgraph serve_api_es8311_bsp_c_266c748d["es8311_bsp.c"]
         es8311_bsp_es8311_init_6335de17("es8311_init()<br/><small>es8311_bsp.c</small>")
         es8311_bsp_es8311_clock_config_c11bbb7e("es8311_clock_config()<br/><small>es8311_bsp.c</small>")
@@ -1205,7 +1310,7 @@ flowchart LR
     es8311_bsp_es8311_voice_mute_ee43be1f -->|calls| es8311_bsp_es8311_write_reg_523e78f5
     es8311_bsp_es8311_voice_volume_get_4b9d7e51 -->|calls| es8311_bsp_es8311_read_reg_062c74c4
     es8311_bsp_es8311_voice_volume_set_f448d62f -->|calls| es8311_bsp_es8311_write_reg_523e78f5
-    %% Omitted for readability: 33 nodes, 0 edges
+    %% Omitted for readability: 34 nodes, 0 edges
     class es8311_bsp_es8311_init_6335de17 function;
     class es8311_bsp_es8311_clock_config_c11bbb7e function;
     class es8311_bsp_es8311_fmt_config_d856a149 function;
@@ -1471,19 +1576,19 @@ flowchart LR
 </tr>
 <tr>
   <td>29</td>
+  <td><code>es8311_codec_get_voice_volume()</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>es8311_voice_volume_get()</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td>es8311_codec_get_voice_volume() node in src/es8311.cpp.</td>
+</tr>
+<tr>
+  <td>30</td>
   <td><code>es8311_codec_init()</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>begin</code><br><small style="color:var(--muted)">src/audio_recorder.h</small></td>
   <td><code>codec dump registers()</code><br><small style="color:var(--muted)">src/es8311.cpp</small><br><code>es8311_create()</code><br><small style="color:var(--muted)">src/es8311.cpp</small><br><code>es8311_init()</code><br><small style="color:var(--muted)">src/es8311.cpp</small><br>+4 more</td>
   <td>es8311_codec_init() node in src/es8311.cpp.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>es8311_create()</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>es8311_codec_init()</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
-  <td>No direct outbound edge</td>
-  <td>es8311_create() node in src/es8311.cpp.</td>
 </tr>
 </table>
 
@@ -1493,13 +1598,13 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>es8311_bsp.c</code></td><td>19 nodes</td></tr>
-<tr><td><code>src/es8311.cpp</code></td><td>18 nodes</td></tr>
+<tr><td><code>src/es8311.cpp</code></td><td>19 nodes</td></tr>
 <tr><td><code>src/es8311_reg.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x74, calls x49, contains x35, imports x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x74, calls x50, contains x36, imports x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2195,25 +2300,26 @@ flowchart LR
 
 <!-- ====== 9. MacroPadGUI ====== -->
 <h2 id="macropadgui">9. MacroPadGUI</h2>
-<p>MacroPadGUI groups implementation around guih, guicpp, text, string, mostly in src/gui.h, src/gui.cpp, src/system_status.h. This section covers 52 nodes and 100 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>MacroPadGUI groups implementation around guih, guicpp, text, string, mostly in src/gui.h, src/gui.cpp. This section covers 57 nodes and 110 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: MacroPadGUI (52 nodes, 100 edges)
+    %% Section: MacroPadGUI (57 nodes, 110 edges)
     subgraph macropadgui_src_gui_h_2c3c6594["src/gui.h"]
         src_gui_macropadgui_drawall_e8dc4428("drawAll<br/><small>src/gui.h</small>")
-        src_gui_h_src_gui_a56c68cc("gui.h")
         src_gui_macropadgui_drawvoicecard_6821a110("drawVoiceCard<br/><small>src/gui.h</small>")
+        src_gui_h_src_gui_a56c68cc("gui.h")
         src_gui_macropadgui_addvoiceturn_f13a64b6("addVoiceTurn<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_clearconversation_172e13bc("clearConversation<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawdashboard_878f9c4f("drawDashboard<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_2de9d209("MacroPadGUI<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_isvoiceaudioenabled_0d0ea05d("isVoiceAudioEnabled()<br/><small>src/gui.h</small>")
         src_gui_macropadgui_rebuildchatlines_6bc3773b("rebuildChatLines<br/><small>src/gui.h</small>")
         src_gui_macropadgui_redrawvoicecard_0ed21610("redrawVoiceCard<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_clearconversation_172e13bc("clearConversation<br/><small>src/gui.h</small>")
         src_gui_macropadgui_scrolltolatestresponse_cb695a79("scrollToLatestResponse<br/><small>src/gui.h</small>")
         src_gui_macropadgui_scrollvoicechat_164d0276("scrollVoiceChat<br/><small>src/gui.h</small>")
         src_gui_macropadgui_rendervoicechatviewport_1b802434("renderVoiceChatViewport<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_canscrollup_034a72fb("canScrollUp<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_canscrolldown_966e68b5("canScrollDown<br/><small>src/gui.h</small>")
     end
     subgraph macropadgui_src_gui_cpp_3e4ba9ed["src/gui.cpp"]
         src_gui_cpp_src_gui_6ce0e73a("gui.cpp")
@@ -2224,42 +2330,40 @@ flowchart LR
         src_gui_h_tft_espi_a5e0095d("TFT_eSPI")
         src_gui_h_vector_ccb54c95("vector")
     end
-    src_system_status_a10ae04d("system_status.h")
+    src_gui_macropadgui_2de9d209 -->|method| src_gui_macropadgui_isvoiceaudioenabled_0d0ea05d
     src_gui_macropadgui_rebuildchatlines_6bc3773b -->|calls| src_gui_wraptexttochatlines_c755b01b
     src_gui_macropadgui_redrawvoicecard_0ed21610 -->|calls| src_gui_drawwrappedtext_94ada9de
     src_gui_cpp_src_gui_6ce0e73a -->|imports| src_gui_h_src_gui_a56c68cc
     src_gui_h_src_gui_a56c68cc -->|imports| src_gui_h_tft_espi_a5e0095d
     src_gui_h_src_gui_a56c68cc -->|imports| src_gui_h_vector_ccb54c95
-    src_gui_h_src_gui_a56c68cc -->|imports| src_system_status_a10ae04d
     src_gui_macropadgui_clearconversation_172e13bc -->|calls| src_gui_macropadgui_redrawvoicecard_0ed21610
     src_gui_macropadgui_addvoiceturn_f13a64b6 -->|calls| src_gui_macropadgui_rebuildchatlines_6bc3773b
     src_gui_macropadgui_addvoiceturn_f13a64b6 -->|calls| src_gui_macropadgui_scrolltolatestresponse_cb695a79
     src_gui_macropadgui_scrollvoicechat_164d0276 -->|calls| src_gui_macropadgui_rendervoicechatviewport_1b802434
-    src_gui_macropadgui_rendervoicechatviewport_1b802434 -->|calls| src_gui_macropadgui_canscrollup_034a72fb
-    src_gui_macropadgui_rendervoicechatviewport_1b802434 -->|calls| src_gui_macropadgui_canscrolldown_966e68b5
     src_gui_macropadgui_drawvoicecard_6821a110 -->|calls| src_gui_macropadgui_addvoiceturn_f13a64b6
     src_gui_macropadgui_drawvoicecard_6821a110 -->|calls| src_gui_macropadgui_redrawvoicecard_0ed21610
     src_gui_macropadgui_redrawvoicecard_0ed21610 -->|calls| src_gui_macropadgui_rendervoicechatviewport_1b802434
+    src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawdashboard_878f9c4f
     src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_redrawvoicecard_0ed21610
-    %% Omitted for readability: 34 nodes, 0 edges
+    %% Omitted for readability: 39 nodes, 0 edges
     class src_gui_macropadgui_drawall_e8dc4428 function;
-    class src_gui_h_src_gui_a56c68cc function;
     class src_gui_macropadgui_drawvoicecard_6821a110 function;
+    class src_gui_h_src_gui_a56c68cc function;
     class src_gui_macropadgui_addvoiceturn_f13a64b6 function;
-    class src_gui_macropadgui_clearconversation_172e13bc function;
+    class src_gui_macropadgui_drawdashboard_878f9c4f function;
+    class src_gui_macropadgui_2de9d209 klass;
+    class src_gui_macropadgui_isvoiceaudioenabled_0d0ea05d function;
     class src_gui_macropadgui_rebuildchatlines_6bc3773b function;
     class src_gui_macropadgui_redrawvoicecard_0ed21610 function;
+    class src_gui_macropadgui_clearconversation_172e13bc function;
     class src_gui_macropadgui_scrolltolatestresponse_cb695a79 function;
     class src_gui_macropadgui_scrollvoicechat_164d0276 function;
     class src_gui_macropadgui_rendervoicechatviewport_1b802434 function;
-    class src_gui_macropadgui_canscrollup_034a72fb function;
-    class src_gui_macropadgui_canscrolldown_966e68b5 function;
     class src_gui_cpp_src_gui_6ce0e73a function;
     class src_gui_wraptexttochatlines_c755b01b function;
     class src_gui_drawwrappedtext_94ada9de function;
     class src_gui_h_tft_espi_a5e0095d klass;
     class src_gui_h_vector_ccb54c95 function;
-    class src_system_status_a10ae04d function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2302,7 +2406,7 @@ flowchart LR
   <td><code>MacroPadGUI</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
+  <td><code>isVoiceAudioEnabled()</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td>MacroPadGUI node in src/gui.h.</td>
 </tr>
 <tr>
@@ -2315,6 +2419,14 @@ flowchart LR
 </tr>
 <tr>
   <td>5</td>
+  <td><code>.isVoiceAudioEnabled()</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MacroPadGUI</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>.isVoiceAudioEnabled() node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>6</td>
   <td><code>MacroPadGUI::MacroPadGUI()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2322,7 +2434,7 @@ flowchart LR
   <td>MacroPadGUI::MacroPadGUI() node in src/gui.cpp.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>7</td>
   <td><code>wrapTextToChatLines()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>rebuildChatLines</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2330,7 +2442,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>8</td>
   <td><code>init</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2338,7 +2450,23 @@ flowchart LR
   <td>init node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>9</td>
+  <td><code>drawVoiceAudioToggle</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>drawVoiceAudioToggle node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>setVoiceAudioEnabled</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>setVoiceAudioEnabled node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>11</td>
   <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>getTouchTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2346,7 +2474,7 @@ flowchart LR
   <td>getButtonRect node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>12</td>
   <td><code>clearConversation</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2354,7 +2482,7 @@ flowchart LR
   <td>clearConversation node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>13</td>
   <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2362,7 +2490,7 @@ flowchart LR
   <td>addVoiceTurn node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>14</td>
   <td><code>rebuildChatLines</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2370,7 +2498,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>15</td>
   <td><code>scrollToBottom</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2378,7 +2506,7 @@ flowchart LR
   <td>scrollToBottom node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>16</td>
   <td><code>scrollToLatestResponse</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2386,7 +2514,7 @@ flowchart LR
   <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>17</td>
   <td><code>scrollToTop</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2394,7 +2522,7 @@ flowchart LR
   <td>scrollToTop node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>18</td>
   <td><code>canScrollUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2402,7 +2530,7 @@ flowchart LR
   <td>canScrollUp node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>19</td>
   <td><code>canScrollDown</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2410,7 +2538,7 @@ flowchart LR
   <td>canScrollDown node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>20</td>
   <td><code>voiceChatScrollable</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2418,7 +2546,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>21</td>
   <td><code>scrollVoiceChat</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2426,7 +2554,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>22</td>
   <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>scrollVoiceChat</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2434,7 +2562,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>23</td>
   <td><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2442,7 +2570,7 @@ flowchart LR
   <td>drawVoiceCard node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>24</td>
   <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>clearConversation</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2450,7 +2578,7 @@ flowchart LR
   <td>redrawVoiceCard node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>25</td>
   <td><code>drawStatusBar</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2458,7 +2586,7 @@ flowchart LR
   <td>drawStatusBar node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>26</td>
   <td><code>drawStatusRow</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -2466,15 +2594,23 @@ flowchart LR
   <td>drawStatusRow node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>27</td>
+  <td><code>drawDashboardVolume</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>drawDashboardVolume node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>28</td>
   <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>drawStatusRow</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>drawDashboardVolume</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawStatusRow</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td>drawDashboard node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>29</td>
   <td><code>drawDashboardSwitching</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2482,44 +2618,12 @@ flowchart LR
   <td>drawDashboardSwitching node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>26</td>
-  <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawStatusBar</code><br><small style="color:var(--muted)">src/gui.h</small><br>+1 more</td>
-  <td>drawAll node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>getTouchTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>getTouchTarget node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>drawButton node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>HealthState</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>HealthState node in project.</td>
-</tr>
-<tr>
   <td>30</td>
-  <td><code>color</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>color node in src/gui.h.</td>
+  <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawStatusBar</code><br><small style="color:var(--muted)">src/gui.h</small><br>+2 more</td>
+  <td>drawAll node in src/gui.h.</td>
 </tr>
 </table>
 
@@ -2528,26 +2632,25 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/gui.h</code></td><td>36 nodes</td></tr>
+      <tr><td><code>src/gui.h</code></td><td>42 nodes</td></tr>
 <tr><td><code>src/gui.cpp</code></td><td>4 nodes</td></tr>
-<tr><td><code>src/system_status.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: defines x32, contains x28, references x18, calls x18. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: defines x37, contains x31, calls x20, references x18. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 10. NetworkManager ====== -->
 <h2 id="networkmanager">10. NetworkManager</h2>
-<p>NetworkManager groups implementation around network, managerh, managercpp, string, mostly in src/network_manager.h, src/network_manager.cpp. This section covers 32 nodes and 71 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>NetworkManager groups implementation around network, managerh, managercpp, string, mostly in src/network_manager.h, src/network_manager.cpp, src/system_status.h. This section covers 33 nodes and 72 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: NetworkManager (32 nodes, 71 edges)
+    %% Section: NetworkManager (33 nodes, 72 edges)
     subgraph networkmanager_src_network_manager_h_b8026d41["src/network_manager.h"]
         src_network_manager_networkmanager_fetchcomposit_409e78b8("fetchCompositeStatus<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_sendvoiceaudi_27eb2920("sendVoiceAudio<br/><small>src/network_manager.h</small>")
@@ -2561,7 +2664,6 @@ flowchart LR
         src_network_manager_networkmanager_getconnecteds_8ad215ed("getConnectedSSID<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_getrssi_9745c173("getRSSI<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_playvoiceaudi_4238dfc9("playVoiceAudioReply<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_checkinternet_2821e5eb("checkInternet<br/><small>src/network_manager.h</small>")
     end
     subgraph networkmanager_src_network_manager_cpp_2695de7b["src/network_manager.cpp"]
         src_network_manager_cpp_src_network_manager_fc796c4c("network_manager.cpp")
@@ -2570,6 +2672,7 @@ flowchart LR
         src_network_manager_extractjsonint_9e88f47f("extractJsonInt()<br/><small>src/network_manager.cpp</small>")
         src_network_manager_extractjsonobject_dff68fa5("extractJsonObject()<br/><small>src/network_manager.cpp</small>")
     end
+    src_system_status_a10ae04d("system_status.h")
     src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonfield_e1050fdd
     src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonbool_b649f566
     src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonint_9e88f47f
@@ -2577,6 +2680,7 @@ flowchart LR
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonbool_b649f566
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonfield_e1050fdd
     src_network_manager_cpp_src_network_manager_fc796c4c -->|imports| src_network_manager_h_src_network_manager_f4b6ea17
+    src_network_manager_h_src_network_manager_f4b6ea17 -->|imports| src_system_status_a10ae04d
     src_network_manager_networkmanager_applyenvironm_1fcc8dc0 -->|calls| src_network_manager_networkmanager_startconnecti_0052fbd8
     src_network_manager_networkmanager_getipaddress_ead67b67 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_getconnecteds_8ad215ed -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
@@ -2584,14 +2688,12 @@ flowchart LR
     src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_playvoiceaudi_4238dfc9 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_checkreceiver_ad818aa1 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
-    src_network_manager_networkmanager_checkinternet_2821e5eb -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getconnecteds_8ad215ed
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getrssi_9745c173
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getipaddress_ead67b67
-    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_checkinternet_2821e5eb
     src_network_manager_networkmanager_begin_5ab86173 -->|calls| src_network_manager_networkmanager_startconnecti_0052fbd8
-    %% Omitted for readability: 14 nodes, 0 edges
+    %% Omitted for readability: 15 nodes, 0 edges
     class src_network_manager_networkmanager_fetchcomposit_409e78b8 function;
     class src_network_manager_networkmanager_sendvoiceaudi_27eb2920 function;
     class src_network_manager_networkmanager_applyenvironm_1fcc8dc0 function;
@@ -2604,12 +2706,12 @@ flowchart LR
     class src_network_manager_networkmanager_getconnecteds_8ad215ed function;
     class src_network_manager_networkmanager_getrssi_9745c173 function;
     class src_network_manager_networkmanager_playvoiceaudi_4238dfc9 function;
-    class src_network_manager_networkmanager_checkinternet_2821e5eb function;
     class src_network_manager_cpp_src_network_manager_fc796c4c function;
     class src_network_manager_extractjsonfield_e1050fdd function;
     class src_network_manager_extractjsonbool_b649f566 function;
     class src_network_manager_extractjsonint_9e88f47f function;
     class src_network_manager_extractjsonobject_dff68fa5 function;
+    class src_system_status_a10ae04d function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2880,6 +2982,7 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>src/network_manager.h</code></td><td>21 nodes</td></tr>
 <tr><td><code>src/network_manager.cpp</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/system_status.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
@@ -3052,7 +3155,7 @@ flowchart LR
   <td>11</td>
   <td><code>Preferences</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>environment_manager.h</code><br><small style="color:var(--muted)">src/environment_manager.h</small></td>
+  <td><code>environment_manager.h</code><br><small style="color:var(--muted)">src/environment_manager.h</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
   <td>No direct outbound edge</td>
   <td>Preferences node in project.</td>
 </tr>
@@ -4016,8 +4119,8 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>413</td></tr>
-      <tr><td>Edges</td><td>656</td></tr>
+      <tr><td>Nodes</td><td>421</td></tr>
+      <tr><td>Edges</td><td>676</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
       <tr><td>Communities</td><td>30</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
@@ -4026,8 +4129,8 @@ flowchart LR
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>615</td></tr>
-      <tr><td>INFERRED</td><td>41</td></tr>
+      <tr><td>EXTRACTED</td><td>631</td></tr>
+      <tr><td>INFERRED</td><td>45</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4035,7 +4138,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>ESP32 project — Architecture Documentation</p>
-  <p>Generated: 2026-09-12 09:18 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-09-12 10:28 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

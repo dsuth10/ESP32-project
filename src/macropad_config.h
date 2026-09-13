@@ -22,8 +22,8 @@
 #define GRID_COLS         3
 #define NUM_BUTTONS_PAGE  (GRID_ROWS * GRID_COLS)
 #define NUM_PAGES         6
-#define PAGE_VOICE        4
-#define PAGE_DASHBOARD    5
+#define PAGE_DASHBOARD    0
+#define PAGE_VOICE        5
 
 #define TOUCH_PREV_PAGE   100
 #define TOUCH_NEXT_PAGE   101
@@ -33,6 +33,10 @@
 #define TOUCH_VOICE_SCROLL_UP   105
 #define TOUCH_VOICE_SCROLL_DOWN 106
 #define TOUCH_VOICE_CLEAR       107
+#define TOUCH_DASH_VOL_DOWN     108
+#define TOUCH_DASH_VOL_UP       109
+#define TOUCH_DASH_VOL_MUTE     110
+#define TOUCH_VOICE_AUDIO_TOGGLE 111
 
 // Color Palette (RGB565)
 #define C_BG              0x0842  // Very dark slate

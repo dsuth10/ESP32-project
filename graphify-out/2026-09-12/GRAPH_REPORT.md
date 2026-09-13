@@ -1,11 +1,11 @@
 # Graph Report - ESP32 project  (2026-09-12)
 
 ## Corpus Check
-- 40 files · ~511,400 words
+- 41 files · ~511,554 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 414 nodes · 650 edges · 31 communities (14 shown, 11 thin omitted)
+- 413 nodes · 656 edges · 30 communities (14 shown, 9 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 41 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
@@ -38,8 +38,6 @@
 - Workflow: /graph-query
 - Workflow: /graph-update
 - Workflow: /graph-visualize
-- DashboardStatus
-- EnvironmentMode
 
 ## God Nodes (most connected - your core abstractions)
 1. `MacroPadGUI` - 35 edges
@@ -47,11 +45,11 @@
 3. `NetworkManager` - 21 edges
 4. `EnvironmentManager` - 17 edges
 5. `ChannelStats` - 14 edges
-6. `_coeff_div` - 13 edges
-7. `es8311_write_reg()` - 13 edges
+6. `es8311_write_reg()` - 13 edges
+7. `_coeff_div` - 13 edges
 8. `EnvironmentProfile` - 12 edges
-9. `fetchCompositeStatus` - 11 edges
-10. `es8311_read_reg()` - 11 edges
+9. `es8311_read_reg()` - 11 edges
+10. `es8311_write_reg()` - 11 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `begin` --calls--> `es8311_codec_init()`  [INFERRED]
@@ -60,18 +58,18 @@
   src/audio_recorder.h → src/es8311.cpp
 - `EnvironmentManager::EnvironmentManager()` --calls--> `initProfiles`  [INFERRED]
   src/environment_manager.cpp → src/environment_manager.h
-- `fetchCompositeStatus` --calls--> `extractJsonField()`  [EXTRACTED]
-  src/network_manager.h → src/network_manager.cpp
-- `sendVoiceAudio` --calls--> `extractJsonField()`  [EXTRACTED]
-  src/network_manager.h → src/network_manager.cpp
+- `redrawVoiceCard` --calls--> `drawWrappedText()`  [EXTRACTED]
+  src/gui.h → src/gui.cpp
+- `rebuildChatLines` --calls--> `wrapTextToChatLines()`  [EXTRACTED]
+  src/gui.h → src/gui.cpp
 
 ## Import Cycles
 - None detected.
 
-## Communities (31 total, 11 thin omitted)
+## Communities (30 total, 9 thin omitted)
 
 ### Community 0 - "MacroPadGUI"
-Cohesion: 0.07
+Cohesion: 0.08
 Nodes (49): HealthState, ChatLine, color, text, ChatMessage, isUser, text, DashboardStatus (+41 more)
 
 ### Community 1 - "hermes_voice_receiver.py"
@@ -83,7 +81,7 @@ Cohesion: 0.10
 Nodes (29): Preferences, EnvironmentChangeCallback, EnvironmentMode, EnvironmentManager, begin, _changeCallback, _currentMode, EnvironmentManager::EnvironmentManager() (+21 more)
 
 ### Community 3 - "AudioRecorder"
-Cohesion: 0.08
+Cohesion: 0.07
 Nodes (26): AudioRecorder, begin, _lastRecordDurationMs, _leftStats, logDiagnostics, _maxLeftPeak, _maxRightPeak, _monoStats (+18 more)
 
 ### Community 4 - "NetworkManager"
@@ -91,7 +89,7 @@ Cohesion: 0.14
 Nodes (29): DashboardStatus, EnvironmentMode, function, String, extractJsonBool(), extractJsonField(), extractJsonInt(), extractJsonObject() (+21 more)
 
 ### Community 5 - "ChannelStats"
-Cohesion: 0.11
+Cohesion: 0.10
 Nodes (13): MacroButton, ChannelStats, clipCount, count, maxVal, minVal, nonZeroCount, sum (+5 more)
 
 ### Community 6 - "es8311_bsp.c"
@@ -99,7 +97,7 @@ Cohesion: 0.25
 Nodes (25): es8311_clock_config_t, es8311_handle_t, es8311_mic_gain_t, es8311_resolution_t, esp_err_t, i2c_port_t, es8311_clock_config(), es8311_create() (+17 more)
 
 ### Community 7 - "es8311.cpp"
-Cohesion: 0.24
+Cohesion: 0.26
 Nodes (23): es8311_clock_config_t, es8311_handle_t, es8311_mic_gain_t, es8311_resolution_t, esp_err_t, i2c_port_t, es8311_clock_config(), es8311_codec_dump_registers() (+15 more)
 
 ### Community 8 - "_coeff_div"
@@ -127,24 +125,24 @@ Cohesion: 0.25
 Nodes (7): 1. Git Commit Hook (Zero-Touch), 2. Live File Watcher (Continuous Auto-Update on Save), 3. Antigravity Agent Rule (Automated Turn-End Maintenance), Automated Background Updating, Everyday Command Reference (`.\graph.ps1`), Graphify Toolkit & Automation System, Slash Commands in Antigravity Chat
 
 ## Knowledge Gaps
-- **145 isolated node(s):** `count`, `minVal`, `maxVal`, `sum`, `sumSq` (+140 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 225 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **145 isolated node(s):** `start_receiver.sh script`, `count`, `minVal`, `maxVal`, `sum` (+140 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 223 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `AudioRecorder` connect `AudioRecorder` to `ChannelStats`?**
-  _High betweenness centrality (0.084) - this node is a cross-community bridge._
-- **Why does `es8311_codec_init()` connect `es8311.cpp` to `AudioRecorder`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
-- **What connects `count`, `minVal`, `maxVal` to the rest of the system?**
+  _High betweenness centrality (0.071) - this node is a cross-community bridge._
+- **Why does `ChannelStats` connect `ChannelStats` to `AudioRecorder`?**
+  _High betweenness centrality (0.033) - this node is a cross-community bridge._
+- **What connects `start_receiver.sh script`, `count`, `minVal` to the rest of the system?**
   _145 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `MacroPadGUI` be split into smaller, more focused modules?**
-  _Cohesion score 0.07127882599580712 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07541478129713423 - nodes in this community are weakly interconnected._
 - **Should `hermes_voice_receiver.py` be split into smaller, more focused modules?**
   _Cohesion score 0.07948717948717948 - nodes in this community are weakly interconnected._
 - **Should `EnvironmentManager` be split into smaller, more focused modules?**
   _Cohesion score 0.0989247311827957 - nodes in this community are weakly interconnected._
 - **Should `AudioRecorder` be split into smaller, more focused modules?**
-  _Cohesion score 0.0766488413547237 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07394957983193277 - nodes in this community are weakly interconnected._

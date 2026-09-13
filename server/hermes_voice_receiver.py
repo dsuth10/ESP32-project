@@ -841,12 +841,22 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         global _last_tts_wav
-        t_req_start = time.perf_counter()
+        url_parts = urllib.parse.urlparse(self.path)
+        req_path = url_parts.path.rstrip('/')
 
-        if self.path not in ["/voice", "/voice/", "/"]:
+        if req_path not in ["/voice", ""]:
             self.send_response(404)
             self.end_headers()
             return
+
+        # Check if client requested audio output or text-only mode
+        audio_requested = True
+        if self.headers.get("X-Audio-Output", "1").strip().lower() in ("0", "false", "no"):
+            audio_requested = False
+        parsed_query = urllib.parse.parse_qs(url_parts.query)
+        if parsed_query.get("audio", ["1"])[0].lower() in ("0", "false", "no") or \
+           parsed_query.get("tts", ["1"])[0].lower() in ("0", "false", "no"):
+            audio_requested = False
 
         # Check Bearer Authentication (Phase 20)
         if not self.check_auth():
@@ -942,11 +952,11 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             # 5. Sanitize reply for embedded TFT display
             clean_reply = sanitize_for_display(reply)
 
-            # 6. Generate Local Voice (Voicebox TTS) if enabled, reachable, and LLM succeeded
+            # 6. Generate Local Voice (Voicebox TTS) if enabled, requested by client, reachable, and LLM succeeded
             tts_s = 0.0
             audio_available = False
             llm_succeeded = backend_used not in ("none", "")
-            if ENABLE_TTS and llm_succeeded and check_voicebox_online():
+            if audio_requested and ENABLE_TTS and llm_succeeded and check_voicebox_online():
                 t_tts_start = time.perf_counter()
                 tts_wav = synthesize_speech_voicebox(clean_reply)
                 t_tts_end = time.perf_counter()
@@ -959,6 +969,8 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
                     with _tts_lock:
                         _last_tts_wav = None
             else:
+                if not audio_requested:
+                    print(f"[TTS] Audio output disabled by client (Text-only mode) -> skipping Voicebox TTS")
                 with _tts_lock:
                     _last_tts_wav = None
 
