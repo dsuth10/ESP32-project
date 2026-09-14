@@ -84,3 +84,32 @@ These rules represent proven architectural invariants established to prevent reg
 - **Enforcement**:
   - Never use `portENTER_CRITICAL` spinlocks when copying structs containing dynamic heap allocations (such as Arduino `String`). Always guard shared state with `SemaphoreHandle_t` or use static C-style structs.
   - All touch-release waiting loops (`while (ts.isTouched)`) MUST enforce an explicit safety timeout (e.g., `millis() - start < 1000`) to prevent hardware transients from locking the main loop.
+
+---
+
+### Rule 11: Dual-Path Audio Output & Non-Blocking TTS Fallback
+- **Invariant**: When audio mode is enabled on the client, the response must be spoken out loud through the host computer's speakers (`SPEAK_ON_HOST=1`) and synthesized as a 16kHz stereo WAV stream for the ESP32 onboard I2S codec. Unaccelerated or offline neural TTS engines must never cause a silent reply or stall round-trip latency.
+- **Anti-Pattern**: Blocking for >10s on a CPU-only 1.7B neural TTS model, or catching an exception and returning `"audio_available": false`, leaving the user with a muted device and silent computer.
+- **Enforcement**:
+  - Host receiver must spawn background thread for local host speaker playback (`speak_on_host_speaker`, e.g., Windows SAPI `SpVoice`).
+  - Implement a fast, zero-dependency local TTS fallback (`synthesize_speech_sapi`, <200ms) whenever high-fidelity engines (Voicebox/Kokoro/Qwen) are unaccelerated, unresponsive, or offline.
+  - Maintain macro and environment parity in `server/receiver.env.example` for `SPEAK_ON_HOST`.
+
+---
+
+### Rule 12: Wi-Fi/BLE Coexistence & AP NVS Cache Sanitation
+- **Invariant**: On ESP32-S3 hardware running concurrent BLE HID Keyboard and Wi-Fi, modem sleep MUST remain enabled; switching networks must purge stale AP BSSID/channel caches.
+- **Anti-Pattern 1**: Calling `WiFi.setSleep(false)` or `esp_wifi_set_ps(WIFI_PS_NONE)` when BLE is initialized. ESP-IDF will panic and abort: `wifi:Error! Should enable WiFi modem sleep when both WiFi and Bluetooth are enabled!!!!!!`.
+- **Anti-Pattern 2**: Roaming to a mobile hotspot while retaining cached connection parameters from a home router, causing `Reason code: 15 (WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT)`.
+- **Enforcement**:
+  - Maintain `WIFI_PS_MIN_MODEM` whenever NimBLE is active.
+  - Call `WiFi.disconnect(false, true)` with `erase_ap = true` when reconfiguring environments in `EnvironmentManager` or recovering from connection loss.
+  - Mobile phone hotspots must be set to pure `WPA2-Personal` (CCMP) to eliminate WPA3 Transition Mode / SAE negotiation failures on embedded radios.
+
+---
+
+### Rule 13: Gateway Tiering & Zero-Zombie Receiver Daemon Semantics
+- **Invariant**: The Voice Receiver (`:8787`) is the sole telemetry bridge to the ESP32. If the receiver restarts or stops, telemetry displays Voice Host, Hermes, and AI as Offline simultaneously.
+- **Enforcement**:
+  - Always verify port `:8787` is listening after workspace or IDE restarts (`netstat -ano | findstr 8787`).
+  - Local LLM backends (`gemma3:latest` on Ollama) must be pre-warmed in GPU VRAM with `keep_alive: 8h` to ensure sub-second inference and prevent ESP32 HTTP client timeouts.
