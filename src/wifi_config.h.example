@@ -4,6 +4,10 @@
 // Portable Home/Work Environment Profiles
 // =============================================================================
 
+// Universal Discovery Configuration
+#define DISCOVERY_UDP_PORT     8788
+#define WORK_HOST_MDNS         "Couch"
+
 // HOME Profile (Home Linux Server & Home Wi-Fi)
 #define HOME_ENV_NAME          "HOME"
 #define HOME_WIFI_SSID         "YOUR_HOME_SSID"

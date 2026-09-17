@@ -1,5 +1,6 @@
 #include "network_manager.h"
 #include "audio_recorder.h"
+#include "host_discovery.h"
 #include <WiFiClientSecure.h>
 #include <esp_task_wdt.h>
 #include <esp_wifi.h>
@@ -164,8 +165,11 @@ void NetworkManager::update() {
         _wasConnected = true;
         Serial.printf("[WiFi] >>> CONNECTED to '%s'! IP: %s, RSSI: %d dBm <<<\n",
                       WiFi.SSID().c_str(), WiFi.localIP().toString().c_str(), WiFi.RSSI());
+        hostDiscovery.begin();
+        hostDiscovery.checkBeacon();
     } else if (!connected && _wasConnected) {
         _wasConnected = false;
+        hostDiscovery.stop();
         Serial.println("[WiFi] <<< DISCONNECTED from Wi-Fi <<<");
     }
 
@@ -225,7 +229,7 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
     }
 
     const EnvironmentProfile& prof = envManager.getActiveProfile();
-    const char* serverUrl = prof.receiverUrl;
+    String serverUrl = prof.receiverUrl;
     const char* authToken = prof.authToken;
     uint32_t timeoutMs = prof.voiceTimeoutMs;
 
@@ -296,6 +300,47 @@ bool NetworkManager::sendVoiceAudio(const uint8_t* wavData, size_t wavSize, Stri
         if (httpCode > 0) {
             serverErrMsg = http.getString();
             Serial.printf("[HTTP] Server error response: %s\n", serverErrMsg.c_str());
+        }
+        http.end();
+
+        // If connection failed or timed out, attempt multi-tier discovery and retry once
+        if (httpCode < 0 || httpCode == HTTPC_ERROR_CONNECTION_REFUSED) {
+            if (hostDiscovery.discoverNow()) {
+                String retryUrl = envManager.getActiveProfile().receiverUrl;
+                Serial.printf("[HTTP] Retrying voice upload to newly discovered endpoint: %s\n", retryUrl.c_str());
+
+                HTTPClient retryHttp;
+                if (retryUrl.startsWith("https://")) {
+                    retryHttp.begin(secureClient, retryUrl);
+                } else {
+                    retryHttp.begin(retryUrl);
+                }
+                retryHttp.addHeader("Content-Type", "audio/wav");
+                retryHttp.addHeader("Connection", "close");
+                if (!requestAudio) retryHttp.addHeader("X-Audio-Output", "0");
+                if (authToken && strlen(authToken) > 0) {
+                    retryHttp.addHeader("Authorization", "Bearer " + String(authToken));
+                }
+                retryHttp.setTimeout(timeoutMs);
+
+                uint32_t rStart = millis();
+                int retryCode = retryHttp.POST((uint8_t*)wavData, wavSize);
+                uint32_t rDur = millis() - rStart;
+
+                if (retryCode == HTTP_CODE_OK || retryCode == 200) {
+                    String response = retryHttp.getString();
+                    outTranscript = extractJsonField(response, "transcript");
+                    outReply = extractJsonField(response, "reply");
+                    outAudioAvailable = extractJsonBool(response, "audio_available", false);
+                    outAudioUrl = extractJsonField(response, "audio_url");
+                    if (outAudioAvailable && outAudioUrl.length() == 0) outAudioUrl = "/voice/audio";
+                    if (outTranscript.length() == 0) outTranscript = "Audio Processed";
+                    if (outReply.length() == 0) outReply = "Received by Hermes";
+                    retryHttp.end();
+                    return true;
+                }
+                retryHttp.end();
+            }
         }
 
         if (httpCode == HTTPC_ERROR_READ_TIMEOUT) {
@@ -459,7 +504,7 @@ bool NetworkManager::fetchCompositeStatus(DashboardStatus& outStatus) {
     }
 
     const EnvironmentProfile& prof = envManager.getActiveProfile();
-    const char* statusUrl = prof.statusUrl;
+    String statusUrl = prof.statusUrl;
     const char* authToken = prof.authToken;
 
     HTTPClient http;
@@ -543,7 +588,77 @@ bool NetworkManager::fetchCompositeStatus(DashboardStatus& outStatus) {
         return true;
     } else {
         http.end();
-        Serial.printf("[Telemetry] Status probe failed: HTTP %d\n", httpCode);
+        Serial.printf("[Telemetry] Status probe failed: HTTP %d (URL: %s)\n", httpCode, statusUrl.c_str());
+
+        // Opportunistic discovery if primary endpoint failed
+        if (hostDiscovery.discoverNow()) {
+            String newStatusUrl = envManager.getActiveProfile().statusUrl;
+            Serial.printf("[Telemetry] Retrying status probe on discovered endpoint: %s\n", newStatusUrl.c_str());
+
+            HTTPClient retryHttp;
+            if (newStatusUrl.startsWith("https://")) {
+                retryHttp.begin(secureClient, newStatusUrl);
+            } else {
+                retryHttp.begin(newStatusUrl);
+            }
+            retryHttp.addHeader("Connection", "close");
+            if (authToken && strlen(authToken) > 0) {
+                retryHttp.addHeader("Authorization", "Bearer " + String(authToken));
+            }
+            retryHttp.setTimeout(2000);
+            int retryCode = retryHttp.GET();
+            if (retryCode == 200) {
+                String retryJson = retryHttp.getString();
+                retryHttp.end();
+
+                String receiverObj = extractJsonObject(retryJson, "receiver");
+                bool recvReady = extractJsonBool(receiverObj, "ready", false);
+                if (!recvReady && receiverObj.length() == 0) {
+                    String statusStr = extractJsonField(retryJson, "status");
+                    recvReady = (statusStr == "ok" || statusStr == "degraded" || statusStr.length() == 0);
+                }
+                outStatus.voiceHost = recvReady ? HEALTH_READY : HEALTH_FAILED;
+                outStatus.voiceHostReady = recvReady;
+
+                String hermesObj = extractJsonObject(retryJson, "hermes");
+                bool hermesLive = extractJsonBool(hermesObj, "live", false);
+                bool hermesReady = extractJsonBool(hermesObj, "ready", false);
+                if (hermesReady) {
+                    outStatus.hermes = HEALTH_READY;
+                    outStatus.hermesReady = true;
+                } else if (hermesLive) {
+                    outStatus.hermes = HEALTH_DEGRADED;
+                    outStatus.hermesReady = false;
+                } else {
+                    outStatus.hermes = HEALTH_FAILED;
+                    outStatus.hermesReady = false;
+                }
+
+                String backendObj = extractJsonObject(retryJson, "backend");
+                bool backendReady = extractJsonBool(backendObj, "ready", false);
+                bool backendWarm = extractJsonBool(backendObj, "warm", false);
+                String backendType = extractJsonField(backendObj, "type");
+
+                if (backendReady && backendType == "ollama") {
+                    outStatus.aiBackend = HEALTH_READY;
+                    outStatus.aiBackendName = backendWarm ? "Ollama • Warm" : "Ollama • Cold";
+                } else if (hermesReady) {
+                    outStatus.aiBackend = HEALTH_READY;
+                    outStatus.aiBackendName = "Hermes Gateway";
+                } else if (backendReady) {
+                    outStatus.aiBackend = HEALTH_READY;
+                    outStatus.aiBackendName = "Ollama Fallback";
+                } else {
+                    outStatus.aiBackend = (envManager.getMode() == ENV_WORK) ? HEALTH_FAILED : HEALTH_UNKNOWN;
+                    outStatus.aiBackendName = (envManager.getMode() == ENV_WORK) ? "Ollama Offline" : "Hermes Offline";
+                }
+
+                outStatus.voiceReady = outStatus.voiceHostReady && (outStatus.hermesReady || backendReady);
+                return true;
+            }
+            retryHttp.end();
+        }
+
         outStatus.voiceHost = HEALTH_FAILED;
         outStatus.voiceHostReady = false;
         outStatus.hermes = HEALTH_UNKNOWN;

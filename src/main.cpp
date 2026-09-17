@@ -12,6 +12,7 @@
 #include "es8311.h"
 #include "network_manager.h"
 #include "environment_manager.h"
+#include "host_discovery.h"
 
 // Set to 1 for raw microphone isolation diagnostic (Wi-Fi, TLS & Hermes upload disabled).
 // Once genuine microphone PCM is proven, set to 0 to restore full network pipeline.
@@ -56,6 +57,9 @@ void telemetryWorkerTask(void* pvParameters) {
       temp.expectedBleHost = envManager.getActiveProfile().expectedBleHost;
 
       if (netManager.isConnected()) {
+        // Fast non-blocking check for UDP beacon from host (<1ms)
+        hostDiscovery.checkBeacon();
+
         // Deep probe: queries receiver :8787/status and DNS in background on Core 0
         netManager.fetchCompositeStatus(temp);
       } else {

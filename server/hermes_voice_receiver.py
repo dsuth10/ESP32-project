@@ -21,6 +21,7 @@ import threading
 import urllib.request
 import urllib.parse
 import tempfile
+import socket
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
 try:
@@ -38,6 +39,7 @@ if hasattr(sys.stderr, 'reconfigure'):
 # ── 1. Configuration & Cross-Platform Path Resolution ──────────────────
 PORT = int(os.environ.get("RECEIVER_PORT", "8787"))
 HOST = os.environ.get("RECEIVER_HOST", "0.0.0.0")
+DISCOVERY_UDP_PORT = int(os.environ.get("DISCOVERY_UDP_PORT", "8788"))
 RECEIVER_ENV = os.environ.get("RECEIVER_ENV", "work" if sys.platform == "win32" else "home")
 GATEWAY_URL = os.environ.get("HERMES_GATEWAY_URL", "http://127.0.0.1:8642/v1/chat/completions")
 HERMES_BASE_URL = os.environ.get("HERMES_BASE_URL", "http://127.0.0.1:8642")
@@ -1157,12 +1159,85 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
                     pass
             voice_lock.release()
 
+def get_local_ip_for_target(target_ip="8.8.8.8"):
+    """Returns the primary outbound IP address of this machine."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect((target_ip, 80))
+        return s.getsockname()[0]
+    except Exception:
+        return "127.0.0.1"
+    finally:
+        s.close()
+
+def run_discovery_beacon():
+    """Broadcasts discovery packets and answers queries from ESP32."""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        sock.bind(("", DISCOVERY_UDP_PORT))
+    except Exception as e:
+        print(f"[Discovery] Warning: could not bind UDP port {DISCOVERY_UDP_PORT}: {e}")
+        return
+
+    sock.settimeout(1.0)
+    last_broadcast = 0.0
+
+    print(f"[Discovery] UDP Beacon listening & broadcasting on port {DISCOVERY_UDP_PORT}")
+
+    while True:
+        now = time.time()
+        # Broadcast periodic beacon every 3 seconds
+        if now - last_broadcast >= 3.0:
+            last_broadcast = now
+            local_ip = get_local_ip_for_target()
+            payload = json.dumps({
+                "service": "hermes-receiver",
+                "port": PORT,
+                "hostname": socket.gethostname(),
+                "env": RECEIVER_ENV,
+                "ip": local_ip,
+                "version": 1
+            }).encode("utf-8")
+            try:
+                sock.sendto(payload, ("255.255.255.255", DISCOVERY_UDP_PORT))
+            except Exception:
+                pass
+
+        # Check for inbound queries from ESP32
+        try:
+            data, addr = sock.recvfrom(1024)
+            if data:
+                try:
+                    msg = json.loads(data.decode("utf-8"))
+                    if msg.get("query") == "hermes-receiver":
+                        local_ip = get_local_ip_for_target(addr[0])
+                        reply = json.dumps({
+                            "service": "hermes-receiver",
+                            "port": PORT,
+                            "hostname": socket.gethostname(),
+                            "env": RECEIVER_ENV,
+                            "ip": local_ip,
+                            "version": 1
+                        }).encode("utf-8")
+                        sock.sendto(reply, addr)
+                except Exception:
+                    pass
+        except socket.timeout:
+            pass
+        except Exception:
+            time.sleep(0.5)
+
 def main():
     # Warm up Whisper model in background
     get_whisper_model()
 
     # Phase 17: Pre-warm Ollama model in background thread to prevent cold start latency
     threading.Thread(target=warmup_ollama_model, daemon=True).start()
+
+    # Launch UDP discovery beacon & query responder
+    threading.Thread(target=run_discovery_beacon, daemon=True).start()
 
     server = ThreadingHTTPServer((HOST, PORT), VoiceRequestHandler)
     server.daemon_threads = True
