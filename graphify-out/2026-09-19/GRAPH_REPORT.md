@@ -1,12 +1,12 @@
 # Graph Report - ESP32 project  (2026-09-19)
 
 ## Corpus Check
-- 43 files · ~514,194 words
+- 41 files · ~513,372 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 440 nodes · 709 edges · 31 communities (15 shown, 9 thin omitted)
-- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 52 edges (avg confidence: 0.85)
+- 429 nodes · 691 edges · 30 communities (14 shown, 9 thin omitted)
+- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 47 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
@@ -38,7 +38,6 @@
 - Workflow: /graph-query
 - Workflow: /graph-update
 - Workflow: /graph-visualize
-- ChannelStats
 
 ## God Nodes (most connected - your core abstractions)
 1. `MacroPadGUI` - 46 edges
@@ -61,17 +60,17 @@
   src/main.cpp → src/es8311.cpp
 - `setup()` --calls--> `es8311_codec_set_voice_volume()`  [INFERRED]
   src/main.cpp → src/es8311.cpp
-- `loop()` --calls--> `listSDCardDirectory()`  [INFERRED]
-  src/main.cpp → src/sd_card.cpp
+- `EnvironmentManager::EnvironmentManager()` --calls--> `initProfiles`  [INFERRED]
+  src/environment_manager.cpp → src/environment_manager.h
 
 ## Import Cycles
 - None detected.
 
-## Communities (31 total, 9 thin omitted)
+## Communities (30 total, 9 thin omitted)
 
 ### Community 0 - "MacroPadGUI"
-Cohesion: 0.06
-Nodes (59): ChatLine, color, text, ChatMessage, isUser, text, DashboardStatus, EnvironmentMode (+51 more)
+Cohesion: 0.08
+Nodes (50): DashboardStatus, EnvironmentMode, HealthState, String, TFT_eSPI, vector, VoiceUIState, drawWrappedText() (+42 more)
 
 ### Community 1 - "hermes_voice_receiver.py"
 Cohesion: 0.08
@@ -82,16 +81,16 @@ Cohesion: 0.10
 Nodes (29): Preferences, EnvironmentChangeCallback, EnvironmentMode, EnvironmentManager, begin, _changeCallback, _currentMode, EnvironmentManager::EnvironmentManager() (+21 more)
 
 ### Community 3 - "AudioRecorder"
-Cohesion: 0.07
-Nodes (26): AudioRecorder, begin, _lastRecordDurationMs, _leftStats, logDiagnostics, _maxLeftPeak, _maxRightPeak, _monoStats (+18 more)
+Cohesion: 0.05
+Nodes (34): AudioRecorder, begin, _lastRecordDurationMs, _leftStats, logDiagnostics, _maxLeftPeak, _maxRightPeak, _monoStats (+26 more)
 
 ### Community 4 - "NetworkManager"
 Cohesion: 0.14
 Nodes (29): DashboardStatus, EnvironmentMode, function, String, extractJsonBool(), extractJsonField(), extractJsonInt(), extractJsonObject() (+21 more)
 
 ### Community 5 - "main.cpp"
-Cohesion: 0.13
-Nodes (17): MacroButton, sdcard_type_t, SDCardStatus, calculateBatteryPercentage(), HealthState, executeMacro(), loop(), sampleBatteryTelemetry() (+9 more)
+Cohesion: 0.11
+Nodes (18): MacroButton, ChatLine, color, text, ChatMessage, isUser, text, String (+10 more)
 
 ### Community 6 - "es8311_bsp.c"
 Cohesion: 0.23
@@ -125,29 +124,25 @@ Nodes (11): ESP32 Portable MacroPad & Hermes Satellite: Core Engineering Rules, 
 Cohesion: 0.25
 Nodes (7): 1. Git Commit Hook (Zero-Touch), 2. Live File Watcher (Continuous Auto-Update on Save), 3. Antigravity Agent Rule (Automated Turn-End Maintenance), Automated Background Updating, Everyday Command Reference (`.\graph.ps1`), Graphify Toolkit & Automation System, Slash Commands in Antigravity Chat
 
-### Community 30 - "ChannelStats"
-Cohesion: 0.15
-Nodes (8): ChannelStats, clipCount, count, maxVal, minVal, nonZeroCount, sum, sumSq
-
 ## Knowledge Gaps
 - **150 isolated node(s):** `start_receiver.sh script`, `count`, `minVal`, `maxVal`, `sum` (+145 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 233 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 229 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AudioRecorder` connect `AudioRecorder` to `main.cpp`, `ChannelStats`?**
-  _High betweenness centrality (0.066) - this node is a cross-community bridge._
+- **Why does `MacroPadGUI` connect `MacroPadGUI` to `main.cpp`?**
+  _High betweenness centrality (0.093) - this node is a cross-community bridge._
 - **What connects `start_receiver.sh script`, `count`, `minVal` to the rest of the system?**
   _150 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `MacroPadGUI` be split into smaller, more focused modules?**
-  _Cohesion score 0.06345848757271286 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07692307692307693 - nodes in this community are weakly interconnected._
 - **Should `hermes_voice_receiver.py` be split into smaller, more focused modules?**
   _Cohesion score 0.07948717948717948 - nodes in this community are weakly interconnected._
 - **Should `EnvironmentManager` be split into smaller, more focused modules?**
   _Cohesion score 0.0989247311827957 - nodes in this community are weakly interconnected._
 - **Should `AudioRecorder` be split into smaller, more focused modules?**
-  _Cohesion score 0.07394957983193277 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05230496453900709 - nodes in this community are weakly interconnected._
 - **Should `NetworkManager` be split into smaller, more focused modules?**
-  _Cohesion score 0.13636363636363635 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1431451612903226 - nodes in this community are weakly interconnected._

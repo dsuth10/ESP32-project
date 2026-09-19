@@ -132,15 +132,15 @@
     "semantic_hash": ""
   },
   "src/macropad_config.h": {
-    "mtime": 1789786937.144209,
-    "seen": 1789787373.1618106,
-    "ast_hash": "2e98a3e8687612826059efb4a4e918db",
+    "mtime": 1789297292.4012191,
+    "seen": 1789297359.2012818,
+    "ast_hash": "4d89db63a1872d88781a40f439863c78",
     "semantic_hash": ""
   },
   "src/main.cpp": {
-    "mtime": 1789786969.436734,
-    "seen": 1789787373.1618118,
-    "ast_hash": "ac3584a05e497a0a73e45add3d56e19c",
+    "mtime": 1789783785.1864429,
+    "seen": 1789783839.4627876,
+    "ast_hash": "a50fe040499140a593667c51f509c06c",
     "semantic_hash": ""
   },
   "src/network_manager.cpp": {
@@ -465,18 +465,6 @@
     "mtime": 1789203572.2288058,
     "seen": 1789204701.9266567,
     "ast_hash": "353330539cac86ee9adaca5be98b07df",
-    "semantic_hash": ""
-  },
-  "src/sd_card.cpp": {
-    "mtime": 1789787287.9282012,
-    "seen": 1789787373.1618142,
-    "ast_hash": "3e9804a8753ad8c4c599710fb1930604",
-    "semantic_hash": ""
-  },
-  "src/sd_card.h": {
-    "mtime": 1789786911.729742,
-    "seen": 1789787373.1618147,
-    "ast_hash": "285a2985cc27806a02cedd791795bfe6",
     "semantic_hash": ""
   }
 }

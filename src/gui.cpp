@@ -3,12 +3,20 @@
 
 MacroPadGUI::MacroPadGUI(TFT_eSPI& tft)
   : _tft(tft),
+    _lastDrawnBatPercent(0),
+    _lastDrawnCharging(false),
+    _lastDrawnBatHealth(HEALTH_UNKNOWN),
     _voiceState(VOICE_UI_IDLE),
     _voiceStatusMsg(""),
     _voiceDetailMsg(""),
     _voiceScrollLine(0),
     _voiceAudioEnabled(true),
-    _lastDrawnVolume(80) {}
+    _lastDrawnVolume(80),
+    _currentStoragePath("/"),
+    _storageScrollIndex(0),
+    _storageTotalGB(0.0f),
+    _storageFreeGB(0.0f),
+    _storageUsedMB(0.0f) {}
 
 void MacroPadGUI::init() {
   _tft.init();
@@ -55,7 +63,7 @@ void MacroPadGUI::getButtonRect(uint8_t pageIndex, uint8_t btnIndex, int16_t& x,
   }
 }
 
-void MacroPadGUI::drawStatusBar(bool isConnected, uint8_t currentPage) {
+void MacroPadGUI::drawStatusBar(bool isConnected, uint8_t currentPage, uint8_t batteryPercent, bool isCharging, HealthState batHealth) {
   // Draw Status Bar Background
   _tft.fillRect(0, 0, SCREEN_WIDTH, STATUS_BAR_H, C_STATUS_BG);
   _tft.drawFastHLine(0, STATUS_BAR_H - 1, SCREEN_WIDTH, 0x3186);
@@ -68,32 +76,84 @@ void MacroPadGUI::drawStatusBar(bool isConnected, uint8_t currentPage) {
   // Connection Status Text
   _tft.setTextDatum(ML_DATUM);
   _tft.setTextColor(isConnected ? C_CONNECTED : 0xFBA0, C_STATUS_BG);
-  _tft.drawString(isConnected ? "CONNECTED" : "WAITING...", 22, STATUS_BAR_H / 2, 2);
+  _tft.drawString(isConnected ? "CONNECTED" : "WAITING...", 20, STATUS_BAR_H / 2, 2);
 
   // Profile Title (Centered)
   _tft.setTextDatum(MC_DATUM);
   _tft.setTextColor(PROFILES[currentPage].themeColor, C_STATUS_BG);
-  _tft.drawString(PROFILES[currentPage].title, 160, STATUS_BAR_H / 2, 2);
+  _tft.drawString(PROFILES[currentPage].title, 142, STATUS_BAR_H / 2, 2);
 
-  // Page switcher buttons (< [1/5] >)
+  // Battery Indicator Widget (x: 198..244)
+  updateStatusBarBattery(batteryPercent, isCharging, batHealth);
+
+  // Page switcher buttons (< [1/6] >)
   // Left arrow button
-  _tft.fillRoundRect(220, 4, 30, 24, 4, 0x2124);
-  _tft.drawRoundRect(220, 4, 30, 24, 4, 0x632C);
+  _tft.fillRoundRect(248, 4, 24, 24, 4, 0x2124);
+  _tft.drawRoundRect(248, 4, 24, 24, 4, 0x632C);
   _tft.setTextColor(C_TEXT_WHITE, 0x2124);
   _tft.setTextDatum(MC_DATUM);
-  _tft.drawString("<", 235, 16, 2);
+  _tft.drawString("<", 260, 16, 2);
 
   // Page number text
   char pageBuf[8];
   snprintf(pageBuf, sizeof(pageBuf), "%d/%d", currentPage + 1, NUM_PAGES);
   _tft.setTextColor(C_TEXT_MUTED, C_STATUS_BG);
-  _tft.drawString(pageBuf, 268, 16, 2);
+  _tft.drawString(pageBuf, 282, 16, 2);
 
   // Right arrow button
-  _tft.fillRoundRect(286, 4, 30, 24, 4, 0x2124);
-  _tft.drawRoundRect(286, 4, 30, 24, 4, 0x632C);
+  _tft.fillRoundRect(296, 4, 22, 24, 4, 0x2124);
+  _tft.drawRoundRect(296, 4, 22, 24, 4, 0x632C);
   _tft.setTextColor(C_TEXT_WHITE, 0x2124);
-  _tft.drawString(">", 301, 16, 2);
+  _tft.drawString(">", 307, 16, 2);
+}
+
+void MacroPadGUI::updateStatusBarBattery(uint8_t batteryPercent, bool isCharging, HealthState batHealth) {
+  _lastDrawnBatPercent = batteryPercent;
+  _lastDrawnCharging = isCharging;
+  _lastDrawnBatHealth = batHealth;
+
+  const int16_t bx = 198;
+  const int16_t by = 7;
+  const int16_t bw = 46;
+  const int16_t bh = 18;
+
+  // Clear battery area (differential redraw)
+  _tft.fillRect(bx, by, bw, bh, C_STATUS_BG);
+
+  if (batteryPercent == 0 && batHealth == HEALTH_UNKNOWN) {
+    return; // Don't render until first telemetry read
+  }
+
+  // Battery icon frame (15 x 10)
+  _tft.drawRoundRect(bx, by + 4, 15, 10, 2, 0xFFFF);
+  _tft.fillRect(bx + 15, by + 7, 2, 4, 0xFFFF); // Terminal nipple
+
+  // Battery fill bar inside frame (11 x 6 max)
+  uint16_t fillColor = 0x07E0; // Green
+  if (isCharging) {
+    fillColor = 0x07FF; // Cyan for charging
+  } else if (batHealth == HEALTH_DEGRADED) {
+    fillColor = 0xFDA0; // Amber
+  } else if (batHealth == HEALTH_FAILED) {
+    fillColor = 0xF800; // Red
+  }
+
+  int fillW = (11 * batteryPercent) / 100;
+  if (fillW > 11) fillW = 11;
+  if (fillW > 0) {
+    _tft.fillRect(bx + 2, by + 6, fillW, 6, fillColor);
+  }
+
+  // Percentage text next to icon
+  _tft.setTextDatum(ML_DATUM);
+  _tft.setTextColor(fillColor, C_STATUS_BG);
+  char pctBuf[8];
+  if (isCharging) {
+    snprintf(pctBuf, sizeof(pctBuf), "+%d%%", batteryPercent);
+  } else {
+    snprintf(pctBuf, sizeof(pctBuf), "%d%%", batteryPercent);
+  }
+  _tft.drawString(pctBuf, bx + 19, by + 9, 1);
 }
 
 void MacroPadGUI::drawButton(uint8_t pageIndex, uint8_t btnIndex, bool pressed) {
@@ -593,27 +653,27 @@ void MacroPadGUI::drawStatusRow(int16_t x, int16_t y, int16_t w, const char* lab
   }
 
   // Draw status dot
-  _tft.fillCircle(x + 8, y + 8, 4, dotColor);
+  _tft.fillCircle(x + 8, y + 7, 3, dotColor);
 
   // Draw Label only on fullRedraw (static labels never change)
   if (fullRedraw) {
     _tft.setTextDatum(ML_DATUM);
     _tft.setTextColor(C_TEXT_MUTED, 0x0842);
-    _tft.drawString(label, x + 18, y + 8, 2);
+    _tft.drawString(label, x + 18, y + 7, 2);
   }
 
   // Clear value area to prevent ghosting when text length changes
-  _tft.fillRect(x + 85, y, w - 90, 16, 0x0842);
+  _tft.fillRect(x + 75, y, w - 80, 14, 0x0842);
 
   // Draw Value (Right aligned)
   _tft.setTextDatum(MR_DATUM);
   _tft.setTextColor(C_TEXT_WHITE, 0x0842);
-  _tft.drawString(value, x + w - 8, y + 8, 2);
+  _tft.drawString(value, x + w - 8, y + 7, 2);
 }
 
 void MacroPadGUI::drawDashboardVolume(uint8_t volume, bool fullRedraw) {
   _lastDrawnVolume = volume;
-  const int16_t volY = 156;
+  const int16_t volY = 158;
   const int16_t volH = 34;
 
   if (fullRedraw) {
@@ -670,7 +730,7 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
   int16_t cardX = 8;
   int16_t cardY = 34;
   int16_t cardW = 304;
-  int16_t cardH = 118;
+  int16_t cardH = 122;
 
   if (fullRedraw) {
     // Background card
@@ -678,29 +738,32 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
     _tft.drawRoundRect(cardX, cardY, cardW, cardH, 6, 0x3186);
 
     // Header banner inside card
-    _tft.fillRoundRect(cardX + 4, cardY + 3, cardW - 8, 18, 4, 0x18C3);
+    _tft.fillRoundRect(cardX + 4, cardY + 3, cardW - 8, 16, 4, 0x18C3);
     _tft.setTextDatum(ML_DATUM);
     _tft.setTextColor(0xFFFF, 0x18C3);
-    _tft.drawString("SYSTEM TELEMETRY", cardX + 10, cardY + 12, 2);
+    _tft.drawString("SYSTEM TELEMETRY", cardX + 10, cardY + 11, 2);
   }
 
   // Subsystem readiness badges on header right (clear badge box only)
-  _tft.fillRect(cardX + cardW - 145, cardY + 4, 140, 16, 0x18C3);
+  _tft.fillRect(cardX + cardW - 145, cardY + 3, 140, 16, 0x18C3);
   _tft.setTextDatum(MR_DATUM);
-  if (status.macropadReady && status.voiceReady) {
+  if (status.battery == HEALTH_FAILED && !status.isCharging && status.batteryVoltage > 0.5f) {
+    _tft.setTextColor(0xF800, 0x18C3);
+    _tft.drawString("LOW BATTERY!", cardX + cardW - 10, cardY + 11, 2);
+  } else if (status.macropadReady && status.voiceReady) {
     _tft.setTextColor(0x07E0, 0x18C3);
-    _tft.drawString("ALL SYSTEMS READY", cardX + cardW - 10, cardY + 12, 2);
+    _tft.drawString("ALL SYSTEMS READY", cardX + cardW - 10, cardY + 11, 2);
   } else if (status.macropadReady) {
     _tft.setTextColor(0xFDA0, 0x18C3);
-    _tft.drawString("MACROPAD READY", cardX + cardW - 10, cardY + 12, 2);
+    _tft.drawString("MACROPAD READY", cardX + cardW - 10, cardY + 11, 2);
   } else {
     _tft.setTextColor(0xFBA0, 0x18C3);
-    _tft.drawString("INITIALIZING...", cardX + cardW - 10, cardY + 12, 2);
+    _tft.drawString("INITIALIZING...", cardX + cardW - 10, cardY + 11, 2);
   }
 
-  // Row heights: 15px per row
-  int16_t rowY = cardY + 24;
-  int16_t rowH = 15;
+  // Row heights: 14px per row (fits 7 telemetry rows cleanly)
+  int16_t rowY = cardY + 21;
+  int16_t rowH = 14;
 
   // Row 1: Wi-Fi SSID + RSSI
   char wifiBuf[32];
@@ -745,6 +808,21 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
   rowY += rowH;
   drawStatusRow(cardX + 4, rowY, cardW - 8, "AI Model", status.aiBackendName.c_str(), status.aiBackend, fullRedraw);
 
+  // Row 7: Power & Battery Telemetry
+  rowY += rowH;
+  char batBuf[36];
+  if (status.batteryVoltage <= 0.5f) {
+    snprintf(batBuf, sizeof(batBuf), "Detecting...");
+  } else if (status.isCharging) {
+    snprintf(batBuf, sizeof(batBuf), "Charging %d%% (%.2fV)", status.batteryPercent, status.batteryVoltage);
+  } else {
+    snprintf(batBuf, sizeof(batBuf), "%d%% (%.2fV)", status.batteryPercent, status.batteryVoltage);
+  }
+  drawStatusRow(cardX + 4, rowY, cardW - 8, "Battery", batBuf, status.battery, fullRedraw);
+
+  // Update Status Bar Battery as well (differential)
+  updateStatusBarBattery(status.batteryPercent, status.isCharging, status.battery);
+
   // Middle Section: Volume Control Bar (Rule 9: fullRedraw or differential)
   drawDashboardVolume(volume, fullRedraw);
 
@@ -787,14 +865,13 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
 }
 
 void MacroPadGUI::drawDashboardSwitching(const char* targetModeName) {
-  int16_t cardX = 20;
-  int16_t cardY = 70;
-  int16_t cardW = 280;
-  int16_t cardH = 100;
+  int16_t cardX = 8;
+  int16_t cardY = 34;
+  int16_t cardW = 304;
+  int16_t cardH = 122;
 
-  _tft.fillRoundRect(cardX, cardY, cardW, cardH, 8, 0x1084);
-  _tft.drawRoundRect(cardX, cardY, cardW, cardH, 8, 0xFDA0);
-  _tft.drawRoundRect(cardX + 1, cardY + 1, cardW - 2, cardH - 2, 7, 0xFDA0);
+  _tft.fillRoundRect(cardX, cardY, cardW, cardH, 6, 0x1084);
+  _tft.drawRoundRect(cardX, cardY, cardW, cardH, 6, 0xFDA0);
 
   _tft.setTextDatum(MC_DATUM);
   _tft.setTextColor(0xFFFF, 0x1084);
@@ -808,7 +885,7 @@ void MacroPadGUI::drawDashboardSwitching(const char* targetModeName) {
 
 void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
   _tft.fillScreen(C_BG);
-  drawStatusBar(isConnected, currentPage);
+  drawStatusBar(isConnected, currentPage, _lastDrawnBatPercent, _lastDrawnCharging, _lastDrawnBatHealth);
 
   if (currentPage == PAGE_DASHBOARD) {
     DashboardStatus status;
@@ -829,8 +906,16 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
     status.aiBackendName = (envManager.getMode() == ENV_WORK) ? "Local Ollama" : "Hermes Gateway";
     status.macropadReady = isConnected;
     status.voiceReady = netManager.isConnected();
+    status.battery = _lastDrawnBatHealth;
+    status.batteryPercent = _lastDrawnBatPercent;
+    status.isCharging = _lastDrawnCharging;
 
     drawDashboard(status, envManager.getMode(), _lastDrawnVolume, true); // fullRedraw = true on initial page entry
+    return;
+  }
+
+  if (currentPage == PAGE_STORAGE) {
+    drawStorageExplorer(true);
     return;
   }
 
@@ -847,10 +932,9 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
 int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
   // Check Top Navigation Buttons (Status Bar: y = 0..32)
   if (y >= 0 && y <= 32) {
-    // Left side navigates to previous page (< arrow & title)
-    if (x < 260) return TOUCH_PREV_PAGE;
-    // Right side navigates to next page (> arrow)
-    return TOUCH_NEXT_PAGE;
+    if (x >= 244 && x <= 280) return TOUCH_PREV_PAGE;
+    if (x >= 288 && x <= 320) return TOUCH_NEXT_PAGE;
+    return -1;
   }
 
   // Check Page 6 Voice scroll area & controls
@@ -908,6 +992,30 @@ int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
     return -1;
   }
 
+  // Check Page 7 Storage Explorer touch targets
+  if (currentPage == PAGE_STORAGE) {
+    // 1. Navigation bar: UP button (x: 224..272) & REF button (x: 274..316), y: 70..96
+    if (y >= 70 && y <= 96) {
+      if (x >= 220 && x <= 272) return TOUCH_STORAGE_UP;
+      if (x >= 274 && x <= 316) return TOUCH_STORAGE_REFRESH;
+    }
+
+    // 2. Scroll buttons on right side: x: 270..316, y: 96..238
+    if (x >= 270 && x <= 316 && y >= 96 && y <= 238) {
+      if (y < 166) return TOUCH_STORAGE_SCROLL_UP;
+      else return TOUCH_STORAGE_SCROLL_DOWN;
+    }
+
+    // 3. File / Folder list items on left side: x: 8..268, y: 96..236
+    if (x >= 8 && x <= 268 && y >= 96 && y <= 236) {
+      int row = (y - 96) / 27;
+      if (row >= 0 && row < 5) {
+        return (int8_t)(TOUCH_STORAGE_ITEM_BASE + row);
+      }
+    }
+    return -1;
+  }
+
   // Check Macro Buttons on active page
   uint8_t count = PROFILES[currentPage].numButtons;
   for (uint8_t i = 0; i < count; i++) {
@@ -919,4 +1027,235 @@ int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
   }
 
   return -1;
+}
+
+// =========================================================================
+// Page 7 Storage Explorer & Directory Browser Implementation
+// =========================================================================
+
+void MacroPadGUI::drawStorageExplorer(bool fullRedraw) {
+  if (fullRedraw) {
+    _tft.fillRect(0, STATUS_BAR_H, SCREEN_WIDTH, SCREEN_HEIGHT - STATUS_BAR_H, C_BG);
+    refreshStorageExplorer();
+    return;
+  }
+
+  // 1. Storage Capacity Header Card (y: 34..70, height 36)
+  int16_t cardX = 8;
+  int16_t cardY = 34;
+  int16_t cardW = 304;
+  int16_t cardH = 36;
+
+  _tft.fillRoundRect(cardX, cardY, cardW, cardH, 5, 0x0842);
+  _tft.drawRoundRect(cardX, cardY, cardW, cardH, 5, 0x3186);
+
+  _tft.setTextDatum(ML_DATUM);
+  _tft.setTextColor(0x07FF, 0x0842);
+  char capBuf[40];
+  SDCardStatus status = getSDCardStatus();
+  if (status.mounted) {
+    snprintf(capBuf, sizeof(capBuf), "%s %.2f GB", status.cardTypeStr.c_str(), _storageTotalGB);
+  } else {
+    snprintf(capBuf, sizeof(capBuf), "SD Card Disconnected");
+  }
+  _tft.drawString(capBuf, cardX + 8, cardY + 11, 2);
+
+  _tft.setTextDatum(MR_DATUM);
+  char freeBuf[48];
+  if (status.mounted) {
+    float pctFree = (_storageTotalGB > 0) ? (_storageFreeGB / _storageTotalGB * 100.0f) : 0;
+    snprintf(freeBuf, sizeof(freeBuf), "Free: %.2f GB (%.1f%%)", _storageFreeGB, pctFree);
+    _tft.setTextColor(0x07E0, 0x0842);
+  } else {
+    snprintf(freeBuf, sizeof(freeBuf), "Not Mounted");
+    _tft.setTextColor(0xF800, 0x0842);
+  }
+  _tft.drawString(freeBuf, cardX + cardW - 8, cardY + 11, 2);
+
+  // Storage usage bar
+  int16_t barX = cardX + 8;
+  int16_t barY = cardY + 23;
+  int16_t barW = cardW - 16;
+  int16_t barH = 7;
+  _tft.fillRoundRect(barX, barY, barW, barH, 3, 0x2124);
+  _tft.drawRoundRect(barX, barY, barW, barH, 3, 0x4A69);
+
+  if (status.mounted && _storageTotalGB > 0) {
+    float usedGB = _storageTotalGB - _storageFreeGB;
+    if (usedGB < 0) usedGB = 0;
+    int16_t fillW = (int16_t)((usedGB / _storageTotalGB) * (barW - 2));
+    if (fillW < 3 && usedGB > 0) fillW = 3;
+    if (fillW > barW - 2) fillW = barW - 2;
+    if (fillW > 0) {
+      _tft.fillRoundRect(barX + 1, barY + 1, fillW, barH - 2, 2, 0x07FF);
+    }
+  }
+
+  // 2. Breadcrumbs & Nav Bar (y: 73..93, height 20)
+  int16_t navY = 73;
+  _tft.fillRect(cardX, navY, cardW - 86, 20, C_BG);
+  _tft.setTextDatum(ML_DATUM);
+  _tft.setTextColor(0xFFFF, C_BG);
+  String displayPath = "Path: " + _currentStoragePath;
+  if (displayPath.length() > 22) {
+    displayPath = "..." + displayPath.substring(displayPath.length() - 19);
+  }
+  _tft.drawString(displayPath.c_str(), cardX + 4, navY + 10, 2);
+
+  // [ UP .. ] button (x: 226, y: navY, w: 46, h: 20)
+  bool canUp = (_currentStoragePath != "/");
+  uint16_t upBg = canUp ? 0x2124 : 0x1084;
+  uint16_t upBorder = canUp ? 0x07E0 : 0x3186;
+  uint16_t upText = canUp ? 0x07E0 : 0x632C;
+  _tft.fillRoundRect(226, navY, 46, 20, 3, upBg);
+  _tft.drawRoundRect(226, navY, 46, 20, 3, upBorder);
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(upText, upBg);
+  _tft.drawString(canUp ? "UP .." : "ROOT", 249, navY + 10, 2);
+
+  // [ REF ] Refresh button (x: 276, y: navY, w: 36, h: 20)
+  _tft.fillRoundRect(276, navY, 36, 20, 3, 0x2124);
+  _tft.drawRoundRect(276, navY, 36, 20, 3, 0x051D);
+  _tft.setTextColor(0x051D, 0x2124);
+  _tft.drawString("REF", 294, navY + 10, 2);
+
+  // 3. Draw the file list and scroll controls
+  drawStorageListOnly();
+}
+
+void MacroPadGUI::drawStorageListOnly() {
+  int16_t listX = 8;
+  int16_t listY = 96;
+  int16_t listW = 258;
+  int16_t rowH = 27;
+
+  // Render 5 items
+  for (int i = 0; i < 5; i++) {
+    int16_t rowY = listY + i * rowH;
+    int itemIdx = _storageScrollIndex + i;
+
+    if (itemIdx < (int)_storageEntries.size()) {
+      const SDFileEntry& entry = _storageEntries[itemIdx];
+      uint16_t rowBg = (i % 2 == 0) ? 0x1084 : 0x0842;
+      _tft.fillRoundRect(listX, rowY, listW, rowH - 2, 4, rowBg);
+      _tft.drawRoundRect(listX, rowY, listW, rowH - 2, 4, 0x2124);
+
+      if (entry.isDirectory) {
+        // Folder badge
+        _tft.fillRoundRect(listX + 4, rowY + 3, 38, rowH - 8, 3, 0x4220); // Amber
+        _tft.drawRoundRect(listX + 4, rowY + 3, 38, rowH - 8, 3, 0xFDA0);
+        _tft.setTextDatum(MC_DATUM);
+        _tft.setTextColor(0xFDA0, 0x4220);
+        _tft.drawString("DIR", listX + 23, rowY + (rowH / 2) - 1, 2);
+
+        // Name
+        _tft.setTextDatum(ML_DATUM);
+        _tft.setTextColor(0xFFFF, rowBg);
+        String dirName = entry.name + "/";
+        if (dirName.length() > 17) dirName = dirName.substring(0, 15) + "..";
+        _tft.drawString(dirName.c_str(), listX + 46, rowY + (rowH / 2) - 1, 2);
+
+        // Size badge
+        _tft.setTextDatum(MR_DATUM);
+        _tft.setTextColor(0xBDD7, rowBg);
+        _tft.drawString("<DIR>", listX + listW - 6, rowY + (rowH / 2) - 1, 2);
+      } else {
+        // File badge
+        _tft.fillRoundRect(listX + 4, rowY + 3, 38, rowH - 8, 3, 0x2124); // Slate
+        _tft.drawRoundRect(listX + 4, rowY + 3, 38, rowH - 8, 3, 0x632C);
+        _tft.setTextDatum(MC_DATUM);
+        _tft.setTextColor(0xBDD7, 0x2124);
+        _tft.drawString("FILE", listX + 23, rowY + (rowH / 2) - 1, 2);
+
+        // Name
+        _tft.setTextDatum(ML_DATUM);
+        _tft.setTextColor(0xFFFF, rowBg);
+        String fileName = entry.name;
+        if (fileName.length() > 17) fileName = fileName.substring(0, 15) + "..";
+        _tft.drawString(fileName.c_str(), listX + 46, rowY + (rowH / 2) - 1, 2);
+
+        // Size
+        _tft.setTextDatum(MR_DATUM);
+        _tft.setTextColor(0x07FF, rowBg);
+        _tft.drawString(entry.formattedSize.c_str(), listX + listW - 6, rowY + (rowH / 2) - 1, 2);
+      }
+    } else {
+      // Empty row
+      _tft.fillRect(listX, rowY, listW, rowH - 2, C_BG);
+      if (itemIdx == 0 && _storageEntries.empty()) {
+        _tft.setTextDatum(MC_DATUM);
+        _tft.setTextColor(0x632C, C_BG);
+        _tft.drawString("(Folder is empty)", listX + listW / 2, rowY + (rowH / 2) - 1, 2);
+      }
+    }
+  }
+
+  // Scroll controls on right: x = 272..312 (width 40)
+  int16_t btnX = 272;
+  int16_t btnW = 40;
+  int16_t btnH = 65;
+
+  // Scroll UP button
+  bool canScrollUp = (_storageScrollIndex > 0);
+  uint16_t upBg = canScrollUp ? 0x2124 : 0x1084;
+  uint16_t upBorder = canScrollUp ? 0x07E0 : 0x3186;
+  uint16_t upText = canScrollUp ? 0x07E0 : 0x632C;
+  _tft.fillRoundRect(btnX, listY, btnW, btnH, 4, upBg);
+  _tft.drawRoundRect(btnX, listY, btnW, btnH, 4, upBorder);
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(upText, upBg);
+  _tft.drawString("/\\", btnX + btnW / 2, listY + btnH / 2, 4);
+
+  // Scroll DOWN button
+  bool canScrollDown = (_storageScrollIndex + 5 < (int)_storageEntries.size());
+  uint16_t dnBg = canScrollDown ? 0x2124 : 0x1084;
+  uint16_t dnBorder = canScrollDown ? 0x07E0 : 0x3186;
+  uint16_t dnText = canScrollDown ? 0x07E0 : 0x632C;
+  _tft.fillRoundRect(btnX, listY + btnH + 5, btnW, btnH, 4, dnBg);
+  _tft.drawRoundRect(btnX, listY + btnH + 5, btnW, btnH, 4, dnBorder);
+  _tft.setTextColor(dnText, dnBg);
+  _tft.drawString("\\/", btnX + btnW / 2, listY + btnH + 5 + btnH / 2, 4);
+}
+
+void MacroPadGUI::scrollStorageList(int16_t delta) {
+  int newIdx = _storageScrollIndex + delta;
+  int maxIdx = max(0, (int)_storageEntries.size() - 5);
+  newIdx = constrain(newIdx, 0, maxIdx);
+  if (newIdx != _storageScrollIndex) {
+    _storageScrollIndex = (int16_t)newIdx;
+    drawStorageListOnly();
+  }
+}
+
+void MacroPadGUI::navigateStorageTo(const String& path) {
+  _currentStoragePath = path;
+  _storageScrollIndex = 0;
+  _storageEntries = sdCardListDirectory(_currentStoragePath);
+  drawStorageExplorer(false);
+}
+
+void MacroPadGUI::navigateStorageUp() {
+  if (_currentStoragePath == "/") return;
+
+  String path = _currentStoragePath;
+  if (path.length() > 1 && path.endsWith("/")) {
+    path = path.substring(0, path.length() - 1);
+  }
+
+  int lastSlash = path.lastIndexOf('/');
+  if (lastSlash <= 0) {
+    path = "/";
+  } else {
+    path = path.substring(0, lastSlash);
+  }
+
+  navigateStorageTo(path);
+}
+
+void MacroPadGUI::refreshStorageExplorer() {
+  sdCardGetStorageSpace(_storageTotalGB, _storageFreeGB, _storageUsedMB);
+  _storageEntries = sdCardListDirectory(_currentStoragePath);
+  int maxIdx = max(0, (int)_storageEntries.size() - 5);
+  _storageScrollIndex = constrain(_storageScrollIndex, (int16_t)0, (int16_t)maxIdx);
+  drawStorageExplorer(false);
 }

@@ -33,6 +33,11 @@ struct DashboardStatus {
     bool macropadReady;
     bool voiceReady;
 
+    HealthState battery;
+    float batteryVoltage;
+    uint8_t batteryPercent;
+    bool isCharging;
+
     DashboardStatus() 
         : wifi(HEALTH_UNKNOWN), wifiSsid("Scanning..."), wifiRssi(0), ipAddress(""),
           internet(HEALTH_UNKNOWN), internetConnected(false),
@@ -40,5 +45,6 @@ struct DashboardStatus {
           voiceHost(HEALTH_UNKNOWN), voiceHostReady(false),
           hermes(HEALTH_UNKNOWN), hermesReady(false),
           aiBackend(HEALTH_UNKNOWN), aiBackendName("Hermes/Ollama"),
-          macropadReady(false), voiceReady(false) {}
+          macropadReady(false), voiceReady(false),
+          battery(HEALTH_UNKNOWN), batteryVoltage(0.0f), batteryPercent(0), isCharging(false) {}
 };

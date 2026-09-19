@@ -12,6 +12,14 @@
 #define PIN_TP_INT        17
 #define PIN_TP_RST        18
 
+// Onboard SD Card Pins (SDIO 4-bit)
+#define PIN_SD_CLK        38
+#define PIN_SD_CMD        40
+#define PIN_SD_D0         39
+#define PIN_SD_D1         41
+#define PIN_SD_D2         48
+#define PIN_SD_D3         47
+
 // Screen Dimensions
 #define SCREEN_WIDTH      320
 #define SCREEN_HEIGHT     240
@@ -21,9 +29,10 @@
 #define GRID_ROWS         2
 #define GRID_COLS         3
 #define NUM_BUTTONS_PAGE  (GRID_ROWS * GRID_COLS)
-#define NUM_PAGES         6
+#define NUM_PAGES         7
 #define PAGE_DASHBOARD    0
 #define PAGE_VOICE        5
+#define PAGE_STORAGE      6
 
 #define TOUCH_PREV_PAGE   100
 #define TOUCH_NEXT_PAGE   101
@@ -37,6 +46,12 @@
 #define TOUCH_DASH_VOL_UP       109
 #define TOUCH_DASH_VOL_MUTE     110
 #define TOUCH_VOICE_AUDIO_TOGGLE 111
+
+#define TOUCH_STORAGE_UP         120
+#define TOUCH_STORAGE_REFRESH    121
+#define TOUCH_STORAGE_SCROLL_UP  122
+#define TOUCH_STORAGE_SCROLL_DOWN 123
+#define TOUCH_STORAGE_ITEM_BASE  130
 
 // Color Palette (RGB565)
 #define C_BG              0x0842  // Very dark slate

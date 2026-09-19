@@ -12,6 +12,7 @@
 #include "es8311.h"
 #include "network_manager.h"
 #include "environment_manager.h"
+#include "sd_card.h"
 
 // Set to 1 for raw microphone isolation diagnostic (Wi-Fi, TLS & Hermes upload disabled).
 // Once genuine microphone PCM is proven, set to 0 to restore full network pipeline.
@@ -49,11 +50,77 @@ static bool g_telemetryDirty = false;
 static SemaphoreHandle_t g_telemetryMutex = NULL;
 static volatile bool g_voiceBusy = false;
 
+// Li-Po battery measurement & smoothing
+static float g_filteredBatVoltage = 0.0f;
+
+static uint8_t calculateBatteryPercentage(float voltage) {
+  if (voltage >= 4.18f) return 100;
+  if (voltage <= 3.35f) return 0;
+
+  // Piecewise Li-Po discharge curve for single-cell 3.7V Li-Po
+  struct BatPoint { float v; uint8_t pct; };
+  static const BatPoint curve[] = {
+    { 4.20f, 100 },
+    { 4.12f, 95 },
+    { 4.05f, 85 },
+    { 3.95f, 75 },
+    { 3.85f, 60 },
+    { 3.78f, 45 },
+    { 3.70f, 30 },
+    { 3.62f, 15 },
+    { 3.52f, 6 },
+    { 3.35f, 0 }
+  };
+  const size_t numPoints = sizeof(curve) / sizeof(curve[0]);
+  for (size_t i = 0; i < numPoints - 1; i++) {
+    if (voltage >= curve[i+1].v) {
+      float ratio = (voltage - curve[i+1].v) / (curve[i].v - curve[i+1].v);
+      return (uint8_t)(curve[i+1].pct + ratio * (curve[i].pct - curve[i+1].pct));
+    }
+  }
+  return 0;
+}
+
+static void sampleBatteryTelemetry(float& outVoltage, uint8_t& outPercent, HealthState& outHealth, bool& outCharging) {
+  // Multisampling: 16 samples to filter high-frequency ADC noise
+  uint32_t mvSum = 0;
+  for (int i = 0; i < 16; i++) {
+    mvSum += analogReadMilliVolts(PIN_BAT_ADC);
+  }
+  float pinMv = (float)mvSum / 16.0f;
+  float rawBatV = (pinMv * 2.0f) / 1000.0f; // 1:2 hardware resistor divider
+
+  // EMA (Exponential Moving Average) filter for rock-solid stability
+  if (g_filteredBatVoltage <= 0.5f) {
+    g_filteredBatVoltage = rawBatV;
+  } else {
+    g_filteredBatVoltage = (g_filteredBatVoltage * 0.8f) + (rawBatV * 0.2f);
+  }
+
+  outVoltage = g_filteredBatVoltage;
+  outPercent = calculateBatteryPercentage(outVoltage);
+
+  // Charging heuristic:
+  // USB connected brings LiPo to ~4.14V-4.24V saturation range
+  outCharging = (outVoltage >= 4.14f);
+
+  if (outPercent >= 30 || outCharging) {
+    outHealth = HEALTH_READY;
+  } else if (outPercent >= 15) {
+    outHealth = HEALTH_DEGRADED;
+  } else {
+    outHealth = HEALTH_FAILED;
+  }
+}
+
 void telemetryWorkerTask(void* pvParameters) {
   while (true) {
     if (!recorder.isRecording() && !g_voiceBusy) {
       DashboardStatus temp;
       temp.expectedBleHost = envManager.getActiveProfile().expectedBleHost;
+
+      // Sample Battery ADC (pinned to Core 0, Rule 8)
+      sampleBatteryTelemetry(temp.batteryVoltage, temp.batteryPercent, temp.battery, temp.isCharging);
 
       if (netManager.isConnected()) {
         // Deep probe: queries receiver :8787/status and DNS in background on Core 0
@@ -75,6 +142,11 @@ void telemetryWorkerTask(void* pvParameters) {
         g_telemetryStatus = temp;
         g_telemetryDirty = true;
         xSemaphoreGive(g_telemetryMutex);
+      }
+
+      // Update BLE Battery Level to host PC (e.g. Windows Bluetooth settings)
+      if (bleKeyboard.isConnected() && temp.batteryPercent > 0) {
+        bleKeyboard.setBatteryLevel(temp.batteryPercent);
       }
     }
     // Poll every 5 seconds
@@ -138,6 +210,10 @@ void setup() {
   // Initialize Backlight (GPIO 45 HIGH)
   pinMode(PIN_TFT_BL, OUTPUT);
   digitalWrite(PIN_TFT_BL, HIGH);
+
+  // Initialize Battery ADC Pin (GPIO 9, 1:2 hardware resistor divider)
+  pinMode(PIN_BAT_ADC, INPUT);
+  analogSetPinAttenuation(PIN_BAT_ADC, ADC_11db);
 
   // Initialize RGB LED
   pixel.begin();
@@ -204,15 +280,22 @@ void setup() {
   Serial.println("[Setup] *************************************************************");
 #endif
 
+  // Initialize and probe MicroSD Card (4-bit SDIO with 1-bit fallback)
+  if (sdCardInit()) {
+    sdCardRunSelfTest();
+  }
+
   Serial.println("[Setup] Ready! Pair with Windows as 'ESP32 MacroPad'.");
-  Serial.println("[Setup] Speaker test commands: type 'test_speaker' or 'chime' in Serial Monitor.");
+  Serial.println("[Setup] Commands: type 'sd', 'sd_ls', 'test_speaker', or 'chime' in Serial Monitor.");
   
   // Play startup speaker verification chime
   recorder.playChime();
 }
 
 void loop() {
-  // 0. Check Serial Commands for Speaker Test
+  bool currentBleState = bleKeyboard.isConnected();
+
+  // 0. Check Serial Commands for Speaker & SD Card Tests
   if (Serial.available()) {
     String cmd = Serial.readStringUntil('\n');
     cmd.trim();
@@ -226,10 +309,44 @@ void loop() {
         Serial.printf("[Command] Playing tone %.1f Hz\n", freq);
         recorder.playTone(freq, 500);
       }
+    } else if (cmd.equalsIgnoreCase("sd") || cmd.equalsIgnoreCase("sd_test") || cmd.equalsIgnoreCase("sdcard")) {
+      Serial.println("[Command] Running SD card diagnostics & self-test...");
+      if (sdCardInit()) {
+        sdCardRunSelfTest();
+        listSDCardDirectory("/", 2);
+      }
+    } else if (cmd.equalsIgnoreCase("sd_ls") || cmd.startsWith("sd_ls")) {
+      listSDCardDirectory("/", 2);
+    } else if (cmd.startsWith("sd_cat ")) {
+      String path = cmd.substring(7);
+      path.trim();
+      fs::File f = SD_MMC.open(path, FILE_READ);
+      if (f) {
+        Serial.printf("=== BEGIN %s (%u bytes) ===\n", path.c_str(), (unsigned int)f.size());
+        while (f.available()) {
+          Serial.write(f.read());
+        }
+        f.close();
+        Serial.printf("\n=== END %s ===\n", path.c_str());
+      } else {
+        Serial.printf("[SD] Cannot open file: %s\n", path.c_str());
+      }
+    } else if (cmd.equalsIgnoreCase("sd_format")) {
+      sdCardFormat();
+    } else if (cmd.startsWith("page ")) {
+      int p = cmd.substring(5).toInt();
+      if (p >= 1 && p <= NUM_PAGES) {
+        currentPage = p - 1;
+        gui.drawAll(currentBleState, currentPage);
+        Serial.printf("[Command] Switched to Page %d/%d: %s\n", currentPage + 1, NUM_PAGES, PROFILES[currentPage].title);
+      }
+    } else if (cmd.equalsIgnoreCase("page") || cmd.equalsIgnoreCase("pages")) {
+      Serial.printf("[Command] Current Page: %d/%d (%s)\n", currentPage + 1, NUM_PAGES, PROFILES[currentPage].title);
+      for (int i = 0; i < NUM_PAGES; i++) {
+        Serial.printf("  Page %d: %s\n", i + 1, PROFILES[i].title);
+      }
     }
   }
-
-  bool currentBleState = bleKeyboard.isConnected();
 
 #if !AUDIO_DIAGNOSTIC_MODE
   // 1. Maintain Wi-Fi Connection
@@ -239,7 +356,7 @@ void loop() {
   // 2. Check BLE Connection Changes
   if (currentBleState != lastBleState) {
     lastBleState = currentBleState;
-    gui.drawStatusBar(currentBleState, currentPage);
+    gui.drawStatusBar(currentBleState, currentPage, g_telemetryStatus.batteryPercent, g_telemetryStatus.isCharging, g_telemetryStatus.battery);
 
     if (currentBleState) {
       Serial.println("[BLE] >>> CONNECTED to host! <<<");
@@ -262,8 +379,8 @@ void loop() {
     }
   }
 
-  // 4. Periodic Dashboard Telemetry Update (Page 1) - 100% non-blocking from Core 0 worker
-  if (currentPage == PAGE_DASHBOARD && !recorder.isRecording()) {
+  // 4. Periodic Telemetry Update - 100% non-blocking from Core 0 worker (Rule 8)
+  if (!recorder.isRecording()) {
     bool hasUpdate = false;
     DashboardStatus statusToDraw;
 
@@ -282,8 +399,13 @@ void loop() {
       statusToDraw.expectedBleHost = envManager.getActiveProfile().expectedBleHost;
       statusToDraw.macropadReady = currentBleState;
 
-      // In-place flicker-free telemetry update (fullRedraw = false)
-      gui.drawDashboard(statusToDraw, envManager.getMode(), g_voiceVolume, false);
+      if (currentPage == PAGE_DASHBOARD) {
+        // In-place flicker-free telemetry update (fullRedraw = false)
+        gui.drawDashboard(statusToDraw, envManager.getMode(), g_voiceVolume, false);
+      } else {
+        // Update top status bar battery widget with zero flicker on any page
+        gui.updateStatusBarBattery(statusToDraw.batteryPercent, statusToDraw.isCharging, statusToDraw.battery);
+      }
     }
   }
 
@@ -500,6 +622,58 @@ void loop() {
         if (currentBleState) setLedColor(0, 50, 15);
       }
     }
+    else if (target == TOUCH_STORAGE_UP) {
+      Serial.println("[Storage] User tapped UP directory");
+      gui.navigateStorageUp();
+      uint32_t waitRelease = millis();
+      while (millis() - waitRelease < 500) {
+        ts.read();
+        if (!ts.isTouched) break;
+        delay(15);
+      }
+    }
+    else if (target == TOUCH_STORAGE_REFRESH) {
+      Serial.println("[Storage] User tapped REFRESH");
+      gui.refreshStorageExplorer();
+      uint32_t waitRelease = millis();
+      while (millis() - waitRelease < 500) {
+        ts.read();
+        if (!ts.isTouched) break;
+        delay(15);
+      }
+    }
+    else if (target == TOUCH_STORAGE_SCROLL_UP) {
+      gui.scrollStorageList(-1);
+      delay(100);
+    }
+    else if (target == TOUCH_STORAGE_SCROLL_DOWN) {
+      gui.scrollStorageList(+1);
+      delay(100);
+    }
+    else if (target >= TOUCH_STORAGE_ITEM_BASE && target < TOUCH_STORAGE_ITEM_BASE + 5) {
+      int row = target - TOUCH_STORAGE_ITEM_BASE;
+      int itemIdx = gui.getStorageScrollIndex() + row;
+      const auto& entries = gui.getStorageEntries();
+      if (itemIdx >= 0 && itemIdx < (int)entries.size()) {
+        const auto& item = entries[itemIdx];
+        if (item.isDirectory) {
+          String newPath = gui.getCurrentStoragePath();
+          if (!newPath.endsWith("/")) newPath += "/";
+          newPath += item.name;
+          Serial.printf("[Storage] Navigating into directory: %s\n", newPath.c_str());
+          gui.navigateStorageTo(newPath);
+        } else {
+          Serial.printf("[Storage] Tapped file: %s (%u bytes)\n", item.name.c_str(), (unsigned int)item.size);
+          recorder.playTone(880.0f, 60);
+        }
+      }
+      uint32_t waitRelease = millis();
+      while (millis() - waitRelease < 500) {
+        ts.read();
+        if (!ts.isTouched) break;
+        delay(15);
+      }
+    }
     else if (target >= 0 && target < PROFILES[currentPage].numButtons) {
       uint8_t btnIndex = (uint8_t)target;
       const MacroButton& btn = PROFILES[currentPage].buttons[btnIndex];
@@ -573,6 +747,12 @@ void loop() {
 
           Serial.printf("[Voice] Recording finished (%u bytes). Sending to receiver...\n", (unsigned int)wavBytes);
 
+          // 1. Save local backup recording to MicroSD storage
+          String savedRecPath = "";
+          if (saveRecordingToSD(recorder.getWavBuffer(), wavBytes, savedRecPath)) {
+            Serial.printf("[SD] Saved offline audio recording -> %s\n", savedRecPath.c_str());
+          }
+
           String transcript, reply;
           bool audioAvailable = false;
           String audioUrl = "";
@@ -583,6 +763,9 @@ void loop() {
                           transcript.c_str(), reply.c_str(), audioAvailable ? audioUrl.c_str() : "None");
             gui.drawVoiceCard(VOICE_UI_SUCCESS, transcript.c_str(), reply.c_str());
             setLedColor(0, 120, 30); // Bright Green
+
+            // 2. Append conversation turn to SD card transcript log
+            appendChatLog(transcript, reply);
 
             // If local TTS audio was generated by host and client enabled audio, stream to speaker
             if (g_voiceAudioEnabled && audioAvailable && audioUrl.length() > 0) {
@@ -597,6 +780,9 @@ void loop() {
             Serial.printf("[Voice] Failed to send audio: %s | %s\n", transcript.c_str(), reply.c_str());
             gui.drawVoiceCard(VOICE_UI_ERROR, transcript.c_str(), reply.c_str());
             setLedColor(120, 0, 0); // Red
+            if (savedRecPath.length() > 0) {
+              appendChatLog("[Offline Audio: " + savedRecPath + "]", "[Gateway Unreachable / Pending Sync]");
+            }
           }
         } else {
           Serial.println("[Voice] Recording too short, dropped.");
