@@ -4,7 +4,7 @@
   "2": "EnvironmentManager",
   "3": "AudioRecorder",
   "4": "NetworkManager",
-  "5": "main.cpp",
+  "5": "sd_card.cpp",
   "6": "es8311_bsp.c",
   "7": "es8311.cpp",
   "8": "_coeff_div",
@@ -28,5 +28,8 @@
   "26": "Workflow: /graph-visualize",
   "27": "graph.ps1",
   "28": "scratch_tts_test.py",
-  "29": "bench_time_tts.py"
+  "29": "bench_time_tts.py",
+  "30": "SDCardStatus",
+  "31": "DashboardStatus",
+  "32": "EnvironmentMode"
 }

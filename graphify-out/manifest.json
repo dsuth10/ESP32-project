@@ -60,9 +60,9 @@
     "semantic_hash": "3c4e8d4dbf1f0d7d3561f4d5a3bc60c2"
   },
   "server/hermes_voice_receiver.py": {
-    "mtime": 1789208508.5153425,
-    "seen": 1789208926.6932347,
-    "ast_hash": "6f03faa423e76f245f333549d2ec9fde",
+    "mtime": 1789817369.2150366,
+    "seen": 1789817637.4815245,
+    "ast_hash": "090f31fed5d1a9e83f6b3706c3d12d4a",
     "semantic_hash": ""
   },
   "server/start_receiver.sh": {
@@ -84,16 +84,16 @@
     "semantic_hash": ""
   },
   "src/environment_manager.cpp": {
-    "mtime": 1788866554.8017259,
-    "seen": 1789134143.524667,
-    "ast_hash": "3aef44ac0909b3e722d4dc6e6022ec9f",
-    "semantic_hash": "3aef44ac0909b3e722d4dc6e6022ec9f"
+    "mtime": 1789817369.2160404,
+    "seen": 1789817637.4815245,
+    "ast_hash": "89eb5ee5315d9ec8bbb466cc416180d7",
+    "semantic_hash": ""
   },
   "src/environment_manager.h": {
-    "mtime": 1788857105.720948,
-    "seen": 1789134143.5246677,
-    "ast_hash": "3929bd0f605efa192e67242966c502b7",
-    "semantic_hash": "3929bd0f605efa192e67242966c502b7"
+    "mtime": 1789817369.2170444,
+    "seen": 1789817637.4815245,
+    "ast_hash": "b5dd4234042c1bae2ad58ef4b0f56fee",
+    "semantic_hash": ""
   },
   "src/es8311.cpp": {
     "mtime": 1789208482.3524625,
@@ -114,39 +114,39 @@
     "semantic_hash": "8f431ae708b4aa78d3e98345d84663a7"
   },
   "src/gui.cpp": {
-    "mtime": 1789783729.3123202,
-    "seen": 1789783839.4627845,
-    "ast_hash": "be1d8c5e760bb93a23fb8290d16a95e1",
+    "mtime": 1789790068.9432828,
+    "seen": 1789817367.657742,
+    "ast_hash": "39842d851ccb4de99043f48e7b90f677",
     "semantic_hash": ""
   },
   "src/gui.h": {
-    "mtime": 1789783587.250353,
-    "seen": 1789783839.4627855,
-    "ast_hash": "b371bf83aed333fa96e7b4d318a8644d",
+    "mtime": 1789789982.4517367,
+    "seen": 1789817367.6577432,
+    "ast_hash": "6e0bb6a693b9f5afd4b764ee1395b61d",
     "semantic_hash": ""
   },
   "src/macropad_config.cpp": {
-    "mtime": 1789297308.654462,
-    "seen": 1789297359.201281,
-    "ast_hash": "29725181c987d07a6216b277d6187d2a",
+    "mtime": 1789789922.4523172,
+    "seen": 1789817367.657744,
+    "ast_hash": "b956dc07c9258071bfa5a693dced85f9",
     "semantic_hash": ""
   },
   "src/macropad_config.h": {
-    "mtime": 1789786937.144209,
-    "seen": 1789787373.1618106,
-    "ast_hash": "2e98a3e8687612826059efb4a4e918db",
+    "mtime": 1789789908.450256,
+    "seen": 1789817367.6577444,
+    "ast_hash": "50889d955afba70db5c5fa4fdf9007d4",
     "semantic_hash": ""
   },
   "src/main.cpp": {
-    "mtime": 1789786969.436734,
-    "seen": 1789787373.1618118,
-    "ast_hash": "ac3584a05e497a0a73e45add3d56e19c",
+    "mtime": 1789817481.1689298,
+    "seen": 1789817637.4815245,
+    "ast_hash": "f7789b9a7e23a7744b51a1bc3664fd51",
     "semantic_hash": ""
   },
   "src/network_manager.cpp": {
-    "mtime": 1789208553.5047097,
-    "seen": 1789208926.6932456,
-    "ast_hash": "1a1ec521fead91cc8b4c13347edc8007",
+    "mtime": 1789817369.2200434,
+    "seen": 1789817637.4815245,
+    "ast_hash": "e05ea1e5cd83ee841db5fcee695c9d69",
     "semantic_hash": ""
   },
   "src/network_manager.h": {
@@ -174,9 +174,9 @@
     "semantic_hash": ""
   },
   "GEMINI.md": {
-    "mtime": 1788857105.7105737,
-    "seen": 1789135310.6959872,
-    "ast_hash": "a03a0ac7566870ebcc045018ac8322eb",
+    "mtime": 1789817369.2130108,
+    "seen": 1789817637.4815245,
+    "ast_hash": "06fe4c504846bdf61f3051253a4e8c46",
     "semantic_hash": ""
   },
   "README.md": {
@@ -207,12 +207,6 @@
     "mtime": 1788867624.256369,
     "seen": 1789135310.6959908,
     "ast_hash": "ae1f095141b71c20c9c94012a6501c32",
-    "semantic_hash": ""
-  },
-  "graphify-out/converted/pinout_allocation_f58fa43e.md": {
-    "mtime": 1789134115.7116265,
-    "seen": 1789135310.6959913,
-    "ast_hash": "a48a5fad95d8c475f9ff97c40b213d0b",
     "semantic_hash": ""
   },
   "docs/dimensions/ES3C28P_Size.pdf": {
@@ -468,15 +462,33 @@
     "semantic_hash": ""
   },
   "src/sd_card.cpp": {
-    "mtime": 1789787287.9282012,
-    "seen": 1789787373.1618142,
-    "ast_hash": "3e9804a8753ad8c4c599710fb1930604",
+    "mtime": 1789789950.1135237,
+    "seen": 1789817367.657747,
+    "ast_hash": "a292b76738d245de9c2d55598d509881",
     "semantic_hash": ""
   },
   "src/sd_card.h": {
-    "mtime": 1789786911.729742,
-    "seen": 1789787373.1618147,
-    "ast_hash": "285a2985cc27806a02cedd791795bfe6",
+    "mtime": 1789789935.041224,
+    "seen": 1789817367.6577477,
+    "ast_hash": "d84c465b0ba525ad0638ad6e182ecccd",
+    "semantic_hash": ""
+  },
+  "src/host_discovery.cpp": {
+    "mtime": 1789817369.218044,
+    "seen": 1789817637.4815245,
+    "ast_hash": "696df99ec6f9d1d3b9b3bf5350cee557",
+    "semantic_hash": ""
+  },
+  "src/host_discovery.h": {
+    "mtime": 1789817369.218044,
+    "seen": 1789817637.4815245,
+    "ast_hash": "d3abe1d957aaaf59ec56c5c1f74a213d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/voice-satellite/SKILL.md": {
+    "mtime": 1789817369.2119904,
+    "seen": 1789817637.4815245,
+    "ast_hash": "3ee6bae0365b2ef083d0ffd82d6723a7",
     "semantic_hash": ""
   }
 }

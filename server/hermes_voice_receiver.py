@@ -21,6 +21,7 @@ import threading
 import urllib.request
 import urllib.parse
 import tempfile
+import socket
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
 try:
@@ -38,6 +39,7 @@ if hasattr(sys.stderr, 'reconfigure'):
 # ── 1. Configuration & Cross-Platform Path Resolution ──────────────────
 PORT = int(os.environ.get("RECEIVER_PORT", "8787"))
 HOST = os.environ.get("RECEIVER_HOST", "0.0.0.0")
+DISCOVERY_UDP_PORT = int(os.environ.get("DISCOVERY_UDP_PORT", "8788"))
 RECEIVER_ENV = os.environ.get("RECEIVER_ENV", "work" if sys.platform == "win32" else "home")
 GATEWAY_URL = os.environ.get("HERMES_GATEWAY_URL", "http://127.0.0.1:8642/v1/chat/completions")
 HERMES_BASE_URL = os.environ.get("HERMES_BASE_URL", "http://127.0.0.1:8642")
@@ -64,6 +66,7 @@ VOICEBOX_PROFILE_NAME = os.environ.get("VOICEBOX_PROFILE_NAME", "Kokoro Heart")
 VOICEBOX_PROFILE_ID = os.environ.get("VOICEBOX_PROFILE_ID", "")
 VOICEBOX_ENGINE = os.environ.get("VOICEBOX_ENGINE", "kokoro")
 VOICEBOX_MODEL_SIZE = os.environ.get("VOICEBOX_MODEL_SIZE", "1.7B")
+SPEAK_ON_HOST = os.environ.get("SPEAK_ON_HOST", "1").lower() in ("1", "true", "yes")
 
 # Look for credentials across standard cross-platform Hermes locations
 hermes_env_candidates = [
@@ -111,6 +114,8 @@ for env_path in hermes_env_candidates:
                         VOICEBOX_ENGINE = v
                     elif k == "VOICEBOX_MODEL_SIZE":
                         VOICEBOX_MODEL_SIZE = v
+                    elif k == "SPEAK_ON_HOST":
+                        SPEAK_ON_HOST = v.strip().lower() in ("1", "true", "yes")
         except Exception as e:
             print(f"[Config] Note: Could not parse {env_path}: {e}")
 
@@ -327,6 +332,86 @@ def synthesize_speech_voicebox(text: str) -> bytes:
     except Exception as e:
         print(f"[TTS] Voicebox generation failed: {e}")
         return b""
+
+def speak_on_host_speaker(text: str):
+    """Asynchronously speaks text out loud on the host computer's speakers."""
+    if not text:
+        return
+    def _run():
+        try:
+            if sys.platform == "win32":
+                import pythoncom
+                import win32com.client
+                pythoncom.CoInitialize()
+                try:
+                    voice = win32com.client.Dispatch("SAPI.SpVoice")
+                    voice.Speak(text)
+                finally:
+                    pythoncom.CoUninitialize()
+        except Exception as e:
+            print(f"[Host Speaker] Speech playback error: {e}")
+    threading.Thread(target=_run, daemon=True).start()
+
+def synthesize_speech_sapi(text: str) -> bytes:
+    """Generates 16kHz stereo WAV using Windows SAPI (instant offline fallback)."""
+    try:
+        import pythoncom
+        import win32com.client
+        pythoncom.CoInitialize()
+        tmp_wav = None
+        try:
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
+                tmp_wav = f.name
+            stream = win32com.client.Dispatch("SAPI.SpFileStream")
+            stream.Format.Type = 22 # SAFT16kHz16BitStereo
+            stream.Open(tmp_wav, 3) # SSFMCreateForWrite
+            voice = win32com.client.Dispatch("SAPI.SpVoice")
+            voice.AudioOutputStream = stream
+            voice.Speak(text)
+            stream.Close()
+            with open(tmp_wav, "rb") as f:
+                raw_bytes = f.read()
+            return convert_24k_mono_to_16k_stereo_wav(raw_bytes)
+        finally:
+            if tmp_wav and os.path.exists(tmp_wav):
+                try:
+                    os.remove(tmp_wav)
+                except Exception:
+                    pass
+            pythoncom.CoUninitialize()
+    except Exception as e:
+        print(f"[TTS] Windows SAPI generation failed: {e}")
+        return b""
+
+def synthesize_speech(text: str) -> tuple[bytes, str]:
+    """Generates 16kHz stereo WAV using Voicebox (primary) or Windows SAPI (instant fallback). Returns (wav_bytes, provider)."""
+    if not ENABLE_TTS or not text:
+        return (b"", "none")
+    tts_text = sanitize_for_tts(text)
+    if not tts_text:
+        return (b"", "none")
+
+    # 1. Try Voicebox if online and responsive
+    if check_voicebox_online():
+        try:
+            wav = synthesize_speech_voicebox(tts_text)
+            if wav:
+                return (wav, "voicebox")
+        except Exception as e:
+            print(f"[TTS] Voicebox attempt note: {e}")
+
+    # 2. Fast Windows SAPI fallback (instant ~100ms)
+    if sys.platform == "win32":
+        try:
+            wav = synthesize_speech_sapi(tts_text)
+            if wav:
+                print(f"[TTS] Synthesized {len(wav)} bytes via Windows SAPI")
+                return (wav, "windows-sapi")
+        except Exception as e:
+            print(f"[TTS] SAPI fallback note: {e}")
+
+    return (b"", "none")
+
 
 # ── 4. Whisper Model Loading (beam_size=1, VAD filtered, int8) ────────
 whisper_model = None
@@ -840,6 +925,7 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(resp, indent=2).encode("utf-8"))
 
     def do_POST(self):
+        t_req_start = time.perf_counter()
         global _last_tts_wav
         url_parts = urllib.parse.urlparse(self.path)
         req_path = url_parts.path.rstrip('/')
@@ -952,13 +1038,19 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             # 5. Sanitize reply for embedded TFT display
             clean_reply = sanitize_for_display(reply)
 
-            # 6. Generate Local Voice (Voicebox TTS) if enabled, requested by client, reachable, and LLM succeeded
+            # 6. Generate Local Voice audio and optionally speak out loud on host
             tts_s = 0.0
             audio_available = False
+            tts_provider = "none"
             llm_succeeded = backend_used not in ("none", "")
-            if audio_requested and ENABLE_TTS and llm_succeeded and check_voicebox_online():
+
+            # Speak out loud on host computer speaker if enabled
+            if SPEAK_ON_HOST and llm_succeeded:
+                speak_on_host_speaker(clean_reply)
+
+            if audio_requested and ENABLE_TTS and llm_succeeded:
                 t_tts_start = time.perf_counter()
-                tts_wav = synthesize_speech_voicebox(clean_reply)
+                tts_wav, tts_provider = synthesize_speech(clean_reply)
                 t_tts_end = time.perf_counter()
                 tts_s = t_tts_end - t_tts_start
                 if tts_wav:
@@ -970,7 +1062,7 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
                         _last_tts_wav = None
             else:
                 if not audio_requested:
-                    print(f"[TTS] Audio output disabled by client (Text-only mode) -> skipping Voicebox TTS")
+                    print(f"[TTS] Audio output disabled by client (Text-only mode) -> skipping TTS")
                 with _tts_lock:
                     _last_tts_wav = None
 
@@ -1067,12 +1159,85 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
                     pass
             voice_lock.release()
 
+def get_local_ip_for_target(target_ip="8.8.8.8"):
+    """Returns the primary outbound IP address of this machine."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect((target_ip, 80))
+        return s.getsockname()[0]
+    except Exception:
+        return "127.0.0.1"
+    finally:
+        s.close()
+
+def run_discovery_beacon():
+    """Broadcasts discovery packets and answers queries from ESP32."""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        sock.bind(("", DISCOVERY_UDP_PORT))
+    except Exception as e:
+        print(f"[Discovery] Warning: could not bind UDP port {DISCOVERY_UDP_PORT}: {e}")
+        return
+
+    sock.settimeout(1.0)
+    last_broadcast = 0.0
+
+    print(f"[Discovery] UDP Beacon listening & broadcasting on port {DISCOVERY_UDP_PORT}")
+
+    while True:
+        now = time.time()
+        # Broadcast periodic beacon every 3 seconds
+        if now - last_broadcast >= 3.0:
+            last_broadcast = now
+            local_ip = get_local_ip_for_target()
+            payload = json.dumps({
+                "service": "hermes-receiver",
+                "port": PORT,
+                "hostname": socket.gethostname(),
+                "env": RECEIVER_ENV,
+                "ip": local_ip,
+                "version": 1
+            }).encode("utf-8")
+            try:
+                sock.sendto(payload, ("255.255.255.255", DISCOVERY_UDP_PORT))
+            except Exception:
+                pass
+
+        # Check for inbound queries from ESP32
+        try:
+            data, addr = sock.recvfrom(1024)
+            if data:
+                try:
+                    msg = json.loads(data.decode("utf-8"))
+                    if msg.get("query") == "hermes-receiver":
+                        local_ip = get_local_ip_for_target(addr[0])
+                        reply = json.dumps({
+                            "service": "hermes-receiver",
+                            "port": PORT,
+                            "hostname": socket.gethostname(),
+                            "env": RECEIVER_ENV,
+                            "ip": local_ip,
+                            "version": 1
+                        }).encode("utf-8")
+                        sock.sendto(reply, addr)
+                except Exception:
+                    pass
+        except socket.timeout:
+            pass
+        except Exception:
+            time.sleep(0.5)
+
 def main():
     # Warm up Whisper model in background
     get_whisper_model()
 
     # Phase 17: Pre-warm Ollama model in background thread to prevent cold start latency
     threading.Thread(target=warmup_ollama_model, daemon=True).start()
+
+    # Launch UDP discovery beacon & query responder
+    threading.Thread(target=run_discovery_beacon, daemon=True).start()
 
     server = ThreadingHTTPServer((HOST, PORT), VoiceRequestHandler)
     server.daemon_threads = True

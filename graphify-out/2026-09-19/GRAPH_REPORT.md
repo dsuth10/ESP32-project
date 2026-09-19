@@ -1,16 +1,16 @@
 # Graph Report - ESP32 project  (2026-09-19)
 
 ## Corpus Check
-- 41 files · ~513,372 words
+- 43 files · ~516,763 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 429 nodes · 691 edges · 30 communities (14 shown, 9 thin omitted)
-- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 47 edges (avg confidence: 0.85)
+- 480 nodes · 780 edges · 33 communities (14 shown, 12 thin omitted)
+- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 65 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0fe22115`
+- Built from commit: `60d6ce91`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -20,7 +20,7 @@
 - EnvironmentManager
 - AudioRecorder
 - NetworkManager
-- main.cpp
+- sd_card.cpp
 - es8311_bsp.c
 - es8311.cpp
 - _coeff_div
@@ -38,39 +38,42 @@
 - Workflow: /graph-query
 - Workflow: /graph-update
 - Workflow: /graph-visualize
+- SDCardStatus
+- DashboardStatus
+- EnvironmentMode
 
 ## God Nodes (most connected - your core abstractions)
-1. `MacroPadGUI` - 46 edges
+1. `MacroPadGUI` - 61 edges
 2. `AudioRecorder` - 31 edges
 3. `NetworkManager` - 21 edges
 4. `EnvironmentManager` - 17 edges
 5. `ChannelStats` - 14 edges
-6. `es8311_write_reg()` - 13 edges
-7. `_coeff_div` - 13 edges
+6. `_coeff_div` - 13 edges
+7. `es8311_write_reg()` - 13 edges
 8. `EnvironmentProfile` - 12 edges
 9. `es8311_read_reg()` - 11 edges
 10. `es8311_write_reg()` - 11 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `begin` --calls--> `es8311_codec_init()`  [INFERRED]
-  src/audio_recorder.h → src/es8311.cpp
-- `logDiagnostics` --calls--> `es8311_codec_dump_registers()`  [INFERRED]
-  src/audio_recorder.h → src/es8311.cpp
-- `loop()` --calls--> `es8311_codec_set_voice_volume()`  [INFERRED]
-  src/main.cpp → src/es8311.cpp
+- `navigateStorageTo` --calls--> `sdCardListDirectory()`  [INFERRED]
+  src/gui.h → src/sd_card.cpp
+- `refreshStorageExplorer` --calls--> `sdCardGetStorageSpace()`  [INFERRED]
+  src/gui.h → src/sd_card.cpp
+- `refreshStorageExplorer` --calls--> `sdCardListDirectory()`  [INFERRED]
+  src/gui.h → src/sd_card.cpp
 - `setup()` --calls--> `es8311_codec_set_voice_volume()`  [INFERRED]
   src/main.cpp → src/es8311.cpp
-- `EnvironmentManager::EnvironmentManager()` --calls--> `initProfiles`  [INFERRED]
-  src/environment_manager.cpp → src/environment_manager.h
+- `loop()` --calls--> `es8311_codec_set_voice_volume()`  [INFERRED]
+  src/main.cpp → src/es8311.cpp
 
 ## Import Cycles
 - None detected.
 
-## Communities (30 total, 9 thin omitted)
+## Communities (33 total, 12 thin omitted)
 
 ### Community 0 - "MacroPadGUI"
-Cohesion: 0.08
-Nodes (50): DashboardStatus, EnvironmentMode, HealthState, String, TFT_eSPI, vector, VoiceUIState, drawWrappedText() (+42 more)
+Cohesion: 0.05
+Nodes (71): DashboardStatus, EnvironmentMode, ChatLine, color, text, ChatMessage, isUser, text (+63 more)
 
 ### Community 1 - "hermes_voice_receiver.py"
 Cohesion: 0.08
@@ -88,9 +91,9 @@ Nodes (34): AudioRecorder, begin, _lastRecordDurationMs, _leftStats, logDiagnost
 Cohesion: 0.14
 Nodes (29): DashboardStatus, EnvironmentMode, function, String, extractJsonBool(), extractJsonField(), extractJsonInt(), extractJsonObject() (+21 more)
 
-### Community 5 - "main.cpp"
-Cohesion: 0.11
-Nodes (18): MacroButton, ChatLine, color, text, ChatMessage, isUser, text, String (+10 more)
+### Community 5 - "sd_card.cpp"
+Cohesion: 0.07
+Nodes (41): MacroButton, sdcard_type_t, TFT_eSPI, vector, calculateBatteryPercentage(), HealthState, executeMacro(), loop() (+33 more)
 
 ### Community 6 - "es8311_bsp.c"
 Cohesion: 0.23
@@ -125,24 +128,24 @@ Cohesion: 0.25
 Nodes (7): 1. Git Commit Hook (Zero-Touch), 2. Live File Watcher (Continuous Auto-Update on Save), 3. Antigravity Agent Rule (Automated Turn-End Maintenance), Automated Background Updating, Everyday Command Reference (`.\graph.ps1`), Graphify Toolkit & Automation System, Slash Commands in Antigravity Chat
 
 ## Knowledge Gaps
-- **150 isolated node(s):** `start_receiver.sh script`, `count`, `minVal`, `maxVal`, `sum` (+145 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 229 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **167 isolated node(s):** `text`, `color`, `isUser`, `text`, `_lastDrawnBatPercent` (+162 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 251 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `MacroPadGUI` connect `MacroPadGUI` to `main.cpp`?**
-  _High betweenness centrality (0.093) - this node is a cross-community bridge._
-- **What connects `start_receiver.sh script`, `count`, `minVal` to the rest of the system?**
-  _150 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `MacroPadGUI` connect `MacroPadGUI` to `sd_card.cpp`?**
+  _High betweenness centrality (0.145) - this node is a cross-community bridge._
+- **What connects `text`, `color`, `isUser` to the rest of the system?**
+  _167 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `MacroPadGUI` be split into smaller, more focused modules?**
-  _Cohesion score 0.07692307692307693 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05117117117117117 - nodes in this community are weakly interconnected._
 - **Should `hermes_voice_receiver.py` be split into smaller, more focused modules?**
   _Cohesion score 0.07948717948717948 - nodes in this community are weakly interconnected._
 - **Should `EnvironmentManager` be split into smaller, more focused modules?**
   _Cohesion score 0.0989247311827957 - nodes in this community are weakly interconnected._
 - **Should `AudioRecorder` be split into smaller, more focused modules?**
-  _Cohesion score 0.05230496453900709 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05102040816326531 - nodes in this community are weakly interconnected._
 - **Should `NetworkManager` be split into smaller, more focused modules?**
-  _Cohesion score 0.1431451612903226 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.13636363636363635 - nodes in this community are weakly interconnected._

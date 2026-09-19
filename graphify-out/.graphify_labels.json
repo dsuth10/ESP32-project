@@ -21,7 +21,7 @@
   "19": "render_views.py",
   "20": "rules/graphify.md",
   "21": "workflows/graphify.md",
-  "22": "pinout_allocation_f58fa43e.md",
+  "22": "HostDiscovery",
   "23": "Automated Background Updating",
   "24": "Workflow: /graph-query",
   "25": "Workflow: /graph-update",
@@ -29,5 +29,5 @@
   "27": "graph.ps1",
   "28": "scratch_tts_test.py",
   "29": "bench_time_tts.py",
-  "30": "ChannelStats"
+  "30": "Voice Satellite Operations Runbook"
 }

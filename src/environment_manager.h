@@ -18,11 +18,14 @@ struct EnvironmentProfile {
     const char* name;
     const char* ssid;
     const char* password;
-    const char* receiverUrl;
-    const char* statusUrl;
+    String receiverUrl;
+    String statusUrl;
+    String defaultReceiverUrl;
+    String defaultStatusUrl;
     const char* authToken;
     const char* expectedBleHost;
     uint32_t voiceTimeoutMs;
+    String discoveredIp;
 };
 
 class EnvironmentManager {
@@ -38,6 +41,13 @@ public:
     bool setMode(EnvironmentMode mode, bool persist = true);
     bool toggleMode();
 
+    void setDiscoveredHost(EnvironmentMode mode, const String& hostIp, uint16_t port = 8787);
+    String getDiscoveredHost(EnvironmentMode mode) const;
+    void resetHostToDefault(EnvironmentMode mode);
+
+    String getReceiverUrl() const;
+    String getStatusUrl() const;
+
     typedef void (*EnvironmentChangeCallback)(EnvironmentMode newMode);
     void onEnvironmentChange(EnvironmentChangeCallback cb);
 
@@ -47,6 +57,7 @@ private:
     EnvironmentProfile _workProfile;
     EnvironmentChangeCallback _changeCallback;
     Preferences _prefs;
+    SemaphoreHandle_t _mutex;
 
     void initProfiles();
 };
