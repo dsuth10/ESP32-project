@@ -47,6 +47,7 @@ public:
     void playTone(float freqHz, uint32_t durationMs, float volume = 0.35f);
     void playChime();
     bool playAudioStream(Stream& stream, size_t totalBytes = 0, std::function<bool()> shouldAbort = nullptr);
+    void prepareForSleep();
     
     bool isRecording() const { return _isRecording; }
     uint32_t getRecordDurationMs() const {

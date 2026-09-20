@@ -131,6 +131,22 @@ void NetworkManager::begin() {
     startConnection();
 }
 
+void NetworkManager::stop() {
+    hostDiscovery.stop();
+    WiFi.disconnect(true, false);
+    WiFi.mode(WIFI_OFF);
+    _wasConnected = false;
+    Serial.println("[WiFi] Stopped for soft-off");
+}
+
+void NetworkManager::resume() {
+    WiFi.persistent(false);
+    WiFi.mode(WIFI_STA);
+    WiFi.setAutoReconnect(true);
+    startConnection();
+    Serial.println("[WiFi] Resumed after soft-off");
+}
+
 void NetworkManager::startConnection() {
     if (_targetSSID.length() == 0 || 
         _targetSSID == "YOUR_WIFI_SSID" || 

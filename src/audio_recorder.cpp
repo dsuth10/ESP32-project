@@ -1,5 +1,6 @@
 #include "audio_recorder.h"
 #include "es8311.h"
+#include "macropad_config.h"
 #include "driver/i2s.h"
 
 #define I2S_PORT         I2S_NUM_0
@@ -8,7 +9,6 @@
 #define PIN_I2S_WS       7
 #define PIN_I2S_DOUT     8  // ESP32 I2S DOUT (Speaker / DAC DSDIN)
 #define PIN_I2S_DIN      6  // ESP32 I2S DIN (Microphone / ADC ASDOUT)
-#define PIN_PA_ENABLE    1
 
 AudioRecorder recorder;
 
@@ -479,6 +479,18 @@ bool AudioRecorder::playAudioStream(Stream& stream, size_t totalBytes, std::func
     Serial.printf("[Audio] Playback finished (%u bytes streamed, aborted=%s)\n", 
                   (unsigned int)totalBytesPlayed, aborted ? "true" : "false");
     return !aborted;
+}
+
+void AudioRecorder::prepareForSleep() {
+    if (_isRecording) {
+        stopRecording();
+    }
+    pinMode(PIN_PA_ENABLE, OUTPUT);
+    digitalWrite(PIN_PA_ENABLE, HIGH);
+    es8311_codec_sleep();
+    i2s_zero_dma_buffer(I2S_PORT);
+    i2s_stop(I2S_PORT);
+    i2s_driver_uninstall(I2S_PORT);
 }
 
 

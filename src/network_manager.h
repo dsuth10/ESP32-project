@@ -10,6 +10,8 @@ class NetworkManager {
 public:
     NetworkManager();
     void begin();
+    void stop();
+    void resume();
     void update();
     bool isConnected();
     String getIpAddress();

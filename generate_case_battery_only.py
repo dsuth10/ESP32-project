@@ -5,10 +5,10 @@ import bmesh
 import bpy
 
 WORKSPACE = "C:/Users/dsuth/Documents/Code Projects/ESP32 project"
-EXPORT_DIR = f"{WORKSPACE}/docs/dimensions/case_stl_battery"
-BLEND_PATH = f"{WORKSPACE}/docs/dimensions/ES3C28P_battery_enclosure.blend"
-RENDER_PATH = f"{WORKSPACE}/docs/dimensions/battery_enclosure_hero.png"
-EXPLODED_PATH = f"{WORKSPACE}/docs/dimensions/battery_enclosure_exploded.png"
+EXPORT_DIR = f"{WORKSPACE}/docs/dimensions/case_stl_battery_only"
+BLEND_PATH = f"{WORKSPACE}/docs/dimensions/ES3C28P_battery_only_enclosure.blend"
+RENDER_PATH = f"{WORKSPACE}/docs/dimensions/battery_only_enclosure_hero.png"
+EXPLODED_PATH = f"{WORKSPACE}/docs/dimensions/battery_only_enclosure_exploded.png"
 
 PCB_W, PCB_L, PCB_H = 50.0, 86.0, 1.6
 SCREEN_W, SCREEN_L, SCREEN_H = 50.0, 69.2, 4.3
@@ -30,24 +30,14 @@ BAT_POCKET_W = 34.0
 BAT_POCKET_L = 62.0
 BAT_CENTER_Y = -4.0
 
-SPK_X, SPK_Y, SPK_Z = 30.0, 40.0, 10.0
-SPK_POCKET_W = 34.0
-SPK_POCKET_L = 48.0
-SPK_POCKET_T = 13.0
-SPK_CENTER_Y = 2.0
-SHELF_T = 1.2
-
 MAIN_INNER_W = PCB_W + 2.0 * XY_CLEAR
 MAIN_INNER_L = PCB_L + 2.0 * XY_CLEAR
 OUTER_W = MAIN_INNER_W + 2.0 * WALL
 OUTER_L = MAIN_INNER_L + 2.0 * WALL
 BODY_CENTER_Y = 0.0
 
-BAT_TOP_Z = -COMPONENT_GAP
-INNER_FLOOR_Z = BAT_TOP_Z - BAT_POCKET_T
-SPK_TOP_Z = INNER_FLOOR_Z - SHELF_T
-SPK_FLOOR_Z = SPK_TOP_Z - SPK_POCKET_T
-FLOOR_Z = SPK_FLOOR_Z - WALL
+INNER_FLOOR_Z = -(COMPONENT_GAP + BAT_POCKET_T)
+FLOOR_Z = INNER_FLOOR_Z - WALL
 PCB_TOP_Z = PCB_H
 BOTTOM_H = PCB_TOP_Z - FLOOR_Z
 TOP_H = 5.0
@@ -223,8 +213,6 @@ def make_materials():
         "top": get_or_create_mat("V2_Top", (0.18, 0.19, 0.21, 1.0), roughness=0.4, metallic=0.05),
         "battery": get_or_create_mat("V2_Battery", (0.05, 0.22, 0.28, 1.0), roughness=0.55),
         "pcm": get_or_create_mat("V2_PCM", (0.02, 0.08, 0.02, 1.0), roughness=0.35),
-        "speaker": get_or_create_mat("V2_SpeakerBody", (0.22, 0.2, 0.18, 1.0), roughness=0.5),
-        "cone": get_or_create_mat("V2_SpeakerCone", (0.04, 0.04, 0.045, 1.0), roughness=0.7),
     }
 
 
@@ -243,12 +231,11 @@ def build_reference_board(coll, mats):
     add_cube("MicroSD_Socket", (23.5, SD_Y, -0.9), (15.0, 14.5, 1.8), coll, mats["metal"])
     add_cylinder("Button_Reset", (RESET_X, BTN_Y, -1.0), 1.2, 2.0, coll, mats["button"])
     add_cylinder("Button_Boot", (BOOT_X, BTN_Y, -1.0), 1.2, 2.0, coll, mats["button"])
-    add_cube("Speaker_JST", (-18.0, 8.0, -1.2), (6.0, 4.0, 2.4), coll, mats["metal"])
     add_cube("Battery_JST", (16.0, -22.0, -1.2), (6.0, 4.0, 2.4), coll, mats["metal"])
     return pcb, display
 
 
-def build_battery_and_speaker(coll, mats):
+def build_battery(coll, mats):
     battery = add_cube(
         "Battery_603048",
         (0.0, BAT_CENTER_Y, INNER_FLOOR_Z + BAT_T / 2.0),
@@ -263,33 +250,16 @@ def build_battery_and_speaker(coll, mats):
         coll,
         mats["pcm"],
     )
-    speaker = add_cube(
-        "Speaker_Module",
-        (0.0, SPK_CENTER_Y, SPK_FLOOR_Z + 1.5 + SPK_Z / 2.0),
-        (SPK_X, SPK_Y, SPK_Z),
-        coll,
-        mats["speaker"],
-    )
-    cone = add_cylinder(
-        "Speaker_Cone",
-        (0.0, SPK_CENTER_Y, SPK_FLOOR_Z + 1.2),
-        11.0,
-        0.5,
-        coll,
-        mats["cone"],
-        vertices=32,
-    )
-    return battery, pcm, speaker, cone
+    return battery, pcm
 
 
 def add_standoffs(case, coll):
     overlap = 1.5
     height = BOSS_H + overlap
     z_center = INNER_FLOOR_Z - overlap + height / 2.0
-    bosses = []
     for i, (hx, hy) in enumerate(HOLES):
-        bosses.append(add_cylinder(f"Boss_{i}", (hx, hy, z_center), BOSS_R, height, coll))
-    union_obj(case, join_objects(bosses, "Bosses"))
+        boss = add_cylinder(f"Boss_{i}", (hx, hy, z_center), BOSS_R, height, coll)
+        union_obj(case, boss)
 
 
 def add_through_bolts(case, coll):
@@ -315,37 +285,6 @@ def add_through_bolts(case, coll):
     apply_boolean(case, join_objects(seats, "NutSeats"), "DIFFERENCE")
 
 
-def add_battery_rails(case, coll):
-    rail_w = 3.5
-    rail_x = SPK_POCKET_W / 2.0 - rail_w / 2.0
-    rails = []
-    for i, side in enumerate((-1.0, 1.0)):
-        rails.append(
-            add_cube(
-                f"Rail_{i}",
-                (side * rail_x, SPK_CENTER_Y, INNER_FLOOR_Z - SHELF_T / 2.0),
-                (rail_w, SPK_POCKET_L + 2.0, SHELF_T),
-                coll,
-            )
-        )
-    union_obj(case, join_objects(rails, "BatteryRails"))
-
-
-def add_bottom_grill(case, coll):
-    slots = []
-    for i in range(6):
-        x = -10.0 + i * 4.0
-        slots.append(
-            add_cube(
-                f"Grill_{i}",
-                (x, SPK_CENTER_Y, FLOOR_Z + WALL / 2.0),
-                (2.2, 28.0, WALL + 2.0),
-                coll,
-            )
-        )
-    apply_boolean(case, join_objects(slots, "GrillSlots"), "DIFFERENCE")
-
-
 def build_case_bottom(coll, mats):
     case = create_rounded_box(
         "Case_Bottom",
@@ -359,19 +298,8 @@ def build_case_bottom(coll, mats):
     )
     cavity_h = PCB_TOP_Z - INNER_FLOOR_Z + 2.0
     cut_box(case, 0.0, 0.0, INNER_FLOOR_Z + cavity_h / 2.0, MAIN_INNER_W, MAIN_INNER_L, cavity_h)
-    cut_box(
-        case,
-        0.0,
-        SPK_CENTER_Y,
-        SPK_FLOOR_Z + (INNER_FLOOR_Z - SPK_FLOOR_Z) / 2.0 + 0.4,
-        SPK_POCKET_W,
-        SPK_POCKET_L,
-        INNER_FLOOR_Z - SPK_FLOOR_Z + 1.0,
-    )
-    add_battery_rails(case, coll)
-    cut_box(case, 16.0, BAT_CENTER_Y - BAT_POCKET_L / 2.0 + 6.0, INNER_FLOOR_Z + 3.5, 12.0, 16.0, 7.0)
-    cut_box(case, -16.0, SPK_CENTER_Y, INNER_FLOOR_Z - 1.0, 6.0, 8.0, 8.0)
-    cut_box(case, 0.0, -44.0, -1.8, 12.5, 8.0, 5.5)
+    add_standoffs(case, coll)
+    cut_box(case, 0.0, -45.4, -1.8, 12.5, 6.0, 5.5)
     cut_box(case, 26.0, SD_Y, -0.9, 8.0, 15.5, 3.8)
     cut_cyl(case, 25.5, SD_Y, -0.5, 5.0, 8.0)
     buttons = [
@@ -379,9 +307,7 @@ def build_case_bottom(coll, mats):
         add_cylinder("BtnHole_1", (BOOT_X, BTN_Y, FLOOR_Z + BOTTOM_H / 2.0), 1.6, BOTTOM_H + 4.0, coll),
     ]
     apply_boolean(case, join_objects(buttons, "ButtonHoles"), "DIFFERENCE")
-    add_standoffs(case, coll)
     add_through_bolts(case, coll)
-    add_bottom_grill(case, coll)
     return case
 
 
@@ -427,7 +353,7 @@ def setup_studio(coll, scene):
     fill.data.size = 200.0
     link_to_collection(fill, coll)
     bpy.ops.object.camera_add(
-        location=(150.0, -170.0, 110.0),
+        location=(120.0, -140.0, 90.0),
         rotation=(math.radians(58.0), 0.0, math.radians(40.0)),
     )
     cam = bpy.context.active_object
@@ -477,15 +403,13 @@ def render_view(scene, filepath):
 
 def explode(parts, restore=False):
     offsets = {
-        "Case_Top": (0.0, 0.0, 28.0),
-        "Screen_Glass": (0.0, 0.0, 18.0),
-        "Screen_Display": (0.0, 0.0, 18.0),
+        "Case_Top": (0.0, 0.0, 22.0),
+        "Screen_Glass": (0.0, 0.0, 14.0),
+        "Screen_Display": (0.0, 0.0, 14.0),
         "PCB_Board": (0.0, 0.0, 8.0),
-        "Speaker_Module": (0.0, 0.0, -22.0),
-        "Speaker_Cone": (0.0, 0.0, -22.0),
-        "Battery_603048": (28.0, 0.0, -8.0),
-        "Battery_PCM": (28.0, 0.0, -8.0),
-        "Case_Bottom": (0.0, 0.0, -24.0),
+        "Battery_603048": (0.0, 0.0, -10.0),
+        "Battery_PCM": (0.0, 0.0, -10.0),
+        "Case_Bottom": (0.0, 0.0, -16.0),
     }
     sign = -1.0 if restore else 1.0
     for obj in parts:
@@ -502,13 +426,13 @@ def create_enclosure():
     colls = setup_scene()
     mats = make_materials()
     pcb, display = build_reference_board(colls["V2_Reference"], mats)
-    battery, pcm, speaker, cone = build_battery_and_speaker(colls["V2_Reference"], mats)
+    battery, pcm = build_battery(colls["V2_Reference"], mats)
     glass = bpy.data.objects["Screen_Glass"]
     bottom = build_case_bottom(colls["V2_Case_Bottom"], mats)
     top = build_case_top(colls["V2_Case_Top"], mats)
     scene = bpy.context.scene
     setup_studio(colls["V2_Studio"], scene)
-    extras = [pcb, glass, display, battery, pcm, speaker, cone]
+    extras = [pcb, glass, display, battery, pcm]
     exported = export_stls(bottom, top, extras)
     render_view(scene, RENDER_PATH)
     parts = [bottom, top, *extras]
@@ -520,8 +444,6 @@ def create_enclosure():
         "status": "success",
         "outer_mm": {"width": OUTER_W, "length": OUTER_L, "height": BOTTOM_H + TOP_H},
         "battery_pocket_mm": {"width": BAT_POCKET_W, "length": BAT_POCKET_L, "height": BAT_POCKET_T},
-        "speaker_pocket_mm": {"width": SPK_POCKET_W, "length": SPK_POCKET_L, "height": SPK_POCKET_T},
-        "objects": [obj.name for obj in bpy.data.objects if obj.name.startswith(("Case_", "Battery_", "Speaker_", "PCB_", "Screen_"))],
         "exported_files": {
             **exported,
             "hero_png": RENDER_PATH,

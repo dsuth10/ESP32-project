@@ -14,6 +14,7 @@
 #include "environment_manager.h"
 #include "sd_card.h"
 #include "host_discovery.h"
+#include "power_manager.h"
 
 // Set to 1 for raw microphone isolation diagnostic (Wi-Fi, TLS & Hermes upload disabled).
 // Once genuine microphone PCM is proven, set to 0 to restore full network pipeline.
@@ -49,7 +50,9 @@ static uint32_t s_voiceDragStartTime = 0;
 static DashboardStatus g_telemetryStatus;
 static bool g_telemetryDirty = false;
 static SemaphoreHandle_t g_telemetryMutex = NULL;
+static TaskHandle_t g_telemetryTask = NULL;
 static volatile bool g_voiceBusy = false;
+static bool s_powerConfirmOpen = false;
 
 // Li-Po battery measurement & smoothing
 static float g_filteredBatVoltage = 0.0f;
@@ -163,6 +166,48 @@ void setLedColor(uint8_t r, uint8_t g, uint8_t b) {
   pixel.show();
 }
 
+static void waitTouchRelease(uint32_t timeoutMs) {
+  uint32_t started = millis();
+  while (millis() - started < timeoutMs) {
+    ts.read();
+    if (!ts.isTouched) break;
+    delay(20);
+  }
+}
+
+static void goToSoftOff() {
+  s_powerConfirmOpen = false;
+  if (g_telemetryTask) {
+    vTaskDelete(g_telemetryTask);
+    g_telemetryTask = NULL;
+  }
+#if !AUDIO_DIAGNOSTIC_MODE
+  netManager.stop();
+#endif
+  gui.drawSleepSplash();
+  delay(280);
+  const char* reason = powerManager.enterSoftOff();
+  Serial.printf("[Power] Resuming GUI after %s\n", reason);
+
+  pinMode(PIN_TFT_BL, OUTPUT);
+  digitalWrite(PIN_TFT_BL, HIGH);
+  bool bleState = bleKeyboard.isConnected();
+  gui.drawAll(bleState, currentPage);
+  if (bleState) {
+    setLedColor(0, 50, 15);
+  }
+
+#if !AUDIO_DIAGNOSTIC_MODE
+  netManager.resume();
+  if (g_telemetryMutex == NULL) {
+    g_telemetryMutex = xSemaphoreCreateMutex();
+  }
+  if (g_telemetryTask == NULL) {
+    xTaskCreatePinnedToCore(telemetryWorkerTask, "telemetryTask", 8192, NULL, 1, &g_telemetryTask, 0);
+  }
+#endif
+}
+
 void executeMacro(const MacroButton& btn) {
   Serial.printf("[MacroPad] Executing: %s (%s)\n", btn.label, btn.subtitle);
 
@@ -201,17 +246,19 @@ void executeMacro(const MacroButton& btn) {
 
 void setup() {
   disableLoopWDT();
-  // 0. Ensure Audio Power Amplifier (FM8002 on GPIO 1, active-LOW) is shut down / muted
-  pinMode(1, OUTPUT);
-  digitalWrite(1, HIGH);
+  pinMode(PIN_PA_ENABLE, OUTPUT);
+  digitalWrite(PIN_PA_ENABLE, HIGH);
 
   Serial.begin(115200);
+  Serial.setTxTimeoutMs(0);
   delay(500);
+  powerManager.begin();
+  currentPage = powerManager.restorePage(0);
+
   Serial.println("\n==========================================");
   Serial.println("   ESP32-S3 Touch Bluetooth MacroPad      ");
   Serial.println("==========================================");
 
-  // Initialize Backlight (GPIO 45 HIGH)
   pinMode(PIN_TFT_BL, OUTPUT);
   digitalWrite(PIN_TFT_BL, HIGH);
 
@@ -228,6 +275,10 @@ void setup() {
   Serial.println("[Setup] Initializing FT6336 Touch...");
   ts.begin();
   ts.setRotation(ROTATION_RIGHT); // Landscape rotation
+#if TOUCH_WAKE_DIAG
+  pinMode(PIN_TP_INT, INPUT_PULLUP);
+  Serial.println("[Diag] Awake INT baseline enabled (GPIO17 pull-up)");
+#endif
 
   // Initialize Display & GUI
   Serial.println("[Setup] Initializing ILI9341 Display...");
@@ -275,7 +326,7 @@ void setup() {
   g_telemetryMutex = xSemaphoreCreateMutex();
 
   // Start background telemetry worker on Core 0 (pinned to Core 0 with 8KB stack, Rule 3)
-  xTaskCreatePinnedToCore(telemetryWorkerTask, "telemetryTask", 8192, NULL, 1, NULL, 0);
+  xTaskCreatePinnedToCore(telemetryWorkerTask, "telemetryTask", 8192, NULL, 1, &g_telemetryTask, 0);
 #else
   Serial.println("[Setup] *************************************************************");
   Serial.println("[Setup] *** AUDIO_DIAGNOSTIC_MODE ACTIVE                          ***");
@@ -290,10 +341,13 @@ void setup() {
   }
 
   Serial.println("[Setup] Ready! Pair with Windows as 'ESP32 MacroPad'.");
-  Serial.println("[Setup] Commands: type 'sd', 'sd_ls', 'test_speaker', or 'chime' in Serial Monitor.");
-  
-  // Play startup speaker verification chime
-  recorder.playChime();
+  Serial.println("[Setup] Commands: type 'sd', 'sd_ls', 'test_speaker', 'chime', or 'sleep' in Serial Monitor.");
+
+  if (powerManager.isSoftWake()) {
+    Serial.println("[Setup] Soft-wake: skipping startup chime");
+  } else {
+    recorder.playChime();
+  }
 }
 
 void loop() {
@@ -307,6 +361,9 @@ void loop() {
         cmd.equalsIgnoreCase("beep") || cmd.equalsIgnoreCase("spk")) {
       Serial.println("[Command] Running speaker chime test...");
       recorder.playChime();
+    } else if (cmd.equalsIgnoreCase("sleep") || cmd.equalsIgnoreCase("poweroff")) {
+      Serial.println("[Command] Soft power off...");
+      goToSoftOff();
     } else if (cmd.startsWith("tone ")) {
       float freq = cmd.substring(5).toFloat();
       if (freq >= 100.0f && freq <= 8000.0f) {
@@ -403,7 +460,7 @@ void loop() {
       statusToDraw.expectedBleHost = envManager.getActiveProfile().expectedBleHost;
       statusToDraw.macropadReady = currentBleState;
 
-      if (currentPage == PAGE_DASHBOARD) {
+      if (currentPage == PAGE_DASHBOARD && !s_powerConfirmOpen) {
         // In-place flicker-free telemetry update (fullRedraw = false)
         gui.drawDashboard(statusToDraw, envManager.getMode(), g_voiceVolume, false);
       } else {
@@ -415,6 +472,18 @@ void loop() {
 
   // 5. Touch Handling
   ts.read();
+#if TOUCH_WAKE_DIAG
+  {
+    static bool s_prevTouched = false;
+    if (ts.isTouched && !s_prevTouched) {
+      Serial.printf("[Diag] Awake touch edge: td=0x%02X bus=%s int=%d\n",
+                    ts.lastStatusRaw,
+                    ts.lastBusOk ? "OK" : "FAIL",
+                    digitalRead(PIN_TP_INT));
+    }
+    s_prevTouched = ts.isTouched;
+  }
+#endif
   if (ts.isTouched) {
     int16_t tx = ts.points[0].x;
     int16_t ty = ts.points[0].y;
@@ -441,6 +510,32 @@ void loop() {
     }
 
     int8_t target = gui.getTouchTarget(tx, ty, currentPage);
+
+    if (s_powerConfirmOpen) {
+      int8_t pwrTarget = gui.getPowerDialogTarget(tx, ty);
+      if (pwrTarget == TOUCH_POWER_CANCEL) {
+        Serial.println("[Power] Cancelled");
+        s_powerConfirmOpen = false;
+        gui.drawAll(currentBleState, currentPage);
+        waitTouchRelease(500);
+        return;
+      }
+      if (pwrTarget == TOUCH_POWER_CONFIRM) {
+        Serial.println("[Power] Confirmed");
+        waitTouchRelease(800);
+        goToSoftOff();
+        return;
+      }
+      return;
+    }
+
+    if (target == TOUCH_POWER) {
+      Serial.println("[Power] Confirm dialog");
+      s_powerConfirmOpen = true;
+      gui.drawPowerConfirmDialog();
+      waitTouchRelease(500);
+      return;
+    }
 
     // Dedicated Page 5 Audio Toggle Button
     if (target == TOUCH_VOICE_AUDIO_TOGGLE) {

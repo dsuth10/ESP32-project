@@ -3,6 +3,8 @@
 #include <BleKeyboard.h>
 
 // Onboard Hardware Pins
+#define PIN_BOOT          0
+#define PIN_PA_ENABLE     1
 #define PIN_TFT_BL        45
 #define PIN_RGB_LED       42
 #define PIN_BAT_ADC       9
@@ -46,6 +48,9 @@
 #define TOUCH_DASH_VOL_UP       109
 #define TOUCH_DASH_VOL_MUTE     110
 #define TOUCH_VOICE_AUDIO_TOGGLE 111
+#define TOUCH_POWER              112
+#define TOUCH_POWER_CANCEL       113
+#define TOUCH_POWER_CONFIRM      114
 
 #define TOUCH_STORAGE_UP         120
 #define TOUCH_STORAGE_REFRESH    121

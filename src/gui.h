@@ -48,6 +48,11 @@ public:
   void drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode, bool fullRedraw = true);
   void drawDashboardVolume(uint8_t volume, bool fullRedraw = false);
   void drawDashboardSwitching(const char* targetModeName);
+  void drawPowerConfirmDialog();
+  void drawSleepSplash();
+  void sleepDisplay();
+  void wakeDisplay();
+  int8_t getPowerDialogTarget(int16_t x, int16_t y);
   void drawVoiceAudioToggle(bool pressed = false);
   void setVoiceAudioEnabled(bool enabled);
   bool isVoiceAudioEnabled() const { return _voiceAudioEnabled; }
@@ -92,6 +97,7 @@ private:
 
   void getButtonRect(uint8_t pageIndex, uint8_t btnIndex, int16_t& x, int16_t& y, int16_t& w, int16_t& h);
   void drawStatusRow(int16_t x, int16_t y, int16_t w, const char* label, const char* value, HealthState health, bool fullRedraw = true);
+  void drawDashboardPowerButton();
   void renderVoiceChatViewport();
   void rebuildChatLines();
 };

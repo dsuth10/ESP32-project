@@ -373,3 +373,14 @@ int es8311_codec_get_voice_volume(void)
     return 0;
 }
 
+esp_err_t es8311_codec_sleep(void)
+{
+    if (!s_es_handle) return ESP_FAIL;
+    es8311_voice_mute(s_es_handle, true);
+    es8311_write_reg(s_es_handle, ES8311_DAC_REG32, 0x00);
+    es8311_write_reg(s_es_handle, ES8311_SYSTEM_REG0E, 0xFF);
+    es8311_write_reg(s_es_handle, ES8311_SYSTEM_REG12, 0x02);
+    es8311_write_reg(s_es_handle, ES8311_CLK_MANAGER_REG01, 0x00);
+    return ESP_OK;
+}
+

@@ -233,6 +233,7 @@ esp_err_t es8311_codec_init(void);
 void es8311_codec_dump_registers(void);
 esp_err_t es8311_codec_set_voice_volume(int volume);
 int es8311_codec_get_voice_volume(void);
+esp_err_t es8311_codec_sleep(void);
 #ifdef __cplusplus
 }
 #endif

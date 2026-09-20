@@ -25,9 +25,18 @@
 #define FT6336_ID_G_LIB_VERSION   (uint8_t)0xA1
 #define FT6336_ID_G_CIPHER_HIGH     (uint8_t)0XA3  //default: 0x64
 #define FT6336_ID_G_MODE            (uint8_t)0XA4
+#define FT6336_ID_G_PMODE           (uint8_t)0XA5
 #define FT6336_ID_G_FOCALTECH_ID    (uint8_t)0XA8  //default: 0x11
 #define FT6336_ID_G_THGROUP         (uint8_t)0X80
 #define FT6336_ID_G_PERIODACTIVE    (uint8_t)0X88
+#define FT6336_CTRL_REG             (uint8_t)0x86
+#define FT6336_TIME_ENTER_MONITOR   (uint8_t)0x87
+#define FT6336_PERIOD_MONITOR       (uint8_t)0x89
+
+#define FT6336_PMODE_ACTIVE         (uint8_t)0x00
+#define FT6336_PMODE_MONITOR        (uint8_t)0x01
+#define FT6336_INT_POLLING          (uint8_t)0x00
+#define FT6336_CTRL_AUTO_MONITOR    (uint8_t)0x01
 
 
 class TP_Point {
@@ -50,9 +59,13 @@ class FT6336 {
     void begin(uint8_t _addr=FT6336_ADDR);
     uint8_t reset();
     void setRotation(uint8_t rot);
+    void enterMonitorMode();
     void read(void);
+    uint8_t readRegisterRaw(uint8_t reg);
     uint8_t touches = 0;
     bool isTouched = false;
+    uint8_t lastStatusRaw = 0;
+    bool lastBusOk = false;
     TP_Point points[2];
 
   private:

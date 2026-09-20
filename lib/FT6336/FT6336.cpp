@@ -53,9 +53,18 @@ void FT6336::setRotation(uint8_t rot) {
   rotation = rot;
 }
 
+void FT6336::enterMonitorMode() {
+  pinMode(pinRst, OUTPUT);
+  digitalWrite(pinRst, HIGH);
+  pinMode(pinInt, INPUT_PULLUP);
+  writeByteData(FT6336_ID_G_MODE, FT6336_INT_POLLING);
+  Serial.printf("[Touch] IRQ armed, INT=%d\n", digitalRead(pinInt));
+}
+
 void FT6336::read(void) {
   uint8_t data[4];
   uint8_t pointInfo = readByteData(FT6336_TD_STATUS);
+  lastStatusRaw = pointInfo;
   touches = pointInfo;
   isTouched = (touches > 0 && touches < 3);
   if (isTouched) {
@@ -64,6 +73,10 @@ void FT6336::read(void) {
       points[i] = readPoint(data);
     }
   }
+}
+
+uint8_t FT6336::readRegisterRaw(uint8_t reg) {
+  return readByteData(reg);
 }
 TP_Point FT6336::readPoint(uint8_t *data) {
   uint16_t temp;
@@ -102,13 +115,16 @@ void FT6336::writeByteData(uint16_t reg, uint8_t val) {
   Wire.endTransmission();
 }
 uint8_t FT6336::readByteData(uint16_t reg) {
-  uint8_t x;
+  uint8_t x = 0xFF;
   Wire.beginTransmission(addr);
  // Wire.write(highByte(reg));
   Wire.write(lowByte(reg));
-  Wire.endTransmission();
-  Wire.requestFrom(addr, (uint8_t)1);
-  x = Wire.read();
+  uint8_t txErr = Wire.endTransmission();
+  size_t got = Wire.requestFrom(addr, (uint8_t)1);
+  lastBusOk = (txErr == 0 && got == 1);
+  if (got == 1) {
+    x = Wire.read();
+  }
   return x;
 }
 void FT6336::writeBlockData(uint16_t reg, uint8_t *val, uint8_t size) {

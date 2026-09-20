@@ -1,6 +1,19 @@
 #include "gui.h"
 #include "network_manager.h"
 
+namespace {
+  const int16_t DASH_PWR_X = 282;
+  const int16_t DASH_PWR_Y = 36;
+  const int16_t DASH_PWR_W = 24;
+  const int16_t DASH_PWR_H = 18;
+
+  const int16_t PWR_CANCEL_X = 40;
+  const int16_t PWR_CONFIRM_X = 168;
+  const int16_t PWR_BTN_Y = 132;
+  const int16_t PWR_BTN_W = 112;
+  const int16_t PWR_BTN_H = 44;
+}
+
 MacroPadGUI::MacroPadGUI(TFT_eSPI& tft)
   : _tft(tft),
     _lastDrawnBatPercent(0),
@@ -744,22 +757,23 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
     _tft.drawString("SYSTEM TELEMETRY", cardX + 10, cardY + 11, 2);
   }
 
-  // Subsystem readiness badges on header right (clear badge box only)
-  _tft.fillRect(cardX + cardW - 145, cardY + 3, 140, 16, 0x18C3);
+  // Subsystem readiness badges on header right (leave room for power button)
+  _tft.fillRect(cardX + cardW - 170, cardY + 3, 114, 16, 0x18C3);
   _tft.setTextDatum(MR_DATUM);
   if (status.battery == HEALTH_FAILED && !status.isCharging && status.batteryVoltage > 0.5f) {
     _tft.setTextColor(0xF800, 0x18C3);
-    _tft.drawString("LOW BATTERY!", cardX + cardW - 10, cardY + 11, 2);
+    _tft.drawString("LOW BAT", cardX + cardW - 32, cardY + 11, 2);
   } else if (status.macropadReady && status.voiceReady) {
     _tft.setTextColor(0x07E0, 0x18C3);
-    _tft.drawString("ALL SYSTEMS READY", cardX + cardW - 10, cardY + 11, 2);
+    _tft.drawString("READY", cardX + cardW - 32, cardY + 11, 2);
   } else if (status.macropadReady) {
     _tft.setTextColor(0xFDA0, 0x18C3);
-    _tft.drawString("MACROPAD READY", cardX + cardW - 10, cardY + 11, 2);
+    _tft.drawString("MACROPAD", cardX + cardW - 32, cardY + 11, 2);
   } else {
     _tft.setTextColor(0xFBA0, 0x18C3);
-    _tft.drawString("INITIALIZING...", cardX + cardW - 10, cardY + 11, 2);
+    _tft.drawString("WAIT", cardX + cardW - 32, cardY + 11, 2);
   }
+  drawDashboardPowerButton();
 
   // Row heights: 14px per row (fits 7 telemetry rows cleanly)
   int16_t rowY = cardY + 21;
@@ -883,6 +897,77 @@ void MacroPadGUI::drawDashboardSwitching(const char* targetModeName) {
   _tft.drawString("Reconnecting Wi-Fi & Services...", 160, cardY + 65, 2);
 }
 
+void MacroPadGUI::drawDashboardPowerButton() {
+  const uint16_t bg = 0x4800;
+  const uint16_t border = 0xF800;
+  const uint16_t icon = 0xFFFF;
+  _tft.fillRoundRect(DASH_PWR_X, DASH_PWR_Y, DASH_PWR_W, DASH_PWR_H, 4, bg);
+  _tft.drawRoundRect(DASH_PWR_X, DASH_PWR_Y, DASH_PWR_W, DASH_PWR_H, 4, border);
+
+  const int16_t cx = DASH_PWR_X + DASH_PWR_W / 2;
+  const int16_t cy = DASH_PWR_Y + DASH_PWR_H / 2 + 1;
+  _tft.drawCircle(cx, cy, 5, icon);
+  _tft.drawFastVLine(cx, DASH_PWR_Y + 3, 7, icon);
+  _tft.drawFastVLine(cx - 1, DASH_PWR_Y + 3, 6, icon);
+  _tft.drawFastVLine(cx + 1, DASH_PWR_Y + 3, 6, icon);
+}
+
+void MacroPadGUI::drawPowerConfirmDialog() {
+  _tft.fillRect(0, STATUS_BAR_H, SCREEN_WIDTH, SCREEN_HEIGHT - STATUS_BAR_H, 0x0000);
+  _tft.fillRoundRect(28, 52, 264, 140, 8, 0x1084);
+  _tft.drawRoundRect(28, 52, 264, 140, 8, 0xF800);
+  _tft.drawRoundRect(29, 53, 262, 138, 7, 0x8000);
+
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(C_TEXT_WHITE, 0x1084);
+  _tft.drawString("Power off?", 160, 78, 4);
+  _tft.setTextColor(C_TEXT_MUTED, 0x1084);
+  _tft.drawString("Tap the screen or BOOT to wake", 160, 108, 2);
+
+  _tft.fillRoundRect(PWR_CANCEL_X, PWR_BTN_Y, PWR_BTN_W, PWR_BTN_H, 6, 0x2124);
+  _tft.drawRoundRect(PWR_CANCEL_X, PWR_BTN_Y, PWR_BTN_W, PWR_BTN_H, 6, 0x632C);
+  _tft.setTextColor(C_TEXT_WHITE, 0x2124);
+  _tft.drawString("CANCEL", PWR_CANCEL_X + PWR_BTN_W / 2, PWR_BTN_Y + PWR_BTN_H / 2, 2);
+
+  _tft.fillRoundRect(PWR_CONFIRM_X, PWR_BTN_Y, PWR_BTN_W, PWR_BTN_H, 6, 0xA800);
+  _tft.drawRoundRect(PWR_CONFIRM_X, PWR_BTN_Y, PWR_BTN_W, PWR_BTN_H, 6, 0xF800);
+  _tft.setTextColor(C_TEXT_WHITE, 0xA800);
+  _tft.drawString("POWER OFF", PWR_CONFIRM_X + PWR_BTN_W / 2, PWR_BTN_Y + PWR_BTN_H / 2, 2);
+}
+
+int8_t MacroPadGUI::getPowerDialogTarget(int16_t x, int16_t y) {
+  if (y >= PWR_BTN_Y && y <= PWR_BTN_Y + PWR_BTN_H) {
+    if (x >= PWR_CANCEL_X && x <= PWR_CANCEL_X + PWR_BTN_W) {
+      return TOUCH_POWER_CANCEL;
+    }
+    if (x >= PWR_CONFIRM_X && x <= PWR_CONFIRM_X + PWR_BTN_W) {
+      return TOUCH_POWER_CONFIRM;
+    }
+  }
+  return -1;
+}
+
+void MacroPadGUI::drawSleepSplash() {
+  _tft.fillScreen(0x0000);
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(C_TEXT_MUTED, 0x0000);
+  _tft.drawString("Going to sleep...", 160, 120, 2);
+}
+
+void MacroPadGUI::sleepDisplay() {
+  _tft.writecommand(TFT_DISPOFF);
+  delay(20);
+  _tft.writecommand(0x10); // SLPIN (ILI9341 / ST7789)
+  delay(120);
+}
+
+void MacroPadGUI::wakeDisplay() {
+  _tft.writecommand(0x11); // SLPOUT
+  delay(120);
+  _tft.writecommand(0x29); // DISPON
+  delay(20);
+}
+
 void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
   _tft.fillScreen(C_BG);
   drawStatusBar(isConnected, currentPage, _lastDrawnBatPercent, _lastDrawnCharging, _lastDrawnBatHealth);
@@ -969,6 +1054,9 @@ int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
 
   // Check Page 1 Dashboard buttons
   if (currentPage == PAGE_DASHBOARD) {
+    if (x >= 276 && x <= 308 && y >= 34 && y <= 56) {
+      return TOUCH_POWER;
+    }
     // Volume controls: y = 152..192
     if (y >= 152 && y <= 192) {
       if (x >= 4 && x <= 54) {
