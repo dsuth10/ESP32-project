@@ -1,19 +1,6 @@
 #include "gui.h"
 #include "network_manager.h"
 
-namespace {
-  const int16_t DASH_PWR_X = 148;
-  const int16_t DASH_PWR_Y = 4;
-  const int16_t DASH_PWR_W = 42;
-  const int16_t DASH_PWR_H = 24;
-
-  const int16_t PWR_CANCEL_X = 40;
-  const int16_t PWR_CONFIRM_X = 168;
-  const int16_t PWR_BTN_Y = 132;
-  const int16_t PWR_BTN_W = 112;
-  const int16_t PWR_BTN_H = 44;
-}
-
 MacroPadGUI::MacroPadGUI(TFT_eSPI& tft)
   : _tft(tft),
     _lastDrawnBatPercent(0),
@@ -33,7 +20,7 @@ MacroPadGUI::MacroPadGUI(TFT_eSPI& tft)
 
 void MacroPadGUI::init() {
   _tft.init();
-  _tft.setRotation(1); // Landscape 320x240
+  _tft.setRotation(UI_TFT_ROTATION);
   _tft.fillScreen(C_BG);
 }
 
@@ -43,55 +30,64 @@ void MacroPadGUI::setVoiceAudioEnabled(bool enabled) {
 
 void MacroPadGUI::getButtonRect(uint8_t pageIndex, uint8_t btnIndex, int16_t& x, int16_t& y, int16_t& w, int16_t& h) {
   if (pageIndex == PAGE_VOICE) {
-    // Voice page: Main hold-to-talk button alongside audio toggle
-    w = 222;
-    h = 42;
-    x = 10;
-    y = 36;
+    w = UI_VOICE_BTN_W;
+    h = UI_VOICE_BTN_H;
+    x = UI_VOICE_BTN_X;
+    y = UI_VOICE_BTN_Y;
     return;
   }
 
   uint8_t count = PROFILES[pageIndex].numButtons;
 
   if (count == 1) {
-    // Single compact button
-    w = 300;
-    h = 42;
-    x = 10;
-    y = 36;
+    w = UI_SINGLE_BTN_W;
+    h = UI_SINGLE_BTN_H;
+    x = UI_SINGLE_BTN_X;
+    y = UI_SINGLE_BTN_Y;
   } else if (count <= 3) {
-    // 3 Wide Horizontal Buttons stacked vertically
-    w = 300;
-    h = 58;
-    x = 10;
-    y = 38 + btnIndex * (h + 8);
+    w = UI_WIDE_BTN_W;
+    h = UI_WIDE_BTN_H;
+    x = UI_WIDE_BTN_X;
+    y = UI_WIDE_BTN_ORIGIN_Y + btnIndex * (h + UI_WIDE_BTN_GAP);
   } else {
-    // 2 Rows x 3 Columns Standard Grid
-    w = 98;
-    h = 94;
+    w = UI_GRID_BTN_W;
+    h = UI_GRID_BTN_H;
     uint8_t row = btnIndex / GRID_COLS;
     uint8_t col = btnIndex % GRID_COLS;
-    x = 7 + col * (w + 6);
-    y = 38 + row * (h + 6);
+    x = UI_GRID_ORIGIN_X + col * (w + UI_GRID_GAP_X);
+    y = UI_GRID_ORIGIN_Y + row * (h + UI_GRID_GAP_Y);
   }
 }
 
 void MacroPadGUI::drawStatusBar(bool isConnected, uint8_t currentPage, uint8_t batteryPercent, bool isCharging, HealthState batHealth) {
-  // Draw Status Bar Background
   _tft.fillRect(0, 0, SCREEN_WIDTH, STATUS_BAR_H, C_STATUS_BG);
-  _tft.drawFastHLine(0, STATUS_BAR_H - 1, SCREEN_WIDTH, 0x3186);
+  _tft.drawFastHLine(0, UI_SYSTEM_BAR_H - 1, SCREEN_WIDTH, 0x3186);
+#if defined(UI_PORTRAIT)
+  if (UI_TITLE_BAR_H > 0) {
+    _tft.drawFastHLine(0, STATUS_BAR_H - 1, SCREEN_WIDTH, 0x3186);
+  }
+#endif
 
-  // Connection Indicator LED Circle
   uint16_t ledColor = isConnected ? C_CONNECTED : C_DISCONNECTED;
-  _tft.fillCircle(10, STATUS_BAR_H / 2, 5, ledColor);
-  _tft.drawCircle(10, STATUS_BAR_H / 2, 6, 0xFFFF);
+  _tft.fillCircle(10, UI_SYSTEM_BAR_H / 2, 5, ledColor);
+  _tft.drawCircle(10, UI_SYSTEM_BAR_H / 2, 6, 0xFFFF);
 
-  // Connection Status Text
   _tft.setTextDatum(ML_DATUM);
   _tft.setTextColor(isConnected ? C_CONNECTED : 0xFBA0, C_STATUS_BG);
-  _tft.drawString(isConnected ? "CONNECTED" : "WAITING...", 20, STATUS_BAR_H / 2, 2);
+#if defined(UI_PORTRAIT)
+  _tft.drawString(isConnected ? "OK" : "...", UI_CONN_TEXT_X, UI_CONN_TEXT_Y, 2);
+#else
+  _tft.drawString(isConnected ? "CONNECTED" : "WAITING...", UI_CONN_TEXT_X, UI_CONN_TEXT_Y, 2);
+#endif
 
-  // Profile Title / System & Power Button
+#if defined(UI_PORTRAIT)
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(PROFILES[currentPage].themeColor, C_STATUS_BG);
+  _tft.drawString(PROFILES[currentPage].title, UI_TITLE_CX, UI_TITLE_CY, 2);
+  if (currentPage == PAGE_DASHBOARD) {
+    drawDashboardPowerButton();
+  }
+#else
   if (currentPage == PAGE_DASHBOARD) {
     _tft.setTextDatum(ML_DATUM);
     _tft.setTextColor(PROFILES[currentPage].themeColor, C_STATUS_BG);
@@ -100,31 +96,27 @@ void MacroPadGUI::drawStatusBar(bool isConnected, uint8_t currentPage, uint8_t b
   } else {
     _tft.setTextDatum(MC_DATUM);
     _tft.setTextColor(PROFILES[currentPage].themeColor, C_STATUS_BG);
-    _tft.drawString(PROFILES[currentPage].title, 142, STATUS_BAR_H / 2, 2);
+    _tft.drawString(PROFILES[currentPage].title, UI_TITLE_CX, UI_TITLE_CY, 2);
   }
+#endif
 
-  // Battery Indicator Widget (x: 198..244)
   updateStatusBarBattery(batteryPercent, isCharging, batHealth);
 
-  // Page switcher buttons (< [1/6] >)
-  // Left arrow button
-  _tft.fillRoundRect(248, 4, 24, 24, 4, 0x2124);
-  _tft.drawRoundRect(248, 4, 24, 24, 4, 0x632C);
+  _tft.fillRoundRect(UI_NAV_PREV_X, UI_NAV_PREV_Y, UI_NAV_PREV_W, UI_NAV_PREV_H, 4, 0x2124);
+  _tft.drawRoundRect(UI_NAV_PREV_X, UI_NAV_PREV_Y, UI_NAV_PREV_W, UI_NAV_PREV_H, 4, 0x632C);
   _tft.setTextColor(C_TEXT_WHITE, 0x2124);
   _tft.setTextDatum(MC_DATUM);
-  _tft.drawString("<", 260, 16, 2);
+  _tft.drawString("<", UI_NAV_PREV_X + UI_NAV_PREV_W / 2, UI_NAV_PREV_Y + UI_NAV_PREV_H / 2, 2);
 
-  // Page number text
   char pageBuf[8];
   snprintf(pageBuf, sizeof(pageBuf), "%d/%d", currentPage + 1, NUM_PAGES);
   _tft.setTextColor(C_TEXT_MUTED, C_STATUS_BG);
-  _tft.drawString(pageBuf, 282, 16, 2);
+  _tft.drawString(pageBuf, UI_NAV_PAGE_CX, UI_NAV_PREV_Y + UI_NAV_PREV_H / 2, 2);
 
-  // Right arrow button
-  _tft.fillRoundRect(296, 4, 22, 24, 4, 0x2124);
-  _tft.drawRoundRect(296, 4, 22, 24, 4, 0x632C);
+  _tft.fillRoundRect(UI_NAV_NEXT_X, UI_NAV_NEXT_Y, UI_NAV_NEXT_W, UI_NAV_NEXT_H, 4, 0x2124);
+  _tft.drawRoundRect(UI_NAV_NEXT_X, UI_NAV_NEXT_Y, UI_NAV_NEXT_W, UI_NAV_NEXT_H, 4, 0x632C);
   _tft.setTextColor(C_TEXT_WHITE, 0x2124);
-  _tft.drawString(">", 307, 16, 2);
+  _tft.drawString(">", UI_NAV_NEXT_X + UI_NAV_NEXT_W / 2, UI_NAV_NEXT_Y + UI_NAV_NEXT_H / 2, 2);
 }
 
 void MacroPadGUI::updateStatusBarBattery(uint8_t batteryPercent, bool isCharging, HealthState batHealth) {
@@ -132,10 +124,10 @@ void MacroPadGUI::updateStatusBarBattery(uint8_t batteryPercent, bool isCharging
   _lastDrawnCharging = isCharging;
   _lastDrawnBatHealth = batHealth;
 
-  const int16_t bx = 198;
-  const int16_t by = 7;
-  const int16_t bw = 46;
-  const int16_t bh = 18;
+  const int16_t bx = UI_BAT_X;
+  const int16_t by = UI_BAT_Y;
+  const int16_t bw = UI_BAT_W;
+  const int16_t bh = UI_BAT_H;
 
   // Clear battery area (differential redraw)
   _tft.fillRect(bx, by, bw, bh, C_STATUS_BG);
@@ -222,10 +214,10 @@ void MacroPadGUI::drawButton(uint8_t pageIndex, uint8_t btnIndex, bool pressed) 
 }
 
 void MacroPadGUI::drawVoiceAudioToggle(bool pressed) {
-  int16_t x = 238;
-  int16_t y = 36;
-  int16_t w = 72;
-  int16_t h = 42;
+  int16_t x = UI_VOICE_AUDIO_X;
+  int16_t y = UI_VOICE_AUDIO_Y;
+  int16_t w = UI_VOICE_AUDIO_W;
+  int16_t h = UI_VOICE_AUDIO_H;
 
   uint16_t bg;
   uint16_t border;
@@ -383,8 +375,7 @@ void MacroPadGUI::addVoiceTurn(const String& transcript, const String& reply) {
 
 void MacroPadGUI::rebuildChatLines() {
   _chatLines.clear();
-  // Allow 258px width for text, leaving space for scrollbar & touch buttons on right
-  const int16_t textMaxW = 258;
+  const int16_t textMaxW = UI_VOICE_TEXT_MAX_W;
 
   for (size_t i = 0; i < _history.size(); i++) {
     const ChatMessage& msg = _history[i];
@@ -402,13 +393,13 @@ void MacroPadGUI::rebuildChatLines() {
 }
 
 void MacroPadGUI::scrollToBottom() {
-  const int visibleLines = 7;
+  const int visibleLines = UI_VOICE_VISIBLE_LINES;
   int total = (int)_chatLines.size();
   _voiceScrollLine = max(0, total - visibleLines);
 }
 
 void MacroPadGUI::scrollToLatestResponse() {
-  const int visibleLines = 7;
+  const int visibleLines = UI_VOICE_VISIBLE_LINES;
   int total = (int)_chatLines.size();
   if (total <= visibleLines) {
     _voiceScrollLine = 0;
@@ -441,17 +432,17 @@ bool MacroPadGUI::canScrollUp() const {
 }
 
 bool MacroPadGUI::canScrollDown() const {
-  const int visibleLines = 7;
+  const int visibleLines = UI_VOICE_VISIBLE_LINES;
   int total = (int)_chatLines.size();
   return (_voiceScrollLine + visibleLines < total);
 }
 
 bool MacroPadGUI::voiceChatScrollable() const {
-  return (_chatLines.size() > 7);
+  return (_chatLines.size() > UI_VOICE_VISIBLE_LINES);
 }
 
 void MacroPadGUI::scrollVoiceChat(int deltaLines) {
-  const int visibleLines = 7;
+  const int visibleLines = UI_VOICE_VISIBLE_LINES;
   int total = (int)_chatLines.size();
   if (total <= visibleLines) {
     return;
@@ -466,20 +457,18 @@ void MacroPadGUI::scrollVoiceChat(int deltaLines) {
 }
 
 void MacroPadGUI::renderVoiceChatViewport() {
-  const int16_t vpX = 14;
-  const int16_t vpY = 115;
-  const int16_t vpW = 262; // Text area width
-  const int16_t vpH = 116;
+  const int16_t vpX = UI_VOICE_VP_X;
+  const int16_t vpY = UI_VOICE_VP_Y;
+  const int16_t vpW = UI_VOICE_VP_W;
+  const int16_t vpH = UI_VOICE_VP_H;
   const uint16_t bgColor = 0x0842;
   const uint8_t font = 2;
-  const int16_t lineHeight = 16;
-  const int visibleLines = 7;
+  const int16_t lineHeight = UI_VOICE_LINE_H;
+  const int visibleLines = UI_VOICE_VISIBLE_LINES;
   const int total = (int)_chatLines.size();
 
-  // 1. Clear conversation text area (minimal differential fill - Rule 9)
   _tft.fillRect(vpX, vpY, vpW, vpH, bgColor);
 
-  // 2. Render visible chat lines
   int16_t curY = vpY + 2;
   int endLine = min(total, _voiceScrollLine + visibleLines);
   for (int i = _voiceScrollLine; i < endLine; i++) {
@@ -491,15 +480,13 @@ void MacroPadGUI::renderVoiceChatViewport() {
     curY += lineHeight;
   }
 
-  // 3. Render vertical scrollbar & on-screen controls if total lines exceed capacity
-  const int16_t ctrlX = 280;
-  const int16_t ctrlW = 26;
+  const int16_t ctrlX = UI_VOICE_CTRL_X;
+  const int16_t ctrlW = UI_VOICE_CTRL_W;
 
   if (total > visibleLines) {
     bool upActive = canScrollUp();
     bool downActive = canScrollDown();
 
-    // Up Button [ ▲ ] (y: 116..142)
     uint16_t upBg = upActive ? 0x18F4 : 0x1084;
     uint16_t upBorder = upActive ? 0x8A3F : 0x2124;
     uint16_t upTri = upActive ? 0xFFFF : 0x632C;
@@ -508,11 +495,10 @@ void MacroPadGUI::renderVoiceChatViewport() {
     _tft.drawRoundRect(ctrlX, vpY + 1, ctrlW, 26, 4, upBorder);
     _tft.fillTriangle(ctrlX + 13, vpY + 7, ctrlX + 7, vpY + 19, ctrlX + 19, vpY + 19, upTri);
 
-    // Track & Thumb (y: 145..198, h: 54)
-    const int16_t trackX = 290;
+    const int16_t trackX = ctrlX + 10;
     const int16_t trackY = vpY + 30;
     const int16_t trackW = 6;
-    const int16_t trackH = 54;
+    const int16_t trackH = max((int16_t)20, (int16_t)(vpH - 62));
 
     _tft.fillRoundRect(trackX, trackY, trackW, trackH, 3, 0x18C3);
 
@@ -521,18 +507,17 @@ void MacroPadGUI::renderVoiceChatViewport() {
     int maxScroll = total - visibleLines;
     int16_t thumbY = trackY + (_voiceScrollLine * (trackH - thumbH)) / maxScroll;
 
-    _tft.fillRoundRect(trackX, thumbY, trackW, thumbH, 3, 0x8A3F); // Vibrant Violet
+    _tft.fillRoundRect(trackX, thumbY, trackW, thumbH, 3, 0x8A3F);
 
-    // Down Button [ ▼ ] (y: 202..228)
     uint16_t downBg = downActive ? 0x18F4 : 0x1084;
     uint16_t downBorder = downActive ? 0x8A3F : 0x2124;
     uint16_t downTri = downActive ? 0xFFFF : 0x632C;
 
-    _tft.fillRoundRect(ctrlX, vpY + 87, ctrlW, 26, 4, downBg);
-    _tft.drawRoundRect(ctrlX, vpY + 87, ctrlW, 26, 4, downBorder);
-    _tft.fillTriangle(ctrlX + 13, vpY + 107, ctrlX + 7, vpY + 95, ctrlX + 19, vpY + 95, downTri);
+    const int16_t dnBtnY = vpY + vpH - 27;
+    _tft.fillRoundRect(ctrlX, dnBtnY, ctrlW, 26, 4, downBg);
+    _tft.drawRoundRect(ctrlX, dnBtnY, ctrlW, 26, 4, downBorder);
+    _tft.fillTriangle(ctrlX + 13, dnBtnY + 19, ctrlX + 7, dnBtnY + 7, ctrlX + 19, dnBtnY + 7, downTri);
   } else {
-    // Clear the control column if not scrollable
     _tft.fillRect(ctrlX - 2, vpY, ctrlW + 6, vpH, bgColor);
   }
 }
@@ -552,10 +537,10 @@ void MacroPadGUI::drawVoiceCard(VoiceUIState state, const char* statusMsg, const
 }
 
 void MacroPadGUI::redrawVoiceCard() {
-  int16_t x = 10;
-  int16_t y = 82;
-  int16_t w = 300;
-  int16_t h = 152;
+  int16_t x = UI_VOICE_CARD_X;
+  int16_t y = UI_VOICE_CARD_Y;
+  int16_t w = UI_VOICE_CARD_W;
+  int16_t h = UI_VOICE_CARD_H;
 
   uint16_t borderColor = 0x39E7;
   uint16_t bgColor = 0x0842;
@@ -693,64 +678,59 @@ void MacroPadGUI::drawStatusRow(int16_t x, int16_t y, int16_t w, const char* lab
 
 void MacroPadGUI::drawDashboardVolume(uint8_t volume, bool fullRedraw) {
   _lastDrawnVolume = volume;
-  const int16_t volY = 158;
-  const int16_t volH = 34;
+  const int16_t volY = UI_DASH_VOL_Y;
+  const int16_t volH = UI_DASH_VOL_H;
 
   if (fullRedraw) {
-    // 1. Minus Button [ - ] (x: 8..52, w: 44)
-    _tft.fillRoundRect(8, volY, 44, volH, 6, 0x1084);
-    _tft.drawRoundRect(8, volY, 44, volH, 6, 0x4228);
+    _tft.fillRoundRect(UI_DASH_VOL_MINUS_X, volY, UI_DASH_VOL_MINUS_W, volH, 6, 0x1084);
+    _tft.drawRoundRect(UI_DASH_VOL_MINUS_X, volY, UI_DASH_VOL_MINUS_W, volH, 6, 0x4228);
     _tft.setTextDatum(MC_DATUM);
     _tft.setTextColor(C_TEXT_WHITE, 0x1084);
-    _tft.drawString("-", 30, volY + volH / 2, 4);
+    _tft.drawString("-", UI_DASH_VOL_MINUS_X + UI_DASH_VOL_MINUS_W / 2, volY + volH / 2, 4);
 
-    // 2. Plus Button [ + ] (x: 268..312, w: 44)
-    _tft.fillRoundRect(268, volY, 44, volH, 6, 0x1084);
-    _tft.drawRoundRect(268, volY, 44, volH, 6, 0x4228);
+    _tft.fillRoundRect(UI_DASH_VOL_PLUS_X, volY, UI_DASH_VOL_PLUS_W, volH, 6, 0x1084);
+    _tft.drawRoundRect(UI_DASH_VOL_PLUS_X, volY, UI_DASH_VOL_PLUS_W, volH, 6, 0x4228);
     _tft.setTextDatum(MC_DATUM);
     _tft.setTextColor(C_TEXT_WHITE, 0x1084);
-    _tft.drawString("+", 290, volY + volH / 2, 4);
+    _tft.drawString("+", UI_DASH_VOL_PLUS_X + UI_DASH_VOL_PLUS_W / 2, volY + volH / 2, 4);
 
-    // 3. Center Box Container (x: 56..264, w: 208)
-    _tft.fillRoundRect(56, volY, 208, volH, 6, 0x0842);
-    _tft.drawRoundRect(56, volY, 208, volH, 6, 0x3186);
+    _tft.fillRoundRect(UI_DASH_VOL_CTR_X, volY, UI_DASH_VOL_CTR_W, volH, 6, 0x0842);
+    _tft.drawRoundRect(UI_DASH_VOL_CTR_X, volY, UI_DASH_VOL_CTR_W, volH, 6, 0x3186);
   }
 
-  // Differential overwrite of center dynamic contents (Rule 9)
-  _tft.fillRect(58, volY + 2, 204, volH - 4, 0x0842);
+  _tft.fillRect(UI_DASH_VOL_CTR_X + 2, volY + 2, UI_DASH_VOL_CTR_W - 4, volH - 4, 0x0842);
 
   _tft.setTextDatum(MC_DATUM);
   char volStr[32];
   if (volume == 0) {
     snprintf(volStr, sizeof(volStr), "HERMES VOL: MUTED");
-    _tft.setTextColor(0xF800, 0x0842); // Red
+    _tft.setTextColor(0xF800, 0x0842);
   } else {
     snprintf(volStr, sizeof(volStr), "HERMES VOL: %d%%", volume);
-    _tft.setTextColor(0x07FF, 0x0842); // Cyan
+    _tft.setTextColor(0x07FF, 0x0842);
   }
-  _tft.drawString(volStr, 160, volY + 11, 2);
+  _tft.drawString(volStr, UI_DASH_VOL_LABEL_CX, volY + 11, 2);
 
-  // Volume Bar Track (w = 180, h = 5, x = 70, y = volY + 22)
-  const int16_t trackX = 70;
+  const int16_t trackX = UI_DASH_VOL_TRACK_X;
   const int16_t trackY = volY + 22;
-  const int16_t trackW = 180;
+  const int16_t trackW = UI_DASH_VOL_TRACK_W;
   const int16_t trackH = 5;
   _tft.fillRoundRect(trackX, trackY, trackW, trackH, 2, 0x18C3);
 
   if (volume > 0) {
     int16_t fillW = (trackW * volume) / 100;
     if (fillW < 4) fillW = 4;
-    uint16_t barColor = (volume > 85) ? 0xFDA0 : 0x07E0; // Green, warning amber if high
+    uint16_t barColor = (volume > 85) ? 0xFDA0 : 0x07E0;
     _tft.fillRoundRect(trackX, trackY, fillW, trackH, 2, barColor);
   }
 }
 
 void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode currentMode, uint8_t volume, bool fullRedraw) {
   _lastDrawnVolume = volume;
-  int16_t cardX = 8;
-  int16_t cardY = 34;
-  int16_t cardW = 304;
-  int16_t cardH = 122;
+  int16_t cardX = UI_DASH_CARD_X;
+  int16_t cardY = UI_DASH_CARD_Y;
+  int16_t cardW = UI_DASH_CARD_W;
+  int16_t cardH = UI_DASH_CARD_H;
 
   if (fullRedraw) {
     // Background card
@@ -851,35 +831,41 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
 
   // Bottom Section: Environment Switcher Buttons (only on fullRedraw)
   if (fullRedraw) {
-    int16_t btnY = 196;
-    int16_t btnH = 38;
-    int16_t btnW = 146;
+    int16_t btnY = UI_DASH_ENV_Y;
+    int16_t btnH = UI_DASH_ENV_H;
+    int16_t btnW = UI_DASH_ENV_W;
 
     bool homeActive = (currentMode == ENV_HOME);
     uint16_t homeBg = homeActive ? 0x0B4E : 0x1084;
     uint16_t homeBorder = homeActive ? 0x07E0 : 0x4228;
-    _tft.fillRoundRect(cardX, btnY, btnW, btnH, 6, homeBg);
-    _tft.drawRoundRect(cardX, btnY, btnW, btnH, 6, homeBorder);
+    _tft.fillRoundRect(UI_DASH_HOME_X, btnY, btnW, btnH, 6, homeBg);
+    _tft.drawRoundRect(UI_DASH_HOME_X, btnY, btnW, btnH, 6, homeBorder);
     if (homeActive) {
-      _tft.drawRoundRect(cardX + 1, btnY + 1, btnW - 2, btnH - 2, 5, homeBorder);
+      _tft.drawRoundRect(UI_DASH_HOME_X + 1, btnY + 1, btnW - 2, btnH - 2, 5, homeBorder);
     }
     _tft.setTextDatum(MC_DATUM);
     _tft.setTextColor(homeActive ? 0xFFFF : C_TEXT_MUTED, homeBg);
-    _tft.drawString(homeActive ? "HOME [ ACTIVE ]" : "SWITCH TO HOME", cardX + btnW / 2, btnY + btnH / 2, 2);
+#if defined(UI_PORTRAIT)
+    _tft.drawString(homeActive ? "HOME *" : "HOME", UI_DASH_HOME_X + btnW / 2, btnY + btnH / 2, 2);
+#else
+    _tft.drawString(homeActive ? "HOME [ ACTIVE ]" : "SWITCH TO HOME", UI_DASH_HOME_X + btnW / 2, btnY + btnH / 2, 2);
+#endif
 
-    // Right Button: WORK
-    int16_t workX = cardX + btnW + 12;
     bool workActive = (currentMode == ENV_WORK);
     uint16_t workBg = workActive ? 0x3194 : 0x1084;
     uint16_t workBorder = workActive ? 0x07E0 : 0x4228;
-    _tft.fillRoundRect(workX, btnY, btnW, btnH, 6, workBg);
-    _tft.drawRoundRect(workX, btnY, btnW, btnH, 6, workBorder);
+    _tft.fillRoundRect(UI_DASH_WORK_X, btnY, btnW, btnH, 6, workBg);
+    _tft.drawRoundRect(UI_DASH_WORK_X, btnY, btnW, btnH, 6, workBorder);
     if (workActive) {
-      _tft.drawRoundRect(workX + 1, btnY + 1, btnW - 2, btnH - 2, 5, workBorder);
+      _tft.drawRoundRect(UI_DASH_WORK_X + 1, btnY + 1, btnW - 2, btnH - 2, 5, workBorder);
     }
     _tft.setTextDatum(MC_DATUM);
     _tft.setTextColor(workActive ? 0xFFFF : C_TEXT_MUTED, workBg);
-    _tft.drawString(workActive ? "WORK [ ACTIVE ]" : "SWITCH TO WORK", workX + btnW / 2, btnY + btnH / 2, 2);
+#if defined(UI_PORTRAIT)
+    _tft.drawString(workActive ? "WORK *" : "WORK", UI_DASH_WORK_X + btnW / 2, btnY + btnH / 2, 2);
+#else
+    _tft.drawString(workActive ? "WORK [ ACTIVE ]" : "SWITCH TO WORK", UI_DASH_WORK_X + btnW / 2, btnY + btnH / 2, 2);
+#endif
   }
 }
 
@@ -888,10 +874,10 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
 }
 
 void MacroPadGUI::drawDashboardSwitching(const char* targetModeName) {
-  int16_t cardX = 8;
-  int16_t cardY = 34;
-  int16_t cardW = 304;
-  int16_t cardH = 122;
+  int16_t cardX = UI_DASH_CARD_X;
+  int16_t cardY = UI_DASH_CARD_Y;
+  int16_t cardW = UI_DASH_CARD_W;
+  int16_t cardH = UI_DASH_CARD_H;
 
   _tft.fillRoundRect(cardX, cardY, cardW, cardH, 6, 0x1084);
   _tft.drawRoundRect(cardX, cardY, cardW, cardH, 6, 0xFDA0);
@@ -900,10 +886,10 @@ void MacroPadGUI::drawDashboardSwitching(const char* targetModeName) {
   _tft.setTextColor(0xFFFF, 0x1084);
   char buf[48];
   snprintf(buf, sizeof(buf), "Switching to %s Profile...", targetModeName);
-  _tft.drawString(buf, 160, cardY + 32, 2);
+  _tft.drawString(buf, SCREEN_WIDTH / 2, cardY + 32, 2);
 
   _tft.setTextColor(0xFDA0, 0x1084);
-  _tft.drawString("Reconnecting Wi-Fi & Services...", 160, cardY + 65, 2);
+  _tft.drawString("Reconnecting Wi-Fi & Services...", SCREEN_WIDTH / 2, cardY + 65, 2);
 }
 
 void MacroPadGUI::drawDashboardPowerButton() {
@@ -924,15 +910,15 @@ void MacroPadGUI::drawDashboardPowerButton() {
 
 void MacroPadGUI::drawPowerConfirmDialog() {
   _tft.fillRect(0, STATUS_BAR_H, SCREEN_WIDTH, SCREEN_HEIGHT - STATUS_BAR_H, 0x0000);
-  _tft.fillRoundRect(28, 52, 264, 140, 8, 0x1084);
-  _tft.drawRoundRect(28, 52, 264, 140, 8, 0xF800);
-  _tft.drawRoundRect(29, 53, 262, 138, 7, 0x8000);
+  _tft.fillRoundRect(PWR_DIALOG_X, PWR_DIALOG_Y, PWR_DIALOG_W, PWR_DIALOG_H, 8, 0x1084);
+  _tft.drawRoundRect(PWR_DIALOG_X, PWR_DIALOG_Y, PWR_DIALOG_W, PWR_DIALOG_H, 8, 0xF800);
+  _tft.drawRoundRect(PWR_DIALOG_X + 1, PWR_DIALOG_Y + 1, PWR_DIALOG_W - 2, PWR_DIALOG_H - 2, 7, 0x8000);
 
   _tft.setTextDatum(MC_DATUM);
   _tft.setTextColor(C_TEXT_WHITE, 0x1084);
-  _tft.drawString("Power off?", 160, 78, 4);
+  _tft.drawString("Power off?", PWR_TITLE_CX, PWR_TITLE_CY, 4);
   _tft.setTextColor(C_TEXT_MUTED, 0x1084);
-  _tft.drawString("Tap the screen or BOOT to wake", 160, 108, 2);
+  _tft.drawString("Tap screen or BOOT to wake", PWR_TITLE_CX, PWR_HINT_CY, 2);
 
   _tft.fillRoundRect(PWR_CANCEL_X, PWR_BTN_Y, PWR_BTN_W, PWR_BTN_H, 6, 0x2124);
   _tft.drawRoundRect(PWR_CANCEL_X, PWR_BTN_Y, PWR_BTN_W, PWR_BTN_H, 6, 0x632C);
@@ -961,7 +947,7 @@ void MacroPadGUI::drawSleepSplash() {
   _tft.fillScreen(0x0000);
   _tft.setTextDatum(MC_DATUM);
   _tft.setTextColor(C_TEXT_MUTED, 0x0000);
-  _tft.drawString("Going to sleep...", 160, 120, 2);
+  _tft.drawString("Going to sleep...", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 2);
 }
 
 void MacroPadGUI::sleepDisplay() {
@@ -1025,96 +1011,118 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
 }
 
 int16_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
-  // Check Top Navigation Buttons (Status Bar: y = 0..32)
-  if (y >= 0 && y <= 32) {
-    if (x >= 244 && x <= 280) return TOUCH_PREV_PAGE;
-    if (x >= 288 && x <= 320) return TOUCH_NEXT_PAGE;
+  if (y >= 0 && y < STATUS_BAR_H) {
+#if defined(UI_PORTRAIT)
+    if (y < UI_SYSTEM_BAR_H) {
+      if (x >= UI_NAV_PREV_HIT_X0 && x <= UI_NAV_PREV_HIT_X1) return TOUCH_PREV_PAGE;
+      if (x >= UI_NAV_NEXT_HIT_X0 && x <= UI_NAV_NEXT_HIT_X1) return TOUCH_NEXT_PAGE;
+    } else if (currentPage == PAGE_DASHBOARD &&
+               x >= DASH_PWR_X - 6 && x <= DASH_PWR_X + DASH_PWR_W + 6) {
+      return TOUCH_POWER;
+    }
+#else
+    if (x >= UI_NAV_PREV_HIT_X0 && x <= UI_NAV_PREV_HIT_X1) return TOUCH_PREV_PAGE;
+    if (x >= UI_NAV_NEXT_HIT_X0 && x <= UI_NAV_NEXT_HIT_X1) return TOUCH_NEXT_PAGE;
     if (currentPage == PAGE_DASHBOARD && x >= DASH_PWR_X - 6 && x <= DASH_PWR_X + DASH_PWR_W + 6) {
       return TOUCH_POWER;
     }
+#endif
     return -1;
   }
 
-  // Check Page 6 Voice scroll area & controls
   if (currentPage == PAGE_VOICE) {
-    // Top audio toggle button: x = 232..316, y = 34..80
-    if (x >= 232 && x <= 316 && y >= 34 && y <= 80) {
+    if (x >= UI_VOICE_AUDIO_HIT_X0 && x <= UI_VOICE_AUDIO_HIT_X1 &&
+        y >= UI_VOICE_AUDIO_HIT_Y0 && y <= UI_VOICE_AUDIO_HIT_Y1) {
       return TOUCH_VOICE_AUDIO_TOGGLE;
     }
 
-    // 1. Check Clear Button (top right of card header)
-    if (!_history.empty() && x >= 254 && x <= 312 && y >= 82 && y <= 112) {
+    if (!_history.empty() &&
+        x >= UI_VOICE_CLR_X0 && x <= UI_VOICE_CLR_X1 &&
+        y >= UI_VOICE_CLR_Y0 && y <= UI_VOICE_CLR_Y1) {
       return TOUCH_VOICE_CLEAR;
     }
 
-    // 2. Check Dedicated Scroll Buttons on right side if scrollable
-    if (_chatLines.size() > 7) {
-      // Up button area: x = 274..314, y = 114..148
-      if (x >= 274 && x <= 314 && y >= 114 && y <= 148) {
-        return TOUCH_VOICE_SCROLL_UP;
-      }
-      // Down button area: x = 274..314, y = 194..236
-      if (x >= 274 && x <= 314 && y >= 194 && y <= 236) {
-        return TOUCH_VOICE_SCROLL_DOWN;
+    if (_chatLines.size() > UI_VOICE_VISIBLE_LINES) {
+      if (x >= UI_VOICE_CTRL_X - 6 && x <= UI_VOICE_CTRL_X + UI_VOICE_CTRL_W + 6) {
+        if (y >= UI_VOICE_SCROLL_UP_Y0 && y <= UI_VOICE_SCROLL_UP_Y1) {
+          return TOUCH_VOICE_SCROLL_UP;
+        }
+        if (y >= UI_VOICE_SCROLL_DN_Y0 && y <= UI_VOICE_SCROLL_DN_Y1) {
+          return TOUCH_VOICE_SCROLL_DOWN;
+        }
       }
     }
 
-    // 3. Main conversation card touch down (for swipe drag or tap)
-    if (x >= 10 && x <= 310 && y >= 112 && y <= 234) {
+    if (x >= UI_VOICE_CHAT_HIT_X0 && x <= UI_VOICE_CHAT_HIT_X1 &&
+        y >= UI_VOICE_CHAT_HIT_Y0 && y <= UI_VOICE_CHAT_HIT_Y1) {
       return TOUCH_VOICE_CHAT;
     }
   }
 
-  // Check Page 1 Dashboard buttons
   if (currentPage == PAGE_DASHBOARD) {
-    // Volume controls: y = 152..192
-    if (y >= 152 && y <= 192) {
-      if (x >= 4 && x <= 54) {
+    if (y >= UI_DASH_VOL_HIT_Y0 && y <= UI_DASH_VOL_HIT_Y1) {
+      if (x >= UI_DASH_VOL_DOWN_X0 && x <= UI_DASH_VOL_DOWN_X1) {
         return TOUCH_DASH_VOL_DOWN;
       }
-      if (x >= 266 && x <= 316) {
+      if (x >= UI_DASH_VOL_UP_X0 && x <= UI_DASH_VOL_UP_X1) {
         return TOUCH_DASH_VOL_UP;
       }
-      if (x >= 55 && x <= 265) {
+      if (x >= UI_DASH_VOL_MUTE_X0 && x <= UI_DASH_VOL_MUTE_X1) {
         return TOUCH_DASH_VOL_MUTE;
       }
     }
-    // HOME button: left bottom area (y = 194..240)
-    if (x >= 4 && x <= 158 && y >= 194 && y <= 240) {
-      return TOUCH_DASH_HOME;
-    }
-    // WORK button: right bottom area (y = 194..240)
-    if (x >= 160 && x <= 316 && y >= 194 && y <= 240) {
-      return TOUCH_DASH_WORK;
-    }
-    return -1;
-  }
-
-  // Check Page 7 Storage Explorer touch targets
-  if (currentPage == PAGE_STORAGE) {
-    // 1. Navigation bar: UP button (x: 224..272) & REF button (x: 274..316), y: 70..96
-    if (y >= 70 && y <= 96) {
-      if (x >= 220 && x <= 272) return TOUCH_STORAGE_UP;
-      if (x >= 274 && x <= 316) return TOUCH_STORAGE_REFRESH;
-    }
-
-    // 2. Scroll buttons on right side: x: 270..316, y: 96..238
-    if (x >= 270 && x <= 316 && y >= 96 && y <= 238) {
-      if (y < 166) return TOUCH_STORAGE_SCROLL_UP;
-      else return TOUCH_STORAGE_SCROLL_DOWN;
-    }
-
-    // 3. File / Folder list items on left side: x: 8..268, y: 96..236
-    if (x >= 8 && x <= 268 && y >= 96 && y <= 236) {
-      int row = (y - 96) / 27;
-      if (row >= 0 && row < 5) {
-        return (int16_t)(TOUCH_STORAGE_ITEM_BASE + row);
+    if (y >= UI_DASH_ENV_HIT_Y0 && y <= UI_DASH_ENV_HIT_Y1) {
+      if (x >= UI_DASH_HOME_HIT_X0 && x <= UI_DASH_HOME_HIT_X1) {
+        return TOUCH_DASH_HOME;
+      }
+      if (x >= UI_DASH_WORK_HIT_X0 && x <= UI_DASH_WORK_HIT_X1) {
+        return TOUCH_DASH_WORK;
       }
     }
     return -1;
   }
 
-  // Check Macro Buttons on active page
+  if (currentPage == PAGE_STORAGE) {
+    if (y >= UI_STOR_NAV_HIT_Y0 && y <= UI_STOR_NAV_HIT_Y1) {
+      if (x >= UI_STOR_UP_HIT_X0 && x <= UI_STOR_UP_HIT_X1) return TOUCH_STORAGE_UP;
+      if (x >= UI_STOR_REF_HIT_X0 && x <= UI_STOR_REF_HIT_X1) return TOUCH_STORAGE_REFRESH;
+    }
+
+#if defined(UI_PORTRAIT)
+    if (y >= UI_STOR_SCROLL_HIT_Y0 && y <= UI_STOR_SCROLL_HIT_Y1) {
+      if (x >= UI_STOR_SCROLL_UP_HIT_X0 && x <= UI_STOR_SCROLL_UP_HIT_X1) {
+        return TOUCH_STORAGE_SCROLL_UP;
+      }
+      if (x >= UI_STOR_SCROLL_DN_HIT_X0 && x <= UI_STOR_SCROLL_DN_HIT_X1) {
+        return TOUCH_STORAGE_SCROLL_DOWN;
+      }
+    }
+
+    if (x >= UI_STOR_LIST_HIT_X0 && x <= UI_STOR_LIST_HIT_X1 &&
+        y >= UI_STOR_LIST_HIT_Y0 && y < UI_STOR_LIST_HIT_Y1) {
+      int row = (y - UI_STOR_LIST_Y) / UI_STOR_ROW_H;
+      if (row >= 0 && row < UI_STOR_VISIBLE_ROWS) {
+        return (int16_t)(TOUCH_STORAGE_ITEM_BASE + row);
+      }
+    }
+#else
+    if (x >= UI_STOR_SCROLL_HIT_X0 && x <= UI_STOR_SCROLL_HIT_X1 &&
+        y >= UI_STOR_SCROLL_HIT_Y0 && y <= UI_STOR_SCROLL_HIT_Y1) {
+      if (y < UI_STOR_SCROLL_MID_Y) return TOUCH_STORAGE_SCROLL_UP;
+      else return TOUCH_STORAGE_SCROLL_DOWN;
+    }
+
+    if (x >= UI_STOR_LIST_HIT_X0 && x <= UI_STOR_LIST_HIT_X1 &&
+        y >= UI_STOR_LIST_HIT_Y0 && y <= UI_STOR_LIST_HIT_Y1) {
+      int row = (y - UI_STOR_LIST_Y) / UI_STOR_ROW_H;
+      if (row >= 0 && row < UI_STOR_VISIBLE_ROWS) {
+        return (int16_t)(TOUCH_STORAGE_ITEM_BASE + row);
+      }
+    }
+#endif
+    return -1;
+  }
+
   uint8_t count = PROFILES[currentPage].numButtons;
   for (uint8_t i = 0; i < count; i++) {
     int16_t bx, by, bw, bh;
@@ -1138,11 +1146,10 @@ void MacroPadGUI::drawStorageExplorer(bool fullRedraw) {
     return;
   }
 
-  // 1. Storage Capacity Header Card (y: 34..70, height 36)
-  int16_t cardX = 8;
-  int16_t cardY = 34;
-  int16_t cardW = 304;
-  int16_t cardH = 36;
+  int16_t cardX = UI_STOR_CARD_X;
+  int16_t cardY = UI_STOR_CARD_Y;
+  int16_t cardW = UI_STOR_CARD_W;
+  int16_t cardH = UI_STOR_CARD_H;
 
   _tft.fillRoundRect(cardX, cardY, cardW, cardH, 5, 0x0842);
   _tft.drawRoundRect(cardX, cardY, cardW, cardH, 5, 0x3186);
@@ -1162,7 +1169,11 @@ void MacroPadGUI::drawStorageExplorer(bool fullRedraw) {
   char freeBuf[48];
   if (status.mounted) {
     float pctFree = (_storageTotalGB > 0) ? (_storageFreeGB / _storageTotalGB * 100.0f) : 0;
+#if defined(UI_PORTRAIT)
+    snprintf(freeBuf, sizeof(freeBuf), "%.1fGB free", _storageFreeGB);
+#else
     snprintf(freeBuf, sizeof(freeBuf), "Free: %.2f GB (%.1f%%)", _storageFreeGB, pctFree);
+#endif
     _tft.setTextColor(0x07E0, 0x0842);
   } else {
     snprintf(freeBuf, sizeof(freeBuf), "Not Mounted");
@@ -1170,7 +1181,6 @@ void MacroPadGUI::drawStorageExplorer(bool fullRedraw) {
   }
   _tft.drawString(freeBuf, cardX + cardW - 8, cardY + 11, 2);
 
-  // Storage usage bar
   int16_t barX = cardX + 8;
   int16_t barY = cardY + 23;
   int16_t barW = cardW - 16;
@@ -1189,46 +1199,48 @@ void MacroPadGUI::drawStorageExplorer(bool fullRedraw) {
     }
   }
 
-  // 2. Breadcrumbs & Nav Bar (y: 73..93, height 20)
-  int16_t navY = 73;
-  _tft.fillRect(cardX, navY, cardW - 86, 20, C_BG);
+  int16_t navY = UI_STOR_NAV_Y;
+  _tft.fillRect(cardX, navY, cardW - (UI_STOR_UP_W + UI_STOR_REF_W + 8), UI_STOR_NAV_H, C_BG);
   _tft.setTextDatum(ML_DATUM);
   _tft.setTextColor(0xFFFF, C_BG);
   String displayPath = "Path: " + _currentStoragePath;
+#if defined(UI_PORTRAIT)
+  if (displayPath.length() > 14) {
+    displayPath = "..." + displayPath.substring(displayPath.length() - 11);
+  }
+#else
   if (displayPath.length() > 22) {
     displayPath = "..." + displayPath.substring(displayPath.length() - 19);
   }
-  _tft.drawString(displayPath.c_str(), cardX + 4, navY + 10, 2);
+#endif
+  _tft.drawString(displayPath.c_str(), cardX + 4, navY + UI_STOR_NAV_H / 2, 2);
 
-  // [ UP .. ] button (x: 226, y: navY, w: 46, h: 20)
   bool canUp = (_currentStoragePath != "/");
   uint16_t upBg = canUp ? 0x2124 : 0x1084;
   uint16_t upBorder = canUp ? 0x07E0 : 0x3186;
   uint16_t upText = canUp ? 0x07E0 : 0x632C;
-  _tft.fillRoundRect(226, navY, 46, 20, 3, upBg);
-  _tft.drawRoundRect(226, navY, 46, 20, 3, upBorder);
+  _tft.fillRoundRect(UI_STOR_UP_X, navY, UI_STOR_UP_W, UI_STOR_NAV_H, 3, upBg);
+  _tft.drawRoundRect(UI_STOR_UP_X, navY, UI_STOR_UP_W, UI_STOR_NAV_H, 3, upBorder);
   _tft.setTextDatum(MC_DATUM);
   _tft.setTextColor(upText, upBg);
-  _tft.drawString(canUp ? "UP .." : "ROOT", 249, navY + 10, 2);
+  _tft.drawString(canUp ? "UP .." : "ROOT", UI_STOR_UP_X + UI_STOR_UP_W / 2, navY + UI_STOR_NAV_H / 2, 2);
 
-  // [ REF ] Refresh button (x: 276, y: navY, w: 36, h: 20)
-  _tft.fillRoundRect(276, navY, 36, 20, 3, 0x2124);
-  _tft.drawRoundRect(276, navY, 36, 20, 3, 0x051D);
+  _tft.fillRoundRect(UI_STOR_REF_X, navY, UI_STOR_REF_W, UI_STOR_NAV_H, 3, 0x2124);
+  _tft.drawRoundRect(UI_STOR_REF_X, navY, UI_STOR_REF_W, UI_STOR_NAV_H, 3, 0x051D);
   _tft.setTextColor(0x051D, 0x2124);
-  _tft.drawString("REF", 294, navY + 10, 2);
+  _tft.drawString("REF", UI_STOR_REF_X + UI_STOR_REF_W / 2, navY + UI_STOR_NAV_H / 2, 2);
 
-  // 3. Draw the file list and scroll controls
   drawStorageListOnly();
 }
 
 void MacroPadGUI::drawStorageListOnly() {
-  int16_t listX = 8;
-  int16_t listY = 96;
-  int16_t listW = 258;
-  int16_t rowH = 27;
+  int16_t listX = UI_STOR_LIST_X;
+  int16_t listY = UI_STOR_LIST_Y;
+  int16_t listW = UI_STOR_LIST_W;
+  int16_t rowH = UI_STOR_ROW_H;
+  const int visibleRows = UI_STOR_VISIBLE_ROWS;
 
-  // Render 5 items
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < visibleRows; i++) {
     int16_t rowY = listY + i * rowH;
     int itemIdx = _storageScrollIndex + i;
 
@@ -1239,46 +1251,47 @@ void MacroPadGUI::drawStorageListOnly() {
       _tft.drawRoundRect(listX, rowY, listW, rowH - 2, 4, 0x2124);
 
       if (entry.isDirectory) {
-        // Folder badge
-        _tft.fillRoundRect(listX + 4, rowY + 3, 38, rowH - 8, 3, 0x4220); // Amber
+        _tft.fillRoundRect(listX + 4, rowY + 3, 38, rowH - 8, 3, 0x4220);
         _tft.drawRoundRect(listX + 4, rowY + 3, 38, rowH - 8, 3, 0xFDA0);
         _tft.setTextDatum(MC_DATUM);
         _tft.setTextColor(0xFDA0, 0x4220);
         _tft.drawString("DIR", listX + 23, rowY + (rowH / 2) - 1, 2);
 
-        // Name
         _tft.setTextDatum(ML_DATUM);
         _tft.setTextColor(0xFFFF, rowBg);
         String dirName = entry.name + "/";
+#if defined(UI_PORTRAIT)
+        if (dirName.length() > 12) dirName = dirName.substring(0, 10) + "..";
+#else
         if (dirName.length() > 17) dirName = dirName.substring(0, 15) + "..";
+#endif
         _tft.drawString(dirName.c_str(), listX + 46, rowY + (rowH / 2) - 1, 2);
 
-        // Drill-down indicator chevron
         _tft.setTextDatum(MR_DATUM);
         _tft.setTextColor(0xFDA0, rowBg);
         _tft.drawString(">", listX + listW - 8, rowY + (rowH / 2) - 1, 4);
       } else {
-        // File badge
-        _tft.fillRoundRect(listX + 4, rowY + 3, 38, rowH - 8, 3, 0x2124); // Slate
+        _tft.fillRoundRect(listX + 4, rowY + 3, 38, rowH - 8, 3, 0x2124);
         _tft.drawRoundRect(listX + 4, rowY + 3, 38, rowH - 8, 3, 0x632C);
         _tft.setTextDatum(MC_DATUM);
         _tft.setTextColor(0xBDD7, 0x2124);
         _tft.drawString("FILE", listX + 23, rowY + (rowH / 2) - 1, 2);
 
-        // Name
         _tft.setTextDatum(ML_DATUM);
         _tft.setTextColor(0xFFFF, rowBg);
         String fileName = entry.name;
+#if defined(UI_PORTRAIT)
+        if (fileName.length() > 12) fileName = fileName.substring(0, 10) + "..";
+#else
         if (fileName.length() > 17) fileName = fileName.substring(0, 15) + "..";
+#endif
         _tft.drawString(fileName.c_str(), listX + 46, rowY + (rowH / 2) - 1, 2);
 
-        // Size
         _tft.setTextDatum(MR_DATUM);
         _tft.setTextColor(0x07FF, rowBg);
         _tft.drawString(entry.formattedSize.c_str(), listX + listW - 6, rowY + (rowH / 2) - 1, 2);
       }
     } else {
-      // Empty row
       _tft.fillRect(listX, rowY, listW, rowH - 2, C_BG);
       if (itemIdx == 0 && _storageEntries.empty()) {
         _tft.setTextDatum(MC_DATUM);
@@ -1288,13 +1301,36 @@ void MacroPadGUI::drawStorageListOnly() {
     }
   }
 
-  // Scroll controls on right: x = 272..312 (width 40)
-  int16_t btnX = 272;
-  int16_t btnW = 40;
-  int16_t btnH = 65;
+#if defined(UI_PORTRAIT)
+  int16_t btnY = UI_STOR_SCROLL_Y;
+  int16_t btnH = UI_STOR_SCROLL_BAR_H;
+  int16_t btnW = UI_STOR_SCROLL_BTN_W;
+
+  bool canScrollUp = (_storageScrollIndex > 0);
+  uint16_t upBg = canScrollUp ? 0x2124 : 0x1084;
+  uint16_t upBorder = canScrollUp ? 0x07E0 : 0x3186;
+  uint16_t upColor = canScrollUp ? 0xFFFF : 0x632C;
+  _tft.fillRoundRect(UI_STOR_SCROLL_UP_X, btnY, btnW, btnH, 4, upBg);
+  _tft.drawRoundRect(UI_STOR_SCROLL_UP_X, btnY, btnW, btnH, 4, upBorder);
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(upColor, upBg);
+  _tft.drawString("UP", UI_STOR_SCROLL_UP_X + btnW / 2, btnY + btnH / 2, 2);
+
+  bool canScrollDown = (_storageScrollIndex + visibleRows < (int)_storageEntries.size());
+  uint16_t dnBg = canScrollDown ? 0x2124 : 0x1084;
+  uint16_t dnBorder = canScrollDown ? 0x07E0 : 0x3186;
+  uint16_t dnColor = canScrollDown ? 0xFFFF : 0x632C;
+  _tft.fillRoundRect(UI_STOR_SCROLL_DN_X, btnY, btnW, btnH, 4, dnBg);
+  _tft.drawRoundRect(UI_STOR_SCROLL_DN_X, btnY, btnW, btnH, 4, dnBorder);
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(dnColor, dnBg);
+  _tft.drawString("DN", UI_STOR_SCROLL_DN_X + btnW / 2, btnY + btnH / 2, 2);
+#else
+  int16_t btnX = UI_STOR_SCROLL_X;
+  int16_t btnW = UI_STOR_SCROLL_W;
+  int16_t btnH = UI_STOR_SCROLL_BTN_H;
   int16_t cx = btnX + (btnW / 2);
 
-  // Scroll UP button
   bool canScrollUp = (_storageScrollIndex > 0);
   uint16_t upBg = canScrollUp ? 0x2124 : 0x1084;
   uint16_t upBorder = canScrollUp ? 0x07E0 : 0x3186;
@@ -1307,8 +1343,7 @@ void MacroPadGUI::drawStorageListOnly() {
   _tft.setTextColor(upColor, upBg);
   _tft.drawString("UP", cx, cyUp + 18, 2);
 
-  // Scroll DOWN button
-  bool canScrollDown = (_storageScrollIndex + 5 < (int)_storageEntries.size());
+  bool canScrollDown = (_storageScrollIndex + visibleRows < (int)_storageEntries.size());
   uint16_t dnBg = canScrollDown ? 0x2124 : 0x1084;
   uint16_t dnBorder = canScrollDown ? 0x07E0 : 0x3186;
   uint16_t dnColor = canScrollDown ? 0xFFFF : 0x632C;
@@ -1320,23 +1355,24 @@ void MacroPadGUI::drawStorageListOnly() {
   _tft.setTextColor(dnColor, dnBg);
   _tft.drawString("DN", cx, cyDn - 18, 2);
   _tft.fillTriangle(cx, cyDn + 12, cx - 12, cyDn - 4, cx + 12, cyDn - 4, dnColor);
+#endif
 }
 
 void MacroPadGUI::highlightStorageRow(uint8_t row, bool isDirectory) {
-  if (row >= 5) return;
-  int16_t listX = 8;
-  int16_t listY = 96;
-  int16_t listW = 258;
-  int16_t rowH = 27;
+  if (row >= UI_STOR_VISIBLE_ROWS) return;
+  int16_t listX = UI_STOR_LIST_X;
+  int16_t listY = UI_STOR_LIST_Y;
+  int16_t listW = UI_STOR_LIST_W;
+  int16_t rowH = UI_STOR_ROW_H;
   int16_t rowY = listY + row * rowH;
-  uint16_t highlightColor = isDirectory ? 0xFDA0 : 0x07FF; // Amber for DIR, Cyan for FILE
+  uint16_t highlightColor = isDirectory ? 0xFDA0 : 0x07FF;
   _tft.drawRoundRect(listX, rowY, listW, rowH - 2, 4, highlightColor);
   _tft.drawRoundRect(listX + 1, rowY + 1, listW - 2, rowH - 4, 3, highlightColor);
 }
 
 void MacroPadGUI::scrollStorageList(int16_t delta) {
   int newIdx = _storageScrollIndex + delta;
-  int maxIdx = max(0, (int)_storageEntries.size() - 5);
+  int maxIdx = max(0, (int)_storageEntries.size() - UI_STOR_VISIBLE_ROWS);
   newIdx = constrain(newIdx, 0, maxIdx);
   if (newIdx != _storageScrollIndex) {
     _storageScrollIndex = (int16_t)newIdx;
@@ -1372,7 +1408,7 @@ void MacroPadGUI::navigateStorageUp() {
 void MacroPadGUI::refreshStorageExplorer() {
   sdCardGetStorageSpace(_storageTotalGB, _storageFreeGB, _storageUsedMB);
   _storageEntries = sdCardListDirectory(_currentStoragePath);
-  int maxIdx = max(0, (int)_storageEntries.size() - 5);
+  int maxIdx = max(0, (int)_storageEntries.size() - UI_STOR_VISIBLE_ROWS);
   _storageScrollIndex = constrain(_storageScrollIndex, (int16_t)0, (int16_t)maxIdx);
   drawStorageExplorer(false);
 }

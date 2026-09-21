@@ -274,7 +274,7 @@ void setup() {
   // Initialize Touch Screen (Wire on SDA 16, SCL 15)
   Serial.println("[Setup] Initializing FT6336 Touch...");
   ts.begin();
-  ts.setRotation(ROTATION_RIGHT); // Landscape rotation
+  ts.setRotation(UI_TOUCH_ROTATION);
 #if TOUCH_WAKE_DIAG
   pinMode(PIN_TP_INT, INPUT_PULLUP);
   Serial.println("[Diag] Awake INT baseline enabled (GPIO17 pull-up)");
@@ -488,9 +488,9 @@ void loop() {
     int16_t tx = ts.points[0].x;
     int16_t ty = ts.points[0].y;
 
-    // Constrain coordinates to landscape 320x240
-    tx = constrain(tx, 0, 319);
-    ty = constrain(ty, 0, 239);
+    // Constrain coordinates to active UI orientation
+    tx = constrain(tx, 0, SCREEN_WIDTH - 1);
+    ty = constrain(ty, 0, SCREEN_HEIGHT - 1);
 
     // Active drag tracking for Page 5 scrollable chat (non-blocking, Rules 8 & 10)
     if (s_voiceDragActive) {
@@ -753,7 +753,7 @@ void loop() {
       recorder.playTone(700.0f, 25);
       delay(100);
     }
-    else if (target >= TOUCH_STORAGE_ITEM_BASE && target < TOUCH_STORAGE_ITEM_BASE + 5) {
+    else if (target >= TOUCH_STORAGE_ITEM_BASE && target < TOUCH_STORAGE_ITEM_BASE + UI_STOR_VISIBLE_ROWS) {
       int row = target - TOUCH_STORAGE_ITEM_BASE;
       int itemIdx = gui.getStorageScrollIndex() + row;
       const auto& entries = gui.getStorageEntries();

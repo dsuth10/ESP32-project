@@ -22,14 +22,8 @@
 #define PIN_SD_D2         48
 #define PIN_SD_D3         47
 
-// Screen Dimensions
-#define SCREEN_WIDTH      320
-#define SCREEN_HEIGHT     240
+#include "ui_layout.h"
 
-// UI Layout Constants
-#define STATUS_BAR_H      32
-#define GRID_ROWS         2
-#define GRID_COLS         3
 #define NUM_BUTTONS_PAGE  (GRID_ROWS * GRID_COLS)
 #define NUM_PAGES         7
 #define PAGE_DASHBOARD    0
