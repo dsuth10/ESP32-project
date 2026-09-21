@@ -27,3 +27,6 @@ Thumbs.db
 desktop.ini
 *.swp
 *~
+
+# Golden landscape firmware archives (local restore only)
+bin/golden-landscape-*/
