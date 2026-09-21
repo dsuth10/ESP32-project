@@ -1,9 +1,9 @@
 #include "macropad_config.h"
 
 const MacroProfile PROFILES[NUM_PAGES] = {
-  // Page 0: System Dashboard
+  // Page 0: System
   {
-    "System Dashboard",
+    "System",
     0x051D, // Cyan / Slate accent
     0,      // Custom layout (drawn by drawDashboard)
     {

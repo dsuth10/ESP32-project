@@ -3,7 +3,7 @@
   "1": "hermes_voice_receiver.py",
   "2": "EnvironmentManager",
   "3": "AudioRecorder",
-  "4": "network_manager.cpp",
+  "4": "NetworkManager",
   "5": "main.cpp",
   "6": "es8311_bsp.c",
   "7": "es8311.cpp",
@@ -34,10 +34,12 @@
   "32": "Soft power-off and touch-to-wake — investigation report",
   "33": "power_manager.cpp",
   "34": "generate_case_battery_only.py",
-  "35": "gui.cpp",
-  "36": "gui.h",
-  "37": "drawDashboard",
+  "35": "es8311_clock_config_t",
+  "36": "es8311_handle_t",
+  "37": "es8311_mic_gain_t",
   "38": "pinout_allocation_f58fa43e.md",
-  "39": "drawStorageExplorer",
-  "40": "addVoiceTurn"
+  "39": "es8311_resolution_t",
+  "40": "esp_err_t",
+  "41": "i2c_port_t",
+  "42": "macropad_config.cpp"
 }

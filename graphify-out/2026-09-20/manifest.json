@@ -72,15 +72,15 @@
     "semantic_hash": "8a52e85332fb1be90a35ab3c4ae1ab97"
   },
   "src/audio_recorder.cpp": {
-    "mtime": 1789176708.5220034,
-    "seen": 1789176912.5440516,
-    "ast_hash": "1f694a4c871b51593d97eefda34a9c04",
+    "mtime": 1789826611.893299,
+    "seen": 1789826923.614054,
+    "ast_hash": "bdb193053bbefe1009f719a7b7e07d22",
     "semantic_hash": ""
   },
   "src/audio_recorder.h": {
-    "mtime": 1789176690.5171523,
-    "seen": 1789176912.5440521,
-    "ast_hash": "db1a9c47c3d0dea2c404da6552da69d3",
+    "mtime": 1789826607.4579308,
+    "seen": 1789826923.6140544,
+    "ast_hash": "f97da24bb16a34b6a8b29cd7ba09c3cd",
     "semantic_hash": ""
   },
   "src/environment_manager.cpp": {
@@ -96,15 +96,15 @@
     "semantic_hash": ""
   },
   "src/es8311.cpp": {
-    "mtime": 1789208482.3524625,
-    "seen": 1789208926.6932402,
-    "ast_hash": "41b3b89fa3aa07b0aacc79b634637ed8",
+    "mtime": 1789826606.8191934,
+    "seen": 1789826923.6140563,
+    "ast_hash": "f9f4b2783ee3814a862f69108ed0573e",
     "semantic_hash": ""
   },
   "src/es8311.h": {
-    "mtime": 1789208472.286031,
-    "seen": 1789208926.693241,
-    "ast_hash": "0a318ff9244fb30fa7742f4f51794fd8",
+    "mtime": 1789826605.9212115,
+    "seen": 1789826923.6140573,
+    "ast_hash": "9d130ef829d7ea8dfb04a7a35aff4d9f",
     "semantic_hash": ""
   },
   "src/es8311_reg.h": {
@@ -114,15 +114,15 @@
     "semantic_hash": "8f431ae708b4aa78d3e98345d84663a7"
   },
   "src/gui.cpp": {
-    "mtime": 1789790068.9432828,
-    "seen": 1789817367.657742,
-    "ast_hash": "39842d851ccb4de99043f48e7b90f677",
+    "mtime": 1789826844.7954326,
+    "seen": 1789826923.6140585,
+    "ast_hash": "c1db2579a0daf5ec8de349b44078f37f",
     "semantic_hash": ""
   },
   "src/gui.h": {
-    "mtime": 1789789982.4517367,
-    "seen": 1789817367.6577432,
-    "ast_hash": "6e0bb6a693b9f5afd4b764ee1395b61d",
+    "mtime": 1789826642.264503,
+    "seen": 1789826923.614059,
+    "ast_hash": "a71bb228818e0f25b5c35e4050063337",
     "semantic_hash": ""
   },
   "src/macropad_config.cpp": {
@@ -132,27 +132,27 @@
     "semantic_hash": ""
   },
   "src/macropad_config.h": {
-    "mtime": 1789789908.450256,
-    "seen": 1789817367.6577444,
-    "ast_hash": "50889d955afba70db5c5fa4fdf9007d4",
+    "mtime": 1789826600.4532013,
+    "seen": 1789826923.614062,
+    "ast_hash": "ec0caa4efdc01603340d4e77c1124283",
     "semantic_hash": ""
   },
   "src/main.cpp": {
-    "mtime": 1789817481.1689298,
-    "seen": 1789817637.4815245,
-    "ast_hash": "f7789b9a7e23a7744b51a1bc3664fd51",
+    "mtime": 1789826708.7648926,
+    "seen": 1789826923.6140625,
+    "ast_hash": "63257266f799bb31bee380895b0bfcab",
     "semantic_hash": ""
   },
   "src/network_manager.cpp": {
-    "mtime": 1789817369.2200434,
-    "seen": 1789817637.4815245,
-    "ast_hash": "e05ea1e5cd83ee841db5fcee695c9d69",
+    "mtime": 1789826610.1692195,
+    "seen": 1789826923.6140633,
+    "ast_hash": "3d74bdda55b59b64e0d8b5eee141b142",
     "semantic_hash": ""
   },
   "src/network_manager.h": {
-    "mtime": 1789208533.2858734,
-    "seen": 1789208926.6932464,
-    "ast_hash": "066c720e66c6dd42512103d590972b08",
+    "mtime": 1789826610.245849,
+    "seen": 1789826923.614064,
+    "ast_hash": "22efbb2e0a1348ccc79260a39a535fe0",
     "semantic_hash": ""
   },
   "src/system_status.h": {
@@ -489,6 +489,72 @@
     "mtime": 1789817369.2119904,
     "seen": 1789817637.4815245,
     "ast_hash": "3ee6bae0365b2ef083d0ffd82d6723a7",
+    "semantic_hash": ""
+  },
+  "generate_case_battery.py": {
+    "mtime": 1789823007.5679505,
+    "seen": 1789826923.6140478,
+    "ast_hash": "006c1bb5158b7c0c9f94619b1bca95f8",
+    "semantic_hash": ""
+  },
+  "src/power_manager.cpp": {
+    "mtime": 1789826752.0694196,
+    "seen": 1789826923.6140647,
+    "ast_hash": "5b9ec79728f7a904064354e49ba9407a",
+    "semantic_hash": ""
+  },
+  "src/power_manager.h": {
+    "mtime": 1789826631.9366364,
+    "seen": 1789826923.6140654,
+    "ast_hash": "f34e6271a2d1fc53fe00ea07b9ffc380",
+    "semantic_hash": ""
+  },
+  "graphify-out/converted/pinout_allocation_f58fa43e.md": {
+    "mtime": 1789134115.7116265,
+    "seen": 1789826923.6140778,
+    "ast_hash": "a48a5fad95d8c475f9ff97c40b213d0b",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/battery_enclosure_bottom.png": {
+    "mtime": 1789822643.7701132,
+    "seen": 1789826923.6140847,
+    "ast_hash": "8cdc50a274bb2cda887116fe38d90ee0",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/battery_enclosure_exploded.png": {
+    "mtime": 1789823014.9476576,
+    "seen": 1789826923.6140852,
+    "ast_hash": "b78c6d82a801241fca7f790b8333cb08",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/battery_enclosure_grill.png": {
+    "mtime": 1789818281.5122156,
+    "seen": 1789826923.6140854,
+    "ast_hash": "afef7e9edb6c8c5c1d3d7535ba55cdee",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/battery_enclosure_hero.png": {
+    "mtime": 1789823014.6799612,
+    "seen": 1789826923.6140862,
+    "ast_hash": "ccce1c828133427893f44b71a3552e1d",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/battery_enclosure_interior.png": {
+    "mtime": 1789818281.9630282,
+    "seen": 1789826923.6140869,
+    "ast_hash": "e0a03792a4540f3f304ca09057e3ae15",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/battery_enclosure_side.png": {
+    "mtime": 1789818281.2376728,
+    "seen": 1789826923.6140873,
+    "ast_hash": "89fc3f2b2009d9db5f54a82d327855b0",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/battery_enclosure_through_holes.png": {
+    "mtime": 1789820393.2800002,
+    "seen": 1789826923.6140878,
+    "ast_hash": "f56fe584afc34313fb7f80553e295712",
     "semantic_hash": ""
   }
 }

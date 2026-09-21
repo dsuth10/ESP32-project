@@ -60,12 +60,13 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>ESP32 project — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 585 nodes, 1025 edges, 39 communities. Commit: d0537b9</p>
+<p class="subtitle">Generated from graphify knowledge graph: 643 nodes, 1133 edges, 41 communities. Commit: 33bc067</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
     <a href="#build-graph">Graph Build</a>
     <a href="#analysis-clustering">Analysis &amp; Clustering</a>
+    <a href="#outputs-docs">Outputs &amp; Docs</a>
     <a href="#cli-skills">CLI &amp; Skill Installers</a>
     <a href="#ingest-cache-update">Ingestion &amp; Updates</a>
     <a href="#serve-api">Serving API</a>
@@ -74,10 +75,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#environmentmanager">EnvironmentManager</a>
     <a href="#network-manager-cpp">network_manager.cpp</a>
     <a href="#macropadgui">MacroPadGUI</a>
-    <a href="#hostdiscovery">HostDiscovery</a>
     <a href="#gui-cpp">gui.cpp</a>
+    <a href="#hostdiscovery">HostDiscovery</a>
     <a href="#power-manager-cpp">power_manager.cpp</a>
-    <a href="#redrawvoicecard">redrawVoiceCard</a>
     <a href="#other">Other</a>
 </div>
 
@@ -88,13 +88,15 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>39 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>66 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>56 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
-    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>61 nodes</small>")
+    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>27 nodes</small>")
+    class OUTPUTS_DOCS_ED82387C module;
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>64 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>65 nodes</small>")
+    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>64 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
     SERVE_API_35EC8E86("Serving API<br/><small>54 nodes</small>")
     class SERVE_API_35EC8E86 module;
@@ -102,34 +104,32 @@ flowchart LR
     class SECURITY_GLOBAL_5B9C6A04 module;
     TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>39 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
-    ENVIRONMENTMANAGER_5897C7D1("EnvironmentManager<br/><small>44 nodes</small>")
+    ENVIRONMENTMANAGER_5897C7D1("EnvironmentManager<br/><small>43 nodes</small>")
     class ENVIRONMENTMANAGER_5897C7D1 module;
-    NETWORK_MANAGER_CPP_3D6026FC("network_manager.cpp<br/><small>31 nodes</small>")
+    NETWORK_MANAGER_CPP_3D6026FC("network_manager.cpp<br/><small>35 nodes</small>")
     class NETWORK_MANAGER_CPP_3D6026FC module;
-    MACROPADGUI_41F3827F("MacroPadGUI<br/><small>22 nodes</small>")
+    MACROPADGUI_41F3827F("MacroPadGUI<br/><small>25 nodes</small>")
     class MACROPADGUI_41F3827F module;
-    HOSTDISCOVERY_9CAFC6FD("HostDiscovery<br/><small>21 nodes</small>")
-    class HOSTDISCOVERY_9CAFC6FD module;
-    GUI_CPP_EB7BCAF2("gui.cpp<br/><small>18 nodes</small>")
+    GUI_CPP_EB7BCAF2("gui.cpp<br/><small>21 nodes</small>")
     class GUI_CPP_EB7BCAF2 module;
-    POWER_MANAGER_CPP_2229D128("power_manager.cpp<br/><small>16 nodes</small>")
+    HOSTDISCOVERY_9CAFC6FD("HostDiscovery<br/><small>20 nodes</small>")
+    class HOSTDISCOVERY_9CAFC6FD module;
+    POWER_MANAGER_CPP_2229D128("power_manager.cpp<br/><small>18 nodes</small>")
     class POWER_MANAGER_CPP_2229D128 module;
-    REDRAWVOICECARD_A5D36791("redrawVoiceCard<br/><small>15 nodes</small>")
-    class REDRAWVOICECARD_A5D36791 module;
-    OTHER_D0941E68("Other<br/><small>67 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>74 nodes</small>")
     class OTHER_D0941E68 module;
-    MACROPADGUI_41F3827F -->|defines x18| OTHER_D0941E68
+    MACROPADGUI_41F3827F -->|defines x24| OTHER_D0941E68
+    GUI_CPP_EB7BCAF2 -->|contains x20| OTHER_D0941E68
     MACROPADGUI_41F3827F -->|defines x17| GUI_CPP_EB7BCAF2
-    GUI_CPP_EB7BCAF2 -->|contains x13| OTHER_D0941E68
-    GUI_CPP_EB7BCAF2 -->|contains x11| REDRAWVOICECARD_A5D36791
-    MACROPADGUI_41F3827F -->|defines x8| REDRAWVOICECARD_A5D36791
-    OTHER_D0941E68 -->|imports x4| CLI_SKILLS_9964CBB8
-    CLI_SKILLS_9964CBB8 -->|imports x4| OTHER_D0941E68
-    NETWORK_MANAGER_CPP_3D6026FC -->|defines x3| HOSTDISCOVERY_9CAFC6FD
+    OTHER_D0941E68 -->|calls x6| CLI_SKILLS_9964CBB8
+    OTHER_D0941E68 -->|calls x3| GUI_CPP_EB7BCAF2
     INGEST_CACHE_UPDATE_FF457338 -->|calls x3| SERVE_API_35EC8E86
-    CLI_SKILLS_9964CBB8 -->|imports x3| ENVIRONMENTMANAGER_5897C7D1
-    REDRAWVOICECARD_A5D36791 -->|references x2| OTHER_D0941E68
+    GUI_CPP_EB7BCAF2 -->|contains x3| MACROPADGUI_41F3827F
     CLI_SKILLS_9964CBB8 -->|calls x2| SERVE_API_35EC8E86
+    INGEST_CACHE_UPDATE_FF457338 -->|imports x2| CLI_SKILLS_9964CBB8
+    OTHER_D0941E68 -->|contains x2| MACROPADGUI_41F3827F
+    NETWORK_MANAGER_CPP_3D6026FC -->|calls x2| HOSTDISCOVERY_9CAFC6FD
+    CLI_SKILLS_9964CBB8 -->|imports x2| OTHER_D0941E68
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,22 +146,22 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Graph Build</td><td>39</td><td><code>31, 24, 25, 26, 27</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>56</td><td><code>1, 10</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>61</td><td><code>5, 23, 30</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>65</td><td><code>3, 17</code></td></tr><tr><td>Serving API</td><td>54</td><td><code>6, 7</code></td></tr><tr><td>Security &amp; Global Graph</td><td>37</td><td><code>16</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>39</td><td><code>15, 28</code></td></tr><tr><td>EnvironmentManager</td><td>44</td><td><code>2</code></td></tr><tr><td>network_manager.cpp</td><td>31</td><td><code>4</code></td></tr><tr><td>MacroPadGUI</td><td>22</td><td><code>0</code></td></tr><tr><td>HostDiscovery</td><td>21</td><td><code>22</code></td></tr><tr><td>gui.cpp</td><td>18</td><td><code>32</code></td></tr><tr><td>power_manager.cpp</td><td>16</td><td><code>33</code></td></tr><tr><td>redrawVoiceCard</td><td>15</td><td><code>34</code></td></tr><tr><td>Other</td><td>67</td><td><code>8, 35, 36, 9, 37, 11, 12, 13, 20, 21, 38, 14, 18, 19, 29</code></td></tr>
+      <tr><td>Graph Build</td><td>66</td><td><code>31, 34, 24, 25, 26, 27</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>56</td><td><code>1, 10</code></td></tr><tr><td>Outputs &amp; Docs</td><td>27</td><td><code>32</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>64</td><td><code>5, 23, 30</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>64</td><td><code>3, 17</code></td></tr><tr><td>Serving API</td><td>54</td><td><code>6, 7</code></td></tr><tr><td>Security &amp; Global Graph</td><td>37</td><td><code>16</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>39</td><td><code>15, 28</code></td></tr><tr><td>EnvironmentManager</td><td>43</td><td><code>2</code></td></tr><tr><td>network_manager.cpp</td><td>35</td><td><code>4</code></td></tr><tr><td>MacroPadGUI</td><td>25</td><td><code>0</code></td></tr><tr><td>gui.cpp</td><td>21</td><td><code>35</code></td></tr><tr><td>HostDiscovery</td><td>20</td><td><code>22</code></td></tr><tr><td>power_manager.cpp</td><td>18</td><td><code>33</code></td></tr><tr><td>Other</td><td>74</td><td><code>8, 36, 37, 9, 39, 40, 11, 12, 13, 20, 21, 38, 14, 18, 19, 29</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Graph Build -&gt; Analysis &amp; Clustering -&gt; CLI &amp; Skill Installers -&gt; Other -&gt; redrawVoiceCard -&gt; gui.cpp -&gt; EnvironmentManager</div>
+    <div class="arrow-chain">Graph Build -&gt; Analysis &amp; Clustering -&gt; Outputs &amp; Docs -&gt; CLI &amp; Skill Installers -&gt; Serving API -&gt; EnvironmentManager -&gt; Ingestion &amp; Updates</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>585 nodes · 1025 edges · 39 communities (23 shown, 9 thin omitted)</li>
-      <li>Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 85 edges (avg confidence: 0.85)</li>
+      <li>643 nodes · 1133 edges · 41 communities (25 shown, 9 thin omitted)</li>
+      <li>Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 88 edges (avg confidence: 0.85)</li>
       <li>Token cost: 0 input · 0 output</li>
-      <li>1. `MacroPadGUI` - 66 edges</li>
+      <li>1. `MacroPadGUI` - 67 edges</li>
       <li>2. `AudioRecorder` - 32 edges</li>
       <li>3. `EnvironmentManager` - 24 edges</li>
     </ul>
@@ -170,38 +170,42 @@ flowchart LR
 <hr>
 <!-- ====== 2. Graph Build ====== -->
 <h2 id="build-graph">2. Graph Build</h2>
-<p>Graph Build groups implementation around case, generate, batterypy, graph, mostly in generate_case_battery.py, .agents/workflows/graph-query.md, .agents/workflows/graph-update.md. This section covers 39 nodes and 91 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around case, generate, battery, batterypy, mostly in generate_case_battery.py, generate_case_battery_only.py, .agents/workflows/graph-query.md. This section covers 66 nodes and 164 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (39 nodes, 91 edges)
-    generate_case_battery_create_enclosure_3f70d94a("create_enclosure()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_build_case_bottom_b81ddba7("build_case_bottom()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_build_case_top_a5cb5d24("build_case_top()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_build_reference_board_08d7ed8b("build_reference_board()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_add_end_vents_7a822a3a("add_end_vents()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_add_speaker_grill_f48954fe("add_speaker_grill()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_add_cube_f0e8a715("add_cube()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_link_to_collection_3842321b("link_to_collection()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_add_cylinder_d82269fb("add_cylinder()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_apply_boolean_c2262b92("apply_boolean()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_join_objects_481b19e8("join_objects()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_add_standoffs_8e8c61ce("add_standoffs()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_union_obj_e5bb4f38("union_obj()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_add_through_bolts_01950529("add_through_bolts()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_build_battery_and_speaker_f2905bf6("build_battery_and_speaker()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_create_rounded_box_253256a3("create_rounded_box()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_cut_box_55bed776("cut_box()<br/><small>generate_case_battery.py</small>")
-    generate_case_battery_cut_cyl_f7870a92("cut_cyl()<br/><small>generate_case_battery.py</small>")
+    %% Section: Graph Build (66 nodes, 164 edges)
+    subgraph build_graph_generate_case_battery_py_7f4a216c["generate_case_battery.py"]
+        generate_case_battery_create_enclosure_3f70d94a("create_enclosure()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_build_case_bottom_b81ddba7("build_case_bottom()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_build_case_top_a5cb5d24("build_case_top()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_add_battery_rails_58151c92("add_battery_rails()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_add_cube_f0e8a715("add_cube()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_join_objects_481b19e8("join_objects()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_union_obj_e5bb4f38("union_obj()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_add_bottom_grill_396aad74("add_bottom_grill()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_apply_boolean_c2262b92("apply_boolean()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_link_to_collection_3842321b("link_to_collection()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_add_cylinder_d82269fb("add_cylinder()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_add_standoffs_8e8c61ce("add_standoffs()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_add_through_bolts_01950529("add_through_bolts()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_build_battery_and_speaker_f2905bf6("build_battery_and_speaker()<br/><small>generate_case_battery.py</small>")
+        generate_case_battery_create_rounded_box_253256a3("create_rounded_box()<br/><small>generate_case_battery.py</small>")
+    end
+    subgraph build_graph_generate_case_battery_only_py_10a36c42["generate_case_battery_only.py"]
+        generate_case_battery_only_create_enclosure_b76819c7("create_enclosure()<br/><small>generate_case_battery_only.py</small>")
+        generate_case_battery_only_build_case_bottom_358556af("build_case_bottom()<br/><small>generate_case_battery_only.py</small>")
+        generate_case_battery_only_build_case_top_a1d5b1be("build_case_top()<br/><small>generate_case_battery_only.py</small>")
+    end
+    generate_case_battery_add_battery_rails_58151c92 -->|calls| generate_case_battery_add_cube_f0e8a715
+    generate_case_battery_add_battery_rails_58151c92 -->|calls| generate_case_battery_join_objects_481b19e8
+    generate_case_battery_add_battery_rails_58151c92 -->|calls| generate_case_battery_union_obj_e5bb4f38
+    generate_case_battery_add_bottom_grill_396aad74 -->|calls| generate_case_battery_add_cube_f0e8a715
+    generate_case_battery_add_bottom_grill_396aad74 -->|calls| generate_case_battery_apply_boolean_c2262b92
+    generate_case_battery_add_bottom_grill_396aad74 -->|calls| generate_case_battery_join_objects_481b19e8
     generate_case_battery_add_cube_f0e8a715 -->|calls| generate_case_battery_link_to_collection_3842321b
     generate_case_battery_add_cylinder_d82269fb -->|calls| generate_case_battery_link_to_collection_3842321b
-    generate_case_battery_add_end_vents_7a822a3a -->|calls| generate_case_battery_add_cylinder_d82269fb
-    generate_case_battery_add_end_vents_7a822a3a -->|calls| generate_case_battery_apply_boolean_c2262b92
-    generate_case_battery_add_end_vents_7a822a3a -->|calls| generate_case_battery_join_objects_481b19e8
-    generate_case_battery_add_speaker_grill_f48954fe -->|calls| generate_case_battery_add_cube_f0e8a715
-    generate_case_battery_add_speaker_grill_f48954fe -->|calls| generate_case_battery_apply_boolean_c2262b92
-    generate_case_battery_add_speaker_grill_f48954fe -->|calls| generate_case_battery_join_objects_481b19e8
     generate_case_battery_add_standoffs_8e8c61ce -->|calls| generate_case_battery_add_cylinder_d82269fb
     generate_case_battery_add_standoffs_8e8c61ce -->|calls| generate_case_battery_join_objects_481b19e8
     generate_case_battery_add_standoffs_8e8c61ce -->|calls| generate_case_battery_union_obj_e5bb4f38
@@ -211,32 +215,32 @@ flowchart LR
     generate_case_battery_build_battery_and_speaker_f2905bf6 -->|calls| generate_case_battery_add_cube_f0e8a715
     generate_case_battery_build_battery_and_speaker_f2905bf6 -->|calls| generate_case_battery_add_cylinder_d82269fb
     generate_case_battery_build_case_bottom_b81ddba7 -->|calls| generate_case_battery_create_rounded_box_253256a3
-    generate_case_battery_build_case_bottom_b81ddba7 -->|calls| generate_case_battery_cut_box_55bed776
-    generate_case_battery_build_case_bottom_b81ddba7 -->|calls| generate_case_battery_cut_cyl_f7870a92
+    generate_case_battery_build_case_bottom_b81ddba7 -->|calls| generate_case_battery_add_battery_rails_58151c92
     generate_case_battery_build_case_bottom_b81ddba7 -->|calls| generate_case_battery_add_cylinder_d82269fb
     generate_case_battery_build_case_bottom_b81ddba7 -->|calls| generate_case_battery_apply_boolean_c2262b92
     generate_case_battery_build_case_bottom_b81ddba7 -->|calls| generate_case_battery_join_objects_481b19e8
     generate_case_battery_build_case_bottom_b81ddba7 -->|calls| generate_case_battery_add_standoffs_8e8c61ce
     generate_case_battery_build_case_bottom_b81ddba7 -->|calls| generate_case_battery_add_through_bolts_01950529
-    %% Omitted for readability: 21 nodes, 22 edges
+    generate_case_battery_build_case_bottom_b81ddba7 -->|calls| generate_case_battery_add_bottom_grill_396aad74
+    %% Omitted for readability: 48 nodes, 10 edges
     class generate_case_battery_create_enclosure_3f70d94a function;
     class generate_case_battery_build_case_bottom_b81ddba7 function;
     class generate_case_battery_build_case_top_a5cb5d24 function;
-    class generate_case_battery_build_reference_board_08d7ed8b function;
-    class generate_case_battery_add_end_vents_7a822a3a function;
-    class generate_case_battery_add_speaker_grill_f48954fe function;
+    class generate_case_battery_add_battery_rails_58151c92 function;
     class generate_case_battery_add_cube_f0e8a715 function;
+    class generate_case_battery_join_objects_481b19e8 function;
+    class generate_case_battery_union_obj_e5bb4f38 function;
+    class generate_case_battery_add_bottom_grill_396aad74 function;
+    class generate_case_battery_apply_boolean_c2262b92 function;
     class generate_case_battery_link_to_collection_3842321b function;
     class generate_case_battery_add_cylinder_d82269fb function;
-    class generate_case_battery_apply_boolean_c2262b92 function;
-    class generate_case_battery_join_objects_481b19e8 function;
     class generate_case_battery_add_standoffs_8e8c61ce function;
-    class generate_case_battery_union_obj_e5bb4f38 function;
     class generate_case_battery_add_through_bolts_01950529 function;
     class generate_case_battery_build_battery_and_speaker_f2905bf6 function;
     class generate_case_battery_create_rounded_box_253256a3 function;
-    class generate_case_battery_cut_box_55bed776 function;
-    class generate_case_battery_cut_cyl_f7870a92 function;
+    class generate_case_battery_only_create_enclosure_b76819c7 function;
+    class generate_case_battery_only_build_case_bottom_358556af function;
+    class generate_case_battery_only_build_case_top_a1d5b1be function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -260,35 +264,35 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
+  <td><code>add_battery_rails()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build_case_bottom()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
+  <td><code>add_cube()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>join_objects()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>union_obj()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
+  <td>add_battery_rails() node in generate_case_battery.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>add_bottom_grill()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build_case_bottom()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
+  <td><code>add_cube()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>apply_boolean()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>join_objects()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
+  <td>add_bottom_grill() node in generate_case_battery.py.</td>
+</tr>
+<tr>
+  <td>3</td>
   <td><code>add_cube()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>add_speaker_grill()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>build_battery_and_speaker()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>build_reference_board()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br>+1 more</td>
+  <td><code>add_battery_rails()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_bottom_grill()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>build_battery_and_speaker()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br>+2 more</td>
   <td><code>link_to_collection()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
   <td>add_cube() node in generate_case_battery.py.</td>
 </tr>
 <tr>
-  <td>2</td>
+  <td>4</td>
   <td><code>add_cylinder()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>add_end_vents()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_standoffs()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_through_bolts()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br>+5 more</td>
+  <td><code>add_standoffs()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_through_bolts()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>build_battery_and_speaker()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br>+4 more</td>
   <td><code>link_to_collection()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
   <td>add_cylinder() node in generate_case_battery.py.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>add_end_vents()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>build_case_bottom()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
-  <td><code>add_cylinder()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>apply_boolean()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>join_objects()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
-  <td>add_end_vents() node in generate_case_battery.py.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>add_speaker_grill()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>build_case_top()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
-  <td><code>add_cube()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>apply_boolean()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>join_objects()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
-  <td>add_speaker_grill() node in generate_case_battery.py.</td>
 </tr>
 <tr>
   <td>5</td>
@@ -310,7 +314,7 @@ flowchart LR
   <td>7</td>
   <td><code>apply_boolean()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>add_end_vents()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_speaker_grill()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_through_bolts()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br>+5 more</td>
+  <td><code>add_bottom_grill()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_through_bolts()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>build_case_bottom()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br>+4 more</td>
   <td>No direct outbound edge</td>
   <td>apply_boolean() node in generate_case_battery.py.</td>
 </tr>
@@ -327,7 +331,7 @@ flowchart LR
   <td><code>build_case_bottom()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>create_enclosure()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
-  <td><code>add_cylinder()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_end_vents()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_standoffs()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br>+6 more</td>
+  <td><code>add_battery_rails()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_bottom_grill()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_cylinder()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br>+7 more</td>
   <td>build_case_bottom() node in generate_case_battery.py.</td>
 </tr>
 <tr>
@@ -335,7 +339,7 @@ flowchart LR
   <td><code>build_case_top()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>create_enclosure()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
-  <td><code>add_cylinder()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_speaker_grill()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>apply_boolean()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br>+4 more</td>
+  <td><code>add_cylinder()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>apply_boolean()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>create_rounded_box()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br>+3 more</td>
   <td>build_case_top() node in generate_case_battery.py.</td>
 </tr>
 <tr>
@@ -422,7 +426,7 @@ flowchart LR
   <td>21</td>
   <td><code>join_objects()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>add_end_vents()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_speaker_grill()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_standoffs()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br>+3 more</td>
+  <td><code>add_battery_rails()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_bottom_grill()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_standoffs()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br>+3 more</td>
   <td>No direct outbound edge</td>
   <td>join_objects() node in generate_case_battery.py.</td>
 </tr>
@@ -478,7 +482,7 @@ flowchart LR
   <td>28</td>
   <td><code>union_obj()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>add_standoffs()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
+  <td><code>add_battery_rails()</code><br><small style="color:var(--muted)">generate_case_battery.py</small><br><code>add_standoffs()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
   <td><code>apply_boolean()</code><br><small style="color:var(--muted)">generate_case_battery.py</small></td>
   <td>union_obj() node in generate_case_battery.py.</td>
 </tr>
@@ -492,11 +496,11 @@ flowchart LR
 </tr>
 <tr>
   <td>30</td>
-  <td><code>graph-query.md</code><br><small style="color:var(--muted)">.agents/workflows/graph-query.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing graph-query.md.</td>
+  <td><code>add_cube()</code><br><small style="color:var(--muted)">generate_case_battery_only.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build_battery()</code><br><small style="color:var(--muted)">generate_case_battery_only.py</small><br><code>build_reference_board()</code><br><small style="color:var(--muted)">generate_case_battery_only.py</small><br><code>cut_box()</code><br><small style="color:var(--muted)">generate_case_battery_only.py</small></td>
+  <td><code>link_to_collection()</code><br><small style="color:var(--muted)">generate_case_battery_only.py</small></td>
+  <td>add_cube() node in generate_case_battery_only.py.</td>
 </tr>
 </table>
 
@@ -506,6 +510,7 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>generate_case_battery.py</code></td><td>29 nodes</td></tr>
+<tr><td><code>generate_case_battery_only.py</code></td><td>27 nodes</td></tr>
 <tr><td><code>.agents/workflows/graph-query.md</code></td><td>3 nodes</td></tr>
 <tr><td><code>.agents/workflows/graph-update.md</code></td><td>3 nodes</td></tr>
 <tr><td><code>.agents/workflows/graph-visualize.md</code></td><td>3 nodes</td></tr>
@@ -514,7 +519,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x57, contains x34. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x104, contains x60. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -864,18 +869,334 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 4. CLI & Skill Installers ====== -->
-<h2 id="cli-skills">4. CLI &amp; Skill Installers</h2>
-<p>CLI &amp; Skill Installers groups implementation around skillmd, cardh, cardcpp, agents, mostly in src/sd_card.h, src/sd_card.cpp, src/main.cpp. This section covers 61 nodes and 91 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 4. Outputs & Docs ====== -->
+<h2 id="outputs-docs">4. Outputs &amp; Docs</h2>
+<p>Outputs &amp; Docs groups implementation around touch, soft, power, wake, mostly in docs/soft-power-touch-wake-report.md. This section covers 27 nodes and 26 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: CLI &amp; Skill Installers (61 nodes, 91 edges)
+    %% Section: Outputs &amp; Docs (27 nodes, 26 edges)
+    docs_soft_power_touch_wake_report_soft_power_off_af70fbad("Soft power-off and touch-to-wake — inve...<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_3_what_we_impl_4b78590e("3. What we implemented (and what you saw)<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_5_leading_expl_056b70f3("5. Leading explanations (ordered)<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_6_how_to_solve_3b65bf56("6. How to solve it<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_8_diagnostic_s_878d7b46("8. Diagnostic session — 20 September 20...<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_d0272aa4("soft-power-touch-wake-report.md")
+    docs_soft_power_touch_wake_report_1_goal_d34642b6("1. Goal<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_2_hardware_fac_55406360("2. Hardware facts that constrain the de...<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_3_1_product_ui_eecce637("3.1 Product UI (this part works)<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_3_2_attempt_a_e06730bf("3.2 Attempt A — ESP32 deep sleep + EXT1...<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_3_3_attempt_b_e92d281e("3.3 Attempt B — Deep sleep, but put tou...<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_3_4_attempt_c_20cacd58("3.4 Attempt C — Light sleep + GPIO wake...<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_3_5_attempt_d_a8d5a51e("3.5 Attempt D — No sleep at all; poll I...<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_4_what_the_cur_5f30ac7e("4. What the current failure actually pr...<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_5_1_capacitive_b62c31d1("5.1 Capacitive touch dies when the back...<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_5_2_i2c_read_r_ac75a7c4("5.2 I2C read returns 0xFF (NACK) duri...<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_5_3_gpio17_int_29f33906("5.3 GPIO17 INT never fires on this unit<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_5_4_we_woke_fr_b6c64429("5.4 We woke from touch but the backligh...<br/><small>docs/soft-power-touch-wake-report.md</small>")
+    docs_soft_power_touch_wake_report_d0272aa4 -->|contains| docs_soft_power_touch_wake_report_soft_power_off_af70fbad
+    docs_soft_power_touch_wake_report_3_what_we_impl_4b78590e -->|contains| docs_soft_power_touch_wake_report_3_1_product_ui_eecce637
+    docs_soft_power_touch_wake_report_3_what_we_impl_4b78590e -->|contains| docs_soft_power_touch_wake_report_3_2_attempt_a_e06730bf
+    docs_soft_power_touch_wake_report_3_what_we_impl_4b78590e -->|contains| docs_soft_power_touch_wake_report_3_3_attempt_b_e92d281e
+    docs_soft_power_touch_wake_report_3_what_we_impl_4b78590e -->|contains| docs_soft_power_touch_wake_report_3_4_attempt_c_20cacd58
+    docs_soft_power_touch_wake_report_3_what_we_impl_4b78590e -->|contains| docs_soft_power_touch_wake_report_3_5_attempt_d_a8d5a51e
+    docs_soft_power_touch_wake_report_5_leading_expl_056b70f3 -->|contains| docs_soft_power_touch_wake_report_5_1_capacitive_b62c31d1
+    docs_soft_power_touch_wake_report_5_leading_expl_056b70f3 -->|contains| docs_soft_power_touch_wake_report_5_2_i2c_read_r_ac75a7c4
+    docs_soft_power_touch_wake_report_5_leading_expl_056b70f3 -->|contains| docs_soft_power_touch_wake_report_5_3_gpio17_int_29f33906
+    docs_soft_power_touch_wake_report_5_leading_expl_056b70f3 -->|contains| docs_soft_power_touch_wake_report_5_4_we_woke_fr_b6c64429
+    docs_soft_power_touch_wake_report_soft_power_off_af70fbad -->|contains| docs_soft_power_touch_wake_report_1_goal_d34642b6
+    docs_soft_power_touch_wake_report_soft_power_off_af70fbad -->|contains| docs_soft_power_touch_wake_report_4_what_the_cur_5f30ac7e
+    docs_soft_power_touch_wake_report_soft_power_off_af70fbad -->|contains| docs_soft_power_touch_wake_report_5_leading_expl_056b70f3
+    docs_soft_power_touch_wake_report_soft_power_off_af70fbad -->|contains| docs_soft_power_touch_wake_report_6_how_to_solve_3b65bf56
+    docs_soft_power_touch_wake_report_soft_power_off_af70fbad -->|contains| docs_soft_power_touch_wake_report_8_diagnostic_s_878d7b46
+    docs_soft_power_touch_wake_report_soft_power_off_af70fbad -->|contains| docs_soft_power_touch_wake_report_2_hardware_fac_55406360
+    docs_soft_power_touch_wake_report_soft_power_off_af70fbad -->|contains| docs_soft_power_touch_wake_report_3_what_we_impl_4b78590e
+    %% Omitted for readability: 9 nodes, 0 edges
+    class docs_soft_power_touch_wake_report_soft_power_off_af70fbad concept;
+    class docs_soft_power_touch_wake_report_3_what_we_impl_4b78590e concept;
+    class docs_soft_power_touch_wake_report_5_leading_expl_056b70f3 concept;
+    class docs_soft_power_touch_wake_report_6_how_to_solve_3b65bf56 concept;
+    class docs_soft_power_touch_wake_report_8_diagnostic_s_878d7b46 concept;
+    class docs_soft_power_touch_wake_report_d0272aa4 concept;
+    class docs_soft_power_touch_wake_report_1_goal_d34642b6 concept;
+    class docs_soft_power_touch_wake_report_2_hardware_fac_55406360 concept;
+    class docs_soft_power_touch_wake_report_3_1_product_ui_eecce637 concept;
+    class docs_soft_power_touch_wake_report_3_2_attempt_a_e06730bf concept;
+    class docs_soft_power_touch_wake_report_3_3_attempt_b_e92d281e concept;
+    class docs_soft_power_touch_wake_report_3_4_attempt_c_20cacd58 concept;
+    class docs_soft_power_touch_wake_report_3_5_attempt_d_a8d5a51e concept;
+    class docs_soft_power_touch_wake_report_4_what_the_cur_5f30ac7e concept;
+    class docs_soft_power_touch_wake_report_5_1_capacitive_b62c31d1 concept;
+    class docs_soft_power_touch_wake_report_5_2_i2c_read_r_ac75a7c4 concept;
+    class docs_soft_power_touch_wake_report_5_3_gpio17_int_29f33906 concept;
+    class docs_soft_power_touch_wake_report_5_4_we_woke_fr_b6c64429 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>soft-power-touch-wake-report.md</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing soft-power-touch-wake-report.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>1. Goal</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. Goal.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>2. Hardware facts that constrain the design</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. Hardware facts that constrain the design.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>3.1 Product UI (this part works)</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.1 Product UI (this part works).</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>3.2 Attempt A — ESP32 deep sleep + EXT1 on GPIO17</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.2 Attempt A — ESP32 deep sleep + EXT1 on GPIO17.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>3.3 Attempt B — Deep sleep, but put touch on EXT0</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.3 Attempt B — Deep sleep, but put touch on EXT0.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>3.4 Attempt C — Light sleep + GPIO wakeup + 150 ms I2C poll</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.4 Attempt C — Light sleep + GPIO wakeup + 150 ms I2C poll.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>3.5 Attempt D — No sleep at all; poll I2C like the GUI (current flash)</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.5 Attempt D — No sleep at all; poll I2C like the GUI (current flash).</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>3. What we implemented (and what you saw)</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. What we implemented (and what you saw).</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>4. What the current failure actually proves</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4. What the current failure actually proves.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>5.1 Capacitive touch dies when the backlight is off — most likely</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5.1 Capacitive touch dies when the backlight is off — most likely.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>5.2 I2C read returns `0xFF` (NACK) during soft-off</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5.2 I2C read returns `0xFF` (NACK) during soft-off.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>5.3 GPIO17 INT never fires on this unit</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5.3 GPIO17 INT never fires on this unit.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>5.4 We woke from touch but the backlight never came back</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5.4 We woke from touch but the backlight never came back.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>5.5 FT6336 reset glitch</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5.5 FT6336 reset glitch.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>5. Leading explanations (ordered)</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5. Leading explanations (ordered).</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>6. How to solve it</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 6. How to solve it.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>7. What we should not do</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 7. What we should not do.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>8.1 Awake INT baseline</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 8.1 Awake INT baseline.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>8.2 Soft-off session</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 8.2 Soft-off session.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>8.3 Verdict</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 8.3 Verdict.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>8. Diagnostic session — 20 September 2026 (COM5)</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 8. Diagnostic session — 20 September 2026 (COM5).</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>Soft power-off and touch-to-wake — investigation report</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Soft power-off and touch-to-wake — investigation report.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>Step 1 — Serial evidence (do this first)</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Step 1 — Serial evidence (do this first).</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Step 2 — Backlight experiment (highest value)</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Step 2 — Backlight experiment (highest value).</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Step 3 — Choose a product architecture</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Step 3 — Choose a product architecture.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Step 4 — Only then chase deep sleep again</code><br><small style="color:var(--muted)">docs/soft-power-touch-wake-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Step 4 — Only then chase deep sleep again.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>docs/soft-power-touch-wake-report.md</code></td><td>27 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x26. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 5. CLI & Skill Installers ====== -->
+<h2 id="cli-skills">5. CLI &amp; Skill Installers</h2>
+<p>CLI &amp; Skill Installers groups implementation around cardcpp, skillmd, cardh, agents, mostly in src/sd_card.cpp, src/sd_card.h, src/main.cpp. This section covers 64 nodes and 96 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: CLI &amp; Skill Installers (64 nodes, 96 edges)
     subgraph cli_skills_src_main_cpp_3614ce5c["src/main.cpp"]
         src_main_loop_b54b6114("loop()<br/><small>src/main.cpp</small>")
-        src_main_setup_d8061760("setup()<br/><small>src/main.cpp</small>")
         src_main_3231ff52("main.cpp")
+        src_main_setup_d8061760("setup()<br/><small>src/main.cpp</small>")
         src_main_telemetryworkertask_db9788b7("telemetryWorkerTask()<br/><small>src/main.cpp</small>")
         src_main_gotosoftoff_9e410475("goToSoftOff()<br/><small>src/main.cpp</small>")
         src_main_setledcolor_32443aca("setLedColor()<br/><small>src/main.cpp</small>")
@@ -894,6 +1215,7 @@ flowchart LR
         src_sd_card_printsdcardinfo_0ee848e1("printSDCardInfo()<br/><small>src/sd_card.cpp</small>")
     end
     src_macropad_config_cpp_src_macropad_config_64790c14("macropad_config.cpp")
+    src_main_gotosoftoff_9e410475 -->|calls| src_main_setledcolor_32443aca
     src_main_loop_b54b6114 -->|calls| src_main_gotosoftoff_9e410475
     src_main_loop_b54b6114 -->|calls| src_main_setledcolor_32443aca
     src_main_loop_b54b6114 -->|calls| src_main_waittouchrelease_64a9ca4c
@@ -910,10 +1232,10 @@ flowchart LR
     src_main_loop_b54b6114 -->|calls| src_sd_card_sdcardformat_daae5edc
     src_main_loop_b54b6114 -->|calls| src_sd_card_saverecordingtosd_d40641e2
     src_main_loop_b54b6114 -->|calls| src_sd_card_appendchatlog_6bb4d77e
-    %% Omitted for readability: 43 nodes, 0 edges
+    %% Omitted for readability: 46 nodes, 0 edges
     class src_main_loop_b54b6114 function;
-    class src_main_setup_d8061760 function;
     class src_main_3231ff52 function;
+    class src_main_setup_d8061760 function;
     class src_main_telemetryworkertask_db9788b7 function;
     class src_main_gotosoftoff_9e410475 function;
     class src_main_setledcolor_32443aca function;
@@ -987,7 +1309,7 @@ flowchart LR
   <td><code>goToSoftOff()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td>No direct outbound edge</td>
+  <td><code>setLedColor()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
   <td>goToSoftOff() node in src/main.cpp.</td>
 </tr>
 <tr>
@@ -1010,7 +1332,7 @@ flowchart LR
   <td>8</td>
   <td><code>setLedColor()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>setup()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td><code>goToSoftOff()</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>setup()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
   <td>No direct outbound edge</td>
   <td>setLedColor() node in src/main.cpp.</td>
 </tr>
@@ -1064,6 +1386,14 @@ flowchart LR
 </tr>
 <tr>
   <td>15</td>
+  <td><code>getSDCardStatus()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>drawStorageExplorer</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>getSDCardStatus() node in src/sd_card.cpp.</td>
+</tr>
+<tr>
+  <td>16</td>
   <td><code>listSDCardDirectory()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
@@ -1071,7 +1401,7 @@ flowchart LR
   <td>listSDCardDirectory() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>17</td>
   <td><code>loadMacroConfig()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1079,7 +1409,7 @@ flowchart LR
   <td>Reads, resolves, or persists project configuration.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>18</td>
   <td><code>printSDCardInfo()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>sdCardFormat()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
@@ -1087,7 +1417,7 @@ flowchart LR
   <td>printSDCardInfo() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>19</td>
   <td><code>saveMacroConfig()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1095,7 +1425,7 @@ flowchart LR
   <td>Reads, resolves, or persists project configuration.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>20</td>
   <td><code>saveRecordingToSD()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
@@ -1103,7 +1433,7 @@ flowchart LR
   <td>saveRecordingToSD() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>21</td>
   <td><code>sdCardEnsureDirectories()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>appendChatLog()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small><br><code>saveMacroConfig()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small><br><code>saveRecordingToSD()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small><br>+2 more</td>
@@ -1111,7 +1441,7 @@ flowchart LR
   <td>sdCardEnsureDirectories() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>22</td>
   <td><code>sdCardFormat()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
@@ -1119,7 +1449,15 @@ flowchart LR
   <td>sdCardFormat() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>23</td>
+  <td><code>sdCardGetStorageSpace()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>refreshStorageExplorer</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>24</td>
   <td><code>sdCardInit()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>setup()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
@@ -1127,7 +1465,7 @@ flowchart LR
   <td>sdCardInit() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>25</td>
   <td><code>sdCardListDirectory()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>navigateStorageTo</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>refreshStorageExplorer</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -1135,7 +1473,7 @@ flowchart LR
   <td>sdCardListDirectory() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>26</td>
   <td><code>sdCardRunSelfTest()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>setup()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
@@ -1143,7 +1481,7 @@ flowchart LR
   <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>27</td>
   <td><code>MacroButton</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1151,7 +1489,7 @@ flowchart LR
   <td>MacroButton node in project.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>28</td>
   <td><code>sdcard_type_t</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1159,36 +1497,20 @@ flowchart LR
   <td>sdcard_type_t node in project.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>29</td>
+  <td><code>es8311.h</code><br><small style="color:var(--muted)">src/es8311.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>audio_recorder.cpp</code><br><small style="color:var(--muted)">src/audio_recorder.cpp</small><br><code>es8311.cpp</code><br><small style="color:var(--muted)">src/es8311.cpp</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td>No direct outbound edge</td>
+  <td>es8311.h node in src/es8311.h.</td>
+</tr>
+<tr>
+  <td>30</td>
   <td><code>macropad_config.cpp</code><br><small style="color:var(--muted)">src/macropad_config.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small></td>
   <td>Reads, resolves, or persists project configuration.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>audio_recorder.cpp</code><br><small style="color:var(--muted)">src/audio_recorder.cpp</small><br><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>macropad_config.cpp</code><br><small style="color:var(--muted)">src/macropad_config.cpp</small><br>+3 more</td>
-  <td>No direct outbound edge</td>
-  <td>Reads, resolves, or persists project configuration.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>audio_recorder.h</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br><code>environment_manager.h</code><br><small style="color:var(--muted)">src/environment_manager.h</small><br><code>es8311.h</code><br><small style="color:var(--muted)">src/es8311.h</small><br>+8 more</td>
-  <td>main.cpp node in src/main.cpp.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>HealthState</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>HealthState node in project.</td>
 </tr>
 </table>
 
@@ -1197,30 +1519,31 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/sd_card.cpp</code></td><td>14 nodes</td></tr>
+      <tr><td><code>src/sd_card.cpp</code></td><td>16 nodes</td></tr>
 <tr><td><code>src/sd_card.h</code></td><td>14 nodes</td></tr>
 <tr><td><code>src/main.cpp</code></td><td>10 nodes</td></tr>
 <tr><td><code>skills/graphify-toolkit/SKILL.md</code></td><td>8 nodes</td></tr>
 <tr><td><code>skills/voice-satellite/SKILL.md</code></td><td>7 nodes</td></tr>
+<tr><td><code>src/es8311.h</code></td><td>1 nodes</td></tr>
 <tr><td><code>src/macropad_config.cpp</code></td><td>1 nodes</td></tr>
 <tr><td><code>src/macropad_config.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x37, calls x24, references x14, defines x11. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x39, calls x25, references x15, defines x11. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 5. Ingestion & Updates ====== -->
-<h2 id="ingest-cache-update">5. Ingestion &amp; Updates</h2>
-<p>Ingestion &amp; Updates groups implementation around audio, recorderh, geminimd, rule, mostly in src/audio_recorder.h, GEMINI.md, src/audio_recorder.cpp. This section covers 65 nodes and 77 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 6. Ingestion & Updates ====== -->
+<h2 id="ingest-cache-update">6. Ingestion &amp; Updates</h2>
+<p>Ingestion &amp; Updates groups implementation around audio, recorderh, geminimd, rule, mostly in src/audio_recorder.h, GEMINI.md, src/audio_recorder.cpp. This section covers 64 nodes and 76 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Ingestion &amp; Updates (65 nodes, 77 edges)
+    %% Section: Ingestion &amp; Updates (64 nodes, 76 edges)
     subgraph ingest_cache_update_src_audio_recorder_h_ad2e6707["src/audio_recorder.h"]
         src_audio_recorder_audiorecorder_b4022ebd("AudioRecorder<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_channelstats_b437c15e("ChannelStats<br/><small>src/audio_recorder.h</small>")
@@ -1238,9 +1561,9 @@ flowchart LR
         src_audio_recorder_channelstats_getnonzeropct_b7c18466("getNonZeroPct()<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_channelstats_getclippct_5ab7f089("getClipPct()<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_h_src_audio_recorder_079da71f("audio_recorder.h")
+        src_audio_recorder_audiorecorder_stoprecording_00ea97de("stopRecording<br/><small>src/audio_recorder.h</small>")
     end
     src_audio_recorder_cpp_src_audio_recorder_9215fedd("audio_recorder.cpp")
-    src_es8311_h_src_es8311_a96b8a50("es8311.h")
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_isrecording_3baca3b6
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getrecorddurati_7af30ad5
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getwavbuffer_898064a8
@@ -1253,8 +1576,9 @@ flowchart LR
     src_audio_recorder_channelstats_b437c15e -->|method| src_audio_recorder_channelstats_getnonzeropct_b7c18466
     src_audio_recorder_channelstats_b437c15e -->|method| src_audio_recorder_channelstats_getclippct_5ab7f089
     src_audio_recorder_cpp_src_audio_recorder_9215fedd -->|imports| src_audio_recorder_h_src_audio_recorder_079da71f
-    src_audio_recorder_cpp_src_audio_recorder_9215fedd -->|imports| src_es8311_h_src_es8311_a96b8a50
-    %% Omitted for readability: 47 nodes, 0 edges
+    src_audio_recorder_audiorecorder_update_43ac1eab -->|calls| src_audio_recorder_audiorecorder_stoprecording_00ea97de
+    src_audio_recorder_audiorecorder_prepareforsleep_fe62852d -->|calls| src_audio_recorder_audiorecorder_stoprecording_00ea97de
+    %% Omitted for readability: 46 nodes, 0 edges
     class src_audio_recorder_audiorecorder_b4022ebd klass;
     class src_audio_recorder_channelstats_b437c15e klass;
     class src_audio_recorder_audiorecorder_prepareforsleep_fe62852d function;
@@ -1271,8 +1595,8 @@ flowchart LR
     class src_audio_recorder_channelstats_getnonzeropct_b7c18466 function;
     class src_audio_recorder_channelstats_getclippct_5ab7f089 entry;
     class src_audio_recorder_h_src_audio_recorder_079da71f function;
+    class src_audio_recorder_audiorecorder_stoprecording_00ea97de function;
     class src_audio_recorder_cpp_src_audio_recorder_9215fedd function;
-    class src_es8311_h_src_es8311_a96b8a50 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1544,7 +1868,6 @@ flowchart LR
       <tr><td><code>src/audio_recorder.h</code></td><td>45 nodes</td></tr>
 <tr><td><code>GEMINI.md</code></td><td>15 nodes</td></tr>
 <tr><td><code>src/audio_recorder.cpp</code></td><td>2 nodes</td></tr>
-<tr><td><code>src/es8311.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
@@ -1554,8 +1877,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 6. Serving API ====== -->
-<h2 id="serve-api">6. Serving API</h2>
+<!-- ====== 7. Serving API ====== -->
+<h2 id="serve-api">7. Serving API</h2>
 <p>Serving API groups implementation around es8311, es8311cpp, bspc, config, mostly in src/es8311.cpp, es8311_bsp.c, src/es8311_reg.h. This section covers 54 nodes and 169 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1906,8 +2229,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 7. Security & Global Graph ====== -->
-<h2 id="security-global">7. Security &amp; Global Graph</h2>
+<!-- ====== 8. Security & Global Graph ====== -->
+<h2 id="security-global">8. Security &amp; Global Graph</h2>
 <p>Security &amp; Global Graph groups implementation around readmemd, work, home, architecturemd, mostly in README.md, docs/home-work-architecture.md. This section covers 37 nodes and 36 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2251,8 +2574,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 8. Tests & Fixtures ====== -->
-<h2 id="tests-fixtures">8. Tests &amp; Fixtures</h2>
+<!-- ====== 9. Tests & Fixtures ====== -->
+<h2 id="tests-fixtures">9. Tests &amp; Fixtures</h2>
 <p>Tests &amp; Fixtures groups implementation around dashboard, planmd, docs, phase, mostly in docs/Dashboard-plan.md, .agents/scratch_tts_test.py. This section covers 39 nodes and 37 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2595,14 +2918,14 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 9. EnvironmentManager ====== -->
-<h2 id="environmentmanager">9. EnvironmentManager</h2>
-<p>EnvironmentManager groups implementation around environment, managerh, managercpp, environmentchangecallback, mostly in src/environment_manager.h, src/environment_manager.cpp, src/network_manager.h. This section covers 44 nodes and 70 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 10. EnvironmentManager ====== -->
+<h2 id="environmentmanager">10. EnvironmentManager</h2>
+<p>EnvironmentManager groups implementation around environment, managerh, managercpp, environmentchangecallback, mostly in src/environment_manager.h, src/environment_manager.cpp. This section covers 43 nodes and 69 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: EnvironmentManager (44 nodes, 70 edges)
+    %% Section: EnvironmentManager (43 nodes, 69 edges)
     subgraph environmentmanager_External_generated_d6216338["External / generated"]
         preferences_dcedb31d("Preferences")
         src_environment_manager_cpp_environmentchangecal_2beac61d("EnvironmentChangeCallback")
@@ -2621,21 +2944,20 @@ flowchart LR
         src_environment_manager_environmentmanager_initp_72e74bbe("initProfiles<br/><small>src/environment_manager.h</small>")
         src_environment_manager_environmentmanager_getmo_a6393561("getModeName<br/><small>src/environment_manager.h</small>")
         src_environment_manager_environmentmanager_chang_4b394e2b("_changeCallback<br/><small>src/environment_manager.h</small>")
+        src_environment_manager_environmentmanager_138c3d1c("EnvironmentManager<br/><small>src/environment_manager.h</small>")
     end
     subgraph environmentmanager_src_environment_manager_cpp_8c00c771["src/environment_manager.cpp"]
         src_environment_manager_cpp_src_environment_mana_64a048dd("environment_manager.cpp")
         src_environment_manager_environmentmanager_envir_30c2c479("EnvironmentManager::EnvironmentManager()<br/><small>src/environment_manager.cpp</small>")
     end
-    src_network_manager_h_src_network_manager_f4b6ea17("network_manager.h")
     src_environment_manager_cpp_src_environment_mana_64a048dd -->|imports| src_environment_manager_h_src_environment_manage_67d67216
     src_environment_manager_h_src_environment_manage_67d67216 -->|imports| preferences_dcedb31d
-    src_network_manager_h_src_network_manager_f4b6ea17 -->|imports| src_environment_manager_h_src_environment_manage_67d67216
     src_environment_manager_environmentmanager_envir_30c2c479 -->|calls| src_environment_manager_environmentmanager_initp_72e74bbe
     src_environment_manager_environmentmanager_begin_9c804443 -->|calls| src_environment_manager_environmentmanager_getmo_a6393561
     src_environment_manager_environmentmanager_setmo_e0599ff3 -->|calls| src_environment_manager_environmentmanager_getmo_a6393561
     src_environment_manager_environmentmanager_setmo_e0599ff3 -->|calls| src_environment_manager_environmentmanager_chang_4b394e2b
     src_environment_manager_environmentmanager_toggl_f6ab440b -->|calls| src_environment_manager_environmentmanager_setmo_e0599ff3
-    %% Omitted for readability: 26 nodes, 0 edges
+    %% Omitted for readability: 25 nodes, 0 edges
     class preferences_dcedb31d klass;
     class src_environment_manager_cpp_environmentchangecal_2beac61d klass;
     class src_environment_manager_h_environmentchangecallb_5e53b4a6 klass;
@@ -2651,9 +2973,9 @@ flowchart LR
     class src_environment_manager_environmentmanager_initp_72e74bbe function;
     class src_environment_manager_environmentmanager_getmo_a6393561 function;
     class src_environment_manager_environmentmanager_chang_4b394e2b function;
+    class src_environment_manager_environmentmanager_138c3d1c klass;
     class src_environment_manager_cpp_src_environment_mana_64a048dd function;
     class src_environment_manager_environmentmanager_envir_30c2c479 function;
-    class src_network_manager_h_src_network_manager_f4b6ea17 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2924,7 +3246,6 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>src/environment_manager.h</code></td><td>33 nodes</td></tr>
 <tr><td><code>src/environment_manager.cpp</code></td><td>2 nodes</td></tr>
-<tr><td><code>src/network_manager.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
@@ -2934,21 +3255,22 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 10. network_manager.cpp ====== -->
-<h2 id="network-manager-cpp">10. network_manager.cpp</h2>
-<p>network_manager.cpp groups implementation around network, managerh, managercpp, string, mostly in src/network_manager.h, src/network_manager.cpp. This section covers 31 nodes and 68 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 11. network_manager.cpp ====== -->
+<h2 id="network-manager-cpp">11. network_manager.cpp</h2>
+<p>network_manager.cpp groups implementation around network, managerh, managercpp, string, mostly in src/network_manager.h, src/network_manager.cpp, src/system_status.h. This section covers 35 nodes and 77 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: network_manager.cpp (31 nodes, 68 edges)
+    %% Section: network_manager.cpp (35 nodes, 77 edges)
     subgraph network_manager_cpp_src_network_manager_h_e3af950b["src/network_manager.h"]
         src_network_manager_networkmanager_fetchcomposit_409e78b8("fetchCompositeStatus<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_sendvoiceaudi_27eb2920("sendVoiceAudio<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_applyenvironm_1fcc8dc0("applyEnvironment<br/><small>src/network_manager.h</small>")
+        src_network_manager_networkmanager_begin_5ab86173("begin<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_checkreceiver_ad818aa1("checkReceiverHealth<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_playvoiceaudi_4238dfc9("playVoiceAudioReply<br/><small>src/network_manager.h</small>")
-        src_network_manager_networkmanager_checkinternet_2821e5eb("checkInternet<br/><small>src/network_manager.h</small>")
+        src_network_manager_h_src_network_manager_f4b6ea17("network_manager.h")
+        src_network_manager_networkmanager_resume_78226981("resume<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_startconnecti_0052fbd8("startConnection<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_getipaddress_ead67b67("getIpAddress<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_isconnected_a62d7582("isConnected<br/><small>src/network_manager.h</small>")
@@ -2956,54 +3278,52 @@ flowchart LR
         src_network_manager_networkmanager_getrssi_9745c173("getRSSI<br/><small>src/network_manager.h</small>")
     end
     subgraph network_manager_cpp_src_network_manager_cpp_a00a3711["src/network_manager.cpp"]
+        src_network_manager_cpp_src_network_manager_fc796c4c("network_manager.cpp")
         src_network_manager_extractjsonfield_e1050fdd("extractJsonField()<br/><small>src/network_manager.cpp</small>")
         src_network_manager_extractjsonbool_b649f566("extractJsonBool()<br/><small>src/network_manager.cpp</small>")
         src_network_manager_extractjsonint_9e88f47f("extractJsonInt()<br/><small>src/network_manager.cpp</small>")
         src_network_manager_extractjsonobject_dff68fa5("extractJsonObject()<br/><small>src/network_manager.cpp</small>")
     end
-    subgraph network_manager_cpp_External_generated_395ffa9c["External / generated"]
-        src_network_manager_cpp_dashboardstatus_7cb6607a("DashboardStatus")
-        src_network_manager_cpp_environmentmode_54868e10("EnvironmentMode")
-        src_network_manager_cpp_string_db597c2f("String")
-    end
+    src_system_status_a10ae04d("system_status.h")
     src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonfield_e1050fdd
     src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonbool_b649f566
     src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonint_9e88f47f
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonobject_dff68fa5
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonbool_b649f566
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonfield_e1050fdd
+    src_network_manager_cpp_src_network_manager_fc796c4c -->|imports| src_network_manager_h_src_network_manager_f4b6ea17
+    src_network_manager_h_src_network_manager_f4b6ea17 -->|imports| src_system_status_a10ae04d
+    src_network_manager_networkmanager_resume_78226981 -->|calls| src_network_manager_networkmanager_startconnecti_0052fbd8
     src_network_manager_networkmanager_applyenvironm_1fcc8dc0 -->|calls| src_network_manager_networkmanager_startconnecti_0052fbd8
     src_network_manager_networkmanager_getipaddress_ead67b67 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_getconnecteds_8ad215ed -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_getrssi_9745c173 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
-    src_network_manager_networkmanager_playvoiceaudi_4238dfc9 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_checkreceiver_ad818aa1 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
-    src_network_manager_networkmanager_checkinternet_2821e5eb -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getconnecteds_8ad215ed
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getrssi_9745c173
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getipaddress_ead67b67
-    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_checkinternet_2821e5eb
-    %% Omitted for readability: 13 nodes, 0 edges
+    src_network_manager_networkmanager_begin_5ab86173 -->|calls| src_network_manager_networkmanager_startconnecti_0052fbd8
+    %% Omitted for readability: 17 nodes, 0 edges
     class src_network_manager_networkmanager_fetchcomposit_409e78b8 function;
     class src_network_manager_networkmanager_sendvoiceaudi_27eb2920 function;
     class src_network_manager_networkmanager_applyenvironm_1fcc8dc0 function;
+    class src_network_manager_networkmanager_begin_5ab86173 function;
     class src_network_manager_networkmanager_checkreceiver_ad818aa1 function;
-    class src_network_manager_networkmanager_playvoiceaudi_4238dfc9 function;
-    class src_network_manager_networkmanager_checkinternet_2821e5eb function;
+    class src_network_manager_h_src_network_manager_f4b6ea17 function;
+    class src_network_manager_networkmanager_resume_78226981 function;
     class src_network_manager_networkmanager_startconnecti_0052fbd8 function;
     class src_network_manager_networkmanager_getipaddress_ead67b67 function;
     class src_network_manager_networkmanager_isconnected_a62d7582 function;
     class src_network_manager_networkmanager_getconnecteds_8ad215ed function;
     class src_network_manager_networkmanager_getrssi_9745c173 function;
+    class src_network_manager_cpp_src_network_manager_fc796c4c function;
     class src_network_manager_extractjsonfield_e1050fdd function;
     class src_network_manager_extractjsonbool_b649f566 function;
     class src_network_manager_extractjsonint_9e88f47f function;
     class src_network_manager_extractjsonobject_dff68fa5 function;
-    class src_network_manager_cpp_dashboardstatus_7cb6607a klass;
-    class src_network_manager_cpp_environmentmode_54868e10 klass;
-    class src_network_manager_cpp_string_db597c2f klass;
+    class src_system_status_a10ae04d function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -3083,14 +3403,22 @@ flowchart LR
 </tr>
 <tr>
   <td>8</td>
+  <td><code>resume</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>startConnection</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>resume node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>9</td>
   <td><code>startConnection</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>applyEnvironment</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>begin</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><code>applyEnvironment</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>begin</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>resume</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td>No direct outbound edge</td>
   <td>startConnection node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>10</td>
   <td><code>applyEnvironment</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3098,7 +3426,7 @@ flowchart LR
   <td>applyEnvironment node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>11</td>
   <td><code>update</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3106,7 +3434,7 @@ flowchart LR
   <td>update node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>12</td>
   <td><code>isConnected</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>checkInternet</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>checkReceiverHealth</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small><br>+5 more</td>
@@ -3114,7 +3442,7 @@ flowchart LR
   <td>isConnected node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>13</td>
   <td><code>getIpAddress</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
@@ -3122,7 +3450,7 @@ flowchart LR
   <td>getIpAddress node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>14</td>
   <td><code>getConnectedSSID</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
@@ -3130,7 +3458,7 @@ flowchart LR
   <td>getConnectedSSID node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>15</td>
   <td><code>getRSSI</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
@@ -3138,7 +3466,7 @@ flowchart LR
   <td>getRSSI node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>16</td>
   <td><code>sendVoiceAudio</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3146,7 +3474,7 @@ flowchart LR
   <td>sendVoiceAudio node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>17</td>
   <td><code>playVoiceAudioReply</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3154,7 +3482,7 @@ flowchart LR
   <td>playVoiceAudioReply node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>18</td>
   <td><code>checkReceiverHealth</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3162,7 +3490,7 @@ flowchart LR
   <td>checkReceiverHealth node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>19</td>
   <td><code>checkInternet</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
@@ -3170,7 +3498,7 @@ flowchart LR
   <td>checkInternet node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>20</td>
   <td><code>fetchCompositeStatus</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3178,7 +3506,15 @@ flowchart LR
   <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>21</td>
+  <td><code>begin</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>IPAddress</code><br><code>startConnection</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>begin node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>22</td>
   <td><code>DashboardStatus</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3186,7 +3522,7 @@ flowchart LR
   <td>DashboardStatus node in project.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>23</td>
   <td><code>EnvironmentMode</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3194,7 +3530,7 @@ flowchart LR
   <td>EnvironmentMode node in project.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>24</td>
   <td><code>function</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3202,7 +3538,7 @@ flowchart LR
   <td>function node in project.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>25</td>
   <td><code>network_manager.cpp</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3210,23 +3546,31 @@ flowchart LR
   <td>network_manager.cpp node in src/network_manager.cpp.</td>
 </tr>
 <tr>
-  <td>24</td>
-  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>String node in project.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>String node in project.</td>
-</tr>
-<tr>
   <td>26</td>
+  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>String node in project.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gui.cpp</code><br><small style="color:var(--muted)">src/gui.cpp</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>network_manager.cpp</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
+  <td><code>environment_manager.h</code><br><small style="color:var(--muted)">src/environment_manager.h</small><br><code>system_status.h</code><br><small style="color:var(--muted)">src/system_status.h</small></td>
+  <td>network_manager.h node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>String node in project.</td>
+</tr>
+<tr>
+  <td>29</td>
   <td><code>_lastInternetCheck</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3234,36 +3578,12 @@ flowchart LR
   <td>_lastInternetCheck node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>30</td>
   <td><code>_lastInternetState</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>_lastInternetState node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>_lastReconnectAttempt</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_lastReconnectAttempt node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>_targetPassword</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_targetPassword node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>_targetSSID</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>_targetSSID node in src/network_manager.h.</td>
 </tr>
 </table>
 
@@ -3272,29 +3592,33 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/network_manager.h</code></td><td>20 nodes</td></tr>
+      <tr><td><code>src/network_manager.h</code></td><td>23 nodes</td></tr>
 <tr><td><code>src/network_manager.cpp</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/system_status.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: defines x19, calls x19, contains x18, references x12. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: defines x21, calls x21, contains x21, references x12. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 11. MacroPadGUI ====== -->
-<h2 id="macropadgui">11. MacroPadGUI</h2>
-<p>MacroPadGUI groups implementation around guih, macropadgui, getstoragescrollindex, isvoiceaudioenabled, mostly in src/gui.h. This section covers 22 nodes and 21 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 12. MacroPadGUI ====== -->
+<h2 id="macropadgui">12. MacroPadGUI</h2>
+<p>MacroPadGUI groups implementation around guih, macropadgui, getstoragescrollindex, isvoiceaudioenabled, mostly in src/gui.h. This section covers 25 nodes and 26 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: MacroPadGUI (22 nodes, 21 edges)
+    %% Section: MacroPadGUI (25 nodes, 26 edges)
     subgraph macropadgui_src_gui_h_2c3c6594["src/gui.h"]
         src_gui_macropadgui_2de9d209("MacroPadGUI<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawbutton_f732c89d("drawButton<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_gettouchtarget_f1b368b6("getTouchTarget<br/><small>src/gui.h</small>")
         src_gui_macropadgui_isvoiceaudioenabled_0d0ea05d("isVoiceAudioEnabled()<br/><small>src/gui.h</small>")
         src_gui_macropadgui_getstoragescrollindex_1aaa139b("getStorageScrollIndex()<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_getbuttonrect_97fa57c7("getButtonRect<br/><small>src/gui.h</small>")
         src_gui_macropadgui_chatlines_b5be046f("_chatLines<br/><small>src/gui.h</small>")
         src_gui_macropadgui_currentstoragepath_e3d73717("_currentStoragePath<br/><small>src/gui.h</small>")
         src_gui_macropadgui_history_a608aaa0("_history<br/><small>src/gui.h</small>")
@@ -3305,9 +3629,6 @@ flowchart LR
         src_gui_macropadgui_storageentries_26434bae("_storageEntries<br/><small>src/gui.h</small>")
         src_gui_macropadgui_storagefreegb_61720a4a("_storageFreeGB<br/><small>src/gui.h</small>")
         src_gui_macropadgui_storagescrollindex_f71c85f2("_storageScrollIndex<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_storagetotalgb_5c4c8562("_storageTotalGB<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_storageusedmb_084ccc55("_storageUsedMB<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_voiceaudioenabled_b8b42810("_voiceAudioEnabled<br/><small>src/gui.h</small>")
     end
     subgraph macropadgui_External_generated_74b06092["External / generated"]
         src_gui_h_healthstate_a9d12398("HealthState")
@@ -3315,10 +3636,15 @@ flowchart LR
     end
     src_gui_macropadgui_2de9d209 -->|method| src_gui_macropadgui_isvoiceaudioenabled_0d0ea05d
     src_gui_macropadgui_2de9d209 -->|method| src_gui_macropadgui_getstoragescrollindex_1aaa139b
-    %% Omitted for readability: 4 nodes, 0 edges
+    src_gui_macropadgui_gettouchtarget_f1b368b6 -->|calls| src_gui_macropadgui_getbuttonrect_97fa57c7
+    src_gui_macropadgui_drawbutton_f732c89d -->|calls| src_gui_macropadgui_getbuttonrect_97fa57c7
+    %% Omitted for readability: 7 nodes, 0 edges
     class src_gui_macropadgui_2de9d209 klass;
+    class src_gui_macropadgui_drawbutton_f732c89d function;
+    class src_gui_macropadgui_gettouchtarget_f1b368b6 function;
     class src_gui_macropadgui_isvoiceaudioenabled_0d0ea05d function;
     class src_gui_macropadgui_getstoragescrollindex_1aaa139b function;
+    class src_gui_macropadgui_getbuttonrect_97fa57c7 function;
     class src_gui_macropadgui_chatlines_b5be046f function;
     class src_gui_macropadgui_currentstoragepath_e3d73717 function;
     class src_gui_macropadgui_history_a608aaa0 function;
@@ -3329,9 +3655,6 @@ flowchart LR
     class src_gui_macropadgui_storageentries_26434bae function;
     class src_gui_macropadgui_storagefreegb_61720a4a function;
     class src_gui_macropadgui_storagescrollindex_f71c85f2 function;
-    class src_gui_macropadgui_storagetotalgb_5c4c8562 function;
-    class src_gui_macropadgui_storageusedmb_084ccc55 function;
-    class src_gui_macropadgui_voiceaudioenabled_b8b42810 function;
     class src_gui_h_healthstate_a9d12398 klass;
     class src_gui_h_voiceuistate_edd3b849 klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -3381,6 +3704,30 @@ flowchart LR
 </tr>
 <tr>
   <td>4</td>
+  <td><code>getTouchTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>getTouchTarget node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>drawButton node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>getTouchTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>getButtonRect node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>7</td>
   <td><code>HealthState</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3388,7 +3735,7 @@ flowchart LR
   <td>HealthState node in project.</td>
 </tr>
 <tr>
-  <td>5</td>
+  <td>8</td>
   <td><code>VoiceUIState</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3396,7 +3743,7 @@ flowchart LR
   <td>VoiceUIState node in project.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>9</td>
   <td><code>_chatLines</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3404,7 +3751,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>10</td>
   <td><code>_currentStoragePath</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3412,7 +3759,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>11</td>
   <td><code>_history</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3420,7 +3767,7 @@ flowchart LR
   <td>_history node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>12</td>
   <td><code>_lastDrawnBatHealth</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3428,7 +3775,7 @@ flowchart LR
   <td>_lastDrawnBatHealth node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>13</td>
   <td><code>_lastDrawnBatPercent</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3436,7 +3783,7 @@ flowchart LR
   <td>_lastDrawnBatPercent node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>14</td>
   <td><code>_lastDrawnCharging</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3444,7 +3791,7 @@ flowchart LR
   <td>_lastDrawnCharging node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>15</td>
   <td><code>_lastDrawnVolume</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3452,7 +3799,7 @@ flowchart LR
   <td>_lastDrawnVolume node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>16</td>
   <td><code>_storageEntries</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3460,7 +3807,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>17</td>
   <td><code>_storageFreeGB</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3468,7 +3815,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>18</td>
   <td><code>_storageScrollIndex</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3476,7 +3823,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>19</td>
   <td><code>_storageTotalGB</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3484,7 +3831,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>20</td>
   <td><code>_storageUsedMB</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3492,7 +3839,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>21</td>
   <td><code>_voiceAudioEnabled</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3500,7 +3847,7 @@ flowchart LR
   <td>_voiceAudioEnabled node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>22</td>
   <td><code>_voiceDetailMsg</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3508,7 +3855,7 @@ flowchart LR
   <td>_voiceDetailMsg node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>23</td>
   <td><code>_voiceScrollLine</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3516,7 +3863,7 @@ flowchart LR
   <td>_voiceScrollLine node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>24</td>
   <td><code>_voiceState</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3524,7 +3871,7 @@ flowchart LR
   <td>_voiceState node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>25</td>
   <td><code>_voiceStatusMsg</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3538,37 +3885,300 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/gui.h</code></td><td>20 nodes</td></tr>
+      <tr><td><code>src/gui.h</code></td><td>23 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: defines x17, references x2, method x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: defines x20, references x2, method x2, calls x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 12. HostDiscovery ====== -->
-<h2 id="hostdiscovery">12. HostDiscovery</h2>
-<p>HostDiscovery groups implementation around host, discoveryh, discoverycpp, begin, mostly in src/host_discovery.h, src/host_discovery.cpp, src/network_manager.h. This section covers 21 nodes and 40 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 13. gui.cpp ====== -->
+<h2 id="gui-cpp">13. gui.cpp</h2>
+<p>gui.cpp groups implementation around guih, guicpp, drawwrappedtext, macropadguimacropadgui, mostly in src/gui.h, src/gui.cpp. This section covers 21 nodes and 27 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: HostDiscovery (21 nodes, 40 edges)
+    %% Section: gui.cpp (21 nodes, 27 edges)
+    subgraph gui_cpp_src_gui_h_6bd5f851["src/gui.h"]
+        src_gui_macropadgui_redrawvoicecard_0ed21610("redrawVoiceCard<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_clearconversation_172e13bc("clearConversation<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_scrollvoicechat_164d0276("scrollVoiceChat<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_rendervoicechatviewport_1b802434("renderVoiceChatViewport<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_canscrollup_034a72fb("canScrollUp<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_canscrolldown_966e68b5("canScrollDown<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawdashboardswitching_bf06cbca("drawDashboardSwitching<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawpowerconfirmdialog_908a7805("drawPowerConfirmDialog<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawsleepsplash_e07bfcee("drawSleepSplash<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_getpowerdialogtarget_468708cd("getPowerDialogTarget<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_init_d123d84e("init<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_scrolltobottom_bd221b1d("scrollToBottom<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_scrolltotop_947ae621("scrollToTop<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_setvoiceaudioenabled_b43fc294("setVoiceAudioEnabled<br/><small>src/gui.h</small>")
+    end
+    subgraph gui_cpp_src_gui_cpp_4f5b42dd["src/gui.cpp"]
+        src_gui_drawwrappedtext_94ada9de("drawWrappedText()<br/><small>src/gui.cpp</small>")
+        src_gui_macropadgui_macropadgui_61457887("MacroPadGUI::MacroPadGUI()<br/><small>src/gui.cpp</small>")
+        src_gui_cpp_src_gui_6ce0e73a("gui.cpp")
+    end
+    src_gui_cpp_tft_espi_7f0197d4("TFT_eSPI")
+    src_gui_macropadgui_redrawvoicecard_0ed21610 -->|calls| src_gui_drawwrappedtext_94ada9de
+    src_gui_macropadgui_clearconversation_172e13bc -->|calls| src_gui_macropadgui_redrawvoicecard_0ed21610
+    src_gui_macropadgui_scrollvoicechat_164d0276 -->|calls| src_gui_macropadgui_rendervoicechatviewport_1b802434
+    src_gui_macropadgui_rendervoicechatviewport_1b802434 -->|calls| src_gui_macropadgui_canscrollup_034a72fb
+    src_gui_macropadgui_rendervoicechatviewport_1b802434 -->|calls| src_gui_macropadgui_canscrolldown_966e68b5
+    src_gui_macropadgui_redrawvoicecard_0ed21610 -->|calls| src_gui_macropadgui_rendervoicechatviewport_1b802434
+    %% Omitted for readability: 3 nodes, 0 edges
+    class src_gui_macropadgui_redrawvoicecard_0ed21610 function;
+    class src_gui_macropadgui_clearconversation_172e13bc function;
+    class src_gui_macropadgui_scrollvoicechat_164d0276 function;
+    class src_gui_macropadgui_rendervoicechatviewport_1b802434 function;
+    class src_gui_macropadgui_canscrollup_034a72fb function;
+    class src_gui_macropadgui_canscrolldown_966e68b5 function;
+    class src_gui_macropadgui_drawdashboardswitching_bf06cbca function;
+    class src_gui_macropadgui_drawpowerconfirmdialog_908a7805 function;
+    class src_gui_macropadgui_drawsleepsplash_e07bfcee function;
+    class src_gui_macropadgui_getpowerdialogtarget_468708cd function;
+    class src_gui_macropadgui_init_d123d84e function;
+    class src_gui_macropadgui_scrolltobottom_bd221b1d function;
+    class src_gui_macropadgui_scrolltotop_947ae621 function;
+    class src_gui_macropadgui_setvoiceaudioenabled_b43fc294 function;
+    class src_gui_drawwrappedtext_94ada9de function;
+    class src_gui_macropadgui_macropadgui_61457887 function;
+    class src_gui_cpp_src_gui_6ce0e73a function;
+    class src_gui_cpp_tft_espi_7f0197d4 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>drawWrappedText()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>drawWrappedText() node in src/gui.cpp.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>MacroPadGUI::MacroPadGUI()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>MacroPadGUI::MacroPadGUI() node in src/gui.cpp.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>init</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>init node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>clearConversation</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>clearConversation node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>setVoiceAudioEnabled</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>setVoiceAudioEnabled node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>scrollToBottom</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>scrollToBottom node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>scrollToTop</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>scrollToTop node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>canScrollUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>canScrollUp node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>canScrollDown</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>canScrollDown node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>voiceChatScrollable</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>scrollVoiceChat</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>scrollVoiceChat</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>canScrollDown</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>canScrollUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>clearConversation</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>drawWrappedText()</code><br><small style="color:var(--muted)">src/gui.cpp</small><br><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>redrawVoiceCard node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>drawDashboardSwitching</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>drawDashboardSwitching node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>drawPowerConfirmDialog</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>drawPowerConfirmDialog node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>getPowerDialogTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>getPowerDialogTarget node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>drawSleepSplash</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>drawSleepSplash node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>sleepDisplay</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>sleepDisplay node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>wakeDisplay</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>wakeDisplay node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>gui.cpp</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>gui.cpp node in src/gui.cpp.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>TFT_eSPI</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>TFT_eSPI node in project.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/gui.h</code></td><td>17 nodes</td></tr>
+<tr><td><code>src/gui.cpp</code></td><td>3 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x19, calls x6, references x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 14. HostDiscovery ====== -->
+<h2 id="hostdiscovery">14. HostDiscovery</h2>
+<p>HostDiscovery groups implementation around host, discoveryh, discoverycpp, hostdiscovery, mostly in src/host_discovery.h, src/host_discovery.cpp. This section covers 20 nodes and 39 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: HostDiscovery (20 nodes, 39 edges)
     subgraph hostdiscovery_src_host_discovery_h_9d9a8906["src/host_discovery.h"]
         src_host_discovery_hostdiscovery_discovernow_984aee62("discoverNow<br/><small>src/host_discovery.h</small>")
         src_host_discovery_hostdiscovery_querymdns_a22d38c1("queryMdns<br/><small>src/host_discovery.h</small>")
         src_host_discovery_hostdiscovery_sendquery_610ad066("sendQuery<br/><small>src/host_discovery.h</small>")
         src_host_discovery_h_src_host_discovery_b33d92fb("host_discovery.h")
-        src_host_discovery_hostdiscovery_verifyreceiver_759d8f16("verifyReceiver<br/><small>src/host_discovery.h</small>")
         src_host_discovery_hostdiscovery_probesubnet_c27de2f0("probeSubnet<br/><small>src/host_discovery.h</small>")
+        src_host_discovery_hostdiscovery_verifyreceiver_759d8f16("verifyReceiver<br/><small>src/host_discovery.h</small>")
         src_host_discovery_hostdiscovery_checkbeacon_3ea0f9dd("checkBeacon<br/><small>src/host_discovery.h</small>")
         src_host_discovery_hostdiscovery_parseandapplydi_58022d94("parseAndApplyDiscoveryPayload<br/><small>src/host_discovery.h</small>")
         src_host_discovery_hostdiscovery_9f956194("HostDiscovery<br/><small>src/host_discovery.h</small>")
         src_host_discovery_hostdiscovery_lastbeaconcheck_d0b496f6("_lastBeaconCheck<br/><small>src/host_discovery.h</small>")
         src_host_discovery_hostdiscovery_lastdiscoveryat_7e9073f9("_lastDiscoveryAttempt<br/><small>src/host_discovery.h</small>")
         src_host_discovery_hostdiscovery_udp_d3757253("_udp<br/><small>src/host_discovery.h</small>")
+        src_host_discovery_hostdiscovery_udpstarted_3aeea024("_udpStarted<br/><small>src/host_discovery.h</small>")
     end
     subgraph hostdiscovery_External_generated_17d98231["External / generated"]
         ipaddress_1f99aaad("IPAddress")
@@ -3579,7 +4189,6 @@ flowchart LR
         src_host_discovery_cpp_src_host_discovery_5c1a273c("host_discovery.cpp")
         src_host_discovery_hostdiscovery_hostdiscovery_1cd3785f("HostDiscovery::HostDiscovery()<br/><small>src/host_discovery.cpp</small>")
     end
-    src_network_manager_networkmanager_begin_5ab86173("begin<br/><small>src/network_manager.h</small>")
     src_host_discovery_hostdiscovery_querymdns_a22d38c1 -->|calls| ipaddress_1f99aaad
     src_host_discovery_hostdiscovery_sendquery_610ad066 -->|calls| ipaddress_1f99aaad
     src_host_discovery_cpp_src_host_discovery_5c1a273c -->|imports| src_host_discovery_h_src_host_discovery_b33d92fb
@@ -3592,26 +4201,25 @@ flowchart LR
     src_host_discovery_hostdiscovery_discovernow_984aee62 -->|calls| src_host_discovery_hostdiscovery_probesubnet_c27de2f0
     src_host_discovery_hostdiscovery_checkbeacon_3ea0f9dd -->|calls| src_host_discovery_hostdiscovery_parseandapplydi_58022d94
     src_host_discovery_hostdiscovery_sendquery_610ad066 -->|calls| src_host_discovery_hostdiscovery_checkbeacon_3ea0f9dd
-    src_network_manager_networkmanager_begin_5ab86173 -->|calls| ipaddress_1f99aaad
-    %% Omitted for readability: 3 nodes, 0 edges
+    %% Omitted for readability: 2 nodes, 0 edges
     class src_host_discovery_hostdiscovery_discovernow_984aee62 function;
     class src_host_discovery_hostdiscovery_querymdns_a22d38c1 function;
     class src_host_discovery_hostdiscovery_sendquery_610ad066 function;
     class src_host_discovery_h_src_host_discovery_b33d92fb function;
-    class src_host_discovery_hostdiscovery_verifyreceiver_759d8f16 function;
     class src_host_discovery_hostdiscovery_probesubnet_c27de2f0 function;
+    class src_host_discovery_hostdiscovery_verifyreceiver_759d8f16 function;
     class src_host_discovery_hostdiscovery_checkbeacon_3ea0f9dd function;
     class src_host_discovery_hostdiscovery_parseandapplydi_58022d94 function;
     class src_host_discovery_hostdiscovery_9f956194 klass;
     class src_host_discovery_hostdiscovery_lastbeaconcheck_d0b496f6 function;
     class src_host_discovery_hostdiscovery_lastdiscoveryat_7e9073f9 function;
     class src_host_discovery_hostdiscovery_udp_d3757253 function;
+    class src_host_discovery_hostdiscovery_udpstarted_3aeea024 function;
     class ipaddress_1f99aaad klass;
     class wifiudp_1620bf10 klass;
     class src_host_discovery_cpp_string_4d2305a2 klass;
     class src_host_discovery_cpp_src_host_discovery_5c1a273c function;
     class src_host_discovery_hostdiscovery_hostdiscovery_1cd3785f function;
-    class src_network_manager_networkmanager_begin_5ab86173 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -3723,14 +4331,6 @@ flowchart LR
 </tr>
 <tr>
   <td>12</td>
-  <td><code>begin</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>IPAddress</code><br><code>startConnection</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>begin node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>13</td>
   <td><code>IPAddress</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>begin</code><br><small style="color:var(--muted)">src/network_manager.h</small><br><code>queryMdns</code><br><small style="color:var(--muted)">src/host_discovery.h</small><br><code>sendQuery</code><br><small style="color:var(--muted)">src/host_discovery.h</small></td>
@@ -3738,7 +4338,7 @@ flowchart LR
   <td>IPAddress node in project.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>13</td>
   <td><code>host_discovery.cpp</code><br><small style="color:var(--muted)">src/host_discovery.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3746,7 +4346,7 @@ flowchart LR
   <td>host_discovery.cpp node in src/host_discovery.cpp.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>14</td>
   <td><code>String</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3754,7 +4354,7 @@ flowchart LR
   <td>String node in project.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>15</td>
   <td><code>host_discovery.h</code><br><small style="color:var(--muted)">src/host_discovery.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>host_discovery.cpp</code><br><small style="color:var(--muted)">src/host_discovery.cpp</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>network_manager.cpp</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
@@ -3762,7 +4362,7 @@ flowchart LR
   <td>host_discovery.h node in src/host_discovery.h.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>16</td>
   <td><code>_lastBeaconCheck</code><br><small style="color:var(--muted)">src/host_discovery.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3770,7 +4370,7 @@ flowchart LR
   <td>_lastBeaconCheck node in src/host_discovery.h.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>17</td>
   <td><code>_lastDiscoveryAttempt</code><br><small style="color:var(--muted)">src/host_discovery.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3778,7 +4378,7 @@ flowchart LR
   <td>_lastDiscoveryAttempt node in src/host_discovery.h.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>18</td>
   <td><code>_udp</code><br><small style="color:var(--muted)">src/host_discovery.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3786,7 +4386,7 @@ flowchart LR
   <td>_udp node in src/host_discovery.h.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>19</td>
   <td><code>_udpStarted</code><br><small style="color:var(--muted)">src/host_discovery.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3794,7 +4394,7 @@ flowchart LR
   <td>_udpStarted node in src/host_discovery.h.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>20</td>
   <td><code>WiFiUDP</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>host_discovery.h</code><br><small style="color:var(--muted)">src/host_discovery.h</small></td>
@@ -3810,300 +4410,75 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>src/host_discovery.h</code></td><td>15 nodes</td></tr>
 <tr><td><code>src/host_discovery.cpp</code></td><td>2 nodes</td></tr>
-<tr><td><code>src/network_manager.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: defines x13, calls x11, contains x11, references x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: defines x13, contains x11, calls x10, references x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 13. gui.cpp ====== -->
-<h2 id="gui-cpp">13. gui.cpp</h2>
-<p>gui.cpp groups implementation around guih, guicpp, gettouchtarget, drawbutton, mostly in src/gui.h, src/gui.cpp. This section covers 18 nodes and 22 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 15. power_manager.cpp ====== -->
+<h2 id="power-manager-cpp">15. power_manager.cpp</h2>
+<p>power_manager.cpp groups implementation around power, managerh, managercpp, powermanager, mostly in src/power_manager.h, src/power_manager.cpp. This section covers 18 nodes and 33 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: gui.cpp (18 nodes, 22 edges)
-    subgraph gui_cpp_src_gui_h_6bd5f851["src/gui.h"]
-        src_gui_macropadgui_rendervoicechatviewport_1b802434("renderVoiceChatViewport<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawbutton_f732c89d("drawButton<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_gettouchtarget_f1b368b6("getTouchTarget<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_scrollvoicechat_164d0276("scrollVoiceChat<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_getbuttonrect_97fa57c7("getButtonRect<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_canscrollup_034a72fb("canScrollUp<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_canscrolldown_966e68b5("canScrollDown<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawdashboardswitching_bf06cbca("drawDashboardSwitching<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawpowerconfirmdialog_908a7805("drawPowerConfirmDialog<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawsleepsplash_e07bfcee("drawSleepSplash<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_getpowerdialogtarget_468708cd("getPowerDialogTarget<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_init_d123d84e("init<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_scrolltobottom_bd221b1d("scrollToBottom<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_scrolltotop_947ae621("scrollToTop<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_setvoiceaudioenabled_b43fc294("setVoiceAudioEnabled<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_sleepdisplay_cb6f0d99("sleepDisplay<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_voicechatscrollable_88c8203c("voiceChatScrollable<br/><small>src/gui.h</small>")
-    end
-    src_gui_cpp_src_gui_6ce0e73a("gui.cpp")
-    src_gui_macropadgui_gettouchtarget_f1b368b6 -->|calls| src_gui_macropadgui_getbuttonrect_97fa57c7
-    src_gui_macropadgui_drawbutton_f732c89d -->|calls| src_gui_macropadgui_getbuttonrect_97fa57c7
-    src_gui_macropadgui_scrollvoicechat_164d0276 -->|calls| src_gui_macropadgui_rendervoicechatviewport_1b802434
-    src_gui_macropadgui_rendervoicechatviewport_1b802434 -->|calls| src_gui_macropadgui_canscrollup_034a72fb
-    src_gui_macropadgui_rendervoicechatviewport_1b802434 -->|calls| src_gui_macropadgui_canscrolldown_966e68b5
-    class src_gui_macropadgui_rendervoicechatviewport_1b802434 function;
-    class src_gui_macropadgui_drawbutton_f732c89d function;
-    class src_gui_macropadgui_gettouchtarget_f1b368b6 function;
-    class src_gui_macropadgui_scrollvoicechat_164d0276 function;
-    class src_gui_macropadgui_getbuttonrect_97fa57c7 function;
-    class src_gui_macropadgui_canscrollup_034a72fb function;
-    class src_gui_macropadgui_canscrolldown_966e68b5 function;
-    class src_gui_macropadgui_drawdashboardswitching_bf06cbca function;
-    class src_gui_macropadgui_drawpowerconfirmdialog_908a7805 function;
-    class src_gui_macropadgui_drawsleepsplash_e07bfcee function;
-    class src_gui_macropadgui_getpowerdialogtarget_468708cd function;
-    class src_gui_macropadgui_init_d123d84e function;
-    class src_gui_macropadgui_scrolltobottom_bd221b1d function;
-    class src_gui_macropadgui_scrolltotop_947ae621 function;
-    class src_gui_macropadgui_setvoiceaudioenabled_b43fc294 function;
-    class src_gui_macropadgui_sleepdisplay_cb6f0d99 function;
-    class src_gui_macropadgui_voicechatscrollable_88c8203c function;
-    class src_gui_cpp_src_gui_6ce0e73a function;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>getTouchTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>getTouchTarget node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>drawButton node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>init</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>init node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>scrollToBottom</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>scrollToBottom node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>setVoiceAudioEnabled</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>setVoiceAudioEnabled node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>scrollToTop</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>scrollToTop node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>canScrollUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>canScrollUp node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>canScrollDown</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>canScrollDown node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>getTouchTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>getButtonRect node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>voiceChatScrollable</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>scrollVoiceChat</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>scrollVoiceChat</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>canScrollDown</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>canScrollUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>drawDashboardSwitching</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>drawDashboardSwitching node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>drawPowerConfirmDialog</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>drawPowerConfirmDialog node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>getPowerDialogTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>getPowerDialogTarget node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>drawSleepSplash</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>drawSleepSplash node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>sleepDisplay</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>sleepDisplay node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>gui.cpp</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>gui.cpp node in src/gui.cpp.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/gui.h</code></td><td>17 nodes</td></tr>
-<tr><td><code>src/gui.cpp</code></td><td>1 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x17, calls x5. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 14. power_manager.cpp ====== -->
-<h2 id="power-manager-cpp">14. power_manager.cpp</h2>
-<p>power_manager.cpp groups implementation around power, managerh, managercpp, powermanager, mostly in src/power_manager.h, src/power_manager.cpp. This section covers 16 nodes and 30 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: power_manager.cpp (16 nodes, 30 edges)
+    %% Section: power_manager.cpp (18 nodes, 33 edges)
     subgraph power_manager_cpp_src_power_manager_h_dd7dd8d9["src/power_manager.h"]
-        src_power_manager_powermanager_enterdeepsleep_b4c2833c("enterDeepSleep<br/><small>src/power_manager.h</small>")
         src_power_manager_powermanager_begin_82f58433("begin<br/><small>src/power_manager.h</small>")
-        src_power_manager_powermanager_5812a542("PowerManager<br/><small>src/power_manager.h</small>")
-        src_power_manager_powermanager_issoftwake_a97fe755("isSoftWake()<br/><small>src/power_manager.h</small>")
-        src_power_manager_h_src_power_manager_0c78e5d6("power_manager.h")
-        src_power_manager_powermanager_releasepinholds_f9c29ab5("releasePinHolds<br/><small>src/power_manager.h</small>")
-        src_power_manager_powermanager_logwakecause_5ad9105e("logWakeCause<br/><small>src/power_manager.h</small>")
         src_power_manager_powermanager_fadebacklightoff_7725983a("fadeBacklightOff<br/><small>src/power_manager.h</small>")
-        src_power_manager_powermanager_holdsleeppins_af0018a4("holdSleepPins<br/><small>src/power_manager.h</small>")
-        src_power_manager_powermanager_waitforwakepinsid_69e1d916("waitForWakePinsIdle<br/><small>src/power_manager.h</small>")
-        src_power_manager_powermanager_configurewakesour_b9797c5d("configureWakeSources<br/><small>src/power_manager.h</small>")
+        src_power_manager_powermanager_5812a542("PowerManager<br/><small>src/power_manager.h</small>")
+        src_power_manager_powermanager_entersoftoff_8d6df66a("enterSoftOff<br/><small>src/power_manager.h</small>")
+        src_power_manager_powermanager_issoftwake_a97fe755("isSoftWake()<br/><small>src/power_manager.h</small>")
+        src_power_manager_powermanager_releasepinholds_f9c29ab5("releasePinHolds<br/><small>src/power_manager.h</small>")
+        src_power_manager_h_src_power_manager_0c78e5d6("power_manager.h")
+        src_power_manager_powermanager_setbacklightduty_2ccf7b2e("setBacklightDuty<br/><small>src/power_manager.h</small>")
+        src_power_manager_powermanager_detachbacklightpw_0eeeef82("detachBacklightPwm<br/><small>src/power_manager.h</small>")
+        src_power_manager_powermanager_logwakecause_5ad9105e("logWakeCause<br/><small>src/power_manager.h</small>")
         src_power_manager_powermanager_softwake_e8bfa6f9("_softWake<br/><small>src/power_manager.h</small>")
         src_power_manager_powermanager_wakecause_81ca921a("_wakeCause<br/><small>src/power_manager.h</small>")
         src_power_manager_powermanager_restorepage_5caa28ea("restorePage<br/><small>src/power_manager.h</small>")
     end
-    esp_sleep_wakeup_cause_t_c89ced0d("esp_sleep_wakeup_cause_t")
-    src_power_manager_cpp_src_power_manager_4bc4f2ed("power_manager.cpp")
+    subgraph power_manager_cpp_src_power_manager_cpp_c87352c1["src/power_manager.cpp"]
+        src_power_manager_powermanager_entersoftoffdiag_75ebe45d("PowerManager::enterSoftOffDiag()<br/><small>src/power_manager.cpp</small>")
+        src_power_manager_cpp_src_power_manager_4bc4f2ed("power_manager.cpp")
+        src_power_manager_releasertcpin_d1028ff8("releaseRtcPin()<br/><small>src/power_manager.cpp</small>")
+    end
+    subgraph power_manager_cpp_External_generated_af37cb34["External / generated"]
+        esp_sleep_wakeup_cause_t_c89ced0d("esp_sleep_wakeup_cause_t")
+        gpio_num_t_388b4f23("gpio_num_t")
+    end
     src_power_manager_powermanager_5812a542 -->|method| src_power_manager_powermanager_issoftwake_a97fe755
+    src_power_manager_powermanager_releasepinholds_f9c29ab5 -->|calls| src_power_manager_releasertcpin_d1028ff8
     src_power_manager_cpp_src_power_manager_4bc4f2ed -->|imports| src_power_manager_h_src_power_manager_0c78e5d6
+    src_power_manager_powermanager_entersoftoffdiag_75ebe45d -->|calls| src_power_manager_powermanager_setbacklightduty_2ccf7b2e
+    src_power_manager_powermanager_entersoftoffdiag_75ebe45d -->|calls| src_power_manager_powermanager_detachbacklightpw_0eeeef82
+    src_power_manager_powermanager_fadebacklightoff_7725983a -->|calls| src_power_manager_powermanager_setbacklightduty_2ccf7b2e
+    src_power_manager_powermanager_fadebacklightoff_7725983a -->|calls| src_power_manager_powermanager_detachbacklightpw_0eeeef82
     src_power_manager_powermanager_begin_82f58433 -->|calls| src_power_manager_powermanager_releasepinholds_f9c29ab5
     src_power_manager_powermanager_begin_82f58433 -->|calls| src_power_manager_powermanager_logwakecause_5ad9105e
-    src_power_manager_powermanager_enterdeepsleep_b4c2833c -->|calls| src_power_manager_powermanager_fadebacklightoff_7725983a
-    src_power_manager_powermanager_enterdeepsleep_b4c2833c -->|calls| src_power_manager_powermanager_holdsleeppins_af0018a4
-    src_power_manager_powermanager_enterdeepsleep_b4c2833c -->|calls| src_power_manager_powermanager_waitforwakepinsid_69e1d916
-    src_power_manager_powermanager_enterdeepsleep_b4c2833c -->|calls| src_power_manager_powermanager_configurewakesour_b9797c5d
-    class src_power_manager_powermanager_enterdeepsleep_b4c2833c function;
+    src_power_manager_powermanager_entersoftoff_8d6df66a -->|calls| src_power_manager_powermanager_fadebacklightoff_7725983a
     class src_power_manager_powermanager_begin_82f58433 function;
-    class src_power_manager_powermanager_5812a542 klass;
-    class src_power_manager_powermanager_issoftwake_a97fe755 function;
-    class src_power_manager_h_src_power_manager_0c78e5d6 function;
-    class src_power_manager_powermanager_releasepinholds_f9c29ab5 function;
-    class src_power_manager_powermanager_logwakecause_5ad9105e function;
     class src_power_manager_powermanager_fadebacklightoff_7725983a function;
-    class src_power_manager_powermanager_holdsleeppins_af0018a4 function;
-    class src_power_manager_powermanager_waitforwakepinsid_69e1d916 function;
-    class src_power_manager_powermanager_configurewakesour_b9797c5d function;
+    class src_power_manager_powermanager_5812a542 klass;
+    class src_power_manager_powermanager_entersoftoff_8d6df66a function;
+    class src_power_manager_powermanager_issoftwake_a97fe755 function;
+    class src_power_manager_powermanager_releasepinholds_f9c29ab5 function;
+    class src_power_manager_h_src_power_manager_0c78e5d6 function;
+    class src_power_manager_powermanager_setbacklightduty_2ccf7b2e function;
+    class src_power_manager_powermanager_detachbacklightpw_0eeeef82 function;
+    class src_power_manager_powermanager_logwakecause_5ad9105e function;
     class src_power_manager_powermanager_softwake_e8bfa6f9 function;
     class src_power_manager_powermanager_wakecause_81ca921a function;
     class src_power_manager_powermanager_restorepage_5caa28ea ui;
-    class esp_sleep_wakeup_cause_t_c89ced0d function;
+    class src_power_manager_powermanager_entersoftoffdiag_75ebe45d function;
     class src_power_manager_cpp_src_power_manager_4bc4f2ed function;
+    class src_power_manager_releasertcpin_d1028ff8 function;
+    class esp_sleep_wakeup_cause_t_c89ced0d function;
+    class gpio_num_t_388b4f23 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -4135,6 +4510,14 @@ flowchart LR
 </tr>
 <tr>
   <td>2</td>
+  <td><code>PowerManager::enterSoftOffDiag()</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>detachBacklightPwm</code><br><small style="color:var(--muted)">src/power_manager.h</small><br><code>setBacklightDuty</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td>PowerManager::enterSoftOffDiag() node in src/power_manager.cpp.</td>
+</tr>
+<tr>
+  <td>3</td>
   <td><code>.isSoftWake()</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>PowerManager</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
@@ -4142,31 +4525,47 @@ flowchart LR
   <td>.isSoftWake() node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>3</td>
-  <td><code>holdSleepPins</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>enterDeepSleep</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>holdSleepPins node in src/power_manager.h.</td>
-</tr>
-<tr>
   <td>4</td>
-  <td><code>waitForWakePinsIdle</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td><code>releaseRtcPin()</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>enterDeepSleep</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td><code>releasePinHolds</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td>No direct outbound edge</td>
-  <td>waitForWakePinsIdle node in src/power_manager.h.</td>
+  <td>releaseRtcPin() node in src/power_manager.cpp.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>configureWakeSources</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td><code>releasePinHolds</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>enterDeepSleep</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>Reads, resolves, or persists project configuration.</td>
+  <td><code>begin</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td><code>releaseRtcPin()</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
+  <td>releasePinHolds node in src/power_manager.h.</td>
 </tr>
 <tr>
   <td>6</td>
+  <td><code>setBacklightDuty</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>fadeBacklightOff</code><br><small style="color:var(--muted)">src/power_manager.h</small><br><code>PowerManager::enterSoftOffDiag()</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
+  <td>No direct outbound edge</td>
+  <td>setBacklightDuty node in src/power_manager.h.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>detachBacklightPwm</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>fadeBacklightOff</code><br><small style="color:var(--muted)">src/power_manager.h</small><br><code>PowerManager::enterSoftOffDiag()</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
+  <td>No direct outbound edge</td>
+  <td>detachBacklightPwm node in src/power_manager.h.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>fadeBacklightOff</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>enterSoftOff</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td><code>detachBacklightPwm</code><br><small style="color:var(--muted)">src/power_manager.h</small><br><code>setBacklightDuty</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td>fadeBacklightOff node in src/power_manager.h.</td>
+</tr>
+<tr>
+  <td>9</td>
   <td><code>logWakeCause</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>begin</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
@@ -4174,7 +4573,7 @@ flowchart LR
   <td>logWakeCause node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>10</td>
   <td><code>begin</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -4182,7 +4581,7 @@ flowchart LR
   <td>begin node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>11</td>
   <td><code>restorePage</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -4190,31 +4589,15 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>9</td>
-  <td><code>enterDeepSleep</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td>12</td>
+  <td><code>enterSoftOff</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>configureWakeSources</code><br><small style="color:var(--muted)">src/power_manager.h</small><br><code>fadeBacklightOff</code><br><small style="color:var(--muted)">src/power_manager.h</small><br><code>holdSleepPins</code><br><small style="color:var(--muted)">src/power_manager.h</small><br>+1 more</td>
-  <td>enterDeepSleep node in src/power_manager.h.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>releasePinHolds</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>begin</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>releasePinHolds node in src/power_manager.h.</td>
-</tr>
-<tr>
-  <td>11</td>
   <td><code>fadeBacklightOff</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>enterDeepSleep</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>fadeBacklightOff node in src/power_manager.h.</td>
+  <td>enterSoftOff node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>13</td>
   <td><code>esp_sleep_wakeup_cause_t</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -4222,15 +4605,23 @@ flowchart LR
   <td>esp_sleep_wakeup_cause_t node in project.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>14</td>
+  <td><code>gpio_num_t</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>gpio_num_t node in project.</td>
+</tr>
+<tr>
+  <td>15</td>
   <td><code>power_manager.cpp</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>audio_recorder.h</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small><br>+2 more</td>
+  <td><code>audio_recorder.h</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small><br>+1 more</td>
   <td>power_manager.cpp node in src/power_manager.cpp.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>16</td>
   <td><code>power_manager.h</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>power_manager.cpp</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
@@ -4238,7 +4629,7 @@ flowchart LR
   <td>power_manager.h node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>17</td>
   <td><code>_softWake</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -4246,7 +4637,7 @@ flowchart LR
   <td>_softWake node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>18</td>
   <td><code>_wakeCause</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -4260,247 +4651,38 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/power_manager.h</code></td><td>14 nodes</td></tr>
-<tr><td><code>src/power_manager.cpp</code></td><td>1 nodes</td></tr>
+      <tr><td><code>src/power_manager.h</code></td><td>13 nodes</td></tr>
+<tr><td><code>src/power_manager.cpp</code></td><td>3 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: defines x11, contains x10, calls x6, references x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 15. redrawVoiceCard ====== -->
-<h2 id="redrawvoicecard">15. redrawVoiceCard</h2>
-<p>redrawVoiceCard groups implementation around guih, guicpp, drawwrappedtext, macropadguimacropadgui, mostly in src/gui.h, src/gui.cpp. This section covers 15 nodes and 15 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: redrawVoiceCard (15 nodes, 15 edges)
-    subgraph redrawvoicecard_src_gui_h_b03f3cfd["src/gui.h"]
-        src_gui_macropadgui_drawvoicecard_6821a110("drawVoiceCard<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_addvoiceturn_f13a64b6("addVoiceTurn<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_clearconversation_172e13bc("clearConversation<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_navigatestorageup_a85b2333("navigateStorageUp<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_rebuildchatlines_6bc3773b("rebuildChatLines<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_redrawvoicecard_0ed21610("redrawVoiceCard<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_navigatestorageto_867cc99f("navigateStorageTo<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_scrolltolatestresponse_cb695a79("scrollToLatestResponse<br/><small>src/gui.h</small>")
-    end
-    subgraph redrawvoicecard_External_generated_4efe7524["External / generated"]
-        src_gui_cpp_string_9c5beae7("String")
-        src_gui_cpp_tft_espi_7f0197d4("TFT_eSPI")
-        src_gui_cpp_voiceuistate_069f5f18("VoiceUIState")
-        src_gui_cpp_vector_4e0c1293("vector")
-    end
-    subgraph redrawvoicecard_src_gui_cpp_9692757c["src/gui.cpp"]
-        src_gui_wraptexttochatlines_c755b01b("wrapTextToChatLines()<br/><small>src/gui.cpp</small>")
-        src_gui_drawwrappedtext_94ada9de("drawWrappedText()<br/><small>src/gui.cpp</small>")
-        src_gui_macropadgui_macropadgui_61457887("MacroPadGUI::MacroPadGUI()<br/><small>src/gui.cpp</small>")
-    end
-    src_gui_macropadgui_rebuildchatlines_6bc3773b -->|calls| src_gui_wraptexttochatlines_c755b01b
-    src_gui_macropadgui_redrawvoicecard_0ed21610 -->|calls| src_gui_drawwrappedtext_94ada9de
-    src_gui_macropadgui_navigatestorageup_a85b2333 -->|calls| src_gui_macropadgui_navigatestorageto_867cc99f
-    src_gui_macropadgui_clearconversation_172e13bc -->|calls| src_gui_macropadgui_redrawvoicecard_0ed21610
-    src_gui_macropadgui_addvoiceturn_f13a64b6 -->|calls| src_gui_macropadgui_rebuildchatlines_6bc3773b
-    src_gui_macropadgui_addvoiceturn_f13a64b6 -->|calls| src_gui_macropadgui_scrolltolatestresponse_cb695a79
-    src_gui_macropadgui_drawvoicecard_6821a110 -->|calls| src_gui_macropadgui_addvoiceturn_f13a64b6
-    src_gui_macropadgui_drawvoicecard_6821a110 -->|calls| src_gui_macropadgui_redrawvoicecard_0ed21610
-    class src_gui_macropadgui_drawvoicecard_6821a110 function;
-    class src_gui_macropadgui_addvoiceturn_f13a64b6 function;
-    class src_gui_macropadgui_clearconversation_172e13bc function;
-    class src_gui_macropadgui_navigatestorageup_a85b2333 function;
-    class src_gui_macropadgui_rebuildchatlines_6bc3773b function;
-    class src_gui_macropadgui_redrawvoicecard_0ed21610 function;
-    class src_gui_macropadgui_navigatestorageto_867cc99f function;
-    class src_gui_macropadgui_scrolltolatestresponse_cb695a79 function;
-    class src_gui_cpp_string_9c5beae7 klass;
-    class src_gui_cpp_tft_espi_7f0197d4 klass;
-    class src_gui_cpp_voiceuistate_069f5f18 klass;
-    class src_gui_cpp_vector_4e0c1293 function;
-    class src_gui_wraptexttochatlines_c755b01b function;
-    class src_gui_drawwrappedtext_94ada9de function;
-    class src_gui_macropadgui_macropadgui_61457887 function;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>drawWrappedText()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>drawWrappedText() node in src/gui.cpp.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>MacroPadGUI::MacroPadGUI()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>MacroPadGUI::MacroPadGUI() node in src/gui.cpp.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>wrapTextToChatLines()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>rebuildChatLines</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>navigateStorageTo</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>navigateStorageUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>drawStorageExplorer</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>sdCardListDirectory()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>navigateStorageUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>navigateStorageTo</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>clearConversation</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>clearConversation node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>rebuildChatLines</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>scrollToLatestResponse</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>addVoiceTurn node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>rebuildChatLines</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>wrapTextToChatLines()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>scrollToLatestResponse</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>drawVoiceCard node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>clearConversation</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>drawWrappedText()</code><br><small style="color:var(--muted)">src/gui.cpp</small><br><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>redrawVoiceCard node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>String node in project.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>TFT_eSPI</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>TFT_eSPI node in project.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>vector</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>vector node in project.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>VoiceUIState</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>VoiceUIState node in project.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/gui.h</code></td><td>8 nodes</td></tr>
-<tr><td><code>src/gui.cpp</code></td><td>3 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x8, references x7. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x11, defines x10, calls x8, references x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 16. Other ====== -->
 <h2 id="other">16. Other</h2>
-<p>Other groups implementation around guih, es8311cpp, generate, casepy, mostly in src/gui.h, src/es8311.cpp, generate_case.py. This section covers 67 nodes and 57 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Other groups implementation around guih, es8311cpp, generate, casepy, mostly in src/gui.h, src/es8311.cpp, generate_case.py. This section covers 74 nodes and 66 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (67 nodes, 57 edges)
+    %% Section: Other (74 nodes, 66 edges)
     subgraph other_src_gui_h_373a92dc["src/gui.h"]
         src_gui_macropadgui_drawall_e8dc4428("drawAll<br/><small>src/gui.h</small>")
         src_gui_macropadgui_drawdashboard_878f9c4f("drawDashboard<br/><small>src/gui.h</small>")
         src_gui_h_src_gui_a56c68cc("gui.h")
-        src_gui_macropadgui_drawstorageexplorer_e06ccec3("drawStorageExplorer<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_scrollstoragelist_6627582e("scrollStorageList<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_addvoiceturn_f13a64b6("addVoiceTurn<br/><small>src/gui.h</small>")
         src_gui_macropadgui_drawstatusbar_c81376cb("drawStatusBar<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawvoicecard_6821a110("drawVoiceCard<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_rebuildchatlines_6bc3773b("rebuildChatLines<br/><small>src/gui.h</small>")
         src_gui_macropadgui_drawdashboardpowerbutton_dcb38111("drawDashboardPowerButton<br/><small>src/gui.h</small>")
         src_gui_macropadgui_drawstatusrow_ad3e4a08("drawStatusRow<br/><small>src/gui.h</small>")
         src_gui_macropadgui_updatestatusbarbattery_79e01c4f("updateStatusBarBattery<br/><small>src/gui.h</small>")
         src_gui_macropadgui_drawdashboardvolume_30c899c0("drawDashboardVolume<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawstorageexplorer_e06ccec3("drawStorageExplorer<br/><small>src/gui.h</small>")
         src_gui_macropadgui_drawvoiceaudiotoggle_e637cdcb("drawVoiceAudioToggle<br/><small>src/gui.h</small>")
         src_gui_macropadgui_refreshstorageexplorer_9f6f9bbd("refreshStorageExplorer<br/><small>src/gui.h</small>")
         src_gui_macropadgui_drawstoragelistonly_3a093351("drawStorageListOnly<br/><small>src/gui.h</small>")
@@ -4509,47 +4691,43 @@ flowchart LR
         src_gui_h_tft_espi_a5e0095d("TFT_eSPI")
         src_gui_h_vector_ccb54c95("vector")
     end
-    subgraph other_src_sd_card_cpp_bb0d1ca9["src/sd_card.cpp"]
-        src_sd_card_getsdcardstatus_fef98d09("getSDCardStatus()<br/><small>src/sd_card.cpp</small>")
-        src_sd_card_sdcardgetstoragespace_ea9ea738("sdCardGetStorageSpace()<br/><small>src/sd_card.cpp</small>")
-    end
-    src_system_status_a10ae04d("system_status.h")
+    src_gui_wraptexttochatlines_c755b01b("wrapTextToChatLines()<br/><small>src/gui.cpp</small>")
+    src_gui_macropadgui_rebuildchatlines_6bc3773b -->|calls| src_gui_wraptexttochatlines_c755b01b
     src_gui_h_src_gui_a56c68cc -->|imports| src_gui_h_tft_espi_a5e0095d
     src_gui_h_src_gui_a56c68cc -->|imports| src_gui_h_vector_ccb54c95
-    src_gui_h_src_gui_a56c68cc -->|imports| src_system_status_a10ae04d
     src_gui_macropadgui_drawdashboard_878f9c4f -->|calls| src_gui_macropadgui_drawdashboardpowerbutton_dcb38111
     src_gui_macropadgui_drawdashboard_878f9c4f -->|calls| src_gui_macropadgui_drawstatusrow_ad3e4a08
     src_gui_macropadgui_drawdashboard_878f9c4f -->|calls| src_gui_macropadgui_updatestatusbarbattery_79e01c4f
     src_gui_macropadgui_drawdashboard_878f9c4f -->|calls| src_gui_macropadgui_drawdashboardvolume_30c899c0
     src_gui_macropadgui_drawstatusbar_c81376cb -->|calls| src_gui_macropadgui_updatestatusbarbattery_79e01c4f
-    src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawvoiceaudiotoggle_e637cdcb
-    src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawstatusbar_c81376cb
+    src_gui_macropadgui_drawstatusbar_c81376cb -->|calls| src_gui_macropadgui_drawdashboardpowerbutton_dcb38111
     src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawdashboard_878f9c4f
     src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawstorageexplorer_e06ccec3
+    src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawvoiceaudiotoggle_e637cdcb
+    src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawstatusbar_c81376cb
     src_gui_macropadgui_drawstorageexplorer_e06ccec3 -->|calls| src_gui_macropadgui_refreshstorageexplorer_9f6f9bbd
-    src_gui_macropadgui_drawstorageexplorer_e06ccec3 -->|calls| src_sd_card_getsdcardstatus_fef98d09
     src_gui_macropadgui_drawstorageexplorer_e06ccec3 -->|calls| src_gui_macropadgui_drawstoragelistonly_3a093351
-    src_gui_macropadgui_scrollstoragelist_6627582e -->|calls| src_gui_macropadgui_drawstoragelistonly_3a093351
-    src_gui_macropadgui_refreshstorageexplorer_9f6f9bbd -->|calls| src_sd_card_sdcardgetstoragespace_ea9ea738
-    %% Omitted for readability: 49 nodes, 0 edges
+    src_gui_macropadgui_addvoiceturn_f13a64b6 -->|calls| src_gui_macropadgui_rebuildchatlines_6bc3773b
+    src_gui_macropadgui_drawvoicecard_6821a110 -->|calls| src_gui_macropadgui_addvoiceturn_f13a64b6
+    %% Omitted for readability: 56 nodes, 0 edges
     class src_gui_macropadgui_drawall_e8dc4428 function;
     class src_gui_macropadgui_drawdashboard_878f9c4f function;
     class src_gui_h_src_gui_a56c68cc function;
-    class src_gui_macropadgui_drawstorageexplorer_e06ccec3 function;
-    class src_gui_macropadgui_scrollstoragelist_6627582e function;
+    class src_gui_macropadgui_addvoiceturn_f13a64b6 function;
     class src_gui_macropadgui_drawstatusbar_c81376cb function;
+    class src_gui_macropadgui_drawvoicecard_6821a110 function;
+    class src_gui_macropadgui_rebuildchatlines_6bc3773b function;
     class src_gui_macropadgui_drawdashboardpowerbutton_dcb38111 function;
     class src_gui_macropadgui_drawstatusrow_ad3e4a08 function;
     class src_gui_macropadgui_updatestatusbarbattery_79e01c4f function;
     class src_gui_macropadgui_drawdashboardvolume_30c899c0 function;
+    class src_gui_macropadgui_drawstorageexplorer_e06ccec3 function;
     class src_gui_macropadgui_drawvoiceaudiotoggle_e637cdcb function;
     class src_gui_macropadgui_refreshstorageexplorer_9f6f9bbd function;
     class src_gui_macropadgui_drawstoragelistonly_3a093351 function;
     class src_gui_h_tft_espi_a5e0095d klass;
     class src_gui_h_vector_ccb54c95 function;
-    class src_sd_card_getsdcardstatus_fef98d09 function;
-    class src_sd_card_sdcardgetstoragespace_ea9ea738 function;
-    class src_system_status_a10ae04d function;
+    class src_gui_wraptexttochatlines_c755b01b function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -4765,14 +4943,6 @@ flowchart LR
 </tr>
 <tr>
   <td>25</td>
-  <td><code>system_status.h</code><br><small style="color:var(--muted)">src/system_status.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>system_status.h node in src/system_status.h.</td>
-</tr>
-<tr>
-  <td>26</td>
   <td><code>updateStatusBarBattery</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawStatusBar</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -4780,7 +4950,7 @@ flowchart LR
   <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>26</td>
   <td><code>drawVoiceAudioToggle</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -4788,7 +4958,7 @@ flowchart LR
   <td>drawVoiceAudioToggle node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>27</td>
   <td><code>drawStatusRow</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -4796,7 +4966,7 @@ flowchart LR
   <td>drawStatusRow node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>28</td>
   <td><code>drawDashboardVolume</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -4804,12 +4974,20 @@ flowchart LR
   <td>drawDashboardVolume node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>29</td>
   <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><code>drawDashboardPowerButton</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawDashboardVolume</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawStatusRow</code><br><small style="color:var(--muted)">src/gui.h</small><br>+1 more</td>
   <td>drawDashboard node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>drawStatusBar</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>drawDashboardPowerButton</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>updateStatusBarBattery</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>drawStatusBar node in src/gui.h.</td>
 </tr>
 </table>
 
@@ -4818,7 +4996,7 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/gui.h</code></td><td>20 nodes</td></tr>
+      <tr><td><code>src/gui.h</code></td><td>26 nodes</td></tr>
 <tr><td><code>src/es8311.cpp</code></td><td>13 nodes</td></tr>
 <tr><td><code>generate_case.py</code></td><td>8 nodes</td></tr>
 <tr><td><code>flash.py</code></td><td>3 nodes</td></tr>
@@ -4830,7 +5008,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: defines x16, contains x15, calls x14, references x8. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x19, defines x16, contains x15, references x13. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4841,18 +5019,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>585</td></tr>
-      <tr><td>Edges</td><td>1025</td></tr>
+      <tr><td>Nodes</td><td>643</td></tr>
+      <tr><td>Edges</td><td>1133</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>39</td></tr>
+      <tr><td>Communities</td><td>41</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>940</td></tr>
-      <tr><td>INFERRED</td><td>85</td></tr>
+      <tr><td>EXTRACTED</td><td>1045</td></tr>
+      <tr><td>INFERRED</td><td>88</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4860,7 +5038,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>ESP32 project — Architecture Documentation</p>
-  <p>Generated: 2026-09-19 14:08 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-09-21 00:11 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

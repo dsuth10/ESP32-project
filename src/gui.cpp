@@ -2,10 +2,10 @@
 #include "network_manager.h"
 
 namespace {
-  const int16_t DASH_PWR_X = 282;
-  const int16_t DASH_PWR_Y = 36;
-  const int16_t DASH_PWR_W = 24;
-  const int16_t DASH_PWR_H = 18;
+  const int16_t DASH_PWR_X = 148;
+  const int16_t DASH_PWR_Y = 4;
+  const int16_t DASH_PWR_W = 42;
+  const int16_t DASH_PWR_H = 24;
 
   const int16_t PWR_CANCEL_X = 40;
   const int16_t PWR_CONFIRM_X = 168;
@@ -91,10 +91,17 @@ void MacroPadGUI::drawStatusBar(bool isConnected, uint8_t currentPage, uint8_t b
   _tft.setTextColor(isConnected ? C_CONNECTED : 0xFBA0, C_STATUS_BG);
   _tft.drawString(isConnected ? "CONNECTED" : "WAITING...", 20, STATUS_BAR_H / 2, 2);
 
-  // Profile Title (Centered)
-  _tft.setTextDatum(MC_DATUM);
-  _tft.setTextColor(PROFILES[currentPage].themeColor, C_STATUS_BG);
-  _tft.drawString(PROFILES[currentPage].title, 142, STATUS_BAR_H / 2, 2);
+  // Profile Title / System & Power Button
+  if (currentPage == PAGE_DASHBOARD) {
+    _tft.setTextDatum(ML_DATUM);
+    _tft.setTextColor(PROFILES[currentPage].themeColor, C_STATUS_BG);
+    _tft.drawString(PROFILES[currentPage].title, 96, STATUS_BAR_H / 2, 2);
+    drawDashboardPowerButton();
+  } else {
+    _tft.setTextDatum(MC_DATUM);
+    _tft.setTextColor(PROFILES[currentPage].themeColor, C_STATUS_BG);
+    _tft.drawString(PROFILES[currentPage].title, 142, STATUS_BAR_H / 2, 2);
+  }
 
   // Battery Indicator Widget (x: 198..244)
   updateStatusBarBattery(batteryPercent, isCharging, batHealth);
@@ -757,23 +764,25 @@ void MacroPadGUI::drawDashboard(const DashboardStatus& status, EnvironmentMode c
     _tft.drawString("SYSTEM TELEMETRY", cardX + 10, cardY + 11, 2);
   }
 
-  // Subsystem readiness badges on header right (leave room for power button)
-  _tft.fillRect(cardX + cardW - 170, cardY + 3, 114, 16, 0x18C3);
+  // Subsystem readiness badges on header right
+  _tft.fillRect(cardX + cardW - 130, cardY + 3, 122, 16, 0x18C3);
   _tft.setTextDatum(MR_DATUM);
   if (status.battery == HEALTH_FAILED && !status.isCharging && status.batteryVoltage > 0.5f) {
     _tft.setTextColor(0xF800, 0x18C3);
-    _tft.drawString("LOW BAT", cardX + cardW - 32, cardY + 11, 2);
+    _tft.drawString("LOW BAT", cardX + cardW - 10, cardY + 11, 2);
   } else if (status.macropadReady && status.voiceReady) {
     _tft.setTextColor(0x07E0, 0x18C3);
-    _tft.drawString("READY", cardX + cardW - 32, cardY + 11, 2);
+    _tft.drawString("READY", cardX + cardW - 10, cardY + 11, 2);
   } else if (status.macropadReady) {
     _tft.setTextColor(0xFDA0, 0x18C3);
-    _tft.drawString("MACROPAD", cardX + cardW - 32, cardY + 11, 2);
+    _tft.drawString("MACROPAD", cardX + cardW - 10, cardY + 11, 2);
   } else {
     _tft.setTextColor(0xFBA0, 0x18C3);
-    _tft.drawString("WAIT", cardX + cardW - 32, cardY + 11, 2);
+    _tft.drawString("WAIT", cardX + cardW - 10, cardY + 11, 2);
   }
-  drawDashboardPowerButton();
+  if (fullRedraw) {
+    drawDashboardPowerButton();
+  }
 
   // Row heights: 14px per row (fits 7 telemetry rows cleanly)
   int16_t rowY = cardY + 21;
@@ -905,11 +914,12 @@ void MacroPadGUI::drawDashboardPowerButton() {
   _tft.drawRoundRect(DASH_PWR_X, DASH_PWR_Y, DASH_PWR_W, DASH_PWR_H, 4, border);
 
   const int16_t cx = DASH_PWR_X + DASH_PWR_W / 2;
-  const int16_t cy = DASH_PWR_Y + DASH_PWR_H / 2 + 1;
+  const int16_t cy = DASH_PWR_Y + DASH_PWR_H / 2;
+  _tft.drawCircle(cx, cy, 6, icon);
   _tft.drawCircle(cx, cy, 5, icon);
-  _tft.drawFastVLine(cx, DASH_PWR_Y + 3, 7, icon);
-  _tft.drawFastVLine(cx - 1, DASH_PWR_Y + 3, 6, icon);
-  _tft.drawFastVLine(cx + 1, DASH_PWR_Y + 3, 6, icon);
+  _tft.fillRect(cx - 2, DASH_PWR_Y + 3, 5, 5, bg);
+  _tft.drawFastVLine(cx, DASH_PWR_Y + 4, 8, icon);
+  _tft.drawFastVLine(cx - 1, DASH_PWR_Y + 4, 8, icon);
 }
 
 void MacroPadGUI::drawPowerConfirmDialog() {
@@ -1019,6 +1029,9 @@ int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
   if (y >= 0 && y <= 32) {
     if (x >= 244 && x <= 280) return TOUCH_PREV_PAGE;
     if (x >= 288 && x <= 320) return TOUCH_NEXT_PAGE;
+    if (currentPage == PAGE_DASHBOARD && x >= DASH_PWR_X - 6 && x <= DASH_PWR_X + DASH_PWR_W + 6) {
+      return TOUCH_POWER;
+    }
     return -1;
   }
 
@@ -1054,9 +1067,6 @@ int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
 
   // Check Page 1 Dashboard buttons
   if (currentPage == PAGE_DASHBOARD) {
-    if (x >= 276 && x <= 308 && y >= 34 && y <= 56) {
-      return TOUCH_POWER;
-    }
     // Volume controls: y = 152..192
     if (y >= 152 && y <= 192) {
       if (x >= 4 && x <= 54) {

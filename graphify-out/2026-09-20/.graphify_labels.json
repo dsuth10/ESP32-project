@@ -3,7 +3,7 @@
   "1": "hermes_voice_receiver.py",
   "2": "EnvironmentManager",
   "3": "AudioRecorder",
-  "4": "NetworkManager",
+  "4": "network_manager.cpp",
   "5": "main.cpp",
   "6": "es8311_bsp.c",
   "7": "es8311.cpp",
@@ -29,5 +29,13 @@
   "27": "graph.ps1",
   "28": "scratch_tts_test.py",
   "29": "bench_time_tts.py",
-  "30": "Voice Satellite Operations Runbook"
+  "30": "Voice Satellite Operations Runbook",
+  "31": "generate_case_battery.py",
+  "32": "gui.cpp",
+  "33": "power_manager.cpp",
+  "34": "redrawVoiceCard",
+  "35": "gui.h",
+  "36": "drawDashboard",
+  "37": "drawStorageExplorer",
+  "38": "pinout_allocation_f58fa43e.md"
 }
