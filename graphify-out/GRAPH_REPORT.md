@@ -1,16 +1,16 @@
 # Graph Report - ESP32 project  (2026-09-21)
 
 ## Corpus Check
-- 51 files · ~1,140,121 words
+- 53 files · ~1,141,382 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 644 nodes · 1135 edges · 41 communities (25 shown, 9 thin omitted)
+- 651 nodes · 1141 edges · 41 communities (25 shown, 9 thin omitted)
 - Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 88 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4ede1376`
+- Built from commit: `1711c875`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -23,7 +23,7 @@
 - main.cpp
 - es8311_bsp.c
 - es8311.cpp
-- _coeff_div
+- Portrait UI — Flash & Revert Guide
 - create_enclosure
 - benchmark_hermes_standalone.py
 - flash.py
@@ -47,8 +47,8 @@
 - gui.h
 - drawDashboard
 - pinout_allocation_f58fa43e.md
+- addVoiceTurn
 - drawStorageExplorer
-- redrawVoiceCard
 
 ## God Nodes (most connected - your core abstractions)
 1. `MacroPadGUI` - 68 edges
@@ -81,14 +81,14 @@
 
 ### Community 0 - "MacroPadGUI"
 Cohesion: 0.09
-Nodes (20): HealthState, VoiceUIState, MacroPadGUI, _chatLines, _currentStoragePath, _history, _lastDrawnBatHealth, _lastDrawnBatPercent (+12 more)
+Nodes (23): HealthState, VoiceUIState, MacroPadGUI, _chatLines, _currentStoragePath, drawButton, getButtonRect, getTouchTarget (+15 more)
 
 ### Community 1 - "hermes_voice_receiver.py"
 Cohesion: 0.06
 Nodes (45): BaseHTTPRequestHandler, ask_hermes_gateway(), check_voicebox_online(), convert_24k_mono_to_16k_stereo_wav(), dispatch_telegram_mirror(), _async_send(), get_composite_status(), get_local_ip_for_target() (+37 more)
 
 ### Community 2 - "EnvironmentManager"
-Cohesion: 0.07
+Cohesion: 0.08
 Nodes (41): Preferences, SemaphoreHandle_t, EnvironmentChangeCallback, EnvironmentMode, String, EnvironmentManager, begin, _changeCallback (+33 more)
 
 ### Community 3 - "AudioRecorder"
@@ -96,11 +96,11 @@ Cohesion: 0.05
 Nodes (35): AudioRecorder, begin, _lastRecordDurationMs, _leftStats, logDiagnostics, _maxLeftPeak, _maxRightPeak, _monoStats (+27 more)
 
 ### Community 4 - "network_manager.cpp"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (31): DashboardStatus, EnvironmentMode, function, String, extractJsonBool(), extractJsonField(), extractJsonInt(), extractJsonObject() (+23 more)
 
 ### Community 5 - "main.cpp"
-Cohesion: 0.08
+Cohesion: 0.07
 Nodes (41): MacroButton, sdcard_type_t, calculateBatteryPercentage(), HealthState, executeMacro(), goToSoftOff(), loop(), sampleBatteryTelemetry() (+33 more)
 
 ### Community 6 - "es8311_bsp.c"
@@ -108,12 +108,12 @@ Cohesion: 0.23
 Nodes (25): es8311_clock_config_t, es8311_handle_t, es8311_mic_gain_t, es8311_resolution_t, esp_err_t, i2c_port_t, es8311_clock_config(), es8311_create() (+17 more)
 
 ### Community 7 - "es8311.cpp"
-Cohesion: 0.25
-Nodes (26): es8311_clock_config_t, es8311_handle_t, es8311_mic_gain_t, es8311_resolution_t, esp_err_t, i2c_port_t, es8311_clock_config(), es8311_codec_dump_registers() (+18 more)
+Cohesion: 0.13
+Nodes (39): _coeff_div, adc_div, adc_osr, bclk_div, dac_div, dac_osr, fs_mode, lrck_h (+31 more)
 
-### Community 8 - "_coeff_div"
-Cohesion: 0.15
-Nodes (13): _coeff_div, adc_div, adc_osr, bclk_div, dac_div, dac_osr, fs_mode, lrck_h (+5 more)
+### Community 8 - "Portrait UI — Flash & Revert Guide"
+Cohesion: 0.33
+Nodes (5): 1. Flash legacy landscape env, 2. Emergency: flash archived golden binaries (no rebuild), Flash portrait (default), Portrait UI — Flash & Revert Guide, Revert to landscape (cheapest first)
 
 ### Community 10 - "benchmark_hermes_standalone.py"
 Cohesion: 0.60
@@ -160,44 +160,44 @@ Cohesion: 0.21
 Nodes (26): add_cube(), add_cylinder(), add_standoffs(), add_through_bolts(), apply_boolean(), build_battery(), build_case_bottom(), build_case_top() (+18 more)
 
 ### Community 35 - "gui.cpp"
-Cohesion: 0.13
-Nodes (19): canScrollDown, canScrollUp, drawButton, drawDashboardSwitching, drawPowerConfirmDialog, drawSleepSplash, getButtonRect, getPowerDialogTarget (+11 more)
+Cohesion: 0.12
+Nodes (21): TFT_eSPI, drawWrappedText(), canScrollDown, canScrollUp, clearConversation, drawDashboardSwitching, drawPowerConfirmDialog, drawSleepSplash (+13 more)
 
 ### Community 36 - "gui.h"
-Cohesion: 0.18
+Cohesion: 0.20
 Nodes (9): ChatLine, color, text, ChatMessage, isUser, text, String, TFT_eSPI (+1 more)
 
 ### Community 37 - "drawDashboard"
 Cohesion: 0.25
 Nodes (11): DashboardStatus, EnvironmentMode, HealthState, drawAll, drawDashboard, drawDashboardPowerButton, drawDashboardVolume, drawStatusBar (+3 more)
 
-### Community 39 - "drawStorageExplorer"
-Cohesion: 0.33
-Nodes (6): drawStorageExplorer, drawStorageListOnly, refreshStorageExplorer, scrollStorageList, getSDCardStatus(), sdCardGetStorageSpace()
+### Community 40 - "addVoiceTurn"
+Cohesion: 0.29
+Nodes (7): vector, VoiceUIState, addVoiceTurn, drawVoiceCard, rebuildChatLines, scrollToLatestResponse, wrapTextToChatLines()
 
-### Community 40 - "redrawVoiceCard"
-Cohesion: 0.14
-Nodes (15): String, TFT_eSPI, vector, VoiceUIState, drawWrappedText(), addVoiceTurn, clearConversation, drawVoiceCard (+7 more)
+### Community 46 - "drawStorageExplorer"
+Cohesion: 0.22
+Nodes (9): String, drawStorageExplorer, drawStorageListOnly, navigateStorageTo, navigateStorageUp, refreshStorageExplorer, scrollStorageList, getSDCardStatus() (+1 more)
 
 ## Knowledge Gaps
-- **206 isolated node(s):** `start_receiver.sh script`, `count`, `minVal`, `maxVal`, `sum` (+201 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 301 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **209 isolated node(s):** `start_receiver.sh script`, `count`, `minVal`, `maxVal`, `sum` (+204 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 306 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `MacroPadGUI` connect `MacroPadGUI` to `gui.cpp`, `gui.h`, `drawDashboard`, `main.cpp`, `drawStorageExplorer`, `redrawVoiceCard`?**
-  _High betweenness centrality (0.067) - this node is a cross-community bridge._
+- **Why does `MacroPadGUI` connect `MacroPadGUI` to `gui.cpp`, `gui.h`, `drawDashboard`, `main.cpp`, `addVoiceTurn`, `drawStorageExplorer`?**
+  _High betweenness centrality (0.066) - this node is a cross-community bridge._
 - **What connects `start_receiver.sh script`, `count`, `minVal` to the rest of the system?**
-  _206 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _209 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `MacroPadGUI` be split into smaller, more focused modules?**
-  _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08666666666666667 - nodes in this community are weakly interconnected._
 - **Should `hermes_voice_receiver.py` be split into smaller, more focused modules?**
   _Cohesion score 0.06274509803921569 - nodes in this community are weakly interconnected._
 - **Should `EnvironmentManager` be split into smaller, more focused modules?**
-  _Cohesion score 0.07399577167019028 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07641196013289037 - nodes in this community are weakly interconnected._
 - **Should `AudioRecorder` be split into smaller, more focused modules?**
   _Cohesion score 0.05142857142857143 - nodes in this community are weakly interconnected._
 - **Should `network_manager.cpp` be split into smaller, more focused modules?**
-  _Cohesion score 0.14015151515151514 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.12941176470588237 - nodes in this community are weakly interconnected._

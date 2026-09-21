@@ -114,9 +114,9 @@
     "semantic_hash": "8f431ae708b4aa78d3e98345d84663a7"
   },
   "src/gui.cpp": {
-    "mtime": 1789955387.0341547,
-    "seen": 1789955463.5823605,
-    "ast_hash": "2396c1716c7d17471f02367323046aef",
+    "mtime": 1789966466.8016706,
+    "seen": 1789966467.3873675,
+    "ast_hash": "359d4442a46ca925e26aa03b3b7d99fa",
     "semantic_hash": ""
   },
   "src/gui.h": {
@@ -132,15 +132,15 @@
     "semantic_hash": ""
   },
   "src/macropad_config.h": {
-    "mtime": 1789826600.4532013,
-    "seen": 1789826923.614062,
-    "ast_hash": "ec0caa4efdc01603340d4e77c1124283",
+    "mtime": 1789966466.802728,
+    "seen": 1789966467.387375,
+    "ast_hash": "79aaae94ee86b7ad6cd246c2cf8ca575",
     "semantic_hash": ""
   },
   "src/main.cpp": {
-    "mtime": 1789955435.2299135,
-    "seen": 1789955463.5823655,
-    "ast_hash": "0d6d73fc0d0f030dbe31a657117ad2d3",
+    "mtime": 1789966466.8037782,
+    "seen": 1789966467.387376,
+    "ast_hash": "96689e5de644dab75d6b64edf53f6e11",
     "semantic_hash": ""
   },
   "src/network_manager.cpp": {
@@ -579,6 +579,18 @@
     "mtime": 1789875498.3318396,
     "seen": 1789912192.4871285,
     "ast_hash": "e3a8bb5f4e1e4c916c19b112c642db72",
+    "semantic_hash": ""
+  },
+  "src/ui_layout.h": {
+    "mtime": 1789966466.8043034,
+    "seen": 1789966468.922371,
+    "ast_hash": "9201d176c10f1ab76f113931fdbfccec",
+    "semantic_hash": ""
+  },
+  "docs/PORTRAIT_UI.md": {
+    "mtime": 1789966466.7990057,
+    "seen": 1789966468.922379,
+    "ast_hash": "ad48d83c3b1564e894cf45edbf332764",
     "semantic_hash": ""
   }
 }

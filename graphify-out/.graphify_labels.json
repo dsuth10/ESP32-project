@@ -7,7 +7,7 @@
   "5": "main.cpp",
   "6": "es8311_bsp.c",
   "7": "es8311.cpp",
-  "8": "_coeff_div",
+  "8": "Portrait UI — Flash & Revert Guide",
   "9": "create_enclosure",
   "10": "benchmark_hermes_standalone.py",
   "11": "flash.py",
@@ -38,6 +38,6 @@
   "36": "gui.h",
   "37": "drawDashboard",
   "38": "pinout_allocation_f58fa43e.md",
-  "39": "drawStorageExplorer",
-  "40": "redrawVoiceCard"
+  "40": "addVoiceTurn",
+  "46": "drawStorageExplorer"
 }

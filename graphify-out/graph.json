@@ -178,8 +178,8 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 8,
-      "community_name": "_coeff_div",
+      "community": 7,
+      "community_name": "es8311.cpp",
       "file_type": "code",
       "norm_label": "_coeff_div",
       "source_file": "src/es8311.cpp",
@@ -1504,6 +1504,46 @@
       "source_location": "L182"
     },
     {
+      "id": "src_gui_drawwrappedtext",
+      "label": "drawWrappedText()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "gui.cpp",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "length",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L275"
+          },
+          {
+            "callee": "c_str",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L276"
+          }
+        ]
+      },
+      "norm_label": "drawwrappedtext()",
+      "source_file": "src/gui.cpp",
+      "source_location": "L258"
+    },
+    {
+      "id": "src_gui_macropadgui_macropadgui",
+      "label": "MacroPadGUI::MacroPadGUI()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "gui.cpp",
+      "file_type": "code",
+      "norm_label": "macropadgui::macropadgui()",
+      "source_file": "src/gui.cpp",
+      "source_location": "L4"
+    },
+    {
       "id": "src_gui_macropadgui_getcurrentstoragepath",
       "label": ".getCurrentStoragePath()",
       "_callable": true,
@@ -1514,52 +1554,6 @@
       "norm_label": ".getcurrentstoragepath()",
       "source_file": "src/gui.h",
       "source_location": "L70"
-    },
-    {
-      "id": "src_sd_card_getsdcardstatus",
-      "label": "getSDCardStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 39,
-      "community_name": "drawStorageExplorer",
-      "file_type": "code",
-      "norm_label": "getsdcardstatus()",
-      "source_file": "src/sd_card.cpp",
-      "source_location": "L292"
-    },
-    {
-      "id": "src_sd_card_sdcardgetstoragespace",
-      "label": "sdCardGetStorageSpace()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 39,
-      "community_name": "drawStorageExplorer",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "cardSize",
-            "receiver_type": "SD_MMC",
-            "lang": "cpp",
-            "line": "L350"
-          },
-          {
-            "callee": "totalBytes",
-            "receiver_type": "SD_MMC",
-            "lang": "cpp",
-            "line": "L351"
-          },
-          {
-            "callee": "usedBytes",
-            "receiver_type": "SD_MMC",
-            "lang": "cpp",
-            "line": "L352"
-          }
-        ]
-      },
-      "norm_label": "sdcardgetstoragespace()",
-      "source_file": "src/sd_card.cpp",
-      "source_location": "L342"
     },
     {
       "id": "src_network_manager_extractjsonbool",
@@ -1740,52 +1734,12 @@
       "source_location": "L93"
     },
     {
-      "id": "src_gui_drawwrappedtext",
-      "label": "drawWrappedText()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 40,
-      "community_name": "redrawVoiceCard",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "length",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L283"
-          },
-          {
-            "callee": "c_str",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L284"
-          }
-        ]
-      },
-      "norm_label": "drawwrappedtext()",
-      "source_file": "src/gui.cpp",
-      "source_location": "L266"
-    },
-    {
-      "id": "src_gui_macropadgui_macropadgui",
-      "label": "MacroPadGUI::MacroPadGUI()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 40,
-      "community_name": "redrawVoiceCard",
-      "file_type": "code",
-      "norm_label": "macropadgui::macropadgui()",
-      "source_file": "src/gui.cpp",
-      "source_location": "L17"
-    },
-    {
       "id": "src_gui_wraptexttochatlines",
       "label": "wrapTextToChatLines()",
       "_callable": true,
       "_origin": "ast",
       "community": 40,
-      "community_name": "redrawVoiceCard",
+      "community_name": "addVoiceTurn",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -1793,25 +1747,71 @@
             "callee": "length",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L321"
+            "line": "L313"
           },
           {
             "callee": "c_str",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L321"
+            "line": "L313"
           },
           {
             "callee": "substring",
             "receiver_type": "String",
             "lang": "cpp",
-            "line": "L323"
+            "line": "L315"
           }
         ]
       },
       "norm_label": "wraptexttochatlines()",
       "source_file": "src/gui.cpp",
-      "source_location": "L310"
+      "source_location": "L302"
+    },
+    {
+      "id": "src_sd_card_getsdcardstatus",
+      "label": "getSDCardStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "drawStorageExplorer",
+      "file_type": "code",
+      "norm_label": "getsdcardstatus()",
+      "source_file": "src/sd_card.cpp",
+      "source_location": "L292"
+    },
+    {
+      "id": "src_sd_card_sdcardgetstoragespace",
+      "label": "sdCardGetStorageSpace()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "drawStorageExplorer",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "cardSize",
+            "receiver_type": "SD_MMC",
+            "lang": "cpp",
+            "line": "L350"
+          },
+          {
+            "callee": "totalBytes",
+            "receiver_type": "SD_MMC",
+            "lang": "cpp",
+            "line": "L351"
+          },
+          {
+            "callee": "usedBytes",
+            "receiver_type": "SD_MMC",
+            "lang": "cpp",
+            "line": "L352"
+          }
+        ]
+      },
+      "norm_label": "sdcardgetstoragespace()",
+      "source_file": "src/sd_card.cpp",
+      "source_location": "L342"
     },
     {
       "id": "src_main_calculatebatterypercentage",
@@ -3304,6 +3304,45 @@
       "norm_label": "link_to_collection()",
       "source_file": "generate_case.py",
       "source_location": "L35"
+    },
+    {
+      "id": "src_gui_macropadgui_gettouchtarget",
+      "label": "getTouchTarget",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L1013",
+      "file_type": "code",
+      "norm_label": "gettouchtarget",
+      "source_file": "src/gui.h",
+      "source_location": "L72"
+    },
+    {
+      "id": "src_gui_macropadgui_drawbutton",
+      "label": "drawButton",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L171",
+      "file_type": "code",
+      "norm_label": "drawbutton",
+      "source_file": "src/gui.h",
+      "source_location": "L35"
+    },
+    {
+      "id": "src_gui_macropadgui_getbuttonrect",
+      "label": "getButtonRect",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "MacroPadGUI",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L31",
+      "file_type": "code",
+      "norm_label": "getbuttonrect",
+      "source_file": "src/gui.h",
+      "source_location": "L99"
     },
     {
       "id": "src_gui_h_healthstate",
@@ -5444,17 +5483,6 @@
       "source_location": ""
     },
     {
-      "id": "src_network_manager_h_src_network_manager",
-      "label": "network_manager.h",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "EnvironmentManager",
-      "file_type": "code",
-      "norm_label": "network_manager.h",
-      "source_file": "src/network_manager.h",
-      "source_location": "L1"
-    },
-    {
       "id": "agents_rules_graphify",
       "label": "rules/graphify.md",
       "_origin": "ast",
@@ -7358,43 +7386,17 @@
       "source_location": "L1"
     },
     {
-      "id": "src_gui_macropadgui_gettouchtarget",
-      "label": "getTouchTarget",
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "gui.cpp",
-      "definition_file": "src/gui.cpp",
-      "definition_location": "L1027",
-      "file_type": "code",
-      "norm_label": "gettouchtarget",
-      "source_file": "src/gui.h",
-      "source_location": "L72"
-    },
-    {
       "id": "src_gui_macropadgui_highlightstoragerow",
       "label": "highlightStorageRow",
       "_origin": "ast",
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L1325",
+      "definition_location": "L1361",
       "file_type": "code",
       "norm_label": "highlightstoragerow",
       "source_file": "src/gui.h",
       "source_location": "L63"
-    },
-    {
-      "id": "src_gui_macropadgui_drawbutton",
-      "label": "drawButton",
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "gui.cpp",
-      "definition_file": "src/gui.cpp",
-      "definition_location": "L179",
-      "file_type": "code",
-      "norm_label": "drawbutton",
-      "source_file": "src/gui.h",
-      "source_location": "L35"
     },
     {
       "id": "src_gui_macropadgui_init",
@@ -7403,7 +7405,7 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L34",
+      "definition_location": "L21",
       "file_type": "code",
       "norm_label": "init",
       "source_file": "src/gui.h",
@@ -7416,11 +7418,24 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L40",
+      "definition_location": "L27",
       "file_type": "code",
       "norm_label": "setvoiceaudioenabled",
       "source_file": "src/gui.h",
       "source_location": "L57"
+    },
+    {
+      "id": "src_gui_macropadgui_clearconversation",
+      "label": "clearConversation",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "gui.cpp",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L348",
+      "file_type": "code",
+      "norm_label": "clearconversation",
+      "source_file": "src/gui.h",
+      "source_location": "L46"
     },
     {
       "id": "src_gui_macropadgui_scrolltobottom",
@@ -7429,7 +7444,7 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L404",
+      "definition_location": "L395",
       "file_type": "code",
       "norm_label": "scrolltobottom",
       "source_file": "src/gui.h",
@@ -7442,7 +7457,7 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L435",
+      "definition_location": "L426",
       "file_type": "code",
       "norm_label": "scrolltotop",
       "source_file": "src/gui.h",
@@ -7455,24 +7470,11 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L439",
+      "definition_location": "L430",
       "file_type": "code",
       "norm_label": "canscrollup",
       "source_file": "src/gui.h",
       "source_location": "L42"
-    },
-    {
-      "id": "src_gui_macropadgui_getbuttonrect",
-      "label": "getButtonRect",
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "gui.cpp",
-      "definition_file": "src/gui.cpp",
-      "definition_location": "L44",
-      "file_type": "code",
-      "norm_label": "getbuttonrect",
-      "source_file": "src/gui.h",
-      "source_location": "L99"
     },
     {
       "id": "src_gui_macropadgui_canscrolldown",
@@ -7481,7 +7483,7 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L443",
+      "definition_location": "L434",
       "file_type": "code",
       "norm_label": "canscrolldown",
       "source_file": "src/gui.h",
@@ -7494,7 +7496,7 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L449",
+      "definition_location": "L440",
       "file_type": "code",
       "norm_label": "voicechatscrollable",
       "source_file": "src/gui.h",
@@ -7507,7 +7509,7 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L453",
+      "definition_location": "L444",
       "file_type": "code",
       "norm_label": "scrollvoicechat",
       "source_file": "src/gui.h",
@@ -7520,11 +7522,24 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L468",
+      "definition_location": "L459",
       "file_type": "code",
       "norm_label": "rendervoicechatviewport",
       "source_file": "src/gui.h",
       "source_location": "L102"
+    },
+    {
+      "id": "src_gui_macropadgui_redrawvoicecard",
+      "label": "redrawVoiceCard",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "gui.cpp",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L539",
+      "file_type": "code",
+      "norm_label": "redrawvoicecard",
+      "source_file": "src/gui.h",
+      "source_location": "L37"
     },
     {
       "id": "src_gui_macropadgui_drawdashboardswitching",
@@ -7533,7 +7548,7 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L890",
+      "definition_location": "L876",
       "file_type": "code",
       "norm_label": "drawdashboardswitching",
       "source_file": "src/gui.h",
@@ -7546,7 +7561,7 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L925",
+      "definition_location": "L911",
       "file_type": "code",
       "norm_label": "drawpowerconfirmdialog",
       "source_file": "src/gui.h",
@@ -7559,7 +7574,7 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L948",
+      "definition_location": "L934",
       "file_type": "code",
       "norm_label": "getpowerdialogtarget",
       "source_file": "src/gui.h",
@@ -7572,7 +7587,7 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L960",
+      "definition_location": "L946",
       "file_type": "code",
       "norm_label": "drawsleepsplash",
       "source_file": "src/gui.h",
@@ -7585,7 +7600,7 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L967",
+      "definition_location": "L953",
       "file_type": "code",
       "norm_label": "sleepdisplay",
       "source_file": "src/gui.h",
@@ -7598,7 +7613,7 @@
       "community": 35,
       "community_name": "gui.cpp",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L974",
+      "definition_location": "L960",
       "file_type": "code",
       "norm_label": "wakedisplay",
       "source_file": "src/gui.h",
@@ -7614,6 +7629,17 @@
       "norm_label": "gui.cpp",
       "source_file": "src/gui.cpp",
       "source_location": "L1"
+    },
+    {
+      "id": "src_gui_cpp_tft_espi",
+      "label": "TFT_eSPI",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "gui.cpp",
+      "file_type": "code",
+      "norm_label": "tft_espi",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "src_gui_chatline_color",
@@ -7704,24 +7730,13 @@
       "source_location": ""
     },
     {
-      "id": "src_system_status",
-      "label": "system_status.h",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "gui.h",
-      "file_type": "code",
-      "norm_label": "system_status.h",
-      "source_file": "src/system_status.h",
-      "source_location": "L1"
-    },
-    {
       "id": "src_gui_macropadgui_updatestatusbarbattery",
       "label": "updateStatusBarBattery",
       "_origin": "ast",
       "community": 37,
       "community_name": "drawDashboard",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L130",
+      "definition_location": "L122",
       "file_type": "code",
       "norm_label": "updatestatusbarbattery",
       "source_file": "src/gui.h",
@@ -7734,11 +7749,24 @@
       "community": 37,
       "community_name": "drawDashboard",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L224",
+      "definition_location": "L216",
       "file_type": "code",
       "norm_label": "drawvoiceaudiotoggle",
       "source_file": "src/gui.h",
       "source_location": "L56"
+    },
+    {
+      "id": "src_gui_macropadgui_drawstatusbar",
+      "label": "drawStatusBar",
+      "_origin": "ast",
+      "community": 37,
+      "community_name": "drawDashboard",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L62",
+      "file_type": "code",
+      "norm_label": "drawstatusbar",
+      "source_file": "src/gui.h",
+      "source_location": "L33"
     },
     {
       "id": "src_gui_macropadgui_drawstatusrow",
@@ -7747,7 +7775,7 @@
       "community": 37,
       "community_name": "drawDashboard",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L665",
+      "definition_location": "L650",
       "file_type": "code",
       "norm_label": "drawstatusrow",
       "source_file": "src/gui.h",
@@ -7760,7 +7788,7 @@
       "community": 37,
       "community_name": "drawDashboard",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L694",
+      "definition_location": "L679",
       "file_type": "code",
       "norm_label": "drawdashboardvolume",
       "source_file": "src/gui.h",
@@ -7773,24 +7801,11 @@
       "community": 37,
       "community_name": "drawDashboard",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L748",
+      "definition_location": "L728",
       "file_type": "code",
       "norm_label": "drawdashboard",
       "source_file": "src/gui.h",
       "source_location": "L47"
-    },
-    {
-      "id": "src_gui_macropadgui_drawstatusbar",
-      "label": "drawStatusBar",
-      "_origin": "ast",
-      "community": 37,
-      "community_name": "drawDashboard",
-      "definition_file": "src/gui.cpp",
-      "definition_location": "L79",
-      "file_type": "code",
-      "norm_label": "drawstatusbar",
-      "source_file": "src/gui.h",
-      "source_location": "L33"
     },
     {
       "id": "src_gui_macropadgui_drawdashboardpowerbutton",
@@ -7799,7 +7814,7 @@
       "community": 37,
       "community_name": "drawDashboard",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L909",
+      "definition_location": "L895",
       "file_type": "code",
       "norm_label": "drawdashboardpowerbutton",
       "source_file": "src/gui.h",
@@ -7812,7 +7827,7 @@
       "community": 37,
       "community_name": "drawDashboard",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L981",
+      "definition_location": "L967",
       "file_type": "code",
       "norm_label": "drawall",
       "source_file": "src/gui.h",
@@ -7874,102 +7889,6 @@
       "norm_label": "sheet: sheet1",
       "source_file": "graphify-out/converted/pinout_allocation_f58fa43e.md",
       "source_location": "L3"
-    },
-    {
-      "id": "src_gui_macropadgui_drawstorageexplorer",
-      "label": "drawStorageExplorer",
-      "_origin": "ast",
-      "community": 39,
-      "community_name": "drawStorageExplorer",
-      "definition_file": "src/gui.cpp",
-      "definition_location": "L1134",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "length",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L1198"
-          },
-          {
-            "callee": "substring",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L1199"
-          },
-          {
-            "callee": "c_str",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L1201"
-          }
-        ]
-      },
-      "norm_label": "drawstorageexplorer",
-      "source_file": "src/gui.h",
-      "source_location": "L61"
-    },
-    {
-      "id": "src_gui_macropadgui_drawstoragelistonly",
-      "label": "drawStorageListOnly",
-      "_origin": "ast",
-      "community": 39,
-      "community_name": "drawStorageExplorer",
-      "definition_file": "src/gui.cpp",
-      "definition_location": "L1224",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "length",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L1253"
-          },
-          {
-            "callee": "substring",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L1253"
-          },
-          {
-            "callee": "c_str",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L1254"
-          }
-        ]
-      },
-      "norm_label": "drawstoragelistonly",
-      "source_file": "src/gui.h",
-      "source_location": "L62"
-    },
-    {
-      "id": "src_gui_macropadgui_scrollstoragelist",
-      "label": "scrollStorageList",
-      "_origin": "ast",
-      "community": 39,
-      "community_name": "drawStorageExplorer",
-      "definition_file": "src/gui.cpp",
-      "definition_location": "L1337",
-      "file_type": "code",
-      "norm_label": "scrollstoragelist",
-      "source_file": "src/gui.h",
-      "source_location": "L64"
-    },
-    {
-      "id": "src_gui_macropadgui_refreshstorageexplorer",
-      "label": "refreshStorageExplorer",
-      "_origin": "ast",
-      "community": 39,
-      "community_name": "drawStorageExplorer",
-      "definition_file": "src/gui.cpp",
-      "definition_location": "L1372",
-      "file_type": "code",
-      "norm_label": "refreshstorageexplorer",
-      "source_file": "src/gui.h",
-      "source_location": "L67"
     },
     {
       "id": "src_network_manager_networkmanager_stop",
@@ -8750,6 +8669,17 @@
       "source_location": ""
     },
     {
+      "id": "src_network_manager_h_src_network_manager",
+      "label": "network_manager.h",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "network_manager.cpp",
+      "file_type": "code",
+      "norm_label": "network_manager.h",
+      "source_file": "src/network_manager.h",
+      "source_location": "L1"
+    },
+    {
       "id": "src_network_manager_h_string",
       "label": "String",
       "_origin": "ast",
@@ -8827,80 +8757,24 @@
       "source_location": "L42"
     },
     {
-      "id": "src_gui_macropadgui_navigatestorageto",
-      "label": "navigateStorageTo",
+      "id": "src_system_status",
+      "label": "system_status.h",
       "_origin": "ast",
-      "community": 40,
-      "community_name": "redrawVoiceCard",
-      "definition_file": "src/gui.cpp",
-      "definition_location": "L1347",
+      "community": 4,
+      "community_name": "network_manager.cpp",
       "file_type": "code",
-      "norm_label": "navigatestorageto",
-      "source_file": "src/gui.h",
-      "source_location": "L65"
-    },
-    {
-      "id": "src_gui_macropadgui_navigatestorageup",
-      "label": "navigateStorageUp",
-      "_origin": "ast",
-      "community": 40,
-      "community_name": "redrawVoiceCard",
-      "definition_file": "src/gui.cpp",
-      "definition_location": "L1354",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "length",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L1358"
-          },
-          {
-            "callee": "endsWith",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L1358"
-          },
-          {
-            "callee": "substring",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L1359"
-          },
-          {
-            "callee": "lastIndexOf",
-            "receiver_type": "String",
-            "lang": "cpp",
-            "line": "L1362"
-          }
-        ]
-      },
-      "norm_label": "navigatestorageup",
-      "source_file": "src/gui.h",
-      "source_location": "L66"
-    },
-    {
-      "id": "src_gui_macropadgui_clearconversation",
-      "label": "clearConversation",
-      "_origin": "ast",
-      "community": 40,
-      "community_name": "redrawVoiceCard",
-      "definition_file": "src/gui.cpp",
-      "definition_location": "L356",
-      "file_type": "code",
-      "norm_label": "clearconversation",
-      "source_file": "src/gui.h",
-      "source_location": "L46"
+      "norm_label": "system_status.h",
+      "source_file": "src/system_status.h",
+      "source_location": "L1"
     },
     {
       "id": "src_gui_macropadgui_addvoiceturn",
       "label": "addVoiceTurn",
       "_origin": "ast",
       "community": 40,
-      "community_name": "redrawVoiceCard",
+      "community_name": "addVoiceTurn",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L366",
+      "definition_location": "L358",
       "file_type": "code",
       "norm_label": "addvoiceturn",
       "source_file": "src/gui.h",
@@ -8911,9 +8785,9 @@
       "label": "rebuildChatLines",
       "_origin": "ast",
       "community": 40,
-      "community_name": "redrawVoiceCard",
+      "community_name": "addVoiceTurn",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L384",
+      "definition_location": "L376",
       "file_type": "code",
       "norm_label": "rebuildchatlines",
       "source_file": "src/gui.h",
@@ -8924,9 +8798,9 @@
       "label": "scrollToLatestResponse",
       "_origin": "ast",
       "community": 40,
-      "community_name": "redrawVoiceCard",
+      "community_name": "addVoiceTurn",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L410",
+      "definition_location": "L401",
       "file_type": "code",
       "norm_label": "scrolltolatestresponse",
       "source_file": "src/gui.h",
@@ -8937,55 +8811,20 @@
       "label": "drawVoiceCard",
       "_origin": "ast",
       "community": 40,
-      "community_name": "redrawVoiceCard",
+      "community_name": "addVoiceTurn",
       "definition_file": "src/gui.cpp",
-      "definition_location": "L540",
+      "definition_location": "L525",
       "file_type": "code",
       "norm_label": "drawvoicecard",
       "source_file": "src/gui.h",
       "source_location": "L36"
     },
     {
-      "id": "src_gui_macropadgui_redrawvoicecard",
-      "label": "redrawVoiceCard",
-      "_origin": "ast",
-      "community": 40,
-      "community_name": "redrawVoiceCard",
-      "definition_file": "src/gui.cpp",
-      "definition_location": "L554",
-      "file_type": "code",
-      "norm_label": "redrawvoicecard",
-      "source_file": "src/gui.h",
-      "source_location": "L37"
-    },
-    {
-      "id": "src_gui_cpp_string",
-      "label": "String",
-      "_origin": "ast",
-      "community": 40,
-      "community_name": "redrawVoiceCard",
-      "file_type": "code",
-      "norm_label": "string",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_gui_cpp_tft_espi",
-      "label": "TFT_eSPI",
-      "_origin": "ast",
-      "community": 40,
-      "community_name": "redrawVoiceCard",
-      "file_type": "code",
-      "norm_label": "tft_espi",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "src_gui_cpp_vector",
       "label": "vector",
       "_origin": "ast",
       "community": 40,
-      "community_name": "redrawVoiceCard",
+      "community_name": "addVoiceTurn",
       "file_type": "code",
       "norm_label": "vector",
       "source_file": "",
@@ -8996,9 +8835,170 @@
       "label": "VoiceUIState",
       "_origin": "ast",
       "community": 40,
-      "community_name": "redrawVoiceCard",
+      "community_name": "addVoiceTurn",
       "file_type": "code",
       "norm_label": "voiceuistate",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_gui_macropadgui_drawstorageexplorer",
+      "label": "drawStorageExplorer",
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "drawStorageExplorer",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L1142",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "length",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L1208"
+          },
+          {
+            "callee": "substring",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L1209"
+          },
+          {
+            "callee": "c_str",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L1216"
+          }
+        ]
+      },
+      "norm_label": "drawstorageexplorer",
+      "source_file": "src/gui.h",
+      "source_location": "L61"
+    },
+    {
+      "id": "src_gui_macropadgui_drawstoragelistonly",
+      "label": "drawStorageListOnly",
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "drawStorageExplorer",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L1236",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "length",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L1264"
+          },
+          {
+            "callee": "substring",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L1264"
+          },
+          {
+            "callee": "c_str",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L1268"
+          }
+        ]
+      },
+      "norm_label": "drawstoragelistonly",
+      "source_file": "src/gui.h",
+      "source_location": "L62"
+    },
+    {
+      "id": "src_gui_macropadgui_scrollstoragelist",
+      "label": "scrollStorageList",
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "drawStorageExplorer",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L1373",
+      "file_type": "code",
+      "norm_label": "scrollstoragelist",
+      "source_file": "src/gui.h",
+      "source_location": "L64"
+    },
+    {
+      "id": "src_gui_macropadgui_navigatestorageto",
+      "label": "navigateStorageTo",
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "drawStorageExplorer",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L1383",
+      "file_type": "code",
+      "norm_label": "navigatestorageto",
+      "source_file": "src/gui.h",
+      "source_location": "L65"
+    },
+    {
+      "id": "src_gui_macropadgui_navigatestorageup",
+      "label": "navigateStorageUp",
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "drawStorageExplorer",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L1390",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "length",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L1394"
+          },
+          {
+            "callee": "endsWith",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L1394"
+          },
+          {
+            "callee": "substring",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L1395"
+          },
+          {
+            "callee": "lastIndexOf",
+            "receiver_type": "String",
+            "lang": "cpp",
+            "line": "L1398"
+          }
+        ]
+      },
+      "norm_label": "navigatestorageup",
+      "source_file": "src/gui.h",
+      "source_location": "L66"
+    },
+    {
+      "id": "src_gui_macropadgui_refreshstorageexplorer",
+      "label": "refreshStorageExplorer",
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "drawStorageExplorer",
+      "definition_file": "src/gui.cpp",
+      "definition_location": "L1408",
+      "file_type": "code",
+      "norm_label": "refreshstorageexplorer",
+      "source_file": "src/gui.h",
+      "source_location": "L67"
+    },
+    {
+      "id": "src_gui_cpp_string",
+      "label": "String",
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "drawStorageExplorer",
+      "file_type": "code",
+      "norm_label": "string",
       "source_file": "",
       "source_location": ""
     },
@@ -9245,6 +9245,17 @@
       "source_location": "L44"
     },
     {
+      "id": "src_ui_layout",
+      "label": "ui_layout.h",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "main.cpp",
+      "file_type": "code",
+      "norm_label": "ui_layout.h",
+      "source_file": "src/ui_layout.h",
+      "source_location": "L1"
+    },
+    {
       "id": "es8311_bsp_c_es8311_bsp",
       "label": "es8311_bsp.c",
       "_origin": "ast",
@@ -9344,6 +9355,138 @@
       "source_location": "L1"
     },
     {
+      "id": "src_es8311_coeff_div_adc_div",
+      "label": "adc_div",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "adc_div",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L19"
+    },
+    {
+      "id": "src_es8311_coeff_div_adc_osr",
+      "label": "adc_osr",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "adc_osr",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L25"
+    },
+    {
+      "id": "src_es8311_coeff_div_bclk_div",
+      "label": "bclk_div",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "bclk_div",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L24"
+    },
+    {
+      "id": "src_es8311_coeff_div_dac_div",
+      "label": "dac_div",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "dac_div",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L20"
+    },
+    {
+      "id": "src_es8311_coeff_div_dac_osr",
+      "label": "dac_osr",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "dac_osr",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_es8311_coeff_div_fs_mode",
+      "label": "fs_mode",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "fs_mode",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L21"
+    },
+    {
+      "id": "src_es8311_coeff_div_lrck_h",
+      "label": "lrck_h",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "lrck_h",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L22"
+    },
+    {
+      "id": "src_es8311_coeff_div_lrck_l",
+      "label": "lrck_l",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "lrck_l",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L23"
+    },
+    {
+      "id": "src_es8311_coeff_div_mclk",
+      "label": "mclk",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "mclk",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_es8311_coeff_div_pre_div",
+      "label": "pre_div",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "pre_div",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L17"
+    },
+    {
+      "id": "src_es8311_coeff_div_pre_multi",
+      "label": "pre_multi",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "pre_multi",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L18"
+    },
+    {
+      "id": "src_es8311_coeff_div_rate",
+      "label": "rate",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "es8311.cpp",
+      "file_type": "code",
+      "norm_label": "rate",
+      "source_file": "src/es8311.cpp",
+      "source_location": "L16"
+    },
+    {
       "id": "src_es8311_cpp_es8311_clock_config_t",
       "label": "es8311_clock_config_t",
       "_origin": "ast",
@@ -9421,136 +9564,76 @@
       "source_location": "L1"
     },
     {
-      "id": "src_es8311_coeff_div_adc_div",
-      "label": "adc_div",
+      "id": "docs_portrait_ui",
+      "label": "PORTRAIT_UI.md",
       "_origin": "ast",
       "community": 8,
-      "community_name": "_coeff_div",
-      "file_type": "code",
-      "norm_label": "adc_div",
-      "source_file": "src/es8311.cpp",
+      "community_name": "Portrait UI \u2014 Flash & Revert Guide",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "portrait_ui.md",
+      "source_file": "docs/PORTRAIT_UI.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_portrait_ui_1_flash_legacy_landscape_env",
+      "label": "1. Flash legacy landscape env",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "Portrait UI \u2014 Flash & Revert Guide",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1. flash legacy landscape env",
+      "source_file": "docs/PORTRAIT_UI.md",
       "source_location": "L19"
     },
     {
-      "id": "src_es8311_coeff_div_adc_osr",
-      "label": "adc_osr",
+      "id": "docs_portrait_ui_2_emergency_flash_archived_golden_binaries_no_rebuild",
+      "label": "2. Emergency: flash archived golden binaries (no rebuild)",
       "_origin": "ast",
       "community": 8,
-      "community_name": "_coeff_div",
-      "file_type": "code",
-      "norm_label": "adc_osr",
-      "source_file": "src/es8311.cpp",
+      "community_name": "Portrait UI \u2014 Flash & Revert Guide",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2. emergency: flash archived golden binaries (no rebuild)",
+      "source_file": "docs/PORTRAIT_UI.md",
       "source_location": "L25"
     },
     {
-      "id": "src_es8311_coeff_div_bclk_div",
-      "label": "bclk_div",
+      "id": "docs_portrait_ui_flash_portrait_default",
+      "label": "Flash portrait (default)",
       "_origin": "ast",
       "community": 8,
-      "community_name": "_coeff_div",
-      "file_type": "code",
-      "norm_label": "bclk_div",
-      "source_file": "src/es8311.cpp",
-      "source_location": "L24"
+      "community_name": "Portrait UI \u2014 Flash & Revert Guide",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "flash portrait (default)",
+      "source_file": "docs/PORTRAIT_UI.md",
+      "source_location": "L9"
     },
     {
-      "id": "src_es8311_coeff_div_dac_div",
-      "label": "dac_div",
+      "id": "docs_portrait_ui_portrait_ui_flash_revert_guide",
+      "label": "Portrait UI \u2014 Flash & Revert Guide",
       "_origin": "ast",
       "community": 8,
-      "community_name": "_coeff_div",
-      "file_type": "code",
-      "norm_label": "dac_div",
-      "source_file": "src/es8311.cpp",
-      "source_location": "L20"
+      "community_name": "Portrait UI \u2014 Flash & Revert Guide",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "portrait ui \u2014 flash & revert guide",
+      "source_file": "docs/PORTRAIT_UI.md",
+      "source_location": "L1"
     },
     {
-      "id": "src_es8311_coeff_div_dac_osr",
-      "label": "dac_osr",
+      "id": "docs_portrait_ui_revert_to_landscape_cheapest_first",
+      "label": "Revert to landscape (cheapest first)",
       "_origin": "ast",
       "community": 8,
-      "community_name": "_coeff_div",
-      "file_type": "code",
-      "norm_label": "dac_osr",
-      "source_file": "src/es8311.cpp",
-      "source_location": "L26"
-    },
-    {
-      "id": "src_es8311_coeff_div_fs_mode",
-      "label": "fs_mode",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "_coeff_div",
-      "file_type": "code",
-      "norm_label": "fs_mode",
-      "source_file": "src/es8311.cpp",
-      "source_location": "L21"
-    },
-    {
-      "id": "src_es8311_coeff_div_lrck_h",
-      "label": "lrck_h",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "_coeff_div",
-      "file_type": "code",
-      "norm_label": "lrck_h",
-      "source_file": "src/es8311.cpp",
-      "source_location": "L22"
-    },
-    {
-      "id": "src_es8311_coeff_div_lrck_l",
-      "label": "lrck_l",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "_coeff_div",
-      "file_type": "code",
-      "norm_label": "lrck_l",
-      "source_file": "src/es8311.cpp",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_es8311_coeff_div_mclk",
-      "label": "mclk",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "_coeff_div",
-      "file_type": "code",
-      "norm_label": "mclk",
-      "source_file": "src/es8311.cpp",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_es8311_coeff_div_pre_div",
-      "label": "pre_div",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "_coeff_div",
-      "file_type": "code",
-      "norm_label": "pre_div",
-      "source_file": "src/es8311.cpp",
+      "community_name": "Portrait UI \u2014 Flash & Revert Guide",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "revert to landscape (cheapest first)",
+      "source_file": "docs/PORTRAIT_UI.md",
       "source_location": "L17"
-    },
-    {
-      "id": "src_es8311_coeff_div_pre_multi",
-      "label": "pre_multi",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "_coeff_div",
-      "file_type": "code",
-      "norm_label": "pre_multi",
-      "source_file": "src/es8311.cpp",
-      "source_location": "L18"
-    },
-    {
-      "id": "src_es8311_coeff_div_rate",
-      "label": "rate",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "_coeff_div",
-      "file_type": "code",
-      "norm_label": "rate",
-      "source_file": "src/es8311.cpp",
-      "source_location": "L16"
     },
     {
       "id": "generate_case",
@@ -11818,7 +11901,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L393",
+      "source_location": "L384",
       "weight": 1.0
     },
     {
@@ -11830,7 +11913,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L654",
+      "source_location": "L639",
       "weight": 1.0
     },
     {
@@ -14770,7 +14853,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gui.cpp",
-      "source_location": "L310",
+      "source_location": "L302",
       "weight": 1.0
     },
     {
@@ -15047,6 +15130,18 @@
       "context": "import",
       "source_file": "src/macropad_config.cpp",
       "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_macropad_config_h_src_macropad_config",
+      "target": "src_ui_layout",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/macropad_config.h",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -15958,7 +16053,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L266",
+      "source_location": "L258",
       "weight": 1.0
     },
     {
@@ -15970,7 +16065,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L366",
+      "source_location": "L358",
       "weight": 1.0
     },
     {
@@ -15982,7 +16077,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L748",
+      "source_location": "L728",
       "weight": 1.0
     },
     {
@@ -15994,7 +16089,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L748",
+      "source_location": "L728",
       "weight": 1.0
     },
     {
@@ -16006,7 +16101,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L79",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -16018,7 +16113,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L665",
+      "source_location": "L650",
       "weight": 1.0
     },
     {
@@ -16030,7 +16125,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L540",
+      "source_location": "L525",
       "weight": 1.0
     },
     {
@@ -16042,7 +16137,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L17",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -16054,7 +16149,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L1347",
+      "source_location": "L1383",
       "weight": 1.0
     },
     {
@@ -16066,7 +16161,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L130",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
@@ -16078,7 +16173,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L310",
+      "source_location": "L302",
       "weight": 1.0
     },
     {
@@ -16090,7 +16185,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gui.cpp",
-      "source_location": "L310",
+      "source_location": "L302",
       "weight": 1.0
     },
     {
@@ -17616,6 +17711,61 @@
       "confidence_score": 1.0,
       "source_file": "docs/home-work-architecture.md",
       "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_portrait_ui",
+      "target": "docs_portrait_ui_portrait_ui_flash_revert_guide",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/PORTRAIT_UI.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_portrait_ui_portrait_ui_flash_revert_guide",
+      "target": "docs_portrait_ui_revert_to_landscape_cheapest_first",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/PORTRAIT_UI.md",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_portrait_ui_portrait_ui_flash_revert_guide",
+      "target": "docs_portrait_ui_flash_portrait_default",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/PORTRAIT_UI.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_portrait_ui_revert_to_landscape_cheapest_first",
+      "target": "docs_portrait_ui_1_flash_legacy_landscape_env",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/PORTRAIT_UI.md",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_portrait_ui_revert_to_landscape_cheapest_first",
+      "target": "docs_portrait_ui_2_emergency_flash_archived_golden_binaries_no_rebuild",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/PORTRAIT_UI.md",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -19991,7 +20141,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L1027",
+      "source_location": "L1013",
       "weight": 1.0
     },
     {
@@ -20002,18 +20152,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L1134",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_drawstoragelistonly",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/gui.cpp",
-      "source_location": "L1224",
+      "source_location": "L1142",
       "weight": 1.0
     },
     {
@@ -20024,7 +20163,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L130",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_drawstoragelistonly",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L1236",
       "weight": 1.0
     },
     {
@@ -20035,7 +20185,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L1325",
+      "source_location": "L1361",
       "weight": 1.0
     },
     {
@@ -20046,7 +20196,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L1337",
+      "source_location": "L1373",
       "weight": 1.0
     },
     {
@@ -20057,7 +20207,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L1347",
+      "source_location": "L1383",
       "weight": 1.0
     },
     {
@@ -20068,7 +20218,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L1354",
+      "source_location": "L1390",
       "weight": 1.0
     },
     {
@@ -20079,18 +20229,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L1372",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_macropadgui",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/gui.cpp",
-      "source_location": "L17",
+      "source_location": "L1408",
       "weight": 1.0
     },
     {
@@ -20101,40 +20240,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L179",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_drawvoiceaudiotoggle",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/gui.cpp",
-      "source_location": "L224",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_drawwrappedtext",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/gui.cpp",
-      "source_location": "L266",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_wraptexttochatlines",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/gui.cpp",
-      "source_location": "L310",
+      "source_location": "L171",
       "weight": 1.0
     },
     {
@@ -20145,40 +20251,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L34",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
       "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_clearconversation",
+      "target": "src_gui_macropadgui_drawvoiceaudiotoggle",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L356",
+      "source_location": "L216",
       "weight": 1.0
     },
     {
       "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_addvoiceturn",
+      "target": "src_gui_drawwrappedtext",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L366",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_rebuildchatlines",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/gui.cpp",
-      "source_location": "L384",
+      "source_location": "L258",
       "weight": 1.0
     },
     {
@@ -20189,51 +20284,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L40",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
       "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_scrolltobottom",
+      "target": "src_gui_wraptexttochatlines",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L404",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_scrolltolatestresponse",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/gui.cpp",
-      "source_location": "L410",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_scrolltotop",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/gui.cpp",
-      "source_location": "L435",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_canscrollup",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/gui.cpp",
-      "source_location": "L439",
+      "source_location": "L302",
       "weight": 1.0
     },
     {
@@ -20244,7 +20306,95 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L44",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_clearconversation",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L348",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_addvoiceturn",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L358",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_rebuildchatlines",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L376",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_scrolltobottom",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L395",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_macropadgui",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_scrolltolatestresponse",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L401",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_scrolltotop",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L426",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_canscrollup",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L430",
       "weight": 1.0
     },
     {
@@ -20255,7 +20405,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L443",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -20266,7 +20416,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L449",
+      "source_location": "L440",
       "weight": 1.0
     },
     {
@@ -20277,7 +20427,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L453",
+      "source_location": "L444",
       "weight": 1.0
     },
     {
@@ -20288,7 +20438,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L468",
+      "source_location": "L459",
       "weight": 1.0
     },
     {
@@ -20299,7 +20449,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L540",
+      "source_location": "L525",
       "weight": 1.0
     },
     {
@@ -20310,40 +20460,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L554",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_drawstatusrow",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/gui.cpp",
-      "source_location": "L665",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_drawdashboardvolume",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/gui.cpp",
-      "source_location": "L694",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_cpp_src_gui",
-      "target": "src_gui_macropadgui_drawdashboard",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/gui.cpp",
-      "source_location": "L748",
+      "source_location": "L539",
       "weight": 1.0
     },
     {
@@ -20354,7 +20471,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L79",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_drawstatusrow",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L650",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_drawdashboardvolume",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L679",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_cpp_src_gui",
+      "target": "src_gui_macropadgui_drawdashboard",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/gui.cpp",
+      "source_location": "L728",
       "weight": 1.0
     },
     {
@@ -20365,7 +20515,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L890",
+      "source_location": "L876",
       "weight": 1.0
     },
     {
@@ -20376,7 +20526,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L909",
+      "source_location": "L895",
       "weight": 1.0
     },
     {
@@ -20387,7 +20537,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L925",
+      "source_location": "L911",
       "weight": 1.0
     },
     {
@@ -20398,7 +20548,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L948",
+      "source_location": "L934",
       "weight": 1.0
     },
     {
@@ -20409,7 +20559,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L960",
+      "source_location": "L946",
       "weight": 1.0
     },
     {
@@ -20420,7 +20570,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L967",
+      "source_location": "L953",
       "weight": 1.0
     },
     {
@@ -20431,7 +20581,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L974",
+      "source_location": "L960",
       "weight": 1.0
     },
     {
@@ -20442,7 +20592,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gui.cpp",
-      "source_location": "L981",
+      "source_location": "L967",
       "weight": 1.0
     },
     {
@@ -21877,7 +22027,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L380",
+      "source_location": "L372",
       "weight": 1.0
     },
     {
@@ -21889,7 +22039,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L381",
+      "source_location": "L373",
       "weight": 1.0
     },
     {
@@ -21901,31 +22051,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L363",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_macropadgui_drawall",
-      "target": "src_gui_macropadgui_drawdashboard",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "context": "call",
-      "source_file": "src/gui.cpp",
-      "source_location": "L1008",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gui_macropadgui_drawall",
-      "target": "src_gui_macropadgui_drawstorageexplorer",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "context": "call",
-      "source_file": "src/gui.cpp",
-      "source_location": "L1013",
+      "source_location": "L355",
       "weight": 1.0
     },
     {
@@ -21937,7 +22063,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1019",
+      "source_location": "L1005",
       "weight": 1.0
     },
     {
@@ -21949,7 +22075,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1022",
+      "source_location": "L1008",
       "weight": 1.0
     },
     {
@@ -21961,7 +22087,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1023",
+      "source_location": "L1009",
       "weight": 1.0
     },
     {
@@ -21973,7 +22099,31 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L983",
+      "source_location": "L969",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui_drawall",
+      "target": "src_gui_macropadgui_drawdashboard",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "src/gui.cpp",
+      "source_location": "L994",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gui_macropadgui_drawall",
+      "target": "src_gui_macropadgui_drawstorageexplorer",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "src/gui.cpp",
+      "source_location": "L999",
       "weight": 1.0
     },
     {
@@ -21985,7 +22135,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L184",
+      "source_location": "L176",
       "weight": 1.0
     },
     {
@@ -21997,7 +22147,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L784",
+      "source_location": "L764",
       "weight": 1.0
     },
     {
@@ -22009,7 +22159,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L798",
+      "source_location": "L778",
       "weight": 1.0
     },
     {
@@ -22021,7 +22171,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L847",
+      "source_location": "L827",
       "weight": 1.0
     },
     {
@@ -22033,7 +22183,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L850",
+      "source_location": "L830",
       "weight": 1.0
     },
     {
@@ -22045,7 +22195,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L107",
+      "source_location": "L103",
       "weight": 1.0
     },
     {
@@ -22057,7 +22207,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L99",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -22069,7 +22219,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1137",
+      "source_location": "L1145",
       "weight": 1.0
     },
     {
@@ -22081,7 +22231,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1153",
+      "source_location": "L1160",
       "weight": 1.0
     },
     {
@@ -22093,7 +22243,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1221",
+      "source_location": "L1233",
       "weight": 1.0
     },
     {
@@ -22105,7 +22255,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L547",
+      "source_location": "L532",
       "weight": 1.0
     },
     {
@@ -22117,7 +22267,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L551",
+      "source_location": "L536",
       "weight": 1.0
     },
     {
@@ -22129,7 +22279,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1121",
+      "source_location": "L1129",
       "weight": 1.0
     },
     {
@@ -22141,7 +22291,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1350",
+      "source_location": "L1386",
       "weight": 1.0
     },
     {
@@ -22153,7 +22303,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1351",
+      "source_location": "L1387",
       "weight": 1.0
     },
     {
@@ -22165,7 +22315,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1369",
+      "source_location": "L1405",
       "weight": 1.0
     },
     {
@@ -22177,7 +22327,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L633",
+      "source_location": "L618",
       "weight": 1.0
     },
     {
@@ -22189,7 +22339,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1373",
+      "source_location": "L1409",
       "weight": 1.0
     },
     {
@@ -22201,7 +22351,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1374",
+      "source_location": "L1410",
       "weight": 1.0
     },
     {
@@ -22213,7 +22363,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L499",
+      "source_location": "L487",
       "weight": 1.0
     },
     {
@@ -22225,7 +22375,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L500",
+      "source_location": "L488",
       "weight": 1.0
     },
     {
@@ -22237,7 +22387,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L1343",
+      "source_location": "L1379",
       "weight": 1.0
     },
     {
@@ -22249,7 +22399,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gui.cpp",
-      "source_location": "L464",
+      "source_location": "L455",
       "weight": 1.0
     },
     {
@@ -22746,5 +22896,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "4ede137648a4e1f15d7780f104903454910938a3"
+  "built_at_commit": "1711c8758ecaa5eb1998980c65870fd60463c89a"
 }
