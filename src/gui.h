@@ -52,14 +52,15 @@ public:
   void drawSleepSplash();
   void sleepDisplay();
   void wakeDisplay();
-  int8_t getPowerDialogTarget(int16_t x, int16_t y);
+  int16_t getPowerDialogTarget(int16_t x, int16_t y);
   void drawVoiceAudioToggle(bool pressed = false);
   void setVoiceAudioEnabled(bool enabled);
   bool isVoiceAudioEnabled() const { return _voiceAudioEnabled; }
 
-  // Page 6 Storage Explorer
+  // Page 7 Storage Explorer
   void drawStorageExplorer(bool fullRedraw = true);
   void drawStorageListOnly();
+  void highlightStorageRow(uint8_t row, bool isDirectory);
   void scrollStorageList(int16_t delta);
   void navigateStorageTo(const String& path);
   void navigateStorageUp();
@@ -68,7 +69,7 @@ public:
   int16_t getStorageScrollIndex() const { return _storageScrollIndex; }
   String getCurrentStoragePath() const { return _currentStoragePath; }
 
-  int8_t getTouchTarget(int16_t x, int16_t y, uint8_t currentPage);
+  int16_t getTouchTarget(int16_t x, int16_t y, uint8_t currentPage);
 
 private:
   TFT_eSPI& _tft;

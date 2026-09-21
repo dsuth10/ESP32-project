@@ -1,4 +1,5 @@
 #include "sd_card.h"
+#include <algorithm>
 
 static SDCardStatus g_sdStatus = {
   false, false, "None", 0.0f, 0.0f, 0.0f, false
@@ -393,6 +394,13 @@ std::vector<SDFileEntry> sdCardListDirectory(const String& dirPath) {
     if (lastSlash >= 0) {
       nameStr = nameStr.substring(lastSlash + 1);
     }
+    // Filter out empty names, FAT self/parent links, and hidden/system metadata
+    if (nameStr.isEmpty() || nameStr == "." || nameStr == ".." || 
+        nameStr.startsWith("._") || nameStr == "System Volume Information") {
+      file = root.openNextFile();
+      continue;
+    }
+
     entry.name = nameStr;
     entry.isDirectory = file.isDirectory();
     entry.size = file.size();
@@ -406,6 +414,18 @@ std::vector<SDFileEntry> sdCardListDirectory(const String& dirPath) {
     file = root.openNextFile();
   }
   root.close();
+
+  // Sort directories and files alphabetically (case-insensitive)
+  std::sort(dirs.begin(), dirs.end(), [](const SDFileEntry& a, const SDFileEntry& b) {
+    String aLower = a.name; aLower.toLowerCase();
+    String bLower = b.name; bLower.toLowerCase();
+    return aLower.compareTo(bLower) < 0;
+  });
+  std::sort(files.begin(), files.end(), [](const SDFileEntry& a, const SDFileEntry& b) {
+    String aLower = a.name; aLower.toLowerCase();
+    String bLower = b.name; bLower.toLowerCase();
+    return aLower.compareTo(bLower) < 0;
+  });
 
   // Combine: directories first, then files
   dirs.insert(dirs.end(), files.begin(), files.end());

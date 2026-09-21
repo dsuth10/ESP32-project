@@ -945,7 +945,7 @@ void MacroPadGUI::drawPowerConfirmDialog() {
   _tft.drawString("POWER OFF", PWR_CONFIRM_X + PWR_BTN_W / 2, PWR_BTN_Y + PWR_BTN_H / 2, 2);
 }
 
-int8_t MacroPadGUI::getPowerDialogTarget(int16_t x, int16_t y) {
+int16_t MacroPadGUI::getPowerDialogTarget(int16_t x, int16_t y) {
   if (y >= PWR_BTN_Y && y <= PWR_BTN_Y + PWR_BTN_H) {
     if (x >= PWR_CANCEL_X && x <= PWR_CANCEL_X + PWR_BTN_W) {
       return TOUCH_POWER_CANCEL;
@@ -1024,7 +1024,7 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
   }
 }
 
-int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
+int16_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
   // Check Top Navigation Buttons (Status Bar: y = 0..32)
   if (y >= 0 && y <= 32) {
     if (x >= 244 && x <= 280) return TOUCH_PREV_PAGE;
@@ -1108,7 +1108,7 @@ int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
     if (x >= 8 && x <= 268 && y >= 96 && y <= 236) {
       int row = (y - 96) / 27;
       if (row >= 0 && row < 5) {
-        return (int8_t)(TOUCH_STORAGE_ITEM_BASE + row);
+        return (int16_t)(TOUCH_STORAGE_ITEM_BASE + row);
       }
     }
     return -1;
@@ -1120,7 +1120,7 @@ int8_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {
     int16_t bx, by, bw, bh;
     getButtonRect(currentPage, i, bx, by, bw, bh);
     if (x >= bx && x <= (bx + bw) && y >= by && y <= (by + bh)) {
-      return (int8_t)i;
+      return (int16_t)i;
     }
   }
 
@@ -1253,10 +1253,10 @@ void MacroPadGUI::drawStorageListOnly() {
         if (dirName.length() > 17) dirName = dirName.substring(0, 15) + "..";
         _tft.drawString(dirName.c_str(), listX + 46, rowY + (rowH / 2) - 1, 2);
 
-        // Size badge
+        // Drill-down indicator chevron
         _tft.setTextDatum(MR_DATUM);
-        _tft.setTextColor(0xBDD7, rowBg);
-        _tft.drawString("<DIR>", listX + listW - 6, rowY + (rowH / 2) - 1, 2);
+        _tft.setTextColor(0xFDA0, rowBg);
+        _tft.drawString(">", listX + listW - 8, rowY + (rowH / 2) - 1, 4);
       } else {
         // File badge
         _tft.fillRoundRect(listX + 4, rowY + 3, 38, rowH - 8, 3, 0x2124); // Slate
@@ -1292,27 +1292,46 @@ void MacroPadGUI::drawStorageListOnly() {
   int16_t btnX = 272;
   int16_t btnW = 40;
   int16_t btnH = 65;
+  int16_t cx = btnX + (btnW / 2);
 
   // Scroll UP button
   bool canScrollUp = (_storageScrollIndex > 0);
   uint16_t upBg = canScrollUp ? 0x2124 : 0x1084;
   uint16_t upBorder = canScrollUp ? 0x07E0 : 0x3186;
-  uint16_t upText = canScrollUp ? 0x07E0 : 0x632C;
+  uint16_t upColor = canScrollUp ? 0xFFFF : 0x632C;
   _tft.fillRoundRect(btnX, listY, btnW, btnH, 4, upBg);
   _tft.drawRoundRect(btnX, listY, btnW, btnH, 4, upBorder);
+  int16_t cyUp = listY + (btnH / 2);
+  _tft.fillTriangle(cx, cyUp - 12, cx - 12, cyUp + 4, cx + 12, cyUp + 4, upColor);
   _tft.setTextDatum(MC_DATUM);
-  _tft.setTextColor(upText, upBg);
-  _tft.drawString("/\\", btnX + btnW / 2, listY + btnH / 2, 4);
+  _tft.setTextColor(upColor, upBg);
+  _tft.drawString("UP", cx, cyUp + 18, 2);
 
   // Scroll DOWN button
   bool canScrollDown = (_storageScrollIndex + 5 < (int)_storageEntries.size());
   uint16_t dnBg = canScrollDown ? 0x2124 : 0x1084;
   uint16_t dnBorder = canScrollDown ? 0x07E0 : 0x3186;
-  uint16_t dnText = canScrollDown ? 0x07E0 : 0x632C;
-  _tft.fillRoundRect(btnX, listY + btnH + 5, btnW, btnH, 4, dnBg);
-  _tft.drawRoundRect(btnX, listY + btnH + 5, btnW, btnH, 4, dnBorder);
-  _tft.setTextColor(dnText, dnBg);
-  _tft.drawString("\\/", btnX + btnW / 2, listY + btnH + 5 + btnH / 2, 4);
+  uint16_t dnColor = canScrollDown ? 0xFFFF : 0x632C;
+  int16_t dnY = listY + btnH + 5;
+  _tft.fillRoundRect(btnX, dnY, btnW, btnH, 4, dnBg);
+  _tft.drawRoundRect(btnX, dnY, btnW, btnH, 4, dnBorder);
+  int16_t cyDn = dnY + (btnH / 2);
+  _tft.setTextDatum(MC_DATUM);
+  _tft.setTextColor(dnColor, dnBg);
+  _tft.drawString("DN", cx, cyDn - 18, 2);
+  _tft.fillTriangle(cx, cyDn + 12, cx - 12, cyDn - 4, cx + 12, cyDn - 4, dnColor);
+}
+
+void MacroPadGUI::highlightStorageRow(uint8_t row, bool isDirectory) {
+  if (row >= 5) return;
+  int16_t listX = 8;
+  int16_t listY = 96;
+  int16_t listW = 258;
+  int16_t rowH = 27;
+  int16_t rowY = listY + row * rowH;
+  uint16_t highlightColor = isDirectory ? 0xFDA0 : 0x07FF; // Amber for DIR, Cyan for FILE
+  _tft.drawRoundRect(listX, rowY, listW, rowH - 2, 4, highlightColor);
+  _tft.drawRoundRect(listX + 1, rowY + 1, listW - 2, rowH - 4, 3, highlightColor);
 }
 
 void MacroPadGUI::scrollStorageList(int16_t delta) {

@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>ESP32 project — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 643 nodes, 1133 edges, 41 communities. Commit: 33bc067</p>
+<p class="subtitle">Generated from graphify knowledge graph: 644 nodes, 1135 edges, 41 communities. Commit: 4ede137</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -75,8 +75,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#environmentmanager">EnvironmentManager</a>
     <a href="#network-manager-cpp">network_manager.cpp</a>
     <a href="#macropadgui">MacroPadGUI</a>
-    <a href="#gui-cpp">gui.cpp</a>
     <a href="#hostdiscovery">HostDiscovery</a>
+    <a href="#gui-cpp">gui.cpp</a>
     <a href="#power-manager-cpp">power_manager.cpp</a>
     <a href="#other">Other</a>
 </div>
@@ -94,9 +94,9 @@ flowchart LR
     class ANALYSIS_CLUSTERING_C79796DA module;
     OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>27 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
-    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>64 nodes</small>")
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>61 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>64 nodes</small>")
+    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>65 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
     SERVE_API_35EC8E86("Serving API<br/><small>54 nodes</small>")
     class SERVE_API_35EC8E86 module;
@@ -104,32 +104,32 @@ flowchart LR
     class SECURITY_GLOBAL_5B9C6A04 module;
     TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>39 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
-    ENVIRONMENTMANAGER_5897C7D1("EnvironmentManager<br/><small>43 nodes</small>")
+    ENVIRONMENTMANAGER_5897C7D1("EnvironmentManager<br/><small>44 nodes</small>")
     class ENVIRONMENTMANAGER_5897C7D1 module;
-    NETWORK_MANAGER_CPP_3D6026FC("network_manager.cpp<br/><small>35 nodes</small>")
+    NETWORK_MANAGER_CPP_3D6026FC("network_manager.cpp<br/><small>33 nodes</small>")
     class NETWORK_MANAGER_CPP_3D6026FC module;
-    MACROPADGUI_41F3827F("MacroPadGUI<br/><small>25 nodes</small>")
+    MACROPADGUI_41F3827F("MacroPadGUI<br/><small>22 nodes</small>")
     class MACROPADGUI_41F3827F module;
-    GUI_CPP_EB7BCAF2("gui.cpp<br/><small>21 nodes</small>")
-    class GUI_CPP_EB7BCAF2 module;
     HOSTDISCOVERY_9CAFC6FD("HostDiscovery<br/><small>20 nodes</small>")
     class HOSTDISCOVERY_9CAFC6FD module;
+    GUI_CPP_EB7BCAF2("gui.cpp<br/><small>20 nodes</small>")
+    class GUI_CPP_EB7BCAF2 module;
     POWER_MANAGER_CPP_2229D128("power_manager.cpp<br/><small>18 nodes</small>")
     class POWER_MANAGER_CPP_2229D128 module;
-    OTHER_D0941E68("Other<br/><small>74 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>82 nodes</small>")
     class OTHER_D0941E68 module;
-    MACROPADGUI_41F3827F -->|defines x24| OTHER_D0941E68
-    GUI_CPP_EB7BCAF2 -->|contains x20| OTHER_D0941E68
-    MACROPADGUI_41F3827F -->|defines x17| GUI_CPP_EB7BCAF2
-    OTHER_D0941E68 -->|calls x6| CLI_SKILLS_9964CBB8
-    OTHER_D0941E68 -->|calls x3| GUI_CPP_EB7BCAF2
+    MACROPADGUI_41F3827F -->|defines x26| OTHER_D0941E68
+    GUI_CPP_EB7BCAF2 -->|contains x24| OTHER_D0941E68
+    MACROPADGUI_41F3827F -->|defines x19| GUI_CPP_EB7BCAF2
+    OTHER_D0941E68 -->|imports x5| CLI_SKILLS_9964CBB8
+    CLI_SKILLS_9964CBB8 -->|imports x4| OTHER_D0941E68
     INGEST_CACHE_UPDATE_FF457338 -->|calls x3| SERVE_API_35EC8E86
-    GUI_CPP_EB7BCAF2 -->|contains x3| MACROPADGUI_41F3827F
+    CLI_SKILLS_9964CBB8 -->|imports x3| ENVIRONMENTMANAGER_5897C7D1
     CLI_SKILLS_9964CBB8 -->|calls x2| SERVE_API_35EC8E86
-    INGEST_CACHE_UPDATE_FF457338 -->|imports x2| CLI_SKILLS_9964CBB8
-    OTHER_D0941E68 -->|contains x2| MACROPADGUI_41F3827F
+    OTHER_D0941E68 -->|calls x2| GUI_CPP_EB7BCAF2
     NETWORK_MANAGER_CPP_3D6026FC -->|calls x2| HOSTDISCOVERY_9CAFC6FD
-    CLI_SKILLS_9964CBB8 -->|imports x2| OTHER_D0941E68
+    CLI_SKILLS_9964CBB8 -->|imports x2| INGEST_CACHE_UPDATE_FF457338
+    SERVE_API_35EC8E86 -->|imports x2| ENVIRONMENTMANAGER_5897C7D1
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,22 +146,22 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Graph Build</td><td>66</td><td><code>31, 34, 24, 25, 26, 27</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>56</td><td><code>1, 10</code></td></tr><tr><td>Outputs &amp; Docs</td><td>27</td><td><code>32</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>64</td><td><code>5, 23, 30</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>64</td><td><code>3, 17</code></td></tr><tr><td>Serving API</td><td>54</td><td><code>6, 7</code></td></tr><tr><td>Security &amp; Global Graph</td><td>37</td><td><code>16</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>39</td><td><code>15, 28</code></td></tr><tr><td>EnvironmentManager</td><td>43</td><td><code>2</code></td></tr><tr><td>network_manager.cpp</td><td>35</td><td><code>4</code></td></tr><tr><td>MacroPadGUI</td><td>25</td><td><code>0</code></td></tr><tr><td>gui.cpp</td><td>21</td><td><code>35</code></td></tr><tr><td>HostDiscovery</td><td>20</td><td><code>22</code></td></tr><tr><td>power_manager.cpp</td><td>18</td><td><code>33</code></td></tr><tr><td>Other</td><td>74</td><td><code>8, 36, 37, 9, 39, 40, 11, 12, 13, 20, 21, 38, 14, 18, 19, 29</code></td></tr>
+      <tr><td>Graph Build</td><td>66</td><td><code>31, 34, 24, 25, 26, 27</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>56</td><td><code>1, 10</code></td></tr><tr><td>Outputs &amp; Docs</td><td>27</td><td><code>32</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>61</td><td><code>5, 23, 30</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>65</td><td><code>3, 17</code></td></tr><tr><td>Serving API</td><td>54</td><td><code>6, 7</code></td></tr><tr><td>Security &amp; Global Graph</td><td>37</td><td><code>16</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>39</td><td><code>15, 28</code></td></tr><tr><td>EnvironmentManager</td><td>44</td><td><code>2</code></td></tr><tr><td>network_manager.cpp</td><td>33</td><td><code>4</code></td></tr><tr><td>MacroPadGUI</td><td>22</td><td><code>0</code></td></tr><tr><td>HostDiscovery</td><td>20</td><td><code>22</code></td></tr><tr><td>gui.cpp</td><td>20</td><td><code>35</code></td></tr><tr><td>power_manager.cpp</td><td>18</td><td><code>33</code></td></tr><tr><td>Other</td><td>82</td><td><code>40, 8, 36, 37, 9, 39, 11, 12, 13, 20, 21, 38, 14, 18, 19, 29</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Graph Build -&gt; Analysis &amp; Clustering -&gt; Outputs &amp; Docs -&gt; CLI &amp; Skill Installers -&gt; Serving API -&gt; EnvironmentManager -&gt; Ingestion &amp; Updates</div>
+    <div class="arrow-chain">Graph Build -&gt; Analysis &amp; Clustering -&gt; Outputs &amp; Docs -&gt; CLI &amp; Skill Installers -&gt; Other -&gt; gui.cpp -&gt; EnvironmentManager</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>643 nodes · 1133 edges · 41 communities (25 shown, 9 thin omitted)</li>
+      <li>644 nodes · 1135 edges · 41 communities (25 shown, 9 thin omitted)</li>
       <li>Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 88 edges (avg confidence: 0.85)</li>
       <li>Token cost: 0 input · 0 output</li>
-      <li>1. `MacroPadGUI` - 67 edges</li>
+      <li>1. `MacroPadGUI` - 68 edges</li>
       <li>2. `AudioRecorder` - 32 edges</li>
       <li>3. `EnvironmentManager` - 24 edges</li>
     </ul>
@@ -1187,16 +1187,16 @@ flowchart LR
 
 <!-- ====== 5. CLI & Skill Installers ====== -->
 <h2 id="cli-skills">5. CLI &amp; Skill Installers</h2>
-<p>CLI &amp; Skill Installers groups implementation around cardcpp, skillmd, cardh, agents, mostly in src/sd_card.cpp, src/sd_card.h, src/main.cpp. This section covers 64 nodes and 96 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>CLI &amp; Skill Installers groups implementation around skillmd, cardh, cardcpp, agents, mostly in src/sd_card.h, src/sd_card.cpp, src/main.cpp. This section covers 61 nodes and 92 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: CLI &amp; Skill Installers (64 nodes, 96 edges)
+    %% Section: CLI &amp; Skill Installers (61 nodes, 92 edges)
     subgraph cli_skills_src_main_cpp_3614ce5c["src/main.cpp"]
         src_main_loop_b54b6114("loop()<br/><small>src/main.cpp</small>")
-        src_main_3231ff52("main.cpp")
         src_main_setup_d8061760("setup()<br/><small>src/main.cpp</small>")
+        src_main_3231ff52("main.cpp")
         src_main_telemetryworkertask_db9788b7("telemetryWorkerTask()<br/><small>src/main.cpp</small>")
         src_main_gotosoftoff_9e410475("goToSoftOff()<br/><small>src/main.cpp</small>")
         src_main_setledcolor_32443aca("setLedColor()<br/><small>src/main.cpp</small>")
@@ -1232,10 +1232,10 @@ flowchart LR
     src_main_loop_b54b6114 -->|calls| src_sd_card_sdcardformat_daae5edc
     src_main_loop_b54b6114 -->|calls| src_sd_card_saverecordingtosd_d40641e2
     src_main_loop_b54b6114 -->|calls| src_sd_card_appendchatlog_6bb4d77e
-    %% Omitted for readability: 46 nodes, 0 edges
+    %% Omitted for readability: 43 nodes, 0 edges
     class src_main_loop_b54b6114 function;
-    class src_main_3231ff52 function;
     class src_main_setup_d8061760 function;
+    class src_main_3231ff52 function;
     class src_main_telemetryworkertask_db9788b7 function;
     class src_main_gotosoftoff_9e410475 function;
     class src_main_setledcolor_32443aca function;
@@ -1386,14 +1386,6 @@ flowchart LR
 </tr>
 <tr>
   <td>15</td>
-  <td><code>getSDCardStatus()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawStorageExplorer</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>getSDCardStatus() node in src/sd_card.cpp.</td>
-</tr>
-<tr>
-  <td>16</td>
   <td><code>listSDCardDirectory()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
@@ -1401,7 +1393,7 @@ flowchart LR
   <td>listSDCardDirectory() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>16</td>
   <td><code>loadMacroConfig()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1409,7 +1401,7 @@ flowchart LR
   <td>Reads, resolves, or persists project configuration.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>17</td>
   <td><code>printSDCardInfo()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>sdCardFormat()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
@@ -1417,7 +1409,7 @@ flowchart LR
   <td>printSDCardInfo() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>18</td>
   <td><code>saveMacroConfig()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1425,7 +1417,7 @@ flowchart LR
   <td>Reads, resolves, or persists project configuration.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>19</td>
   <td><code>saveRecordingToSD()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
@@ -1433,7 +1425,7 @@ flowchart LR
   <td>saveRecordingToSD() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>20</td>
   <td><code>sdCardEnsureDirectories()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>appendChatLog()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small><br><code>saveMacroConfig()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small><br><code>saveRecordingToSD()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small><br>+2 more</td>
@@ -1441,7 +1433,7 @@ flowchart LR
   <td>sdCardEnsureDirectories() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>21</td>
   <td><code>sdCardFormat()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
@@ -1449,15 +1441,7 @@ flowchart LR
   <td>sdCardFormat() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>23</td>
-  <td><code>sdCardGetStorageSpace()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>refreshStorageExplorer</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>24</td>
+  <td>22</td>
   <td><code>sdCardInit()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>setup()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
@@ -1465,7 +1449,7 @@ flowchart LR
   <td>sdCardInit() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>23</td>
   <td><code>sdCardListDirectory()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>navigateStorageTo</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>refreshStorageExplorer</code><br><small style="color:var(--muted)">src/gui.h</small></td>
@@ -1473,7 +1457,7 @@ flowchart LR
   <td>sdCardListDirectory() node in src/sd_card.cpp.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>24</td>
   <td><code>sdCardRunSelfTest()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>loop()</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>setup()</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
@@ -1481,7 +1465,7 @@ flowchart LR
   <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>25</td>
   <td><code>MacroButton</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1489,7 +1473,7 @@ flowchart LR
   <td>MacroButton node in project.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>26</td>
   <td><code>sdcard_type_t</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1497,20 +1481,36 @@ flowchart LR
   <td>sdcard_type_t node in project.</td>
 </tr>
 <tr>
-  <td>29</td>
-  <td><code>es8311.h</code><br><small style="color:var(--muted)">src/es8311.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>audio_recorder.cpp</code><br><small style="color:var(--muted)">src/audio_recorder.cpp</small><br><code>es8311.cpp</code><br><small style="color:var(--muted)">src/es8311.cpp</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
-  <td>No direct outbound edge</td>
-  <td>es8311.h node in src/es8311.h.</td>
-</tr>
-<tr>
-  <td>30</td>
+  <td>27</td>
   <td><code>macropad_config.cpp</code><br><small style="color:var(--muted)">src/macropad_config.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small></td>
   <td>Reads, resolves, or persists project configuration.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>audio_recorder.cpp</code><br><small style="color:var(--muted)">src/audio_recorder.cpp</small><br><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>macropad_config.cpp</code><br><small style="color:var(--muted)">src/macropad_config.cpp</small><br>+3 more</td>
+  <td>No direct outbound edge</td>
+  <td>Reads, resolves, or persists project configuration.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>audio_recorder.h</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br><code>environment_manager.h</code><br><small style="color:var(--muted)">src/environment_manager.h</small><br><code>es8311.h</code><br><small style="color:var(--muted)">src/es8311.h</small><br>+8 more</td>
+  <td>main.cpp node in src/main.cpp.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>HealthState</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>HealthState node in project.</td>
 </tr>
 </table>
 
@@ -1519,31 +1519,30 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/sd_card.cpp</code></td><td>16 nodes</td></tr>
+      <tr><td><code>src/sd_card.cpp</code></td><td>14 nodes</td></tr>
 <tr><td><code>src/sd_card.h</code></td><td>14 nodes</td></tr>
 <tr><td><code>src/main.cpp</code></td><td>10 nodes</td></tr>
 <tr><td><code>skills/graphify-toolkit/SKILL.md</code></td><td>8 nodes</td></tr>
 <tr><td><code>skills/voice-satellite/SKILL.md</code></td><td>7 nodes</td></tr>
-<tr><td><code>src/es8311.h</code></td><td>1 nodes</td></tr>
 <tr><td><code>src/macropad_config.cpp</code></td><td>1 nodes</td></tr>
 <tr><td><code>src/macropad_config.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x39, calls x25, references x15, defines x11. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x37, calls x25, references x14, defines x11. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 6. Ingestion & Updates ====== -->
 <h2 id="ingest-cache-update">6. Ingestion &amp; Updates</h2>
-<p>Ingestion &amp; Updates groups implementation around audio, recorderh, geminimd, rule, mostly in src/audio_recorder.h, GEMINI.md, src/audio_recorder.cpp. This section covers 64 nodes and 76 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Ingestion &amp; Updates groups implementation around audio, recorderh, geminimd, rule, mostly in src/audio_recorder.h, GEMINI.md, src/audio_recorder.cpp. This section covers 65 nodes and 77 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Ingestion &amp; Updates (64 nodes, 76 edges)
+    %% Section: Ingestion &amp; Updates (65 nodes, 77 edges)
     subgraph ingest_cache_update_src_audio_recorder_h_ad2e6707["src/audio_recorder.h"]
         src_audio_recorder_audiorecorder_b4022ebd("AudioRecorder<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_channelstats_b437c15e("ChannelStats<br/><small>src/audio_recorder.h</small>")
@@ -1561,9 +1560,9 @@ flowchart LR
         src_audio_recorder_channelstats_getnonzeropct_b7c18466("getNonZeroPct()<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_channelstats_getclippct_5ab7f089("getClipPct()<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_h_src_audio_recorder_079da71f("audio_recorder.h")
-        src_audio_recorder_audiorecorder_stoprecording_00ea97de("stopRecording<br/><small>src/audio_recorder.h</small>")
     end
     src_audio_recorder_cpp_src_audio_recorder_9215fedd("audio_recorder.cpp")
+    src_es8311_h_src_es8311_a96b8a50("es8311.h")
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_isrecording_3baca3b6
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getrecorddurati_7af30ad5
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getwavbuffer_898064a8
@@ -1576,9 +1575,8 @@ flowchart LR
     src_audio_recorder_channelstats_b437c15e -->|method| src_audio_recorder_channelstats_getnonzeropct_b7c18466
     src_audio_recorder_channelstats_b437c15e -->|method| src_audio_recorder_channelstats_getclippct_5ab7f089
     src_audio_recorder_cpp_src_audio_recorder_9215fedd -->|imports| src_audio_recorder_h_src_audio_recorder_079da71f
-    src_audio_recorder_audiorecorder_update_43ac1eab -->|calls| src_audio_recorder_audiorecorder_stoprecording_00ea97de
-    src_audio_recorder_audiorecorder_prepareforsleep_fe62852d -->|calls| src_audio_recorder_audiorecorder_stoprecording_00ea97de
-    %% Omitted for readability: 46 nodes, 0 edges
+    src_audio_recorder_cpp_src_audio_recorder_9215fedd -->|imports| src_es8311_h_src_es8311_a96b8a50
+    %% Omitted for readability: 47 nodes, 0 edges
     class src_audio_recorder_audiorecorder_b4022ebd klass;
     class src_audio_recorder_channelstats_b437c15e klass;
     class src_audio_recorder_audiorecorder_prepareforsleep_fe62852d function;
@@ -1595,8 +1593,8 @@ flowchart LR
     class src_audio_recorder_channelstats_getnonzeropct_b7c18466 function;
     class src_audio_recorder_channelstats_getclippct_5ab7f089 entry;
     class src_audio_recorder_h_src_audio_recorder_079da71f function;
-    class src_audio_recorder_audiorecorder_stoprecording_00ea97de function;
     class src_audio_recorder_cpp_src_audio_recorder_9215fedd function;
+    class src_es8311_h_src_es8311_a96b8a50 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1868,6 +1866,7 @@ flowchart LR
       <tr><td><code>src/audio_recorder.h</code></td><td>45 nodes</td></tr>
 <tr><td><code>GEMINI.md</code></td><td>15 nodes</td></tr>
 <tr><td><code>src/audio_recorder.cpp</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/es8311.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
@@ -2920,12 +2919,12 @@ flowchart LR
 
 <!-- ====== 10. EnvironmentManager ====== -->
 <h2 id="environmentmanager">10. EnvironmentManager</h2>
-<p>EnvironmentManager groups implementation around environment, managerh, managercpp, environmentchangecallback, mostly in src/environment_manager.h, src/environment_manager.cpp. This section covers 43 nodes and 69 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>EnvironmentManager groups implementation around environment, managerh, managercpp, environmentchangecallback, mostly in src/environment_manager.h, src/environment_manager.cpp, src/network_manager.h. This section covers 44 nodes and 70 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: EnvironmentManager (43 nodes, 69 edges)
+    %% Section: EnvironmentManager (44 nodes, 70 edges)
     subgraph environmentmanager_External_generated_d6216338["External / generated"]
         preferences_dcedb31d("Preferences")
         src_environment_manager_cpp_environmentchangecal_2beac61d("EnvironmentChangeCallback")
@@ -2944,20 +2943,21 @@ flowchart LR
         src_environment_manager_environmentmanager_initp_72e74bbe("initProfiles<br/><small>src/environment_manager.h</small>")
         src_environment_manager_environmentmanager_getmo_a6393561("getModeName<br/><small>src/environment_manager.h</small>")
         src_environment_manager_environmentmanager_chang_4b394e2b("_changeCallback<br/><small>src/environment_manager.h</small>")
-        src_environment_manager_environmentmanager_138c3d1c("EnvironmentManager<br/><small>src/environment_manager.h</small>")
     end
     subgraph environmentmanager_src_environment_manager_cpp_8c00c771["src/environment_manager.cpp"]
         src_environment_manager_cpp_src_environment_mana_64a048dd("environment_manager.cpp")
         src_environment_manager_environmentmanager_envir_30c2c479("EnvironmentManager::EnvironmentManager()<br/><small>src/environment_manager.cpp</small>")
     end
+    src_network_manager_h_src_network_manager_f4b6ea17("network_manager.h")
     src_environment_manager_cpp_src_environment_mana_64a048dd -->|imports| src_environment_manager_h_src_environment_manage_67d67216
     src_environment_manager_h_src_environment_manage_67d67216 -->|imports| preferences_dcedb31d
+    src_network_manager_h_src_network_manager_f4b6ea17 -->|imports| src_environment_manager_h_src_environment_manage_67d67216
     src_environment_manager_environmentmanager_envir_30c2c479 -->|calls| src_environment_manager_environmentmanager_initp_72e74bbe
     src_environment_manager_environmentmanager_begin_9c804443 -->|calls| src_environment_manager_environmentmanager_getmo_a6393561
     src_environment_manager_environmentmanager_setmo_e0599ff3 -->|calls| src_environment_manager_environmentmanager_getmo_a6393561
     src_environment_manager_environmentmanager_setmo_e0599ff3 -->|calls| src_environment_manager_environmentmanager_chang_4b394e2b
     src_environment_manager_environmentmanager_toggl_f6ab440b -->|calls| src_environment_manager_environmentmanager_setmo_e0599ff3
-    %% Omitted for readability: 25 nodes, 0 edges
+    %% Omitted for readability: 26 nodes, 0 edges
     class preferences_dcedb31d klass;
     class src_environment_manager_cpp_environmentchangecal_2beac61d klass;
     class src_environment_manager_h_environmentchangecallb_5e53b4a6 klass;
@@ -2973,9 +2973,9 @@ flowchart LR
     class src_environment_manager_environmentmanager_initp_72e74bbe function;
     class src_environment_manager_environmentmanager_getmo_a6393561 function;
     class src_environment_manager_environmentmanager_chang_4b394e2b function;
-    class src_environment_manager_environmentmanager_138c3d1c klass;
     class src_environment_manager_cpp_src_environment_mana_64a048dd function;
     class src_environment_manager_environmentmanager_envir_30c2c479 function;
+    class src_network_manager_h_src_network_manager_f4b6ea17 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -3246,6 +3246,7 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>src/environment_manager.h</code></td><td>33 nodes</td></tr>
 <tr><td><code>src/environment_manager.cpp</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/network_manager.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
@@ -3257,73 +3258,74 @@ flowchart LR
 
 <!-- ====== 11. network_manager.cpp ====== -->
 <h2 id="network-manager-cpp">11. network_manager.cpp</h2>
-<p>network_manager.cpp groups implementation around network, managerh, managercpp, string, mostly in src/network_manager.h, src/network_manager.cpp, src/system_status.h. This section covers 35 nodes and 77 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>network_manager.cpp groups implementation around network, managerh, managercpp, string, mostly in src/network_manager.h, src/network_manager.cpp. This section covers 33 nodes and 74 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: network_manager.cpp (35 nodes, 77 edges)
+    %% Section: network_manager.cpp (33 nodes, 74 edges)
     subgraph network_manager_cpp_src_network_manager_h_e3af950b["src/network_manager.h"]
         src_network_manager_networkmanager_fetchcomposit_409e78b8("fetchCompositeStatus<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_sendvoiceaudi_27eb2920("sendVoiceAudio<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_applyenvironm_1fcc8dc0("applyEnvironment<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_begin_5ab86173("begin<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_checkreceiver_ad818aa1("checkReceiverHealth<br/><small>src/network_manager.h</small>")
-        src_network_manager_h_src_network_manager_f4b6ea17("network_manager.h")
+        src_network_manager_networkmanager_playvoiceaudi_4238dfc9("playVoiceAudioReply<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_resume_78226981("resume<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_startconnecti_0052fbd8("startConnection<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_getipaddress_ead67b67("getIpAddress<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_isconnected_a62d7582("isConnected<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_getconnecteds_8ad215ed("getConnectedSSID<br/><small>src/network_manager.h</small>")
         src_network_manager_networkmanager_getrssi_9745c173("getRSSI<br/><small>src/network_manager.h</small>")
+        src_network_manager_networkmanager_checkinternet_2821e5eb("checkInternet<br/><small>src/network_manager.h</small>")
     end
     subgraph network_manager_cpp_src_network_manager_cpp_a00a3711["src/network_manager.cpp"]
-        src_network_manager_cpp_src_network_manager_fc796c4c("network_manager.cpp")
         src_network_manager_extractjsonfield_e1050fdd("extractJsonField()<br/><small>src/network_manager.cpp</small>")
         src_network_manager_extractjsonbool_b649f566("extractJsonBool()<br/><small>src/network_manager.cpp</small>")
         src_network_manager_extractjsonint_9e88f47f("extractJsonInt()<br/><small>src/network_manager.cpp</small>")
         src_network_manager_extractjsonobject_dff68fa5("extractJsonObject()<br/><small>src/network_manager.cpp</small>")
     end
-    src_system_status_a10ae04d("system_status.h")
+    src_network_manager_cpp_dashboardstatus_7cb6607a("DashboardStatus")
     src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonfield_e1050fdd
     src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonbool_b649f566
     src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_extractjsonint_9e88f47f
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonobject_dff68fa5
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonbool_b649f566
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_extractjsonfield_e1050fdd
-    src_network_manager_cpp_src_network_manager_fc796c4c -->|imports| src_network_manager_h_src_network_manager_f4b6ea17
-    src_network_manager_h_src_network_manager_f4b6ea17 -->|imports| src_system_status_a10ae04d
     src_network_manager_networkmanager_resume_78226981 -->|calls| src_network_manager_networkmanager_startconnecti_0052fbd8
     src_network_manager_networkmanager_applyenvironm_1fcc8dc0 -->|calls| src_network_manager_networkmanager_startconnecti_0052fbd8
     src_network_manager_networkmanager_getipaddress_ead67b67 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_getconnecteds_8ad215ed -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_getrssi_9745c173 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_sendvoiceaudi_27eb2920 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
+    src_network_manager_networkmanager_playvoiceaudi_4238dfc9 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_checkreceiver_ad818aa1 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
+    src_network_manager_networkmanager_checkinternet_2821e5eb -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_isconnected_a62d7582
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getconnecteds_8ad215ed
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getrssi_9745c173
     src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_getipaddress_ead67b67
+    src_network_manager_networkmanager_fetchcomposit_409e78b8 -->|calls| src_network_manager_networkmanager_checkinternet_2821e5eb
     src_network_manager_networkmanager_begin_5ab86173 -->|calls| src_network_manager_networkmanager_startconnecti_0052fbd8
-    %% Omitted for readability: 17 nodes, 0 edges
+    %% Omitted for readability: 15 nodes, 0 edges
     class src_network_manager_networkmanager_fetchcomposit_409e78b8 function;
     class src_network_manager_networkmanager_sendvoiceaudi_27eb2920 function;
     class src_network_manager_networkmanager_applyenvironm_1fcc8dc0 function;
     class src_network_manager_networkmanager_begin_5ab86173 function;
     class src_network_manager_networkmanager_checkreceiver_ad818aa1 function;
-    class src_network_manager_h_src_network_manager_f4b6ea17 function;
+    class src_network_manager_networkmanager_playvoiceaudi_4238dfc9 function;
     class src_network_manager_networkmanager_resume_78226981 function;
     class src_network_manager_networkmanager_startconnecti_0052fbd8 function;
     class src_network_manager_networkmanager_getipaddress_ead67b67 function;
     class src_network_manager_networkmanager_isconnected_a62d7582 function;
     class src_network_manager_networkmanager_getconnecteds_8ad215ed function;
     class src_network_manager_networkmanager_getrssi_9745c173 function;
-    class src_network_manager_cpp_src_network_manager_fc796c4c function;
+    class src_network_manager_networkmanager_checkinternet_2821e5eb function;
     class src_network_manager_extractjsonfield_e1050fdd function;
     class src_network_manager_extractjsonbool_b649f566 function;
     class src_network_manager_extractjsonint_9e88f47f function;
     class src_network_manager_extractjsonobject_dff68fa5 function;
-    class src_system_status_a10ae04d function;
+    class src_network_manager_cpp_dashboardstatus_7cb6607a klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -3555,14 +3557,6 @@ flowchart LR
 </tr>
 <tr>
   <td>27</td>
-  <td><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>gui.cpp</code><br><small style="color:var(--muted)">src/gui.cpp</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>network_manager.cpp</code><br><small style="color:var(--muted)">src/network_manager.cpp</small></td>
-  <td><code>environment_manager.h</code><br><small style="color:var(--muted)">src/environment_manager.h</small><br><code>system_status.h</code><br><small style="color:var(--muted)">src/system_status.h</small></td>
-  <td>network_manager.h node in src/network_manager.h.</td>
-</tr>
-<tr>
-  <td>28</td>
   <td><code>String</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3570,7 +3564,7 @@ flowchart LR
   <td>String node in project.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>28</td>
   <td><code>_lastInternetCheck</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3578,12 +3572,20 @@ flowchart LR
   <td>_lastInternetCheck node in src/network_manager.h.</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>29</td>
   <td><code>_lastInternetState</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>_lastInternetState node in src/network_manager.h.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>_lastReconnectAttempt</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_lastReconnectAttempt node in src/network_manager.h.</td>
 </tr>
 </table>
 
@@ -3592,33 +3594,29 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/network_manager.h</code></td><td>23 nodes</td></tr>
+      <tr><td><code>src/network_manager.h</code></td><td>22 nodes</td></tr>
 <tr><td><code>src/network_manager.cpp</code></td><td>6 nodes</td></tr>
-<tr><td><code>src/system_status.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: defines x21, calls x21, contains x21, references x12. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: defines x21, calls x21, contains x20, references x12. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 12. MacroPadGUI ====== -->
 <h2 id="macropadgui">12. MacroPadGUI</h2>
-<p>MacroPadGUI groups implementation around guih, macropadgui, getstoragescrollindex, isvoiceaudioenabled, mostly in src/gui.h. This section covers 25 nodes and 26 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>MacroPadGUI groups implementation around guih, macropadgui, getstoragescrollindex, isvoiceaudioenabled, mostly in src/gui.h. This section covers 22 nodes and 21 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: MacroPadGUI (25 nodes, 26 edges)
+    %% Section: MacroPadGUI (22 nodes, 21 edges)
     subgraph macropadgui_src_gui_h_2c3c6594["src/gui.h"]
         src_gui_macropadgui_2de9d209("MacroPadGUI<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawbutton_f732c89d("drawButton<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_gettouchtarget_f1b368b6("getTouchTarget<br/><small>src/gui.h</small>")
         src_gui_macropadgui_isvoiceaudioenabled_0d0ea05d("isVoiceAudioEnabled()<br/><small>src/gui.h</small>")
         src_gui_macropadgui_getstoragescrollindex_1aaa139b("getStorageScrollIndex()<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_getbuttonrect_97fa57c7("getButtonRect<br/><small>src/gui.h</small>")
         src_gui_macropadgui_chatlines_b5be046f("_chatLines<br/><small>src/gui.h</small>")
         src_gui_macropadgui_currentstoragepath_e3d73717("_currentStoragePath<br/><small>src/gui.h</small>")
         src_gui_macropadgui_history_a608aaa0("_history<br/><small>src/gui.h</small>")
@@ -3629,6 +3627,9 @@ flowchart LR
         src_gui_macropadgui_storageentries_26434bae("_storageEntries<br/><small>src/gui.h</small>")
         src_gui_macropadgui_storagefreegb_61720a4a("_storageFreeGB<br/><small>src/gui.h</small>")
         src_gui_macropadgui_storagescrollindex_f71c85f2("_storageScrollIndex<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_storagetotalgb_5c4c8562("_storageTotalGB<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_storageusedmb_084ccc55("_storageUsedMB<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_voiceaudioenabled_b8b42810("_voiceAudioEnabled<br/><small>src/gui.h</small>")
     end
     subgraph macropadgui_External_generated_74b06092["External / generated"]
         src_gui_h_healthstate_a9d12398("HealthState")
@@ -3636,15 +3637,10 @@ flowchart LR
     end
     src_gui_macropadgui_2de9d209 -->|method| src_gui_macropadgui_isvoiceaudioenabled_0d0ea05d
     src_gui_macropadgui_2de9d209 -->|method| src_gui_macropadgui_getstoragescrollindex_1aaa139b
-    src_gui_macropadgui_gettouchtarget_f1b368b6 -->|calls| src_gui_macropadgui_getbuttonrect_97fa57c7
-    src_gui_macropadgui_drawbutton_f732c89d -->|calls| src_gui_macropadgui_getbuttonrect_97fa57c7
-    %% Omitted for readability: 7 nodes, 0 edges
+    %% Omitted for readability: 4 nodes, 0 edges
     class src_gui_macropadgui_2de9d209 klass;
-    class src_gui_macropadgui_drawbutton_f732c89d function;
-    class src_gui_macropadgui_gettouchtarget_f1b368b6 function;
     class src_gui_macropadgui_isvoiceaudioenabled_0d0ea05d function;
     class src_gui_macropadgui_getstoragescrollindex_1aaa139b function;
-    class src_gui_macropadgui_getbuttonrect_97fa57c7 function;
     class src_gui_macropadgui_chatlines_b5be046f function;
     class src_gui_macropadgui_currentstoragepath_e3d73717 function;
     class src_gui_macropadgui_history_a608aaa0 function;
@@ -3655,6 +3651,9 @@ flowchart LR
     class src_gui_macropadgui_storageentries_26434bae function;
     class src_gui_macropadgui_storagefreegb_61720a4a function;
     class src_gui_macropadgui_storagescrollindex_f71c85f2 function;
+    class src_gui_macropadgui_storagetotalgb_5c4c8562 function;
+    class src_gui_macropadgui_storageusedmb_084ccc55 function;
+    class src_gui_macropadgui_voiceaudioenabled_b8b42810 function;
     class src_gui_h_healthstate_a9d12398 klass;
     class src_gui_h_voiceuistate_edd3b849 klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -3704,30 +3703,6 @@ flowchart LR
 </tr>
 <tr>
   <td>4</td>
-  <td><code>getTouchTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>getTouchTarget node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>drawButton node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>getTouchTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>getButtonRect node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>7</td>
   <td><code>HealthState</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3735,7 +3710,7 @@ flowchart LR
   <td>HealthState node in project.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>5</td>
   <td><code>VoiceUIState</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3743,7 +3718,7 @@ flowchart LR
   <td>VoiceUIState node in project.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>6</td>
   <td><code>_chatLines</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3751,7 +3726,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>7</td>
   <td><code>_currentStoragePath</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3759,7 +3734,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>8</td>
   <td><code>_history</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3767,7 +3742,7 @@ flowchart LR
   <td>_history node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>9</td>
   <td><code>_lastDrawnBatHealth</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3775,7 +3750,7 @@ flowchart LR
   <td>_lastDrawnBatHealth node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>10</td>
   <td><code>_lastDrawnBatPercent</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3783,7 +3758,7 @@ flowchart LR
   <td>_lastDrawnBatPercent node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>11</td>
   <td><code>_lastDrawnCharging</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3791,7 +3766,7 @@ flowchart LR
   <td>_lastDrawnCharging node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>12</td>
   <td><code>_lastDrawnVolume</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3799,7 +3774,7 @@ flowchart LR
   <td>_lastDrawnVolume node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>13</td>
   <td><code>_storageEntries</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3807,7 +3782,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>14</td>
   <td><code>_storageFreeGB</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3815,7 +3790,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>15</td>
   <td><code>_storageScrollIndex</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3823,7 +3798,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>16</td>
   <td><code>_storageTotalGB</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3831,7 +3806,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>17</td>
   <td><code>_storageUsedMB</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3839,7 +3814,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>18</td>
   <td><code>_voiceAudioEnabled</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3847,7 +3822,7 @@ flowchart LR
   <td>_voiceAudioEnabled node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>19</td>
   <td><code>_voiceDetailMsg</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3855,7 +3830,7 @@ flowchart LR
   <td>_voiceDetailMsg node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>20</td>
   <td><code>_voiceScrollLine</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3863,7 +3838,7 @@ flowchart LR
   <td>_voiceScrollLine node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>21</td>
   <td><code>_voiceState</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3871,7 +3846,7 @@ flowchart LR
   <td>_voiceState node in src/gui.h.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>22</td>
   <td><code>_voiceStatusMsg</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3885,280 +3860,18 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/gui.h</code></td><td>23 nodes</td></tr>
+      <tr><td><code>src/gui.h</code></td><td>20 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: defines x20, references x2, method x2, calls x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: defines x17, references x2, method x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 13. gui.cpp ====== -->
-<h2 id="gui-cpp">13. gui.cpp</h2>
-<p>gui.cpp groups implementation around guih, guicpp, drawwrappedtext, macropadguimacropadgui, mostly in src/gui.h, src/gui.cpp. This section covers 21 nodes and 27 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: gui.cpp (21 nodes, 27 edges)
-    subgraph gui_cpp_src_gui_h_6bd5f851["src/gui.h"]
-        src_gui_macropadgui_redrawvoicecard_0ed21610("redrawVoiceCard<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_clearconversation_172e13bc("clearConversation<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_scrollvoicechat_164d0276("scrollVoiceChat<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_rendervoicechatviewport_1b802434("renderVoiceChatViewport<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_canscrollup_034a72fb("canScrollUp<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_canscrolldown_966e68b5("canScrollDown<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawdashboardswitching_bf06cbca("drawDashboardSwitching<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawpowerconfirmdialog_908a7805("drawPowerConfirmDialog<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawsleepsplash_e07bfcee("drawSleepSplash<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_getpowerdialogtarget_468708cd("getPowerDialogTarget<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_init_d123d84e("init<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_scrolltobottom_bd221b1d("scrollToBottom<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_scrolltotop_947ae621("scrollToTop<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_setvoiceaudioenabled_b43fc294("setVoiceAudioEnabled<br/><small>src/gui.h</small>")
-    end
-    subgraph gui_cpp_src_gui_cpp_4f5b42dd["src/gui.cpp"]
-        src_gui_drawwrappedtext_94ada9de("drawWrappedText()<br/><small>src/gui.cpp</small>")
-        src_gui_macropadgui_macropadgui_61457887("MacroPadGUI::MacroPadGUI()<br/><small>src/gui.cpp</small>")
-        src_gui_cpp_src_gui_6ce0e73a("gui.cpp")
-    end
-    src_gui_cpp_tft_espi_7f0197d4("TFT_eSPI")
-    src_gui_macropadgui_redrawvoicecard_0ed21610 -->|calls| src_gui_drawwrappedtext_94ada9de
-    src_gui_macropadgui_clearconversation_172e13bc -->|calls| src_gui_macropadgui_redrawvoicecard_0ed21610
-    src_gui_macropadgui_scrollvoicechat_164d0276 -->|calls| src_gui_macropadgui_rendervoicechatviewport_1b802434
-    src_gui_macropadgui_rendervoicechatviewport_1b802434 -->|calls| src_gui_macropadgui_canscrollup_034a72fb
-    src_gui_macropadgui_rendervoicechatviewport_1b802434 -->|calls| src_gui_macropadgui_canscrolldown_966e68b5
-    src_gui_macropadgui_redrawvoicecard_0ed21610 -->|calls| src_gui_macropadgui_rendervoicechatviewport_1b802434
-    %% Omitted for readability: 3 nodes, 0 edges
-    class src_gui_macropadgui_redrawvoicecard_0ed21610 function;
-    class src_gui_macropadgui_clearconversation_172e13bc function;
-    class src_gui_macropadgui_scrollvoicechat_164d0276 function;
-    class src_gui_macropadgui_rendervoicechatviewport_1b802434 function;
-    class src_gui_macropadgui_canscrollup_034a72fb function;
-    class src_gui_macropadgui_canscrolldown_966e68b5 function;
-    class src_gui_macropadgui_drawdashboardswitching_bf06cbca function;
-    class src_gui_macropadgui_drawpowerconfirmdialog_908a7805 function;
-    class src_gui_macropadgui_drawsleepsplash_e07bfcee function;
-    class src_gui_macropadgui_getpowerdialogtarget_468708cd function;
-    class src_gui_macropadgui_init_d123d84e function;
-    class src_gui_macropadgui_scrolltobottom_bd221b1d function;
-    class src_gui_macropadgui_scrolltotop_947ae621 function;
-    class src_gui_macropadgui_setvoiceaudioenabled_b43fc294 function;
-    class src_gui_drawwrappedtext_94ada9de function;
-    class src_gui_macropadgui_macropadgui_61457887 function;
-    class src_gui_cpp_src_gui_6ce0e73a function;
-    class src_gui_cpp_tft_espi_7f0197d4 klass;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>drawWrappedText()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>drawWrappedText() node in src/gui.cpp.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>MacroPadGUI::MacroPadGUI()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>MacroPadGUI::MacroPadGUI() node in src/gui.cpp.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>init</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>init node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>clearConversation</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>clearConversation node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>setVoiceAudioEnabled</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>setVoiceAudioEnabled node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>scrollToBottom</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>scrollToBottom node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>scrollToTop</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>scrollToTop node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>canScrollUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>canScrollUp node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>canScrollDown</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>canScrollDown node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>voiceChatScrollable</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>scrollVoiceChat</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>scrollVoiceChat</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>canScrollDown</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>canScrollUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>clearConversation</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>drawWrappedText()</code><br><small style="color:var(--muted)">src/gui.cpp</small><br><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>redrawVoiceCard node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>drawDashboardSwitching</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>drawDashboardSwitching node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>drawPowerConfirmDialog</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>drawPowerConfirmDialog node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>getPowerDialogTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>getPowerDialogTarget node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>drawSleepSplash</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>drawSleepSplash node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>sleepDisplay</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>sleepDisplay node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>wakeDisplay</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>wakeDisplay node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>gui.cpp</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
-  <td>gui.cpp node in src/gui.cpp.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>TFT_eSPI</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>TFT_eSPI node in project.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/gui.h</code></td><td>17 nodes</td></tr>
-<tr><td><code>src/gui.cpp</code></td><td>3 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x19, calls x6, references x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 14. HostDiscovery ====== -->
-<h2 id="hostdiscovery">14. HostDiscovery</h2>
+<!-- ====== 13. HostDiscovery ====== -->
+<h2 id="hostdiscovery">13. HostDiscovery</h2>
 <p>HostDiscovery groups implementation around host, discoveryh, discoverycpp, hostdiscovery, mostly in src/host_discovery.h, src/host_discovery.cpp. This section covers 20 nodes and 39 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -4419,6 +4132,257 @@ flowchart LR
 </div>
 <hr>
 
+<!-- ====== 14. gui.cpp ====== -->
+<h2 id="gui-cpp">14. gui.cpp</h2>
+<p>gui.cpp groups implementation around guih, guicpp, gettouchtarget, highlightstoragerow, mostly in src/gui.h, src/gui.cpp. This section covers 20 nodes and 24 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: gui.cpp (20 nodes, 24 edges)
+    subgraph gui_cpp_src_gui_h_6bd5f851["src/gui.h"]
+        src_gui_macropadgui_rendervoicechatviewport_1b802434("renderVoiceChatViewport<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawbutton_f732c89d("drawButton<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_gettouchtarget_f1b368b6("getTouchTarget<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_scrollvoicechat_164d0276("scrollVoiceChat<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_getbuttonrect_97fa57c7("getButtonRect<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_canscrollup_034a72fb("canScrollUp<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_canscrolldown_966e68b5("canScrollDown<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawdashboardswitching_bf06cbca("drawDashboardSwitching<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawpowerconfirmdialog_908a7805("drawPowerConfirmDialog<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawsleepsplash_e07bfcee("drawSleepSplash<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_getpowerdialogtarget_468708cd("getPowerDialogTarget<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_highlightstoragerow_53eccbf0("highlightStorageRow<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_init_d123d84e("init<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_scrolltobottom_bd221b1d("scrollToBottom<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_scrolltotop_947ae621("scrollToTop<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_setvoiceaudioenabled_b43fc294("setVoiceAudioEnabled<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_sleepdisplay_cb6f0d99("sleepDisplay<br/><small>src/gui.h</small>")
+    end
+    src_gui_cpp_src_gui_6ce0e73a("gui.cpp")
+    src_gui_macropadgui_gettouchtarget_f1b368b6 -->|calls| src_gui_macropadgui_getbuttonrect_97fa57c7
+    src_gui_macropadgui_drawbutton_f732c89d -->|calls| src_gui_macropadgui_getbuttonrect_97fa57c7
+    src_gui_macropadgui_scrollvoicechat_164d0276 -->|calls| src_gui_macropadgui_rendervoicechatviewport_1b802434
+    src_gui_macropadgui_rendervoicechatviewport_1b802434 -->|calls| src_gui_macropadgui_canscrollup_034a72fb
+    src_gui_macropadgui_rendervoicechatviewport_1b802434 -->|calls| src_gui_macropadgui_canscrolldown_966e68b5
+    %% Omitted for readability: 2 nodes, 0 edges
+    class src_gui_macropadgui_rendervoicechatviewport_1b802434 function;
+    class src_gui_macropadgui_drawbutton_f732c89d function;
+    class src_gui_macropadgui_gettouchtarget_f1b368b6 function;
+    class src_gui_macropadgui_scrollvoicechat_164d0276 function;
+    class src_gui_macropadgui_getbuttonrect_97fa57c7 function;
+    class src_gui_macropadgui_canscrollup_034a72fb function;
+    class src_gui_macropadgui_canscrolldown_966e68b5 function;
+    class src_gui_macropadgui_drawdashboardswitching_bf06cbca function;
+    class src_gui_macropadgui_drawpowerconfirmdialog_908a7805 function;
+    class src_gui_macropadgui_drawsleepsplash_e07bfcee function;
+    class src_gui_macropadgui_getpowerdialogtarget_468708cd function;
+    class src_gui_macropadgui_highlightstoragerow_53eccbf0 function;
+    class src_gui_macropadgui_init_d123d84e function;
+    class src_gui_macropadgui_scrolltobottom_bd221b1d function;
+    class src_gui_macropadgui_scrolltotop_947ae621 function;
+    class src_gui_macropadgui_setvoiceaudioenabled_b43fc294 function;
+    class src_gui_macropadgui_sleepdisplay_cb6f0d99 function;
+    class src_gui_cpp_src_gui_6ce0e73a function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>getTouchTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>getTouchTarget node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>highlightStorageRow</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>drawButton node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>init</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>init node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>setVoiceAudioEnabled</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>setVoiceAudioEnabled node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>scrollToBottom</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>scrollToBottom node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>scrollToTop</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>scrollToTop node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>canScrollUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>canScrollUp node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>getButtonRect</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>drawButton</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>getTouchTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>getButtonRect node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>canScrollDown</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>No direct outbound edge</td>
+  <td>canScrollDown node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>voiceChatScrollable</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>scrollVoiceChat</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>scrollVoiceChat</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>canScrollDown</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>canScrollUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>drawDashboardSwitching</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>drawDashboardSwitching node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>drawPowerConfirmDialog</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>drawPowerConfirmDialog node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>getPowerDialogTarget</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>getPowerDialogTarget node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>drawSleepSplash</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>drawSleepSplash node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>sleepDisplay</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>sleepDisplay node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>wakeDisplay</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>wakeDisplay node in src/gui.h.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>gui.cpp</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>network_manager.h</code><br><small style="color:var(--muted)">src/network_manager.h</small></td>
+  <td>gui.cpp node in src/gui.cpp.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/gui.h</code></td><td>19 nodes</td></tr>
+<tr><td><code>src/gui.cpp</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x19, calls x5. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
 <!-- ====== 15. power_manager.cpp ====== -->
 <h2 id="power-manager-cpp">15. power_manager.cpp</h2>
 <p>power_manager.cpp groups implementation around power, managerh, managercpp, powermanager, mostly in src/power_manager.h, src/power_manager.cpp. This section covers 18 nodes and 33 internal edges; the diagram shows only representative relationships to stay readable.</p>
@@ -4664,37 +4628,41 @@ flowchart LR
 
 <!-- ====== 16. Other ====== -->
 <h2 id="other">16. Other</h2>
-<p>Other groups implementation around guih, es8311cpp, generate, casepy, mostly in src/gui.h, src/es8311.cpp, generate_case.py. This section covers 74 nodes and 66 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Other groups implementation around guih, es8311cpp, generate, casepy, mostly in src/gui.h, src/es8311.cpp, generate_case.py. This section covers 82 nodes and 76 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (74 nodes, 66 edges)
+    %% Section: Other (82 nodes, 76 edges)
     subgraph other_src_gui_h_373a92dc["src/gui.h"]
         src_gui_macropadgui_drawall_e8dc4428("drawAll<br/><small>src/gui.h</small>")
         src_gui_macropadgui_drawdashboard_878f9c4f("drawDashboard<br/><small>src/gui.h</small>")
         src_gui_h_src_gui_a56c68cc("gui.h")
-        src_gui_macropadgui_addvoiceturn_f13a64b6("addVoiceTurn<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawstatusbar_c81376cb("drawStatusBar<br/><small>src/gui.h</small>")
         src_gui_macropadgui_drawvoicecard_6821a110("drawVoiceCard<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawstorageexplorer_e06ccec3("drawStorageExplorer<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_addvoiceturn_f13a64b6("addVoiceTurn<br/><small>src/gui.h</small>")
         src_gui_macropadgui_rebuildchatlines_6bc3773b("rebuildChatLines<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_redrawvoicecard_0ed21610("redrawVoiceCard<br/><small>src/gui.h</small>")
         src_gui_macropadgui_drawdashboardpowerbutton_dcb38111("drawDashboardPowerButton<br/><small>src/gui.h</small>")
         src_gui_macropadgui_drawstatusrow_ad3e4a08("drawStatusRow<br/><small>src/gui.h</small>")
         src_gui_macropadgui_updatestatusbarbattery_79e01c4f("updateStatusBarBattery<br/><small>src/gui.h</small>")
         src_gui_macropadgui_drawdashboardvolume_30c899c0("drawDashboardVolume<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawstorageexplorer_e06ccec3("drawStorageExplorer<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawvoiceaudiotoggle_e637cdcb("drawVoiceAudioToggle<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_refreshstorageexplorer_9f6f9bbd("refreshStorageExplorer<br/><small>src/gui.h</small>")
-        src_gui_macropadgui_drawstoragelistonly_3a093351("drawStorageListOnly<br/><small>src/gui.h</small>")
+        src_gui_macropadgui_drawstatusbar_c81376cb("drawStatusBar<br/><small>src/gui.h</small>")
     end
     subgraph other_External_generated_9e8859fa["External / generated"]
         src_gui_h_tft_espi_a5e0095d("TFT_eSPI")
         src_gui_h_vector_ccb54c95("vector")
     end
-    src_gui_wraptexttochatlines_c755b01b("wrapTextToChatLines()<br/><small>src/gui.cpp</small>")
+    subgraph other_src_gui_cpp_b4c82ed2["src/gui.cpp"]
+        src_gui_wraptexttochatlines_c755b01b("wrapTextToChatLines()<br/><small>src/gui.cpp</small>")
+        src_gui_drawwrappedtext_94ada9de("drawWrappedText()<br/><small>src/gui.cpp</small>")
+    end
+    src_system_status_a10ae04d("system_status.h")
     src_gui_macropadgui_rebuildchatlines_6bc3773b -->|calls| src_gui_wraptexttochatlines_c755b01b
+    src_gui_macropadgui_redrawvoicecard_0ed21610 -->|calls| src_gui_drawwrappedtext_94ada9de
     src_gui_h_src_gui_a56c68cc -->|imports| src_gui_h_tft_espi_a5e0095d
     src_gui_h_src_gui_a56c68cc -->|imports| src_gui_h_vector_ccb54c95
+    src_gui_h_src_gui_a56c68cc -->|imports| src_system_status_a10ae04d
     src_gui_macropadgui_drawdashboard_878f9c4f -->|calls| src_gui_macropadgui_drawdashboardpowerbutton_dcb38111
     src_gui_macropadgui_drawdashboard_878f9c4f -->|calls| src_gui_macropadgui_drawstatusrow_ad3e4a08
     src_gui_macropadgui_drawdashboard_878f9c4f -->|calls| src_gui_macropadgui_updatestatusbarbattery_79e01c4f
@@ -4703,31 +4671,30 @@ flowchart LR
     src_gui_macropadgui_drawstatusbar_c81376cb -->|calls| src_gui_macropadgui_drawdashboardpowerbutton_dcb38111
     src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawdashboard_878f9c4f
     src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawstorageexplorer_e06ccec3
-    src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawvoiceaudiotoggle_e637cdcb
+    src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_redrawvoicecard_0ed21610
     src_gui_macropadgui_drawall_e8dc4428 -->|calls| src_gui_macropadgui_drawstatusbar_c81376cb
-    src_gui_macropadgui_drawstorageexplorer_e06ccec3 -->|calls| src_gui_macropadgui_refreshstorageexplorer_9f6f9bbd
-    src_gui_macropadgui_drawstorageexplorer_e06ccec3 -->|calls| src_gui_macropadgui_drawstoragelistonly_3a093351
     src_gui_macropadgui_addvoiceturn_f13a64b6 -->|calls| src_gui_macropadgui_rebuildchatlines_6bc3773b
     src_gui_macropadgui_drawvoicecard_6821a110 -->|calls| src_gui_macropadgui_addvoiceturn_f13a64b6
-    %% Omitted for readability: 56 nodes, 0 edges
+    src_gui_macropadgui_drawvoicecard_6821a110 -->|calls| src_gui_macropadgui_redrawvoicecard_0ed21610
+    %% Omitted for readability: 64 nodes, 0 edges
     class src_gui_macropadgui_drawall_e8dc4428 function;
     class src_gui_macropadgui_drawdashboard_878f9c4f function;
     class src_gui_h_src_gui_a56c68cc function;
-    class src_gui_macropadgui_addvoiceturn_f13a64b6 function;
-    class src_gui_macropadgui_drawstatusbar_c81376cb function;
     class src_gui_macropadgui_drawvoicecard_6821a110 function;
+    class src_gui_macropadgui_drawstorageexplorer_e06ccec3 function;
+    class src_gui_macropadgui_addvoiceturn_f13a64b6 function;
     class src_gui_macropadgui_rebuildchatlines_6bc3773b function;
+    class src_gui_macropadgui_redrawvoicecard_0ed21610 function;
     class src_gui_macropadgui_drawdashboardpowerbutton_dcb38111 function;
     class src_gui_macropadgui_drawstatusrow_ad3e4a08 function;
     class src_gui_macropadgui_updatestatusbarbattery_79e01c4f function;
     class src_gui_macropadgui_drawdashboardvolume_30c899c0 function;
-    class src_gui_macropadgui_drawstorageexplorer_e06ccec3 function;
-    class src_gui_macropadgui_drawvoiceaudiotoggle_e637cdcb function;
-    class src_gui_macropadgui_refreshstorageexplorer_9f6f9bbd function;
-    class src_gui_macropadgui_drawstoragelistonly_3a093351 function;
+    class src_gui_macropadgui_drawstatusbar_c81376cb function;
     class src_gui_h_tft_espi_a5e0095d klass;
     class src_gui_h_vector_ccb54c95 function;
     class src_gui_wraptexttochatlines_c755b01b function;
+    class src_gui_drawwrappedtext_94ada9de function;
+    class src_system_status_a10ae04d function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -4751,174 +4718,94 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>_coeff_div</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><code>drawWrappedText()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td>No direct outbound edge</td>
-  <td>_coeff_div node in src/es8311.cpp.</td>
+  <td>drawWrappedText() node in src/gui.cpp.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>adc_div</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><code>MacroPadGUI::MacroPadGUI()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>adc_div node in src/es8311.cpp.</td>
+  <td>MacroPadGUI::MacroPadGUI() node in src/gui.cpp.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>adc_osr</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><code>wrapTextToChatLines()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>rebuildChatLines</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td>No direct outbound edge</td>
-  <td>adc_osr node in src/es8311.cpp.</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>bclk_div</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><code>navigateStorageTo</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>bclk_div node in src/es8311.cpp.</td>
+  <td><code>navigateStorageUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>drawStorageExplorer</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>sdCardListDirectory()</code><br><small style="color:var(--muted)">src/sd_card.cpp</small></td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>dac_div</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><code>navigateStorageUp</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>dac_div node in src/es8311.cpp.</td>
+  <td><code>navigateStorageTo</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>dac_osr</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><code>clearConversation</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>dac_osr node in src/es8311.cpp.</td>
+  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>clearConversation node in src/gui.h.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>fs_mode</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>fs_mode node in src/es8311.cpp.</td>
+  <td><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>rebuildChatLines</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>scrollToLatestResponse</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>addVoiceTurn node in src/gui.h.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>lrck_h</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><code>rebuildChatLines</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>lrck_h node in src/es8311.cpp.</td>
+  <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>wrapTextToChatLines()</code><br><small style="color:var(--muted)">src/gui.cpp</small></td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>lrck_l</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><code>scrollToLatestResponse</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td>No direct outbound edge</td>
-  <td>lrck_l node in src/es8311.cpp.</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>mclk</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>mclk node in src/es8311.cpp.</td>
+  <td><code>addVoiceTurn</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>drawVoiceCard node in src/gui.h.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>pre_div</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><code>redrawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>pre_div node in src/es8311.cpp.</td>
+  <td><code>clearConversation</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawVoiceCard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>drawWrappedText()</code><br><small style="color:var(--muted)">src/gui.cpp</small><br><code>renderVoiceChatViewport</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>redrawVoiceCard node in src/gui.h.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>pre_multi</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>pre_multi node in src/es8311.cpp.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>rate</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>rate node in src/es8311.cpp.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>ChatLine</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>ChatMessage</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>.getCurrentStoragePath()</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>MacroPadGUI</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>color</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>color node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>text</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>text node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>isUser</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>isUser node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>text</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>text node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>gui.cpp</code><br><small style="color:var(--muted)">src/gui.cpp</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small><br><code>power_manager.cpp</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
-  <td><code>environment_manager.h</code><br><small style="color:var(--muted)">src/environment_manager.h</small><br><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small><br><code>sd_card.h</code><br><small style="color:var(--muted)">src/sd_card.h</small><br>+3 more</td>
-  <td>gui.h node in src/gui.h.</td>
-</tr>
-<tr>
-  <td>22</td>
   <td><code>String</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -4926,68 +4813,148 @@ flowchart LR
   <td>String node in project.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>13</td>
   <td><code>TFT_eSPI</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>main.cpp</code><br><small style="color:var(--muted)">src/main.cpp</small></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>TFT_eSPI node in project.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>14</td>
   <td><code>vector</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>vector node in project.</td>
 </tr>
 <tr>
-  <td>25</td>
-  <td><code>updateStatusBarBattery</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawStatusBar</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>15</td>
+  <td><code>VoiceUIState</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>VoiceUIState node in project.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>_coeff_div</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_coeff_div node in src/es8311.cpp.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>adc_div</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>adc_div node in src/es8311.cpp.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>adc_osr</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>adc_osr node in src/es8311.cpp.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>bclk_div</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>bclk_div node in src/es8311.cpp.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>dac_div</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>dac_div node in src/es8311.cpp.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>dac_osr</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>dac_osr node in src/es8311.cpp.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>fs_mode</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>fs_mode node in src/es8311.cpp.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>lrck_h</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>lrck_h node in src/es8311.cpp.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>lrck_l</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>lrck_l node in src/es8311.cpp.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>mclk</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>mclk node in src/es8311.cpp.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>drawVoiceAudioToggle</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>pre_div</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>drawVoiceAudioToggle node in src/gui.h.</td>
+  <td>pre_div node in src/es8311.cpp.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>drawStatusRow</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>pre_multi</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>drawStatusRow node in src/gui.h.</td>
+  <td>pre_multi node in src/es8311.cpp.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>drawDashboardVolume</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><code>rate</code><br><small style="color:var(--muted)">src/es8311.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>drawDashboardVolume node in src/gui.h.</td>
+  <td>rate node in src/es8311.cpp.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>drawDashboard</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>drawDashboardPowerButton</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawDashboardVolume</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>drawStatusRow</code><br><small style="color:var(--muted)">src/gui.h</small><br>+1 more</td>
-  <td>drawDashboard node in src/gui.h.</td>
+  <td><code>ChatLine</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>drawStatusBar</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>drawAll</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td><code>drawDashboardPowerButton</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>updateStatusBarBattery</code><br><small style="color:var(--muted)">src/gui.h</small></td>
-  <td>drawStatusBar node in src/gui.h.</td>
+  <td><code>ChatMessage</code><br><small style="color:var(--muted)">src/gui.h</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 </table>
 
@@ -4996,19 +4963,19 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>src/gui.h</code></td><td>26 nodes</td></tr>
+      <tr><td><code>src/gui.h</code></td><td>28 nodes</td></tr>
 <tr><td><code>src/es8311.cpp</code></td><td>13 nodes</td></tr>
 <tr><td><code>generate_case.py</code></td><td>8 nodes</td></tr>
 <tr><td><code>flash.py</code></td><td>3 nodes</td></tr>
+<tr><td><code>src/gui.cpp</code></td><td>3 nodes</td></tr>
 <tr><td><code>.agents/rules/graphify.md</code></td><td>2 nodes</td></tr>
 <tr><td><code>.agents/workflows/graphify.md</code></td><td>2 nodes</td></tr>
 <tr><td><code>blender_client.py</code></td><td>2 nodes</td></tr>
-<tr><td><code>graphify-out/converted/pinout_allocation_f58fa43e.md</code></td><td>2 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x19, defines x16, contains x15, references x13. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x25, defines x16, references x16, contains x15. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -5019,8 +4986,8 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>643</td></tr>
-      <tr><td>Edges</td><td>1133</td></tr>
+      <tr><td>Nodes</td><td>644</td></tr>
+      <tr><td>Edges</td><td>1135</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
       <tr><td>Communities</td><td>41</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
@@ -5029,7 +4996,7 @@ flowchart LR
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>1045</td></tr>
+      <tr><td>EXTRACTED</td><td>1047</td></tr>
       <tr><td>INFERRED</td><td>88</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
@@ -5038,7 +5005,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>ESP32 project — Architecture Documentation</p>
-  <p>Generated: 2026-09-21 00:11 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-09-21 01:51 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

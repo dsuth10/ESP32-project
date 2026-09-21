@@ -509,10 +509,10 @@ void loop() {
       return;
     }
 
-    int8_t target = gui.getTouchTarget(tx, ty, currentPage);
+    int16_t target = gui.getTouchTarget(tx, ty, currentPage);
 
     if (s_powerConfirmOpen) {
-      int8_t pwrTarget = gui.getPowerDialogTarget(tx, ty);
+      int16_t pwrTarget = gui.getPowerDialogTarget(tx, ty);
       if (pwrTarget == TOUCH_POWER_CANCEL) {
         Serial.println("[Power] Cancelled");
         s_powerConfirmOpen = false;
@@ -723,6 +723,7 @@ void loop() {
     }
     else if (target == TOUCH_STORAGE_UP) {
       Serial.println("[Storage] User tapped UP directory");
+      recorder.playTone(520.0f, 40);
       gui.navigateStorageUp();
       uint32_t waitRelease = millis();
       while (millis() - waitRelease < 500) {
@@ -733,6 +734,7 @@ void loop() {
     }
     else if (target == TOUCH_STORAGE_REFRESH) {
       Serial.println("[Storage] User tapped REFRESH");
+      recorder.playTone(440.0f, 40);
       gui.refreshStorageExplorer();
       uint32_t waitRelease = millis();
       while (millis() - waitRelease < 500) {
@@ -743,10 +745,12 @@ void loop() {
     }
     else if (target == TOUCH_STORAGE_SCROLL_UP) {
       gui.scrollStorageList(-1);
+      recorder.playTone(700.0f, 25);
       delay(100);
     }
     else if (target == TOUCH_STORAGE_SCROLL_DOWN) {
       gui.scrollStorageList(+1);
+      recorder.playTone(700.0f, 25);
       delay(100);
     }
     else if (target >= TOUCH_STORAGE_ITEM_BASE && target < TOUCH_STORAGE_ITEM_BASE + 5) {
@@ -755,7 +759,9 @@ void loop() {
       const auto& entries = gui.getStorageEntries();
       if (itemIdx >= 0 && itemIdx < (int)entries.size()) {
         const auto& item = entries[itemIdx];
+        gui.highlightStorageRow(row, item.isDirectory);
         if (item.isDirectory) {
+          recorder.playTone(660.0f, 40);
           String newPath = gui.getCurrentStoragePath();
           if (!newPath.endsWith("/")) newPath += "/";
           newPath += item.name;
