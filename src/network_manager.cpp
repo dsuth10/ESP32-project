@@ -155,9 +155,14 @@ void NetworkManager::startConnection() {
         return;
     }
 
-    Serial.printf("[WiFi] Connecting strictly to '%s' ...\n", _targetSSID.c_str());
-    WiFi.disconnect(false, true); // Erase cached AP credentials from NVS to purge stale transition mode parameters
+    Serial.printf("[WiFi] Connecting strictly to '%s' (pwd len=%d) ...\n", 
+                  _targetSSID.c_str(), (int)_targetPassword.length());
+    WiFi.disconnect(true, true); // Clean disconnect and erase cached AP credentials
     delay(100);
+    WiFi.mode(WIFI_STA);
+    delay(50);
+    WiFi.setSleep(WIFI_PS_MIN_MODEM);
+    WiFi.setAutoReconnect(true);
     WiFi.begin(_targetSSID.c_str(), _targetPassword.c_str());
     _lastReconnectAttempt = millis();
     _wasConnected = false;
@@ -191,13 +196,17 @@ void NetworkManager::update() {
 
     if (!connected) {
         uint32_t now = millis();
-        // Give association, 4-way handshake, and Telstra band-steering 25 seconds before retrying
+        // Give association, 4-way handshake, and band-steering 25 seconds before retrying
         if (now - _lastReconnectAttempt > 25000) {
             _lastReconnectAttempt = now;
             Serial.printf("[WiFi] Retrying connection to '%s' (status=%d)...\n", 
                           _targetSSID.c_str(), (int)WiFi.status());
-            WiFi.disconnect(false, true); // Clear stale AP cache
+            WiFi.disconnect(true, true);
             delay(100);
+            WiFi.mode(WIFI_STA);
+            delay(50);
+            WiFi.setSleep(WIFI_PS_MIN_MODEM);
+            WiFi.setAutoReconnect(true);
             WiFi.begin(_targetSSID.c_str(), _targetPassword.c_str());
         }
     }
