@@ -48,6 +48,45 @@ with urllib.request.urlopen(req) as resp:
 "
 ```
 
+## Hybrid Fast Lane
+Chat questions go to Groq (or local Ollama). Tool, live-data, and device-action requests go to the Hermes agent.
+
+Set these in `%LOCALAPPDATA%\hermes\.env` or `server/.env` (already git-ignored):
+
+```
+FAST_LLM_PROVIDER=groq
+FAST_LLM_MODEL=qwen/qwen3.8-27b
+GROQ_API_KEY=gsk_...
+HERMES_VOICE_PROVIDER=custom:groq-voice
+HERMES_VOICE_MODEL=openai/gpt-oss-20b
+HERMES_REASONING_EFFORT=low
+HERMES_AGENT_TIMEOUT_S=25
+STT_PROVIDER=local
+```
+
+Get a Groq key at https://console.groq.com/keys. Until `GROQ_API_KEY` is set, the fast lane falls back to the warm local Ollama model. `FAST_LLM_PROVIDER=off` restores the legacy order (work: Ollama then Hermes, home: Hermes then Ollama).
+
+Restart the receiver after changing these values. Hermes also needs a restart after `custom_providers` changes in `%LOCALAPPDATA%\hermes\config.yaml`.
+
+## LLM Path Benchmark
+Times every inference path (local Ollama, Ollama Cloud, Hermes session/OpenAI/CLI, Groq) and scores replies from `server/bench_prompts.json`.
+
+```powershell
+# List paths
+C:\Python312\python.exe server\bench_llm_paths.py --list
+
+# Full run (direct paths 3 rounds, Hermes paths 1 round)
+C:\Python312\python.exe server\bench_llm_paths.py
+
+# Also compare STT engines and POST spoken fixtures to the running receiver
+C:\Python312\python.exe server\bench_llm_paths.py --stt --e2e
+
+# Re-benchmark only the Hermes agent after pointing it at Groq
+C:\Python312\python.exe server\bench_llm_paths.py --only hermes-session,hermes-session-low,hermes-session+groq
+```
+
+Results land in `server/bench_results/` (git-ignored). Ranking uses warm p50 total time among paths with accuracy >= 0.8.
+
 ## Mobile Hotspot Connection Troubleshooting (Reason 15)
 If ESP32 fails to connect to phone hotspot with `Reason: 15` (`WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT`):
 1. Open Hotspot settings on phone (Samsung/Android/iOS).

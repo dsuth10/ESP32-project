@@ -1,11 +1,12 @@
 """
 Hermes Voice Satellite Receiver Service (Concurrent Health Authority Architecture)
 Listens for HTTP requests on port 8787 using ThreadingHTTPServer:
-- POST /voice  : Upload WAV audio, transcribe via faster-whisper, query Hermes Gateway (:8642)
-                 with transparent Ollama (:11434) fallback. Concurrency protected by voice_lock.
+- POST /voice  : Upload WAV audio, transcribe via faster-whisper, then answer through either the
+                 hybrid fast lane (FAST_LLM_PROVIDER=groq|ollama: chat -> fast LLM, tool/action
+                 requests -> Hermes agent) or the legacy Hermes/Ollama order. Protected by voice_lock.
 - GET  /health : Lightweight instant liveness probe for fast ping/keep-alive.
 - GET  /status : Composite health authority endpoint providing deep diagnostic state for Hermes,
-                 Ollama model residency, Whisper, and last voice telemetry.
+                 Ollama model residency, fast lane, Whisper, and last voice telemetry.
 """
 
 import os
@@ -16,8 +17,11 @@ import io
 import wave
 import math
 import re
+import uuid
 import pathlib
 import threading
+import http.client
+import urllib.error
 import urllib.request
 import urllib.parse
 import tempfile
@@ -75,6 +79,8 @@ hermes_env_candidates = [
     os.path.join(os.path.dirname(__file__), ".env")
 ]
 
+_FILE_ENV: dict[str, str] = {}
+
 for env_path in hermes_env_candidates:
     if os.path.exists(env_path):
         try:
@@ -86,6 +92,7 @@ for env_path in hermes_env_candidates:
                     k, v = line.split("=", 1)
                     k = k.strip()
                     v = v.strip()
+                    _FILE_ENV.setdefault(k, v)
                     if k == "API_SERVER_KEY" and not API_SERVER_KEY:
                         API_SERVER_KEY = v
                     elif k == "VOICE_RECEIVER_TOKEN" and not VOICE_RECEIVER_TOKEN:
@@ -119,6 +126,31 @@ for env_path in hermes_env_candidates:
         except Exception as e:
             print(f"[Config] Note: Could not parse {env_path}: {e}")
 
+
+def _env(key: str, default: str = "") -> str:
+    """Process environment first, then the first .env file that defines the key."""
+    return os.environ.get(key) or _FILE_ENV.get(key) or default
+
+
+# Hybrid fast lane. 'off' keeps the legacy order (work: Ollama -> Hermes, home: Hermes -> Ollama),
+# so sending transcripts to a cloud provider is always an explicit opt-in.
+FAST_LLM_PROVIDER = _env("FAST_LLM_PROVIDER", "off").strip().lower()
+if FAST_LLM_PROVIDER not in ("groq", "ollama", "off"):
+    print(f"[Config] Unknown FAST_LLM_PROVIDER '{FAST_LLM_PROVIDER}', using 'off'")
+    FAST_LLM_PROVIDER = "off"
+GROQ_API_KEY = _env("GROQ_API_KEY")
+GROQ_BASE_URL = _env("GROQ_BASE_URL", "https://api.groq.com/openai/v1").rstrip("/")
+FAST_LLM_MODEL = _env("FAST_LLM_MODEL", "qwen/qwen3.8-27b")
+FAST_LLM_MAX_TOKENS = int(_env("FAST_LLM_MAX_TOKENS", "120"))
+FAST_LLM_TIMEOUT_S = float(_env("FAST_LLM_TIMEOUT_S", "8"))
+OLLAMA_NUM_PREDICT = int(_env("OLLAMA_NUM_PREDICT", str(FAST_LLM_MAX_TOKENS)))
+HERMES_AGENT_TIMEOUT_S = float(_env("HERMES_AGENT_TIMEOUT_S", "25"))
+HERMES_REASONING_EFFORT = _env("HERMES_REASONING_EFFORT", "low").strip().lower()
+HERMES_VOICE_PROVIDER = _env("HERMES_VOICE_PROVIDER").strip()
+HERMES_VOICE_MODEL = _env("HERMES_VOICE_MODEL").strip()
+STT_PROVIDER = _env("STT_PROVIDER", "local").strip().lower()
+GROQ_STT_MODEL = _env("GROQ_STT_MODEL", "whisper-large-v3-turbo")
+
 # Phase 18 & 19: Enforce strict Work privacy hardening
 if RECEIVER_ENV.lower() == "work":
     DISABLE_TELEGRAM = True
@@ -128,7 +160,16 @@ print(f"[Config] Receiver Port  : {PORT} (host: {HOST})")
 print(f"[Config] Receiver Token : {'Enforced (Bearer auth enabled)' if VOICE_RECEIVER_TOKEN else 'None (Open access / unauthenticated)'}")
 print(f"[Config] Hermes Gateway : {GATEWAY_URL}")
 print(f"[Config] API Server Key : {'Configured (' + API_SERVER_KEY[:8] + '...)' if API_SERVER_KEY else 'MISSING (Set API_SERVER_KEY or ~/.hermes/.env)'}")
-print(f"[Config] Ollama Host    : {OLLAMA_HOST} (keep_alive: {OLLAMA_KEEP_ALIVE})")
+print(f"[Config] Ollama Host    : {OLLAMA_HOST} (keep_alive: {OLLAMA_KEEP_ALIVE}, num_predict: {OLLAMA_NUM_PREDICT})")
+if FAST_LLM_PROVIDER == "off":
+    print("[Config] Fast Lane      : Off (legacy backend order)")
+else:
+    fast_desc = f"groq/{FAST_LLM_MODEL}" + ("" if GROQ_API_KEY else " (GROQ_API_KEY MISSING -> Ollama)") \
+        if FAST_LLM_PROVIDER == "groq" else "local Ollama"
+    print(f"[Config] Fast Lane      : {fast_desc} | agent lane: Hermes (timeout {HERMES_AGENT_TIMEOUT_S:.0f}s, "
+          f"reasoning {HERMES_REASONING_EFFORT or 'default'}"
+          f"{', ' + HERMES_VOICE_PROVIDER + '/' + (HERMES_VOICE_MODEL or 'default') if HERMES_VOICE_PROVIDER else ''})")
+print(f"[Config] Speech-to-Text : {'Groq ' + GROQ_STT_MODEL + ' (local fallback)' if STT_PROVIDER == 'groq' else 'local faster-whisper base'}")
 tts_status_str = f"Enabled ({VOICEBOX_URL} | Engine: '{VOICEBOX_ENGINE or 'default'}' | Profile: '{VOICEBOX_PROFILE_NAME}')" if ENABLE_TTS else "Disabled"
 print(f"[Config] Local TTS      : {tts_status_str}")
 print(f"[Config] Telegram Mirror: {'Disabled (Work Mode / Privacy Hardened)' if RECEIVER_ENV.lower() == 'work' else ('Disabled' if DISABLE_TELEGRAM else ('Configured' if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID else 'Not configured'))}")
@@ -145,12 +186,17 @@ ESP32_SYSTEM_PROMPT = (
 voice_lock = threading.Lock()
 
 _last_tts_wav = None
+_pending_tts_text = None
 _tts_lock = threading.Lock()
+_tts_ready = threading.Event()
+_tts_ready.set()
 
 last_voice_record = {
     "transcript": "",
     "reply": "",
     "backend": "none",
+    "route": "none",
+    "stt": "none",
     "success": False,
     "timestamp": 0.0,
     "timing": {}
@@ -182,7 +228,10 @@ def check_voicebox_online(force_probe: bool = False) -> bool:
     if not ENABLE_TTS or not VOICEBOX_URL:
         return False
     now = time.time()
-    if not force_probe and (now - _voicebox_online_time < 3.0):
+    # Negative cache is long: Voicebox is usually off, and a 0.5s probe on every
+    # turn would sit in front of the SAPI fallback. Positive cache stays short.
+    ttl = 3.0 if _voicebox_online_cache else 60.0
+    if not force_probe and (now - _voicebox_online_time < ttl):
         return _voicebox_online_cache
     try:
         req = urllib.request.Request(f"{VOICEBOX_URL}/health", headers={"User-Agent": "HermesReceiver/1.0"})
@@ -413,6 +462,34 @@ def synthesize_speech(text: str) -> tuple[bytes, str]:
     return (b"", "none")
 
 
+def queue_lazy_tts(text: str):
+    """Start TTS in the background so the JSON reply can leave before audio is ready."""
+    global _pending_tts_text, _last_tts_wav
+    with _tts_lock:
+        _pending_tts_text = text
+        _last_tts_wav = None
+        _tts_ready.clear()
+
+    def _run():
+        global _pending_tts_text, _last_tts_wav
+        wav, provider = synthesize_speech(text)
+        with _tts_lock:
+            _last_tts_wav = wav if wav else None
+            _pending_tts_text = None
+        print(f"[TTS] Lazy generation via {provider}: {len(wav) if wav else 0} bytes")
+        _tts_ready.set()
+
+    threading.Thread(target=_run, daemon=True, name="lazy-tts").start()
+
+
+def wait_for_tts_wav(timeout: float = 20.0) -> bytes:
+    if not _tts_ready.wait(timeout):
+        print("[TTS] Lazy generation timed out")
+        return b""
+    with _tts_lock:
+        return _last_tts_wav or b""
+
+
 # ── 4. Whisper Model Loading (beam_size=1, VAD filtered, int8) ────────
 whisper_model = None
 
@@ -523,7 +600,31 @@ def load_voice_session() -> str:
 
 HERMES_TIMEOUT = int(os.environ.get("HERMES_TIMEOUT_S", "4" if RECEIVER_ENV == "work" else "25"))
 
-def ask_hermes_gateway(prompt: str) -> tuple[str, bool]:
+_voice_session_id = ""
+_voice_session_lock = threading.Lock()
+
+
+def get_voice_session_id(refresh: bool = False) -> str:
+    """Cached durable session ID, so each voice turn skips the session lookup round trip."""
+    global _voice_session_id
+    with _voice_session_lock:
+        if refresh or not _voice_session_id:
+            _voice_session_id = load_voice_session()
+        return _voice_session_id
+
+
+def _hermes_voice_overrides() -> dict:
+    overrides = {}
+    if HERMES_REASONING_EFFORT and HERMES_REASONING_EFFORT != "default":
+        overrides["model_options"] = {"reasoning_effort": HERMES_REASONING_EFFORT}
+    if HERMES_VOICE_PROVIDER:
+        overrides["provider"] = HERMES_VOICE_PROVIDER
+        if HERMES_VOICE_MODEL:
+            overrides["model"] = HERMES_VOICE_MODEL
+    return overrides
+
+
+def ask_hermes_gateway(prompt: str, timeout: float | None = None) -> tuple[str, bool]:
     """Dispatches prompt to persistent Hermes Gateway via HTTP."""
     if not API_SERVER_KEY:
         return ("Error: API_SERVER_KEY not configured on host.", False)
@@ -535,43 +636,283 @@ def ask_hermes_gateway(prompt: str) -> tuple[str, bool]:
 
     payload = json.dumps({
         "input": prompt,
-        "instructions": ESP32_SYSTEM_PROMPT
+        "instructions": ESP32_SYSTEM_PROMPT,
+        **_hermes_voice_overrides()
     }).encode("utf-8")
 
+    for attempt in range(2):
+        try:
+            session_id = get_voice_session_id(refresh=attempt > 0)
+        except Exception as e:
+            return (f"Hermes session setup failed: {e}", False)
+        url = f"{HERMES_SESSIONS_BASE}/{session_id}/chat"
+        req = urllib.request.Request(url, data=payload, headers=headers)
+        try:
+            with urllib.request.urlopen(req, timeout=timeout or HERMES_TIMEOUT) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                reply = (data.get("message") or {}).get("content", "").strip()
+                # Detect provider billing/credit exhaustion errors returned by the agent
+                lower_reply = reply.lower()
+                if any(err_phrase in lower_reply for err_phrase in [
+                    "billing or credits exhausted", "credits exhausted",
+                    "requires a subscription or usage credits",
+                    "rate limit exceeded", "account entitlement is exhausted",
+                    "no available provider", "payment / credit error"
+                ]):
+                    print(f"[Hermes] Gateway reported provider credit/billing error: {reply[:100]}...")
+                    return (reply, False)
+                return (reply or "Command acknowledged.", True)
+        except urllib.error.HTTPError as e:
+            if e.code == 404 and attempt == 0:
+                print("[Session] cached voice session vanished; re-resolving")
+                continue
+            err_body = e.read().decode("utf-8", errors="ignore")
+            return (f"Hermes Gateway HTTP {e.code}: {err_body[:100]}", False)
+        except (urllib.error.URLError, TimeoutError, Exception) as e:
+            return (f"Hermes Gateway error: {str(e)}", False)
+    return ("Hermes Gateway error: voice session unavailable", False)
+
+
+# ── 6c. Hybrid Fast Lane (Groq direct) + Intent Router ─────────────────
+# Shared by the Groq fast lane, the local Ollama path and agent replies, so a
+# fallback mid-conversation still sees the previous turns.
+_chat_history: list[tuple[str, str]] = []
+_chat_history_lock = threading.Lock()
+CHAT_HISTORY_TURNS = 4
+
+
+def remember_turn(prompt: str, reply: str):
+    global _chat_history
+    with _chat_history_lock:
+        _chat_history.append((prompt, reply))
+        _chat_history = _chat_history[-10:]
+
+
+def history_messages(system_prompt: str, prompt: str) -> list[dict]:
+    messages = [{"role": "system", "content": system_prompt}]
+    with _chat_history_lock:
+        for user, assistant in _chat_history[-CHAT_HISTORY_TURNS:]:
+            messages.append({"role": "user", "content": user})
+            messages.append({"role": "assistant", "content": assistant})
+    messages.append({"role": "user", "content": prompt})
+    return messages
+
+
+# Groq reasoning models must have thinking disabled/hidden or it consumes the token budget.
+GROQ_MODEL_EXTRAS = {
+    "openai/gpt-oss-20b": {"reasoning_effort": "low", "include_reasoning": False},
+    "openai/gpt-oss-120b": {"reasoning_effort": "low", "include_reasoning": False},
+    "qwen/qwen3-32b": {"reasoning_effort": "none", "reasoning_format": "hidden"},
+}
+
+_groq_url = urllib.parse.urlsplit(GROQ_BASE_URL)
+_groq_conn: http.client.HTTPSConnection | None = None
+_groq_conn_lock = threading.Lock()
+fast_llm_state = {"ready": False, "error": None, "last_ms": None}
+
+
+def _groq_request(method: str, endpoint: str, body: bytes | None, headers: dict, timeout: float) -> tuple[int, bytes]:
+    """One request over a persistent TLS connection (reconnects once if Groq dropped it while idle)."""
+    global _groq_conn
+    path = _groq_url.path.rstrip("/") + endpoint
+    with _groq_conn_lock:
+        for attempt in range(2):
+            if _groq_conn is None:
+                _groq_conn = http.client.HTTPSConnection(_groq_url.hostname, _groq_url.port, timeout=timeout)
+            _groq_conn.timeout = timeout
+            if _groq_conn.sock is not None:
+                _groq_conn.sock.settimeout(timeout)
+            try:
+                _groq_conn.request(method, path, body=body, headers=headers)
+                resp = _groq_conn.getresponse()
+                return resp.status, resp.read()
+            except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError, http.client.CannotSendRequest):
+                _groq_conn.close()
+                _groq_conn = None
+                if attempt:
+                    raise
+            except Exception:
+                _groq_conn.close()
+                _groq_conn = None
+                raise
+    raise RuntimeError("unreachable")
+
+
+def _groq_headers(content_type: str = "application/json") -> dict:
+    return {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": content_type,
+            "User-Agent": "HermesReceiver/1.0"}
+
+
+def ask_fast_llm(prompt: str, extra_system: str = "") -> tuple[str, bool]:
+    """Answers directly via Groq's OpenAI-compatible API (no agent, no tools)."""
+    if not GROQ_API_KEY:
+        return ("GROQ_API_KEY not configured", False)
+    system_prompt = ESP32_SYSTEM_PROMPT + (f" {extra_system}" if extra_system else "")
+    body = {
+        "model": FAST_LLM_MODEL,
+        "messages": history_messages(system_prompt, prompt),
+        "temperature": 0.5,
+        "max_completion_tokens": FAST_LLM_MAX_TOKENS,
+        **GROQ_MODEL_EXTRAS.get(FAST_LLM_MODEL, {}),
+    }
+    t0 = time.perf_counter()
     try:
-        session_id = load_voice_session()
+        status, raw = _groq_request("POST", "/chat/completions", json.dumps(body).encode("utf-8"),
+                                    _groq_headers(), FAST_LLM_TIMEOUT_S)
     except Exception as e:
-        return (f"Hermes session setup failed: {e}", False)
-    url = f"{HERMES_SESSIONS_BASE}/{session_id}/chat"
-    req = urllib.request.Request(url, data=payload, headers=headers)
+        fast_llm_state.update(ready=False, error=f"{type(e).__name__}: {e}")
+        return (f"Groq error: {e}", False)
+    elapsed_ms = int((time.perf_counter() - t0) * 1000)
+    if status != 200:
+        detail = raw.decode("utf-8", errors="replace")[:160]
+        fast_llm_state.update(ready=False, error=f"HTTP {status}: {detail}")
+        return (f"Groq HTTP {status}: {detail}", False)
     try:
-        with urllib.request.urlopen(req, timeout=HERMES_TIMEOUT) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            reply = (data.get("message") or {}).get("content", "").strip()
-            # Detect provider billing/credit exhaustion errors returned by the agent
-            lower_reply = reply.lower()
-            if any(err_phrase in lower_reply for err_phrase in [
-                "billing or credits exhausted", "credits exhausted",
-                "requires a subscription or usage credits",
-                "rate limit exceeded", "account entitlement is exhausted",
-                "no available provider", "payment / credit error"
-            ]):
-                print(f"[Hermes] Gateway reported provider credit/billing error: {reply[:100]}...")
-                return (reply, False)
-            return (reply or "Command acknowledged.", True)
-    except urllib.error.HTTPError as e:
-        err_body = e.read().decode("utf-8", errors="ignore")
-        return (f"Hermes Gateway HTTP {e.code}: {err_body[:100]}", False)
-    except (urllib.error.URLError, TimeoutError, Exception) as e:
-        return (f"Hermes Gateway error: {str(e)}", False)
+        reply = json.loads(raw)["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        return (f"Groq response unparseable: {e}", False)
+    if not reply:
+        return ("Groq returned an empty reply", False)
+    fast_llm_state.update(ready=True, error=None, last_ms=elapsed_ms)
+    print(f"[Groq] {FAST_LLM_MODEL} responded in {elapsed_ms} ms: {reply[:60]}...")
+    remember_turn(prompt, reply)
+    return (reply, True)
+
+
+def warmup_fast_llm():
+    """Validates the Groq key and opens the TLS connection before the first voice turn."""
+    if FAST_LLM_PROVIDER != "groq":
+        return
+    if not GROQ_API_KEY:
+        fast_llm_state.update(ready=False, error="GROQ_API_KEY not configured")
+        print("[Groq] GROQ_API_KEY missing; fast lane will use local Ollama")
+        return
+    try:
+        # Probe /models (not /models/{id}): slashes in names like qwen/qwen3.8-27b 404 if encoded.
+        status, raw = _groq_request("GET", "/models", None, _groq_headers(), 5.0)
+        if status == 200:
+            ids = {m.get("id") for m in (json.loads(raw).get("data") or [])}
+            if FAST_LLM_MODEL in ids:
+                fast_llm_state.update(ready=True, error=None)
+                print(f"[Groq] Fast lane ready ({FAST_LLM_MODEL})")
+            else:
+                fast_llm_state.update(ready=False, error=f"model '{FAST_LLM_MODEL}' not in Groq catalog")
+                print(f"[Groq] Fast lane check failed: {fast_llm_state['error']}")
+        else:
+            fast_llm_state.update(ready=False, error=f"HTTP {status}: {raw.decode('utf-8', 'replace')[:120]}")
+            print(f"[Groq] Fast lane check failed: {fast_llm_state['error']}")
+    except Exception as e:
+        fast_llm_state.update(ready=False, error=str(e))
+        print(f"[Groq] Fast lane check failed: {e}")
+
+
+def transcribe_with_groq(wav_path: str) -> str:
+    """Groq Whisper STT over the same persistent TLS connection as the fast lane."""
+    if not GROQ_API_KEY:
+        return ""
+    boundary = uuid.uuid4().hex
+    buf = io.BytesIO()
+    for name, value in (("model", GROQ_STT_MODEL), ("language", "en"), ("response_format", "json")):
+        buf.write(f"--{boundary}\r\nContent-Disposition: form-data; name=\"{name}\"\r\n\r\n{value}\r\n".encode())
+    wav_name = os.path.basename(wav_path)
+    buf.write(f"--{boundary}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"{wav_name}\"\r\n"
+              f"Content-Type: audio/wav\r\n\r\n".encode())
+    with open(wav_path, "rb") as f:
+        buf.write(f.read())
+    buf.write(f"\r\n--{boundary}--\r\n".encode())
+    status, raw = _groq_request(
+        "POST", "/audio/transcriptions", buf.getvalue(),
+        _groq_headers(f"multipart/form-data; boundary={boundary}"), 20.0)
+    if status != 200:
+        raise RuntimeError(f"HTTP {status}: {raw.decode('utf-8', 'replace')[:160]}")
+    return (json.loads(raw).get("text") or "").strip()
+
+
+def transcribe_local(wav_path: str) -> str:
+    model = get_whisper_model()
+    if not model:
+        return ""
+    segments, _info = model.transcribe(wav_path, beam_size=1, vad_filter=True, language="en")
+    return " ".join(seg.text for seg in segments).strip()
+
+
+def transcribe_audio(wav_path: str) -> tuple[str, str]:
+    """Returns (transcript, stt_provider). Groq first when enabled, then local Whisper."""
+    if STT_PROVIDER == "groq" and GROQ_API_KEY:
+        try:
+            text = transcribe_with_groq(wav_path)
+            if text:
+                return text, "groq-whisper"
+        except Exception as e:
+            print(f"[STT] Groq failed ({e}); falling back to local Whisper")
+    text = transcribe_local(wav_path)
+    return text, ("faster-whisper" if text else "none")
+
+
+# Requests that need live data, tools or device actions go to the Hermes agent. The
+# list errs towards the agent: a false positive costs seconds, a false negative
+# gets a confidently made-up forecast or a lamp that never turns on.
+AGENT_INTENT_RE = re.compile(
+    r"\b("
+    r"weather|forecast|news|headlines?|today|tonight|tomorrow|"
+    r"what(?:'s| is) the (?:date|time)|what day is it|what time is it|"
+    r"search|look (?:it |that )?up|google|browse|website|"
+    r"remind(?:er)?s?|schedule|calendar|appointments?|meetings?|timers?|alarms?|"
+    r"e-?mails?|inbox|send (?:a |an )?(?:message|text|email)|"
+    r"turn (?:on|off)|switch (?:on|off)|lights?|lamps?|thermostat|home assistant|"
+    r"onenote|my (?:files?|notes?|documents?)|"
+    r"ask hermes|use hermes|hermes agent"
+    r")\b",
+    re.IGNORECASE,
+)
+
+
+def route_intent(transcript: str) -> str:
+    """Returns 'agent' for tool/action/live-data requests, otherwise 'fast'."""
+    return "agent" if AGENT_INTENT_RE.search(transcript or "") else "fast"
+
+
+def answer_fast_lane(transcript: str) -> tuple[str, bool, str]:
+    """Fast lane: Groq (if enabled), then warm local Ollama, then the Hermes agent."""
+    if FAST_LLM_PROVIDER == "groq":
+        reply, ok = ask_fast_llm(transcript)
+        if ok:
+            return (reply, True, "groq-fast")
+        print(f"[WARN] Fast lane Groq failed ({reply}); trying local Ollama")
+    reply, ok = query_ollama_fallback(transcript)
+    if ok:
+        return (reply, True, "ollama-local" if FAST_LLM_PROVIDER == "ollama" else "ollama-fallback")
+    reply, ok = ask_hermes_gateway(transcript, timeout=HERMES_AGENT_TIMEOUT_S)
+    if ok:
+        remember_turn(transcript, reply)
+        return (reply, True, "hermes-agent-fallback")
+    return (reply, False, "none")
+
+
+def answer_agent_lane(transcript: str) -> tuple[str, bool, str]:
+    """Agent lane: Hermes with tools; if it fails, a fast model answers and says tools are offline."""
+    reply, ok = ask_hermes_gateway(transcript, timeout=HERMES_AGENT_TIMEOUT_S)
+    if ok:
+        remember_turn(transcript, reply)
+        return (reply, True, "hermes-agent")
+    print(f"[WARN] Hermes agent unavailable ({reply}); answering without tools")
+    tools_down = ("Your tools, live data and device controls are unavailable right now. If the request "
+                  "needs them, say so briefly instead of guessing.")
+    if FAST_LLM_PROVIDER == "groq":
+        fast_reply, fast_ok = ask_fast_llm(transcript, extra_system=tools_down)
+        if fast_ok:
+            return (fast_reply, True, "groq-no-tools")
+    fast_reply, fast_ok = query_ollama_fallback(transcript, extra_system=tools_down)
+    if fast_ok:
+        return (fast_reply, True, "ollama-no-tools")
+    return (reply, False, "none")
 
 # ── 7. Local Ollama Fallback (Transparent Diagnostic Fallback) ─────────
-_ollama_history: list[tuple[str, str]] = []
-_ollama_history_lock = threading.Lock()
+OLLAMA_THINKING_PREFIXES = ("qwen3", "deepseek-r1", "gpt-oss")
 
-def query_ollama_fallback(prompt: str) -> tuple[str, bool]:
-    """Diagnostic fallback querying local Ollama directly if Hermes Gateway is offline."""
-    global _ollama_history
+
+def query_ollama_fallback(prompt: str, extra_system: str = "") -> tuple[str, bool]:
+    """Queries local Ollama directly (work-mode primary, fast-lane and agent fallback)."""
     models_to_try = list(OLLAMA_MODELS)
     try:
         ps_resp = urllib.request.urlopen(f"{OLLAMA_HOST.rstrip('/')}/api/ps", timeout=1.0)
@@ -586,46 +927,39 @@ def query_ollama_fallback(prompt: str) -> tuple[str, bool]:
     except Exception:
         pass
 
-    with _ollama_history_lock:
-        history_lines = []
-        for u, a in _ollama_history[-4:]:
-            history_lines.append(f"User: {u}\nAssistant: {a}")
-        if history_lines:
-            conv_prompt = f"{ESP32_SYSTEM_PROMPT}\n\n" + "\n\n".join(history_lines) + f"\n\nUser: {prompt}\nAssistant:"
-        else:
-            conv_prompt = f"{ESP32_SYSTEM_PROMPT}\n\nUser: {prompt}\nAssistant:"
+    system_prompt = ESP32_SYSTEM_PROMPT + (f" {extra_system}" if extra_system else "")
+    messages = history_messages(system_prompt, prompt)
 
     for model in models_to_try:
         try:
-            print(f"[Ollama] Fallback querying model '{model}'...")
+            print(f"[Ollama] Querying model '{model}'...")
             t_start = time.perf_counter()
-            req_data = json.dumps({
+            body = {
                 "model": model,
-                "prompt": conv_prompt,
+                "messages": messages,
                 "stream": False,
                 "keep_alive": OLLAMA_KEEP_ALIVE,
                 "options": {
                     "num_ctx": 2048,
-                    "num_predict": 40,
-                    "temperature": 0.7
+                    "num_predict": OLLAMA_NUM_PREDICT,
+                    "temperature": 0.5
                 }
-            }).encode("utf-8")
-            url = f"{OLLAMA_HOST.rstrip('/')}/api/generate"
+            }
+            if model.startswith(OLLAMA_THINKING_PREFIXES):
+                body["think"] = False
+            url = f"{OLLAMA_HOST.rstrip('/')}/api/chat"
             req = urllib.request.Request(
                 url,
-                data=req_data,
+                data=json.dumps(body).encode("utf-8"),
                 headers={"Content-Type": "application/json"}
             )
             with urllib.request.urlopen(req, timeout=30) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
-                reply = data.get("response", "").strip()
+                reply = ((data.get("message") or {}).get("content") or "").strip()
                 t_dur = time.perf_counter() - t_start
                 if reply:
                     print(f"[Ollama] Model '{model}' responded in {t_dur:.2f}s: {reply[:60]}...")
-                    with _ollama_history_lock:
-                        _ollama_history.append((prompt, reply))
-                        if len(_ollama_history) > 10:
-                            _ollama_history = _ollama_history[-10:]
+                    remember_turn(prompt, reply)
                     return (reply, True)
         except Exception as e:
             print(f"[Ollama] Model '{model}' query error: {e}")
@@ -806,6 +1140,17 @@ def get_composite_status() -> dict:
         lv = dict(last_voice_record)
 
     tts_online = check_voicebox_online()
+    if FAST_LLM_PROVIDER == "groq":
+        fast_ready = bool(GROQ_API_KEY) and bool(fast_llm_state.get("ready") or not fast_llm_state.get("error"))
+        fast_error = None if GROQ_API_KEY else "GROQ_API_KEY not configured"
+        if GROQ_API_KEY:
+            fast_error = fast_llm_state.get("error")
+    elif FAST_LLM_PROVIDER == "ollama":
+        fast_ready = bool(ollama_info.get("warm") or ollama_info.get("ready"))
+        fast_error = ollama_info.get("error")
+    else:
+        fast_ready = False
+        fast_error = None
 
     status_data = {
         "status": overall_status,
@@ -821,6 +1166,18 @@ def get_composite_status() -> dict:
             "provider": "voicebox",
             "ready": tts_online,
             "profile": VOICEBOX_PROFILE_NAME
+        },
+        "stt": {
+            "provider": STT_PROVIDER,
+            "model": GROQ_STT_MODEL if STT_PROVIDER == "groq" else "faster-whisper-base",
+            "ready": bool(GROQ_API_KEY) if STT_PROVIDER == "groq" else whisper_model is not None
+        },
+        "fast_llm": {
+            "provider": FAST_LLM_PROVIDER,
+            "model": FAST_LLM_MODEL if FAST_LLM_PROVIDER != "off" else None,
+            "ready": fast_ready,
+            "error": fast_error,
+            "last_ms": fast_llm_state.get("last_ms")
         },
         "hermes": hermes_info,
         "backend": ollama_info,
@@ -887,8 +1244,7 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             if not self.check_auth():
                 self.send_unauthorized()
                 return
-            with _tts_lock:
-                audio_bytes = _last_tts_wav
+            audio_bytes = wait_for_tts_wav()
             if not audio_bytes:
                 self.send_response(404)
                 self.send_header("Content-Type", "application/json")
@@ -991,27 +1347,26 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             reply = ""
             backend_used = "none"
 
-            # 3. Transcribe with Whisper (beam_size=1, VAD filter enabled)
+            # 3. Transcribe (Groq Whisper when STT_PROVIDER=groq, else local faster-whisper)
             t_whisper_start = time.perf_counter()
-            model = get_whisper_model()
-            if model:
-                segments, info = model.transcribe(
-                    tmp_wav_path,
-                    beam_size=1,
-                    vad_filter=True,
-                    language="en"
-                )
-                transcript = " ".join([seg.text for seg in segments]).strip()
-
+            transcript, stt_used = transcribe_audio(tmp_wav_path)
             t_whisper_end = time.perf_counter()
             whisper_s = t_whisper_end - t_whisper_start
 
             if not transcript:
                 transcript = "(unrecognized speech)"
 
-            # 4. Query LLM Backend (Work mode: Local Ollama primary; Home mode: Hermes Gateway primary)
+            # 4. Query LLM Backend (hybrid router when the fast lane is enabled, otherwise
+            #    legacy order: Work = local Ollama primary, Home = Hermes Gateway primary)
             t_hermes_start = time.perf_counter()
-            if RECEIVER_ENV.lower() == "work":
+            route = "legacy"
+            if FAST_LLM_PROVIDER != "off":
+                route = route_intent(transcript)
+                if route == "agent":
+                    reply, _, backend_used = answer_agent_lane(transcript)
+                else:
+                    reply, _, backend_used = answer_fast_lane(transcript)
+            elif RECEIVER_ENV.lower() == "work":
                 ollama_reply, ollama_ok = query_ollama_fallback(transcript)
                 if ollama_ok:
                     reply = ollama_reply
@@ -1049,22 +1404,17 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
                 speak_on_host_speaker(clean_reply)
 
             if audio_requested and ENABLE_TTS and llm_succeeded:
-                t_tts_start = time.perf_counter()
-                tts_wav, tts_provider = synthesize_speech(clean_reply)
-                t_tts_end = time.perf_counter()
-                tts_s = t_tts_end - t_tts_start
-                if tts_wav:
-                    with _tts_lock:
-                        _last_tts_wav = tts_wav
-                    audio_available = True
-                else:
-                    with _tts_lock:
-                        _last_tts_wav = None
+                # Generate audio after the JSON leaves so the TFT can show text first.
+                # GET /voice/audio waits on the same Event (ESP32 already delays 300ms).
+                queue_lazy_tts(clean_reply)
+                audio_available = True
+                tts_provider = "lazy"
             else:
                 if not audio_requested:
                     print(f"[TTS] Audio output disabled by client (Text-only mode) -> skipping TTS")
                 with _tts_lock:
                     _last_tts_wav = None
+                    _tts_ready.set()
 
             t_server_end = time.perf_counter()
             server_total_s = t_server_end - t_req_start
@@ -1082,6 +1432,8 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
                 last_voice_record["transcript"] = transcript
                 last_voice_record["reply"] = clean_reply[:800]
                 last_voice_record["backend"] = backend_used
+                last_voice_record["route"] = route
+                last_voice_record["stt"] = stt_used
                 last_voice_record["success"] = True
                 last_voice_record["timestamp"] = time.time()
                 last_voice_record["timing"] = timing_dict
@@ -1091,6 +1443,8 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
                 "transcript": transcript,
                 "reply": clean_reply[:800],
                 "backend": backend_used,
+                "route": route,
+                "stt": stt_used,
                 "audio_available": audio_available,
                 "audio_url": "/voice/audio" if audio_available else "",
                 "timing": timing_dict,
@@ -1117,8 +1471,8 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             # Structured console performance logging
             print("\n========== VOICE REQUEST ==========")
             print(f"WAV received  : {content_length} bytes from {self.client_address[0]}")
-            print(f"Backend used  : {backend_used}")
-            print(f"TTS audio     : {'Generated (16kHz stereo WAV)' if audio_available else 'None / Offline'}")
+            print(f"Backend used  : {backend_used} (route: {route}, stt: {stt_used})")
+            print(f"TTS audio     : {'Queued (lazy 16kHz stereo WAV)' if audio_available else 'None / Offline'}")
             print(f"[PERF] body_read   : {body_read_s:6.2f} s")
             print(f"[PERF] wav_write   : {wav_write_s:6.2f} s")
             print(f"[PERF] whisper     : {whisper_s:6.2f} s")
@@ -1235,6 +1589,7 @@ def main():
 
     # Phase 17: Pre-warm Ollama model in background thread to prevent cold start latency
     threading.Thread(target=warmup_ollama_model, daemon=True).start()
+    threading.Thread(target=warmup_fast_llm, daemon=True).start()
 
     # Launch UDP discovery beacon & query responder
     threading.Thread(target=run_discovery_beacon, daemon=True).start()
@@ -1249,8 +1604,12 @@ def main():
     print(f"  Gateway URL  : {GATEWAY_URL}")
     print(f"  Ollama URL   : {OLLAMA_HOST}")
     print(f"=======================================================")
-    print(f"  Primary LLM  : Persistent Hermes Gateway (:8642)")
-    print(f"  Fallback LLM : Local Ollama (:11434)")
+    if FAST_LLM_PROVIDER == "off":
+        print(f"  Primary LLM  : Persistent Hermes Gateway (:8642)")
+        print(f"  Fallback LLM : Local Ollama (:11434)")
+    else:
+        print(f"  Fast lane    : {FAST_LLM_PROVIDER}/{FAST_LLM_MODEL if FAST_LLM_PROVIDER == 'groq' else (OLLAMA_MODELS[0] if OLLAMA_MODELS else 'ollama')}")
+        print(f"  Agent lane   : Hermes Gateway (:8642) timeout {HERMES_AGENT_TIMEOUT_S:.0f}s")
     print(f"=======================================================\n")
 
     try:

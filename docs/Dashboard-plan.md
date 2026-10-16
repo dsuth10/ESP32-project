@@ -1212,7 +1212,7 @@ And newly added files:
 | `src/system_status.h`                 | `HealthState` and `DashboardStatus` telemetry model            | Completed |
 | `server/start_receiver.sh`            | Linux receiver launcher for Home hosting                       | Completed |
 | `server/receiver.env.example`         | Template environment configuration                             | Completed |
-| `server/benchmark_hermes_standalone.py` | Standalone latency comparison utility                        | Completed |
+| `server/bench_llm_paths.py`           | Latency + accuracy benchmark across every LLM path             | Completed |
 | `docs/home-work-architecture.md`      | Standalone comprehensive architecture and deployment guide     | Completed |
 
 ---

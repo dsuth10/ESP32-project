@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "notes": "Fixed prompt set for bench_llm_paths.py. Prompts run in order within a round so 'recall' can use the history from 'remember'. Tool prompts are read-only on purpose: the Hermes agent has Home Assistant and memory tools, so nothing here may switch devices or store personal facts.",
+  "defaults": {
+    "max_sentences": 3,
+    "max_chars": 260,
+    "no_markdown": true
+  },
+  "prompts": [
+    {
+      "id": "capital",
+      "category": "fact",
+      "prompt": "What is the capital of Australia?",
+      "expect_any": ["canberra"]
+    },
+    {
+      "id": "multiply",
+      "category": "math",
+      "prompt": "What is 17 times 23?",
+      "expect_any": ["391"]
+    },
+    {
+      "id": "convert",
+      "category": "math",
+      "prompt": "How many centimetres are in 2.5 metres?",
+      "expect_any": ["250"]
+    },
+    {
+      "id": "author",
+      "category": "fact",
+      "prompt": "Who wrote Romeo and Juliet?",
+      "expect_any": ["shakespeare"]
+    },
+    {
+      "id": "photosynthesis",
+      "category": "science",
+      "prompt": "Which gas do plants take in from the air for photosynthesis?",
+      "expect_any": ["carbon dioxide", "co2"]
+    },
+    {
+      "id": "black-hole",
+      "category": "explain",
+      "prompt": "Explain what a black hole is in two sentences.",
+      "expect_any": ["gravity", "light"],
+      "max_sentences": 2
+    },
+    {
+      "id": "limerick",
+      "category": "creative",
+      "prompt": "Write a limerick about a cat who loves coffee.",
+      "expect_any": ["cat"],
+      "lines": 5,
+      "max_sentences": null,
+      "max_chars": 320
+    },
+    {
+      "id": "remember",
+      "category": "memory",
+      "prompt": "I'm thinking of the number 42. Keep it in mind for my next question.",
+      "max_sentences": 2
+    },
+    {
+      "id": "recall",
+      "category": "memory",
+      "prompt": "What number am I thinking of?",
+      "expect_any": ["42", "forty-two", "forty two"]
+    },
+    {
+      "id": "classroom-tip",
+      "category": "advice",
+      "prompt": "Give me one quick tip for keeping a Year 5 class focused after lunch."
+    },
+    {
+      "id": "weather",
+      "category": "tool",
+      "prompt": "What is the weather forecast for Brisbane today?",
+      "expect_regex": "\\d+\\s*(°|degrees|celsius|c\\b)",
+      "reject_any": ["i can't", "i cannot", "i don't have", "unable to", "real-time", "real time"]
+    },
+    {
+      "id": "date",
+      "category": "tool",
+      "prompt": "What is today's date and day of the week?",
+      "expect_any": ["{today_weekday}"],
+      "reject_any": ["i can't", "i cannot", "i don't have", "unable to", "real-time", "real time"]
+    }
+  ]
+}

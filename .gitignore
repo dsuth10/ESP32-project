@@ -15,6 +15,9 @@ venv/
 .env
 graphify-out/cache/
 
+# LLM benchmark output (server/bench_llm_paths.py)
+server/bench_results/
+
 # Editor and IDE configurations
 .vscode/
 .idea/
