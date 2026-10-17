@@ -146,8 +146,8 @@ private:
   void delay_ms(uint64_t ms);
 
   uint16_t vid       = 0x05ac;
-  uint16_t pid       = 0x820a;
-  uint16_t version   = 0x0210;
+  uint16_t pid       = 0x820b;
+  uint16_t version   = 0x0211;
 
 public:
   BleKeyboard(std::string deviceName = "ESP32 Keyboard", std::string deviceManufacturer = "Espressif", uint8_t batteryLevel = 100);

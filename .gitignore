@@ -13,6 +13,9 @@ __pycache__/
 *.pyo
 venv/
 .env
+tools/compose/*.env
+!tools/compose/compose.env.example
+tools/compose/*.log
 graphify-out/cache/
 
 # LLM benchmark output (server/bench_llm_paths.py)

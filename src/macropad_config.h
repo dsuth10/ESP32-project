@@ -25,10 +25,11 @@
 #include "ui_layout.h"
 
 #define NUM_BUTTONS_PAGE  (GRID_ROWS * GRID_COLS)
-#define NUM_PAGES         7
+#define NUM_PAGES         8
 #define PAGE_DASHBOARD    0
 #define PAGE_VOICE        5
-#define PAGE_STORAGE      6
+#define PAGE_COMPOSE      6
+#define PAGE_STORAGE      7
 
 #define TOUCH_PREV_PAGE   100
 #define TOUCH_NEXT_PAGE   101

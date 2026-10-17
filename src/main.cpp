@@ -54,6 +54,10 @@ static TaskHandle_t g_telemetryTask = NULL;
 static volatile bool g_voiceBusy = false;
 static bool s_powerConfirmOpen = false;
 
+// Compose & Dictate latching state (Tap-to-Toggle + Hold-to-Talk)
+static int s_composeLatchedBtn = -1;
+static uint32_t s_composeLatchStart = 0;
+
 // Li-Po battery measurement & smoothing
 static float g_filteredBatVoltage = 0.0f;
 
@@ -471,6 +475,15 @@ void loop() {
   }
 
   // 5. Touch Handling
+  // Auto-release Compose recording if 60s safety timeout is reached
+  if (s_composeLatchedBtn != -1 && (millis() - s_composeLatchStart >= 60000)) {
+    Serial.println("[Compose] Safety timeout reached (60s). Auto-stopping recording.");
+    bleKeyboard.releaseAll();
+    gui.drawButton(PAGE_COMPOSE, s_composeLatchedBtn, false);
+    s_composeLatchedBtn = -1;
+    if (currentBleState) setLedColor(0, 50, 15);
+  }
+
   ts.read();
 #if TOUCH_WAKE_DIAG
   {
@@ -487,6 +500,17 @@ void loop() {
   if (ts.isTouched) {
     int16_t tx = ts.points[0].x;
     int16_t ty = ts.points[0].y;
+
+    // Check if we are currently latched in recording mode (Tap-to-Toggle)
+    if (s_composeLatchedBtn != -1) {
+      Serial.printf("[Compose] Second tap received! Stopping recording for button %d.\n", s_composeLatchedBtn);
+      bleKeyboard.releaseAll();
+      gui.drawButton(PAGE_COMPOSE, s_composeLatchedBtn, false);
+      s_composeLatchedBtn = -1;
+      if (currentBleState) setLedColor(0, 50, 15);
+      waitTouchRelease(500);
+      return;
+    }
 
     // Constrain coordinates to active UI orientation
     tx = constrain(tx, 0, SCREEN_WIDTH - 1);
@@ -903,26 +927,109 @@ void loop() {
         }
       } 
       else {
-        // === STANDARD MACRO KEYSTROKE FLOW ===
-        gui.drawButton(currentPage, btnIndex, true);
-        setLedColor(120, 120, 120); // Bright White flash
+        // === PAGE 6: COMPOSE & DICTATE (TAP-TO-TOGGLE + HOLD-TO-TALK) ===
+        if (currentPage == PAGE_COMPOSE) {
+          if (btnIndex == 0 || btnIndex == 1) { // 0 = COMPOSE, 1 = DICTATE
+            uint8_t targetKey = (btnIndex == 0) ? KEY_F9 : KEY_F10;
+            uint8_t extKey = (btnIndex == 0) ? KEY_F13 : KEY_F14;
 
-        executeMacro(btn);
+            gui.drawButton(currentPage, btnIndex, true);
+            if (btnIndex == 0) {
+              setLedColor(120, 60, 0);  // Amber for Compose
+            } else {
+              setLedColor(0, 80, 120); // Cyan for Dictate
+            }
 
-        // Wait until finger is lifted
-        uint32_t pressStart = millis();
-        while (true) {
-          ts.read();
-          if (!ts.isTouched) break;
-          if (millis() - pressStart > 1500) break;
-          delay(15);
+            if (bleKeyboard.isConnected()) {
+              Serial.printf("[Compose] Recording started: %s (Ctrl+Alt+Shift+F%d + F%d)\n", 
+                            btn.label, (btnIndex == 0 ? 9 : 10), (btnIndex == 0 ? 13 : 14));
+              // Send both standard modifiers combo AND extended F-key for universal compatibility
+              bleKeyboard.press(KEY_LEFT_CTRL);
+              bleKeyboard.press(KEY_LEFT_ALT);
+              bleKeyboard.press(KEY_LEFT_SHIFT);
+              bleKeyboard.press(targetKey);
+              bleKeyboard.press(extKey);
+            } else {
+              Serial.println("[Compose] BLE not connected. Keystroke dropped.");
+            }
+
+            uint32_t pressStart = millis();
+            bool isHold = false;
+            while (ts.isTouched) {
+              ts.read();
+              if (millis() - pressStart >= 350) {
+                isHold = true;
+                break;
+              }
+              delay(15);
+            }
+
+            if (isHold) {
+              // User is HOLDING (Push-To-Talk). Continue waiting until finger released.
+              Serial.println("[Compose] Operating in Push-To-Talk (Hold) mode.");
+              while (ts.isTouched) {
+                ts.read();
+                if (millis() - pressStart >= 60000) { // Rule 10 safety cap (60s)
+                  Serial.println("[Compose] Safety cap reached (60s). Forcing release.");
+                  break;
+                }
+                delay(15);
+              }
+              bleKeyboard.releaseAll();
+              gui.drawButton(currentPage, btnIndex, false);
+              if (currentBleState) setLedColor(0, 50, 15);
+              Serial.printf("[Compose] Push-to-Talk finished (%lu ms).\n", millis() - pressStart);
+            } else {
+              // User TAPPED/CLICKED (< 350ms). Latch recording ON!
+              Serial.println("[Compose] Tap detected! Latching recording ON. Tap again anywhere to finish.");
+              s_composeLatchedBtn = btnIndex;
+              s_composeLatchStart = millis();
+              // Leave button pressed, leave LED on, leave keys down!
+            }
+            delay(30);
+            return;
+          }
+          else if (btnIndex == 2) {
+            // PASTE READY (Button 2)
+            gui.drawButton(currentPage, btnIndex, true);
+            setLedColor(0, 120, 30); // Bright Green
+            if (bleKeyboard.isConnected()) {
+              Serial.println("[Compose] Tapped PASTE READY (Ctrl+Alt+Shift+F11 + F15)");
+              bleKeyboard.press(KEY_LEFT_CTRL);
+              bleKeyboard.press(KEY_LEFT_ALT);
+              bleKeyboard.press(KEY_LEFT_SHIFT);
+              bleKeyboard.press(KEY_F11);
+              bleKeyboard.press(KEY_F15);
+              delay(40);
+              bleKeyboard.releaseAll();
+            }
+            waitTouchRelease(500);
+            gui.drawButton(currentPage, btnIndex, false);
+            if (currentBleState) setLedColor(0, 50, 15);
+            return;
+          }
+        } else {
+          // Standard tap macro keystroke flow
+          gui.drawButton(currentPage, btnIndex, true);
+          setLedColor(120, 120, 120); // Bright White flash
+
+          executeMacro(btn);
+
+          // Wait until finger is lifted
+          uint32_t pressStart = millis();
+          while (true) {
+            ts.read();
+            if (!ts.isTouched) break;
+            if (millis() - pressStart > 1500) break;
+            delay(15);
+          }
+
+          gui.drawButton(currentPage, btnIndex, false);
+          if (currentBleState) {
+            setLedColor(0, 50, 15);
+          }
+          delay(30);
         }
-
-        gui.drawButton(currentPage, btnIndex, false);
-        if (currentBleState) {
-          setLedColor(0, 50, 15);
-        }
-        delay(30);
       }
     }
   } else {

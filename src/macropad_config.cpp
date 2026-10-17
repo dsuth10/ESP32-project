@@ -91,7 +91,25 @@ const MacroProfile PROFILES[NUM_PAGES] = {
     }
   },
 
-  // Page 6: Storage Explorer (Custom layout)
+  // Page 6: Compose & Dictate
+  {
+    "Compose & Dictate",
+    0xFD20, // Amber / Warm Orange accent
+    3,      // 3 large buttons
+    {
+      // Button 0: COMPOSE (Tap or Hold)
+      { "COMPOSE", "Tap/Hold to Speak", 0x3186, 0xFD20, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F13, nullptr },
+      // Button 1: DICTATE (Tap or Hold)
+      { "DICTATE", "Tap/Hold to Dictate", 0x1A28, 0x051D, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F14, nullptr },
+      // Button 2: PASTE READY (Tap F15)
+      { "PASTE READY", "Tap: Paste Pending", 0x1245, 0x07E0, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F15, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr }
+    }
+  },
+
+  // Page 7: Storage Explorer (Custom layout)
   {
     "Storage Explorer",
     0xFD20, // Warm amber accent

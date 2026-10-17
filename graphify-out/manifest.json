@@ -53,16 +53,10 @@
     "ast_hash": "26a1ce34e511f502ec6a7c5439bc6cb7",
     "semantic_hash": "26a1ce34e511f502ec6a7c5439bc6cb7"
   },
-  "server/benchmark_hermes_standalone.py": {
-    "mtime": 1788857105.7157393,
-    "seen": 1789134143.5246646,
-    "ast_hash": "3c4e8d4dbf1f0d7d3561f4d5a3bc60c2",
-    "semantic_hash": "3c4e8d4dbf1f0d7d3561f4d5a3bc60c2"
-  },
   "server/hermes_voice_receiver.py": {
-    "mtime": 1789817369.2150366,
-    "seen": 1789817637.4815245,
-    "ast_hash": "090f31fed5d1a9e83f6b3706c3d12d4a",
+    "mtime": 1792134531.0264244,
+    "seen": 1792158467.3689444,
+    "ast_hash": "c73b7e4c4c631a383f9bafd5578321df",
     "semantic_hash": ""
   },
   "server/start_receiver.sh": {
@@ -84,9 +78,9 @@
     "semantic_hash": ""
   },
   "src/environment_manager.cpp": {
-    "mtime": 1789817369.2160404,
-    "seen": 1789817637.4815245,
-    "ast_hash": "89eb5ee5315d9ec8bbb466cc416180d7",
+    "mtime": 1792145592.2828057,
+    "seen": 1792158467.3689444,
+    "ast_hash": "ff7a6898f321f434decab5373e4b7e9b",
     "semantic_hash": ""
   },
   "src/environment_manager.h": {
@@ -126,27 +120,27 @@
     "semantic_hash": ""
   },
   "src/macropad_config.cpp": {
-    "mtime": 1789949414.137213,
-    "seen": 1789949481.9182923,
-    "ast_hash": "d35a04e8a15b7c2e35827e965abb6314",
+    "mtime": 1792206863.33168,
+    "seen": 1792206930.4751525,
+    "ast_hash": "e057ef06fadbce611d70e055fb7821dc",
     "semantic_hash": ""
   },
   "src/macropad_config.h": {
-    "mtime": 1789966466.802728,
-    "seen": 1789966467.387375,
-    "ast_hash": "79aaae94ee86b7ad6cd246c2cf8ca575",
+    "mtime": 1792196101.619373,
+    "seen": 1792196382.921921,
+    "ast_hash": "e9117b8c7c36963184b1b51a5177d88c",
     "semantic_hash": ""
   },
   "src/main.cpp": {
-    "mtime": 1789966466.8037782,
-    "seen": 1789966467.387376,
-    "ast_hash": "96689e5de644dab75d6b64edf53f6e11",
+    "mtime": 1792206755.5097034,
+    "seen": 1792206930.4751525,
+    "ast_hash": "adf56eff4c719e22e633ab495ba6f782",
     "semantic_hash": ""
   },
   "src/network_manager.cpp": {
-    "mtime": 1789873370.4575422,
-    "seen": 1789912192.487102,
-    "ast_hash": "4e93b06fe618c2b619b5118719f6f5a0",
+    "mtime": 1792134531.0284247,
+    "seen": 1792158467.3689444,
+    "ast_hash": "a75bb80a56fd7121856e160486790196",
     "semantic_hash": ""
   },
   "src/network_manager.h": {
@@ -180,15 +174,15 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1788857105.7121227,
-    "seen": 1789135310.6959877,
-    "ast_hash": "4a86d590c0ce812177d0ac16e803076b",
+    "mtime": 1792134531.013338,
+    "seen": 1792158467.3689444,
+    "ast_hash": "f4203b3d922fe9444562bfc1865964c6",
     "semantic_hash": ""
   },
   "docs/Dashboard-plan.md": {
-    "mtime": 1788857105.7131538,
-    "seen": 1789135310.6959884,
-    "ast_hash": "285cc3af5e3d8488388fb96dbd79cce2",
+    "mtime": 1792134531.0153744,
+    "seen": 1792158467.3689444,
+    "ast_hash": "bac326ccd8bb07e459f57bc0d43a8bd0",
     "semantic_hash": ""
   },
   "docs/home-work-architecture.md": {
@@ -486,9 +480,9 @@
     "semantic_hash": ""
   },
   ".agents/skills/voice-satellite/SKILL.md": {
-    "mtime": 1789817369.2119904,
-    "seen": 1789817637.4815245,
-    "ast_hash": "3ee6bae0365b2ef083d0ffd82d6723a7",
+    "mtime": 1792134531.0103383,
+    "seen": 1792158467.3689444,
+    "ast_hash": "f5d00cef5728fcbb3b085659f172e40b",
     "semantic_hash": ""
   },
   "generate_case_battery.py": {
@@ -507,12 +501,6 @@
     "mtime": 1789888712.4605653,
     "seen": 1789912192.4871037,
     "ast_hash": "a1da0e2c5cdbb252c05676ae55d4ab39",
-    "semantic_hash": ""
-  },
-  "graphify-out/converted/pinout_allocation_f58fa43e.md": {
-    "mtime": 1789134115.7116265,
-    "seen": 1789826923.6140778,
-    "ast_hash": "a48a5fad95d8c475f9ff97c40b213d0b",
     "semantic_hash": ""
   },
   "docs/dimensions/battery_enclosure_bottom.png": {
@@ -591,6 +579,138 @@
     "mtime": 1789966466.7990057,
     "seen": 1789966468.922379,
     "ast_hash": "ad48d83c3b1564e894cf45edbf332764",
+    "semantic_hash": ""
+  },
+  "server/bench_llm_paths.py": {
+    "mtime": 1792134531.021374,
+    "seen": 1792158467.3689444,
+    "ast_hash": "5da058a55c51bfd6b178cfc1ffc3f588",
+    "semantic_hash": ""
+  },
+  "server/bench_prompts.json": {
+    "mtime": 1792134531.0244234,
+    "seen": 1792158467.3689444,
+    "ast_hash": "1325dff59dd9b61e6c5a5c38f78b6f9f",
+    "semantic_hash": ""
+  },
+  "docs/ESP32_Classroom_Companion_OneNote_Automation_Plan.md": {
+    "mtime": 1789991076.3620377,
+    "seen": 1792158467.3689444,
+    "ast_hash": "06c16d91dc3e6756f8898797dac64c78",
+    "semantic_hash": ""
+  },
+  "docs/ESP32_Windows_Compose_Dictate_Plan.md": {
+    "mtime": 1792158408.6632648,
+    "seen": 1792158467.3689444,
+    "ast_hash": "c025c9f14e904e9cdda98f48276039c2",
+    "semantic_hash": ""
+  },
+  "docs/build-guide.md": {
+    "mtime": 1792134531.0153744,
+    "seen": 1792158467.3689444,
+    "ast_hash": "579d5599e631548b26dc3672e09f6610",
+    "semantic_hash": ""
+  },
+  "docs/hardware-reference.md": {
+    "mtime": 1792134531.0163746,
+    "seen": 1792158467.3689444,
+    "ast_hash": "4da15689a45a5ee67b55f1398709b350",
+    "semantic_hash": ""
+  },
+  "tools/compose/audio_capture.py": {
+    "mtime": 1792231610.8417168,
+    "seen": 1792232286.1841018,
+    "ast_hash": "f2c8596faa3ce5c85c313c8498e49ae9",
+    "semantic_hash": ""
+  },
+  "tools/compose/clipboard_manager.py": {
+    "mtime": 1792231507.183848,
+    "seen": 1792232286.1841042,
+    "ast_hash": "069f2235c90ceefad8851051ed810cef",
+    "semantic_hash": ""
+  },
+  "tools/compose/compose_companion.py": {
+    "mtime": 1792231525.739205,
+    "seen": 1792232286.184105,
+    "ast_hash": "7b8944b02a70f3e8e5402aee84a5b004",
+    "semantic_hash": ""
+  },
+  "tools/compose/focus_tracker.py": {
+    "mtime": 1792231506.921812,
+    "seen": 1792232286.1841066,
+    "ast_hash": "2d58b8bf7d89d4ddc62a85976553c78e",
+    "semantic_hash": ""
+  },
+  "tools/compose/llm_pipeline.py": {
+    "mtime": 1792195984.564924,
+    "seen": 1792196382.921921,
+    "ast_hash": "7f2639461fa3b4ecb65701e4c4ec6827",
+    "semantic_hash": ""
+  },
+  "tools/compose/prompt_engine.py": {
+    "mtime": 1792195856.2286382,
+    "seen": 1792196382.921921,
+    "ast_hash": "bb440872be3784fd2e23dcf68b546f59",
+    "semantic_hash": ""
+  },
+  "tools/compose/speech_pipeline.py": {
+    "mtime": 1792231651.6519032,
+    "seen": 1792232286.18411,
+    "ast_hash": "bac659a01db1c22cd67139c789d86fe6",
+    "semantic_hash": ""
+  },
+  "tools/compose/status_overlay.py": {
+    "mtime": 1792201634.1463284,
+    "seen": 1792205845.5909677,
+    "ast_hash": "ddf99bd4cf27ed203bf75cefc288e446",
+    "semantic_hash": ""
+  },
+  "tools/compose/requirements.txt": {
+    "mtime": 1792231525.7402043,
+    "seen": 1792232286.1841283,
+    "ast_hash": "5801a7b506ab4f3ba3b622b6c20b226c",
+    "semantic_hash": ""
+  },
+  "tools/compose/check_ble.ps1": {
+    "mtime": 1792205486.7497613,
+    "seen": 1792205845.5909677,
+    "ast_hash": "4196e5dfea1c3859a5911ba3d61c6953",
+    "semantic_hash": ""
+  },
+  "tools/compose/compose_gui.py": {
+    "mtime": 1792231631.851453,
+    "seen": 1792232286.1841056,
+    "ast_hash": "fc45a7e654e9b54d8c38589c18dd4a1d",
+    "semantic_hash": ""
+  },
+  "docs/ESP32_Windows_Compose_Dictate_Implementation_Report.md": {
+    "mtime": 1792231775.3985937,
+    "seen": 1792232286.184121,
+    "ast_hash": "b611cffa2bfa592f58ef3621c451cb7c",
+    "semantic_hash": ""
+  },
+  "tools/compose/hotkey_state.py": {
+    "mtime": 1792231456.8562245,
+    "seen": 1792232286.1841075,
+    "ast_hash": "dc290d8d5502f74e154a95eaa0ad2306",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_compose.py": {
+    "mtime": 1792231711.457786,
+    "seen": 1792232286.184111,
+    "ast_hash": "8da55049709bbd006ba29f38d7c3762d",
+    "semantic_hash": ""
+  },
+  "docs/Compose_Dictate_Repair_2026-10-17.md": {
+    "mtime": 1792231775.1916854,
+    "seen": 1792232286.1841187,
+    "ast_hash": "3f8f2eced08ab2c4caac13bb66edbbe0",
+    "semantic_hash": ""
+  },
+  "graphify-out/converted/pinout_allocation_f58fa43e.md": {
+    "mtime": 1789134115.7116265,
+    "seen": 1792232286.1841276,
+    "ast_hash": "a48a5fad95d8c475f9ff97c40b213d0b",
     "semantic_hash": ""
   }
 }

@@ -141,13 +141,12 @@ void EnvironmentManager::begin() {
         Serial.printf("[Env] Loaded cached WORK dynamic host IP: %s\n", savedWorkIp.c_str());
     }
 
-    String savedHomeIp = _prefs.getString("dyn_home_ip", "");
-    if (savedHomeIp.length() > 0) {
-        _homeProfile.discoveredIp = savedHomeIp;
-        _homeProfile.receiverUrl = "http://" + savedHomeIp + ":8787/voice";
-        _homeProfile.statusUrl = "http://" + savedHomeIp + ":8787/status";
-        Serial.printf("[Env] Loaded cached HOME dynamic host IP: %s\n", savedHomeIp.c_str());
-    }
+
+    // Clear stale cached home dynamic IP so defined HOME_RECEIVER_URL is authoritative
+    _prefs.remove("dyn_home_ip");
+    _homeProfile.discoveredIp = "";
+    _homeProfile.receiverUrl = _homeProfile.defaultReceiverUrl;
+    _homeProfile.statusUrl = _homeProfile.defaultStatusUrl;
     _prefs.end();
 
     Serial.printf("[Env] Initialized. Active Environment: %s (SSID: %s, Receiver: %s)\n", 
