@@ -1,16 +1,16 @@
 # Graph Report - ESP32 project  (2026-10-17)
 
 ## Corpus Check
-- 68 files · ~1,161,939 words
+- 73 files · ~1,165,904 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 982 nodes · 1674 edges · 66 communities (50 shown, 8 thin omitted)
-- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 112 edges (avg confidence: 0.86)
+- 1072 nodes · 1850 edges · 69 communities (53 shown, 8 thin omitted)
+- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 121 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `86bae7e2`
+- Built from commit: `ba7f2d85`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -33,7 +33,7 @@
 - ESP32 Portable MacroPad & Hermes Satellite: Core Engineering Rules
 - rules/graphify.md
 - workflows/graphify.md
-- HostDiscovery
+- test_web_grounding.py
 - Automated Background Updating
 - Workflow: /graph-query
 - Workflow: /graph-update
@@ -44,11 +44,11 @@
 - power_manager.cpp
 - generate_case_battery_only.py
 - gui.cpp
-- gui.h
+- ChatLine
 - drawDashboard
 - ESP32_Classroom_Companion_OneNote_Automation_Plan.md
 - ESP32 & Windows Compose / Dictate Companion: Architecture & Implementation Plan
-- redrawVoiceCard
+- addVoiceTurn
 - Detailed build guide
 - Build an ESP32 classroom companion with an AI coding agent
 - compose_companion.py
@@ -61,34 +61,35 @@
 - ask_hermes_gateway
 - get_composite_status
 - queue_lazy_tts
-- ComposeCompanion
+- wrapTextToChatLines
 - 4. Problems Encountered & Root Causes
 - dispatch_telegram_mirror
 - StatusOverlay
 - LlmPipeline
 - AudioCapture
 - SpeechPipeline
-- .run
-- 5. Set up the optional voice receiver
+- ComposeCompanion
+- .inject_paste
 - ComposeApp
 - _coeff_div
+- test_compose.py
+- 5. Set up the optional voice receiver
 - 6. Connect Blender MCP
+- FocusTracker
 
 ## God Nodes (most connected - your core abstractions)
 1. `MacroPadGUI` - 68 edges
 2. `AudioRecorder` - 32 edges
-3. `EnvironmentManager` - 24 edges
-4. `NetworkManager` - 23 edges
-5. `ComposeCompanion` - 19 edges
-6. `ComposeApp` - 19 edges
+3. `ComposeApp` - 28 edges
+4. `EnvironmentManager` - 24 edges
+5. `NetworkManager` - 23 edges
+6. `ComposeCompanion` - 20 edges
 7. `EnvironmentProfile` - 16 edges
 8. `HostDiscovery` - 15 edges
-9. `StatusOverlay` - 15 edges
-10. `ChannelStats` - 14 edges
+9. `SpeechPipeline` - 15 edges
+10. `StatusOverlay` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `refreshStorageExplorer` --calls--> `sdCardGetStorageSpace()`  [INFERRED]
-  src/gui.h → src/sd_card.cpp
 - `begin` --calls--> `es8311_codec_init()`  [INFERRED]
   src/audio_recorder.h → src/es8311.cpp
 - `logDiagnostics` --calls--> `es8311_codec_dump_registers()`  [INFERRED]
@@ -97,15 +98,17 @@
   src/audio_recorder.h → src/es8311.cpp
 - `loop()` --calls--> `es8311_codec_set_voice_volume()`  [INFERRED]
   src/main.cpp → src/es8311.cpp
+- `setup()` --calls--> `es8311_codec_set_voice_volume()`  [INFERRED]
+  src/main.cpp → src/es8311.cpp
 
 ## Import Cycles
 - None detected.
 
-## Communities (66 total, 8 thin omitted)
+## Communities (69 total, 8 thin omitted)
 
 ### Community 0 - "MacroPadGUI"
 Cohesion: 0.09
-Nodes (20): HealthState, VoiceUIState, MacroPadGUI, _chatLines, _currentStoragePath, _history, _lastDrawnBatHealth, _lastDrawnBatPercent (+12 more)
+Nodes (23): HealthState, VoiceUIState, MacroPadGUI, _chatLines, _currentStoragePath, drawButton, getButtonRect, getTouchTarget (+15 more)
 
 ### Community 1 - "hermes_voice_receiver.py"
 Cohesion: 0.22
@@ -113,19 +116,19 @@ Nodes (12): _env(), get_local_ip_for_target(), get_whisper_model(), main(), Herm
 
 ### Community 2 - "EnvironmentManager"
 Cohesion: 0.08
-Nodes (41): Preferences, SemaphoreHandle_t, EnvironmentChangeCallback, EnvironmentMode, String, EnvironmentManager, begin, _changeCallback (+33 more)
+Nodes (40): SemaphoreHandle_t, EnvironmentChangeCallback, EnvironmentMode, String, EnvironmentManager, begin, _changeCallback, _currentMode (+32 more)
 
 ### Community 3 - "AudioRecorder"
 Cohesion: 0.05
 Nodes (35): AudioRecorder, begin, _lastRecordDurationMs, _leftStats, logDiagnostics, _maxLeftPeak, _maxRightPeak, _monoStats (+27 more)
 
 ### Community 4 - "network_manager.cpp"
-Cohesion: 0.13
-Nodes (31): DashboardStatus, EnvironmentMode, function, String, extractJsonBool(), extractJsonField(), extractJsonInt(), extractJsonObject() (+23 more)
+Cohesion: 0.08
+Nodes (48): IPAddress, String, HostDiscovery, begin, checkBeacon, discoverNow, _lastBeaconCheck, _lastDiscoveryAttempt (+40 more)
 
 ### Community 5 - "main.cpp"
 Cohesion: 0.07
-Nodes (43): MacroButton, sdcard_type_t, calculateBatteryPercentage(), HealthState, executeMacro(), goToSoftOff(), loop(), sampleBatteryTelemetry() (+35 more)
+Nodes (44): MacroButton, Preferences, sdcard_type_t, TFT_eSPI, vector, calculateBatteryPercentage(), HealthState, executeMacro() (+36 more)
 
 ### Community 6 - "es8311_bsp.c"
 Cohesion: 0.23
@@ -155,9 +158,9 @@ Nodes (12): 1. System Topology, 2. Component Directory, 3. Security Model: Secre
 Cohesion: 0.14
 Nodes (14): ESP32 Portable MacroPad & Hermes Satellite: Core Engineering Rules, Rule 10: Safe Cross-Core Concurrency & Bounded Touch Debounce, Rule 11: Dual-Path Audio Output & Non-Blocking TTS Fallback, Rule 12: Wi-Fi/BLE Coexistence & AP NVS Cache Sanitation, Rule 13: Gateway Tiering & Zero-Zombie Receiver Daemon Semantics, Rule 1: Strict Environment Binding (The Composite Profile Rule), Rule 2: The Contract Principle & Visible Degradation, Rule 3: Asynchronous Receiver Concurrency (The Audio Lock Rule) (+6 more)
 
-### Community 22 - "HostDiscovery"
-Cohesion: 0.21
-Nodes (17): IPAddress, String, HostDiscovery, begin, checkBeacon, discoverNow, _lastBeaconCheck, _lastDiscoveryAttempt (+9 more)
+### Community 22 - "test_web_grounding.py"
+Cohesion: 0.07
+Nodes (35): Session, Unit tests for web_grounding (keyword router, Jev/Groq model router, Brave…, test_brave_search_client_parses_results(), test_build_search_query_strips_command_prefix(), test_format_search_context(), test_intent_router_jev_ambiguous_triggers_api(), test_intent_router_jev_failure_falls_back_to_groq(), test_intent_router_jev_success() (+27 more)
 
 ### Community 23 - "Automated Background Updating"
 Cohesion: 0.25
@@ -185,11 +188,11 @@ Nodes (26): add_cube(), add_cylinder(), add_standoffs(), add_through_bolts(), ap
 
 ### Community 35 - "gui.cpp"
 Cohesion: 0.13
-Nodes (19): canScrollDown, canScrollUp, drawButton, drawDashboardSwitching, drawPowerConfirmDialog, drawSleepSplash, getButtonRect, getPowerDialogTarget (+11 more)
+Nodes (18): canScrollDown, canScrollUp, clearConversation, drawDashboardSwitching, drawPowerConfirmDialog, drawSleepSplash, getPowerDialogTarget, highlightStorageRow (+10 more)
 
-### Community 36 - "gui.h"
-Cohesion: 0.20
-Nodes (9): ChatLine, color, text, ChatMessage, isUser, text, String, TFT_eSPI (+1 more)
+### Community 36 - "ChatLine"
+Cohesion: 0.25
+Nodes (7): ChatLine, color, text, ChatMessage, isUser, text, String
 
 ### Community 37 - "drawDashboard"
 Cohesion: 0.25
@@ -203,9 +206,9 @@ Nodes (42): 10. Classroom Companion Command Model, 11. Do Not Hard-Code OneNote 
 Cohesion: 0.07
 Nodes (27): 1. Executive Summary, 2.1 Page Allocation & Layout, 2.2 Button Configuration (`src/macropad_config.cpp`), 2.3 Main Loop Hold Logic & Rule 10 Safety Timeout, 2. Firmware Extension (ESP32-S3), 3.1 Architecture & Process Model, 3.2 Hotkey Interception (`F13`–`F15`), 3. Windows Background Companion (`tools/compose/`) (+19 more)
 
-### Community 40 - "redrawVoiceCard"
-Cohesion: 0.18
-Nodes (12): TFT_eSPI, vector, VoiceUIState, drawWrappedText(), addVoiceTurn, clearConversation, drawVoiceCard, MacroPadGUI::MacroPadGUI() (+4 more)
+### Community 40 - "addVoiceTurn"
+Cohesion: 0.29
+Nodes (7): String, VoiceUIState, addVoiceTurn, drawVoiceCard, navigateStorageTo, navigateStorageUp, scrollToLatestResponse
 
 ### Community 41 - "Detailed build guide"
 Cohesion: 0.18
@@ -216,8 +219,8 @@ Cohesion: 0.15
 Nodes (13): 1. Download and open the project, 2. Connect the ESP32 over USB, 3. Configure, build and upload, 4. Pair Bluetooth and try a shortcut, 5. Make a small change with your IDE agent, 6. Connect Blender MCP and refine the case, 7. Add voice once the basic device works, 8. Test, print and keep improving (+5 more)
 
 ### Community 43 - "compose_companion.py"
-Cohesion: 0.13
-Nodes (16): ClipboardManager, Clipboard manager for Windows with atomic snapshot, paste injection, prior…, ESP32 & Windows Voice Compose & Dictate Companion Service Resides in the…, ESP32 & Windows Voice Compose & Dictate Companion - Interactive Desktop App…, FocusTracker, Focus tracking and UI Automation target lock module for Windows. Ensures…, Verifies if the current foreground window and control still match the snapshot., LLM generation pipeline with Groq high-speed cloud generation, local Ollama… (+8 more)
+Cohesion: 0.12
+Nodes (17): ESP32 & Windows Voice Compose & Dictate Companion Service Resides in the…, ESP32 & Windows Voice Compose & Dictate Companion - Interactive Desktop App…, Focus tracking and UI Automation target lock module for Windows. Ensures…, One edge dispatcher for the firmware's held keys, used by both companions., LLM generation pipeline with Groq high-speed cloud generation, local Ollama…, build_compose_messages(), build_dictate_messages(), Prompt engine for Australian English text generation, grammar cleaning, and… (+9 more)
 
 ### Community 44 - ".do_POST"
 Cohesion: 0.23
@@ -228,8 +231,8 @@ Cohesion: 0.22
 Nodes (11): convert_24k_mono_to_16k_stereo_wav(), Converts 24kHz mono 16-bit PCM WAV to 16kHz stereo 16-bit PCM WAV for ESP32 I2S., Prepare text for TTS pronunciation and ensure optimal generation length., Generate audio via Voicebox and format for ESP32 playback., Generates 16kHz stereo WAV using Windows SAPI (instant offline fallback)., Generates 16kHz stereo WAV using Voicebox (primary) or Windows SAPI (instant…, resolve_voicebox_profile_id(), sanitize_for_tts() (+3 more)
 
 ### Community 46 - "drawStorageExplorer"
-Cohesion: 0.29
-Nodes (7): String, drawStorageExplorer, drawStorageListOnly, navigateStorageTo, navigateStorageUp, refreshStorageExplorer, scrollStorageList
+Cohesion: 0.33
+Nodes (6): drawStorageExplorer, drawStorageListOnly, refreshStorageExplorer, scrollStorageList, getSDCardStatus(), sdCardGetStorageSpace()
 
 ### Community 47 - "ask_fast_llm"
 Cohesion: 0.31
@@ -255,13 +258,13 @@ Nodes (7): check_voicebox_online(), get_composite_status(), probe_hermes_health(
 Cohesion: 0.33
 Nodes (6): queue_lazy_tts(), _run(), Asynchronously speaks text out loud on the host computer's speakers., Start TTS in the background so the JSON reply can leave before audio is ready., speak_on_host_speaker(), _run()
 
-### Community 53 - "ComposeCompanion"
-Cohesion: 0.16
-Nodes (11): KeyboardEvent, ComposeCompanion, F13 Pressed: Begin Compose recording., F13 Released: Stop recording and dispatch Compose pipeline., F14 Pressed: Begin Dictate recording., F14 Released: Stop recording and dispatch Dictate pipeline., F15 Tapped: Inject pending payload if in READY status., Global keyboard hook dispatcher. (+3 more)
+### Community 53 - "wrapTextToChatLines"
+Cohesion: 0.33
+Nodes (6): TFT_eSPI, vector, drawWrappedText(), MacroPadGUI::MacroPadGUI(), rebuildChatLines, wrapTextToChatLines()
 
 ### Community 54 - "4. Problems Encountered & Root Causes"
-Cohesion: 0.11
-Nodes (18): 1. Executive Summary & Objective, 2. Architecture & Topology, 3.1 Firmware Enhancements, 3.2 Windows Companion Subsystem (`tools/compose/`), 3. Work Completed, 4.1 Problem 1: Windows Bluetooth HID Descriptor Caching, 4.2 Problem 2: Tap vs. Hold Debounce Filter, 4.3 Problem 3: `pyautogui.FailSafeException` Crash on Key Down (+10 more)
+Cohesion: 0.08
+Nodes (22): Everyday use, Repairs, Verification, Windows Compose and Dictate repair — 17 October 2026, 1. Executive Summary & Objective, 2. Architecture & Topology, 3.1 Firmware Enhancements, 3.2 Windows Companion Subsystem (`tools/compose/`) (+14 more)
 
 ### Community 55 - "dispatch_telegram_mirror"
 Cohesion: 0.50
@@ -272,56 +275,68 @@ Cohesion: 0.16
 Nodes (5): Floating non-activating HUD status overlay pill using Tkinter & Win32 styles.…, Displays or updates the HUD overlay non-blockingly., Hides the HUD overlay., Thread-safe floating HUD status pill., StatusOverlay
 
 ### Community 57 - "LlmPipeline"
-Cohesion: 0.15
-Nodes (8): load_env_config(), Loads configuration from compose.env and system environment., LlmPipeline, Calls Groq chat completions endpoint. Returns (content, finish_reason)., Calls local Ollama chat completions endpoint. Returns (content, finish_reason)., Executes LLM generation with automatic multi-round continuation if length…, Cleans up any stray markdown fences or quotes that models occasionally wrap…, sanitize_plain_text()
+Cohesion: 0.18
+Nodes (6): load_env_config(), Loads configuration from compose.env and system environment., LlmPipeline, Calls Groq chat completions endpoint. Returns (content, finish_reason)., Calls local Ollama chat completions endpoint. Returns (content, finish_reason)., Executes LLM generation with automatic multi-round continuation if length…
 
 ### Community 58 - "AudioCapture"
 Cohesion: 0.15
 Nodes (7): ndarray, AudioCapture, find_default_wasapi_input_device(), Audio capture module using sounddevice and WASAPI for high-fidelity PC…, Starts recording audio from the PC microphone via WASAPI., Stops recording and returns: (wav_bytes_16khz, duration_seconds, rms_level), Finds the default Windows WASAPI recording device and its native sample rate.
 
 ### Community 59 - "SpeechPipeline"
-Cohesion: 0.31
-Nodes (4): Uploads WAV bytes to Groq Whisper endpoint., Transcribes WAV bytes via local faster-whisper., Transcribes audio bytes. Returns: (transcript, provider_used, latency_seconds), SpeechPipeline
+Cohesion: 0.19
+Nodes (7): Uploads WAV bytes to Groq Whisper endpoint., Transcribes WAV bytes via local faster-whisper., Transcribes audio bytes. Returns: (transcript, provider_used, latency_seconds), SpeechPipeline, run(), test_auto_whisper_retries_lazy_cuda_failure_on_cpu(), test_explicit_cuda_configuration_does_not_silently_switch_device()
 
-### Community 60 - ".run"
-Cohesion: 0.22
-Nodes (6): Image, open_config_action(), paste_ready_action(), toggle_local_only(), create_tray_icon_image(), Creates a tray icon with amber/emerald indicator dot.
+### Community 60 - "ComposeCompanion"
+Cohesion: 0.09
+Nodes (15): Image, ComposeCompanion, open_config_action(), paste_ready_action(), toggle_local_only(), create_tray_icon_image(), F13 Released: Stop recording and dispatch Compose pipeline., F14 Pressed: Begin Dictate recording. (+7 more)
 
-### Community 61 - "5. Set up the optional voice receiver"
-Cohesion: 0.50
-Nodes (4): 5. Set up the optional voice receiver, Check network reachability, Install Python dependencies, Select the AI route explicitly
+### Community 61 - ".inject_paste"
+Cohesion: 0.19
+Nodes (11): ClipboardManager, _Input, _InputUnion, _KeyboardInput, Clipboard manager for Windows with atomic snapshot, paste injection, prior…, Send a checked native Ctrl+V, independently of the pointer position., Attempts to open the Windows clipboard with retries in case another process…, Safely retrieves current text in clipboard if available. (+3 more)
 
 ### Community 62 - "ComposeApp"
-Cohesion: 0.16
-Nodes (7): Tk, Attempts to open the Windows clipboard with retries in case another process…, Safely retrieves current text in clipboard if available., Injects text at the current cursor position: 1. Snapshots prior clipboard. 2.…, ComposeApp, load_env_config(), Polls for hardware hotkeys sent by the ESP32 MacroPad or physical PC keyboard:…
+Cohesion: 0.19
+Nodes (4): Tk, ComposeApp, load_env_config(), Snapshots the active foreground window HWND and focused UI Automation control.
 
 ### Community 63 - "_coeff_div"
 Cohesion: 0.15
 Nodes (13): _coeff_div, adc_div, adc_osr, bclk_div, dac_div, dac_osr, fs_mode, lrck_h (+5 more)
 
-### Community 64 - "6. Connect Blender MCP"
+### Community 64 - "test_compose.py"
+Cohesion: 0.27
+Nodes (11): make_app(), Regression checks without recording, network requests or desktop keystrokes., test_busy_pipeline_rejects_new_recording(), test_changed_focus_keeps_result_ready_without_paste(), test_dictation_survives_unavailable_cleanup_provider(), test_failed_paste_keeps_payload_for_retry(), test_hardware_release_stops_recording_instead_of_waiting_for_another_down(), test_microphone_failure_does_not_claim_to_record() (+3 more)
+
+### Community 65 - "5. Set up the optional voice receiver"
+Cohesion: 0.50
+Nodes (4): 5. Set up the optional voice receiver, Check network reachability, Install Python dependencies, Select the AI route explicitly
+
+### Community 66 - "6. Connect Blender MCP"
 Cohesion: 0.50
 Nodes (4): 6. Connect Blender MCP, Codex, Cursor, Verify the connection
 
+### Community 67 - "FocusTracker"
+Cohesion: 0.24
+Nodes (6): F13 Pressed: Begin Compose recording., FocusTracker, Verifies if the current foreground window and control still match the snapshot., Read the UIA selection without altering clipboard or held HID modifiers., test_capture_selected_text_extracts_via_text_pattern(), test_capture_selected_text_falls_back_to_parent()
+
 ## Knowledge Gaps
-- **295 isolated node(s):** `start_receiver.sh script`, `count`, `minVal`, `maxVal`, `sum` (+290 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 469 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **299 isolated node(s):** `start_receiver.sh script`, `count`, `minVal`, `maxVal`, `sum` (+294 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 490 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `MacroPadGUI` connect `MacroPadGUI` to `gui.cpp`, `gui.h`, `drawDashboard`, `main.cpp`, `redrawVoiceCard`, `drawStorageExplorer`?**
-  _High betweenness centrality (0.029) - this node is a cross-community bridge._
-- **Are the 6 inferred relationships involving `ComposeCompanion` (e.g. with `AudioCapture` and `ClipboardManager`) actually correct?**
-  _`ComposeCompanion` has 6 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `MacroPadGUI` connect `MacroPadGUI` to `gui.cpp`, `ChatLine`, `drawDashboard`, `main.cpp`, `addVoiceTurn`, `drawStorageExplorer`, `wrapTextToChatLines`?**
+  _High betweenness centrality (0.034) - this node is a cross-community bridge._
+- **Why does `EnvironmentProfile` connect `EnvironmentManager` to `main.cpp`?**
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+- **Why does `EnvironmentManager` connect `EnvironmentManager` to `main.cpp`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Are the 8 inferred relationships involving `ComposeApp` (e.g. with `AudioCapture` and `ClipboardManager`) actually correct?**
+  _`ComposeApp` has 8 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `start_receiver.sh script`, `count`, `minVal` to the rest of the system?**
-  _295 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _299 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `MacroPadGUI` be split into smaller, more focused modules?**
-  _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08666666666666667 - nodes in this community are weakly interconnected._
 - **Should `EnvironmentManager` be split into smaller, more focused modules?**
-  _Cohesion score 0.07641196013289037 - nodes in this community are weakly interconnected._
-- **Should `AudioRecorder` be split into smaller, more focused modules?**
-  _Cohesion score 0.05142857142857143 - nodes in this community are weakly interconnected._
-- **Should `network_manager.cpp` be split into smaller, more focused modules?**
-  _Cohesion score 0.12941176470588237 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07804878048780488 - nodes in this community are weakly interconnected._

@@ -54,9 +54,9 @@
     "semantic_hash": "26a1ce34e511f502ec6a7c5439bc6cb7"
   },
   "server/hermes_voice_receiver.py": {
-    "mtime": 1792134531.0264244,
-    "seen": 1792158467.3689444,
-    "ast_hash": "c73b7e4c4c631a383f9bafd5578321df",
+    "mtime": 1792315357.625545,
+    "seen": 1792317990.4960938,
+    "ast_hash": "040b31f517fd5effcefffdbf7a8fc71a",
     "semantic_hash": ""
   },
   "server/start_receiver.sh": {
@@ -624,39 +624,39 @@
     "semantic_hash": ""
   },
   "tools/compose/clipboard_manager.py": {
-    "mtime": 1792231507.183848,
-    "seen": 1792232286.1841042,
-    "ast_hash": "069f2235c90ceefad8851051ed810cef",
+    "mtime": 1792239476.276878,
+    "seen": 1792239595.8260183,
+    "ast_hash": "48dcf2b58bef0a865d2244c7982c9d22",
     "semantic_hash": ""
   },
   "tools/compose/compose_companion.py": {
-    "mtime": 1792231525.739205,
-    "seen": 1792232286.184105,
-    "ast_hash": "7b8944b02a70f3e8e5402aee84a5b004",
+    "mtime": 1792315459.3709495,
+    "seen": 1792317990.496114,
+    "ast_hash": "14e77e6e9ee8766b39a327b5f410599e",
     "semantic_hash": ""
   },
   "tools/compose/focus_tracker.py": {
-    "mtime": 1792231506.921812,
-    "seen": 1792232286.1841066,
-    "ast_hash": "2d58b8bf7d89d4ddc62a85976553c78e",
+    "mtime": 1792315294.6389115,
+    "seen": 1792317990.4961152,
+    "ast_hash": "b184db24a1ba5631f29fdf54576a1600",
     "semantic_hash": ""
   },
   "tools/compose/llm_pipeline.py": {
-    "mtime": 1792195984.564924,
-    "seen": 1792196382.921921,
-    "ast_hash": "7f2639461fa3b4ecb65701e4c4ec6827",
+    "mtime": 1792315445.7292092,
+    "seen": 1792317990.4961164,
+    "ast_hash": "1ec108d3d2bf7a25a9c5fbcd6b2abe52",
     "semantic_hash": ""
   },
   "tools/compose/prompt_engine.py": {
-    "mtime": 1792195856.2286382,
-    "seen": 1792196382.921921,
-    "ast_hash": "bb440872be3784fd2e23dcf68b546f59",
+    "mtime": 1792235014.3443742,
+    "seen": 1792235204.8079016,
+    "ast_hash": "70b0e2a1df081f976d8ad43895aa6d73",
     "semantic_hash": ""
   },
   "tools/compose/speech_pipeline.py": {
-    "mtime": 1792231651.6519032,
-    "seen": 1792232286.18411,
-    "ast_hash": "bac659a01db1c22cd67139c789d86fe6",
+    "mtime": 1792315317.8590786,
+    "seen": 1792317990.496118,
+    "ast_hash": "4d001c21bdd1d831bc543c3a3e490cce",
     "semantic_hash": ""
   },
   "tools/compose/status_overlay.py": {
@@ -678,9 +678,9 @@
     "semantic_hash": ""
   },
   "tools/compose/compose_gui.py": {
-    "mtime": 1792231631.851453,
-    "seen": 1792232286.1841056,
-    "ast_hash": "fc45a7e654e9b54d8c38589c18dd4a1d",
+    "mtime": 1792315458.907889,
+    "seen": 1792317990.4961147,
+    "ast_hash": "71429b296eca751cc28ea6ae092f5078",
     "semantic_hash": ""
   },
   "docs/ESP32_Windows_Compose_Dictate_Implementation_Report.md": {
@@ -696,9 +696,9 @@
     "semantic_hash": ""
   },
   "tools/compose/tests/test_compose.py": {
-    "mtime": 1792231711.457786,
-    "seen": 1792232286.184111,
-    "ast_hash": "8da55049709bbd006ba29f38d7c3762d",
+    "mtime": 1792315467.4557278,
+    "seen": 1792317990.4961193,
+    "ast_hash": "bdd7cc5bcfad45379e45bb0f2d8483e9",
     "semantic_hash": ""
   },
   "docs/Compose_Dictate_Repair_2026-10-17.md": {
@@ -707,9 +707,21 @@
     "ast_hash": "3f8f2eced08ab2c4caac13bb66edbbe0",
     "semantic_hash": ""
   },
+  "tools/compose/tests/test_web_grounding.py": {
+    "mtime": 1792235186.251398,
+    "seen": 1792235204.8079016,
+    "ast_hash": "4feae86c1c18931967182356b265a0f5",
+    "semantic_hash": ""
+  },
+  "tools/compose/web_grounding.py": {
+    "mtime": 1792234996.034318,
+    "seen": 1792235204.8079016,
+    "ast_hash": "fdf09723c2cadeaf66115465ea3a5912",
+    "semantic_hash": ""
+  },
   "graphify-out/converted/pinout_allocation_f58fa43e.md": {
     "mtime": 1789134115.7116265,
-    "seen": 1792232286.1841276,
+    "seen": 1792317990.496137,
     "ast_hash": "a48a5fad95d8c475f9ff97c40b213d0b",
     "semantic_hash": ""
   }

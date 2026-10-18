@@ -618,27 +618,27 @@
     "semantic_hash": ""
   },
   "tools/compose/audio_capture.py": {
-    "mtime": 1792229308.6996808,
-    "seen": 1792229431.1359339,
-    "ast_hash": "9a0de90d23c989f47867b227e6230926",
+    "mtime": 1792231610.8417168,
+    "seen": 1792232286.1841018,
+    "ast_hash": "f2c8596faa3ce5c85c313c8498e49ae9",
     "semantic_hash": ""
   },
   "tools/compose/clipboard_manager.py": {
-    "mtime": 1792195963.473001,
-    "seen": 1792196382.921921,
-    "ast_hash": "cf694d81cbab8b113b0d191d22f2b1dd",
+    "mtime": 1792231507.183848,
+    "seen": 1792232286.1841042,
+    "ast_hash": "069f2235c90ceefad8851051ed810cef",
     "semantic_hash": ""
   },
   "tools/compose/compose_companion.py": {
-    "mtime": 1792229175.329151,
-    "seen": 1792229431.1359339,
-    "ast_hash": "c42b6c04f1c43fb52116063c6d871dcb",
+    "mtime": 1792235040.4441187,
+    "seen": 1792235204.8079016,
+    "ast_hash": "cb2e9fbc6b8969344b033b4e64351835",
     "semantic_hash": ""
   },
   "tools/compose/focus_tracker.py": {
-    "mtime": 1792229105.988615,
-    "seen": 1792229431.1359339,
-    "ast_hash": "4ac63f7895031ea4bc27451fe13636fb",
+    "mtime": 1792237600.0167837,
+    "seen": 1792237643.7166114,
+    "ast_hash": "5ca6262014fee321735f25ebb238bc65",
     "semantic_hash": ""
   },
   "tools/compose/llm_pipeline.py": {
@@ -648,15 +648,15 @@
     "semantic_hash": ""
   },
   "tools/compose/prompt_engine.py": {
-    "mtime": 1792195856.2286382,
-    "seen": 1792196382.921921,
-    "ast_hash": "bb440872be3784fd2e23dcf68b546f59",
+    "mtime": 1792235014.3443742,
+    "seen": 1792235204.8079016,
+    "ast_hash": "70b0e2a1df081f976d8ad43895aa6d73",
     "semantic_hash": ""
   },
   "tools/compose/speech_pipeline.py": {
-    "mtime": 1792195891.563438,
-    "seen": 1792196382.921921,
-    "ast_hash": "4e1eecd443665e70ee136492eb5acb8b",
+    "mtime": 1792231651.6519032,
+    "seen": 1792232286.18411,
+    "ast_hash": "bac659a01db1c22cd67139c789d86fe6",
     "semantic_hash": ""
   },
   "tools/compose/status_overlay.py": {
@@ -666,9 +666,9 @@
     "semantic_hash": ""
   },
   "tools/compose/requirements.txt": {
-    "mtime": 1792195755.152661,
-    "seen": 1792196382.921921,
-    "ast_hash": "ec8db9369cc9abb3385970d9e95ee6ac",
+    "mtime": 1792231525.7402043,
+    "seen": 1792232286.1841283,
+    "ast_hash": "5801a7b506ab4f3ba3b622b6c20b226c",
     "semantic_hash": ""
   },
   "tools/compose/check_ble.ps1": {
@@ -678,15 +678,45 @@
     "semantic_hash": ""
   },
   "tools/compose/compose_gui.py": {
-    "mtime": 1792230555.8394759,
-    "seen": 1792230588.2496085,
-    "ast_hash": "8884aa7aa2a7f1a7c182bca8593d4ed5",
+    "mtime": 1792237614.7777948,
+    "seen": 1792237643.7166114,
+    "ast_hash": "1f865778070e2eff25355cb47e92972e",
     "semantic_hash": ""
   },
   "docs/ESP32_Windows_Compose_Dictate_Implementation_Report.md": {
-    "mtime": 1792230866.0326998,
-    "seen": 1792230878.189484,
-    "ast_hash": "ff834c104aacd7aa5f68673686ee13bd",
+    "mtime": 1792231775.3985937,
+    "seen": 1792232286.184121,
+    "ast_hash": "b611cffa2bfa592f58ef3621c451cb7c",
+    "semantic_hash": ""
+  },
+  "tools/compose/hotkey_state.py": {
+    "mtime": 1792231456.8562245,
+    "seen": 1792232286.1841075,
+    "ast_hash": "dc290d8d5502f74e154a95eaa0ad2306",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_compose.py": {
+    "mtime": 1792237627.6243258,
+    "seen": 1792237643.7166114,
+    "ast_hash": "b977a882630500b8aefa82325a78cbba",
+    "semantic_hash": ""
+  },
+  "docs/Compose_Dictate_Repair_2026-10-17.md": {
+    "mtime": 1792231775.1916854,
+    "seen": 1792232286.1841187,
+    "ast_hash": "3f8f2eced08ab2c4caac13bb66edbbe0",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_web_grounding.py": {
+    "mtime": 1792235186.251398,
+    "seen": 1792235204.8079016,
+    "ast_hash": "4feae86c1c18931967182356b265a0f5",
+    "semantic_hash": ""
+  },
+  "tools/compose/web_grounding.py": {
+    "mtime": 1792234996.034318,
+    "seen": 1792235204.8079016,
+    "ast_hash": "fdf09723c2cadeaf66115465ea3a5912",
     "semantic_hash": ""
   }
 }
