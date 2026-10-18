@@ -175,3 +175,178 @@ def test_explicit_cuda_configuration_does_not_silently_switch_device():
     pipeline._local_model.transcribe.side_effect = RuntimeError('missing library')
     with pytest.raises(RuntimeError):
         pipeline._transcribe_local(b'fixture')
+
+
+def test_capture_selected_text_extracts_via_text_pattern():
+    from focus_tracker import FocusTracker
+    import uiautomation as auto
+
+    mock_range = Mock()
+    mock_range.GetText.return_value = "Selected essay text"
+
+    mock_pattern = Mock()
+    mock_pattern.GetSelection.return_value = [mock_range]
+
+    mock_control = Mock()
+    mock_control.GetPattern.side_effect = lambda pat_id: mock_pattern if pat_id == auto.PatternId.TextPattern else None
+
+    with patch("uiautomation.GetFocusedControl", return_value=mock_control):
+        assert FocusTracker.capture_selected_text() == "Selected essay text"
+
+
+def test_capture_selected_text_falls_back_to_parent():
+    from focus_tracker import FocusTracker
+    import uiautomation as auto
+
+    mock_range = Mock()
+    mock_range.GetText.return_value = "Parent essay text"
+
+    mock_pattern = Mock()
+    mock_pattern.GetSelection.return_value = [mock_range]
+
+    mock_parent = Mock()
+    mock_parent.GetPattern.side_effect = lambda pat_id: mock_pattern if pat_id == auto.PatternId.TextPattern else None
+
+    mock_control = Mock()
+    mock_control.GetPattern.return_value = None
+    mock_control.GetParentControl.return_value = mock_parent
+
+    with patch("uiautomation.GetFocusedControl", return_value=mock_control):
+        assert FocusTracker.capture_selected_text() == "Parent essay text"
+
+
+def test_capture_selected_text_falls_back_to_wm_copy_for_scintilla():
+    from focus_tracker import FocusTracker
+
+    with patch("uiautomation.GetFocusedControl", return_value=None), \
+         patch.object(FocusTracker, "get_focused_child_hwnd", return_value=12345), \
+         patch.object(FocusTracker, "_capture_via_wm_copy", return_value="Notepad++ essay text") as mock_copy:
+        result = FocusTracker.capture_selected_text(fg_hwnd=999)
+        assert result == "Notepad++ essay text"
+        mock_copy.assert_called_with(12345)
+
+
+def test_capture_selected_text_falls_back_to_chord_ctrl_c():
+    from focus_tracker import FocusTracker
+
+    with patch("uiautomation.GetFocusedControl", return_value=None), \
+         patch.object(FocusTracker, "_capture_via_wm_copy", return_value=""), \
+         patch.object(FocusTracker, "_capture_via_chord_ctrl_c", return_value="Chord captured text") as mock_ctrl_c:
+        result = FocusTracker.capture_selected_text(fg_hwnd=999)
+        assert result == "Chord captured text"
+        mock_ctrl_c.assert_called_once()
+
+
+def test_chord_ctrl_c_releases_keys_it_presses_and_restores_alt():
+    from focus_tracker import FocusTracker
+
+    events = []
+
+    def event(vk, up=False):
+        events.append((vk, up))
+
+    seq = {"n": 0}
+
+    def sequence():
+        seq["n"] += 1
+        return 1 if seq["n"] == 1 else 2
+
+    with patch("focus_tracker._key_event", side_effect=event), \
+         patch("focus_tracker._key_is_down", side_effect=lambda vk: vk == 0x12), \
+         patch("focus_tracker.time.sleep"), \
+         patch("focus_tracker.ctypes.windll.user32.GetClipboardSequenceNumber", side_effect=sequence), \
+         patch("focus_tracker.ClipboardManager.get_clipboard_text", side_effect=["old", "copied"]), \
+         patch("focus_tracker.ClipboardManager.set_clipboard_text") as restore:
+        assert FocusTracker._capture_via_chord_ctrl_c() == "copied"
+
+    assert (0x12, True) in events
+    assert events[-1] == (0x12, False)
+    assert [e for e in events if e[0] == 0x11] == [(0x11, False), (0x11, True)]
+    restore.assert_called_once_with("old")
+
+
+def test_chord_ctrl_c_releases_ctrl_when_injection_fails():
+    from focus_tracker import FocusTracker
+
+    events = []
+
+    def event(vk, up=False):
+        events.append((vk, up))
+        if vk == 0x43 and not up:
+            raise OSError("injected")
+
+    with patch("focus_tracker._key_event", side_effect=event), \
+         patch("focus_tracker._key_is_down", return_value=False), \
+         patch("focus_tracker.time.sleep"), \
+         patch("focus_tracker.ctypes.windll.user32.GetClipboardSequenceNumber", return_value=1), \
+         patch("focus_tracker.ClipboardManager.get_clipboard_text", return_value="old"):
+        assert FocusTracker._capture_via_chord_ctrl_c() == ""
+
+    assert (0x11, True) in events
+
+
+def test_capture_selected_text_ignores_this_process():
+    import os
+    from focus_tracker import FocusTracker
+
+    with patch("uiautomation.GetFocusedControl", return_value=None), \
+         patch("focus_tracker.win32process.GetWindowThreadProcessId", return_value=(1, os.getpid())), \
+         patch.object(FocusTracker, "_capture_via_wm_copy") as copy, \
+         patch.object(FocusTracker, "_capture_via_chord_ctrl_c") as chord:
+        assert FocusTracker.capture_selected_text(fg_hwnd=999) == ""
+    copy.assert_not_called()
+    chord.assert_not_called()
+
+
+def test_groq_stt_network_failure_stays_on_local_whisper():
+    import requests
+    pipeline = SpeechPipeline(groq_api_key="gsk-test")
+    groq_calls = {"n": 0}
+
+    def groq(_wav):
+        groq_calls["n"] += 1
+        raise requests.ConnectionError("blocked")
+
+    with patch.object(pipeline, "_transcribe_groq", side_effect=groq), \
+         patch.object(pipeline, "_transcribe_local", return_value="hello"):
+        text, provider, _ = pipeline.transcribe(b"x" * 120)
+        assert (text, provider) == ("hello", "local_whisper")
+        assert pipeline.cloud_down is True
+        pipeline.transcribe(b"y" * 120)
+    assert groq_calls["n"] == 1
+
+
+def test_groq_timeout_latches_local_ollama():
+    import requests
+    from llm_pipeline import LlmPipeline
+
+    pipeline = LlmPipeline(groq_api_key="gsk-test", local_only=False)
+    groq_calls = {"n": 0}
+
+    def groq(*_args, **_kwargs):
+        groq_calls["n"] += 1
+        raise requests.Timeout("blocked")
+
+    with patch.object(pipeline, "_call_groq", side_effect=groq), \
+         patch.object(pipeline, "_call_ollama", return_value=("ok", "stop")):
+        text, provider, _, _ = pipeline.generate([{"role": "user", "content": "hi"}])
+        assert (text, provider, pipeline.local_only) == ("ok", "ollama", True)
+        pipeline.generate([{"role": "user", "content": "again"}])
+    assert groq_calls["n"] == 1
+
+
+def test_ollama_uses_installed_model_when_configured_model_is_missing():
+    from llm_pipeline import LlmPipeline
+
+    pipeline = LlmPipeline(local_only=True, ollama_model="llama3.2:latest")
+    missing = Mock(status_code=404, text="model not found")
+    ok = Mock(status_code=200)
+    ok.json.return_value = {"choices": [{"message": {"content": "hi"}, "finish_reason": "stop"}]}
+    tags = Mock(status_code=200)
+    tags.json.return_value = {"models": [{"name": "qwen3.5:latest"}]}
+    with patch("llm_pipeline.requests.post", side_effect=[missing, ok]) as post, \
+         patch("llm_pipeline.requests.get", return_value=tags):
+        text, provider, _, _ = pipeline.generate([{"role": "user", "content": "hi"}])
+    assert (text, provider, pipeline.ollama_model) == ("hi", "ollama", "qwen3.5:latest")
+    assert post.call_args_list[1].kwargs["json"]["model"] == "qwen3.5:latest"
+

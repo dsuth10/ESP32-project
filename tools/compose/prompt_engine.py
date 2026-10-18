@@ -27,12 +27,26 @@ STRICT CONSTRAINTS:
 
 CONTINUATION_PROMPT = "Continue writing exactly where you left off. Do not repeat previous text or include any introduction or commentary."
 
+WEB_GROUNDING_PROMPT = """
+LIVE WEB CONTEXT:
+Today's date is {today}. Live web search results are included with the user's message.
+5. For anything time-sensitive, trust the web results over your own training data, which may be out of date.
+6. Use only facts supported by the results; if they do not answer the request, say so briefly rather than guessing.
+7. Do not include URLs, citation numbers or a sources list unless the user asks for them.
+"""
 
-def build_compose_messages(spoken_request: str, selected_text: str = "") -> list[dict]:
+
+def build_compose_messages(spoken_request: str, selected_text: str = "", web_context: str = "") -> list[dict]:
     """Builds the message list for the Compose pipeline."""
-    messages = [{"role": "system", "content": COMPOSE_SYSTEM_PROMPT}]
+    system_prompt = COMPOSE_SYSTEM_PROMPT
+    if web_context.strip():
+        from datetime import datetime
+        system_prompt += WEB_GROUNDING_PROMPT.format(today=datetime.now().strftime("%A %d %B %Y"))
+    messages = [{"role": "system", "content": system_prompt}]
 
     user_content = ""
+    if web_context.strip():
+        user_content += f"{web_context.strip()}\n\n"
     if selected_text.strip():
         user_content += f"Context / Currently Selected Document Text:\n\"\"\"\n{selected_text.strip()}\n\"\"\"\n\n"
 

@@ -709,6 +709,51 @@ _groq_url = urllib.parse.urlsplit(GROQ_BASE_URL)
 _groq_conn: http.client.HTTPSConnection | None = None
 _groq_conn_lock = threading.Lock()
 fast_llm_state = {"ready": False, "error": None, "last_ms": None}
+_groq_skip_until = 0.0
+_hermes_gate = {"checked": 0.0, "live": False}
+
+
+def _groq_network_failure(exc: Exception) -> bool:
+    if isinstance(exc, urllib.error.HTTPError):
+        return False
+    return isinstance(exc, (TimeoutError, socket.timeout, urllib.error.URLError, ConnectionError))
+
+
+def groq_should_try() -> bool:
+    """Skip Groq when it has no key, the model is wrong, or the network just failed."""
+    if not GROQ_API_KEY:
+        return False
+    err = fast_llm_state.get("error") or ""
+    if "not in Groq catalog" in err:
+        return False
+    return time.time() >= _groq_skip_until
+
+
+def mark_groq_unreachable(reason, cooldown: float = 60.0) -> None:
+    """School networks often block Groq. Don't pay the connect timeout on every question."""
+    global _groq_skip_until
+    _groq_skip_until = time.time() + cooldown
+    fast_llm_state.update(ready=False, error=str(reason))
+    print(f"[Groq] Unreachable ({reason}); using local Ollama for {cooldown:.0f}s")
+
+
+def hermes_reachable() -> bool:
+    """Short cached liveness check so a stopped Hermes gateway cannot burn the ESP32 timeout."""
+    now = time.time()
+    if now - _hermes_gate["checked"] < 15:
+        return _hermes_gate["live"]
+    live = False
+    try:
+        health_url = f"{HERMES_BASE_URL.rstrip('/')}/health"
+        with urllib.request.urlopen(health_url, timeout=0.6) as resp:
+            live = resp.status == 200
+    except Exception:
+        live = False
+    _hermes_gate["checked"] = time.time()
+    _hermes_gate["live"] = live
+    if not live:
+        print("[Hermes] Gateway not reachable; voice will stay on the local model")
+    return live
 
 
 def _groq_request(method: str, endpoint: str, body: bytes | None, headers: dict, timeout: float) -> tuple[int, bytes]:
@@ -760,7 +805,10 @@ def ask_fast_llm(prompt: str, extra_system: str = "") -> tuple[str, bool]:
         status, raw = _groq_request("POST", "/chat/completions", json.dumps(body).encode("utf-8"),
                                     _groq_headers(), FAST_LLM_TIMEOUT_S)
     except Exception as e:
-        fast_llm_state.update(ready=False, error=f"{type(e).__name__}: {e}")
+        if _groq_network_failure(e):
+            mark_groq_unreachable(e)
+        else:
+            fast_llm_state.update(ready=False, error=f"{type(e).__name__}: {e}")
         return (f"Groq error: {e}", False)
     elapsed_ms = int((time.perf_counter() - t0) * 1000)
     if status != 200:
@@ -802,8 +850,11 @@ def warmup_fast_llm():
             fast_llm_state.update(ready=False, error=f"HTTP {status}: {raw.decode('utf-8', 'replace')[:120]}")
             print(f"[Groq] Fast lane check failed: {fast_llm_state['error']}")
     except Exception as e:
-        fast_llm_state.update(ready=False, error=str(e))
-        print(f"[Groq] Fast lane check failed: {e}")
+        if _groq_network_failure(e):
+            mark_groq_unreachable(e)
+        else:
+            fast_llm_state.update(ready=False, error=str(e))
+            print(f"[Groq] Fast lane check failed: {e}")
 
 
 def transcribe_with_groq(wav_path: str) -> str:
@@ -874,31 +925,38 @@ def route_intent(transcript: str) -> str:
 
 def answer_fast_lane(transcript: str) -> tuple[str, bool, str]:
     """Fast lane: Groq (if enabled), then warm local Ollama, then the Hermes agent."""
-    if FAST_LLM_PROVIDER == "groq":
+    if FAST_LLM_PROVIDER == "groq" and groq_should_try():
         reply, ok = ask_fast_llm(transcript)
         if ok:
             return (reply, True, "groq-fast")
         print(f"[WARN] Fast lane Groq failed ({reply}); trying local Ollama")
+    elif FAST_LLM_PROVIDER == "groq":
+        print("[Groq] Skipping fast lane; using local Ollama")
     reply, ok = query_ollama_fallback(transcript)
     if ok:
         return (reply, True, "ollama-local" if FAST_LLM_PROVIDER == "ollama" else "ollama-fallback")
-    reply, ok = ask_hermes_gateway(transcript, timeout=HERMES_AGENT_TIMEOUT_S)
-    if ok:
-        remember_turn(transcript, reply)
-        return (reply, True, "hermes-agent-fallback")
+    if hermes_reachable():
+        reply, ok = ask_hermes_gateway(transcript, timeout=HERMES_AGENT_TIMEOUT_S)
+        if ok:
+            remember_turn(transcript, reply)
+            return (reply, True, "hermes-agent-fallback")
     return (reply, False, "none")
 
 
 def answer_agent_lane(transcript: str) -> tuple[str, bool, str]:
     """Agent lane: Hermes with tools; if it fails, a fast model answers and says tools are offline."""
-    reply, ok = ask_hermes_gateway(transcript, timeout=HERMES_AGENT_TIMEOUT_S)
-    if ok:
-        remember_turn(transcript, reply)
-        return (reply, True, "hermes-agent")
-    print(f"[WARN] Hermes agent unavailable ({reply}); answering without tools")
+    reply, ok = ("Hermes gateway is not running", False)
+    if hermes_reachable():
+        reply, ok = ask_hermes_gateway(transcript, timeout=HERMES_AGENT_TIMEOUT_S)
+        if ok:
+            remember_turn(transcript, reply)
+            return (reply, True, "hermes-agent")
+        print(f"[WARN] Hermes agent unavailable ({reply}); answering without tools")
+    else:
+        print("[WARN] Hermes agent is not running; answering without tools")
     tools_down = ("Your tools, live data and device controls are unavailable right now. If the request "
                   "needs them, say so briefly instead of guessing.")
-    if FAST_LLM_PROVIDER == "groq":
+    if FAST_LLM_PROVIDER == "groq" and groq_should_try():
         fast_reply, fast_ok = ask_fast_llm(transcript, extra_system=tools_down)
         if fast_ok:
             return (fast_reply, True, "groq-no-tools")

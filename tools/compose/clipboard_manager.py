@@ -70,6 +70,42 @@ class ClipboardManager:
                 pass
 
     @classmethod
+    def empty_clipboard(cls) -> bool:
+        """Safely empties the Windows clipboard."""
+        if not cls._open_clipboard_retry():
+            return False
+        try:
+            win32clipboard.EmptyClipboard()
+            return True
+        except Exception as e:
+            logging.debug("Error emptying clipboard: %s", e)
+            return False
+        finally:
+            try:
+                win32clipboard.CloseClipboard()
+            except Exception:
+                pass
+
+    @classmethod
+    def set_clipboard_text(cls, text: str) -> bool:
+        """Safely sets Unicode text on the Windows clipboard."""
+        if not cls._open_clipboard_retry():
+            return False
+        try:
+            win32clipboard.EmptyClipboard()
+            if text is not None:
+                win32clipboard.SetClipboardData(win32con.CF_UNICODETEXT, text)
+            return True
+        except Exception as e:
+            logging.debug("Error setting clipboard text: %s", e)
+            return False
+        finally:
+            try:
+                win32clipboard.CloseClipboard()
+            except Exception:
+                pass
+
+    @classmethod
     def inject_paste(cls, text: str, restore_delay: float = 0.15) -> bool:
         """
         Injects text at the current cursor position:

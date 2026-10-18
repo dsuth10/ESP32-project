@@ -9,6 +9,11 @@ import time
 import logging
 import requests
 
+
+def is_cloud_network_failure(exc: Exception) -> bool:
+    """True when a cloud call failed because the network blocked or dropped it."""
+    return isinstance(exc, (requests.Timeout, requests.ConnectionError))
+
 os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 
 
@@ -28,6 +33,7 @@ class SpeechPipeline:
         self.local_model_name = local_model_name
         self.local_device = local_device
         self.local_only = local_only
+        self.cloud_down = False
 
         self._local_model = None
         self._resolved_device = None
@@ -105,14 +111,18 @@ class SpeechPipeline:
             return "", "none", 0.0
 
         # Try Groq first if available and not forced local
-        if self.groq_api_key and not self.local_only:
+        if self.groq_api_key and not self.local_only and not self.cloud_down:
             try:
                 text = self._transcribe_groq(wav_bytes)
                 latency = time.time() - t0
                 logging.info("Groq STT transcription succeeded in %.2fs: '%s'", latency, text)
                 return text, "groq", latency
             except Exception as e:
-                logging.warning("Groq STT failed: %s. Falling back to local faster-whisper...", e)
+                if is_cloud_network_failure(e):
+                    self.cloud_down = True
+                    logging.warning("Groq STT unreachable (%s). Staying on local Whisper for this session.", e)
+                else:
+                    logging.warning("Groq STT failed: %s. Falling back to local faster-whisper...", e)
 
         # Fallback to local faster-whisper
         try:

@@ -31,6 +31,7 @@ from prompt_engine import (
 from speech_pipeline import SpeechPipeline
 from llm_pipeline import LlmPipeline
 from clipboard_manager import ClipboardManager
+from web_grounding import WebGrounding
 
 
 def load_env_config() -> dict:
@@ -59,6 +60,14 @@ def load_env_config() -> dict:
         "AUDIO_SAMPLE_RATE",
         "CLIPBOARD_RESTORE_DELAY",
         "CONTINUATION_MAX_ROUNDS",
+        "WEB_SEARCH_ENABLED",
+        "BRAVE_API_KEY",
+        "BRAVE_COUNTRY",
+        "BRAVE_RESULT_COUNT",
+        "INTENT_ROUTER",
+        "OPENROUTER_API_KEY",
+        "JEV_MODEL",
+        "ROUTER_GROQ_MODEL",
     ]:
         if k in os.environ and os.environ[k]:
             env_vars[k] = os.environ[k]
@@ -101,6 +110,7 @@ class ComposeApp:
             local_only=self.local_only,
             max_continuation_rounds=int(self.config.get("CONTINUATION_MAX_ROUNDS", "4")),
         )
+        self.web_grounding = WebGrounding.from_config(self.config)
 
         self.restore_delay = float(self.config.get("CLIPBOARD_RESTORE_DELAY", "0.15"))
         self.pending_ready_payload: str | None = None
@@ -121,6 +131,7 @@ class ComposeApp:
         self.log(f"Service initialized. Active Microphone: {self.audio_capture.device_name} (WASAPI)")
         provider = "Local Whisper + Ollama" if self.local_only or not self.config.get("GROQ_API_KEY") else "Groq + local fallback"
         self.log(f"Processing: {provider}")
+        self.log(self.web_grounding.describe())
         self.log("Ready and listening for ESP32 MacroPad or keyboard hotkeys!")
 
         # Start hardware key listener thread
@@ -330,7 +341,8 @@ class ComposeApp:
             self._target_focus_snap = FocusTracker.get_focus_snapshot()
             if self._target_focus_snap.get("pid") == os.getpid():
                 self._target_focus_snap = None
-            self._target_selected_text = FocusTracker.capture_selected_text() if mode == "compose" else ""
+            fg_hwnd = self._target_focus_snap.get("hwnd", 0) if self._target_focus_snap else 0
+            self._target_selected_text = FocusTracker.capture_selected_text(fg_hwnd) if mode == "compose" else ""
         except Exception as e:
             self._target_focus_snap = None
             self._target_selected_text = ""
@@ -338,6 +350,13 @@ class ComposeApp:
         self._recording_timer = self.root.after(60000, self.stop_recording_flow)
 
         if mode == "compose":
+            if self._target_selected_text:
+                preview = self._target_selected_text.strip().replace("\n", " ")
+                if len(preview) > 60:
+                    preview = preview[:57] + "..."
+                self.log(f"📋 Context captured from document ({len(self._target_selected_text)} chars): \"{preview}\"")
+            else:
+                self.log("📋 Context: No text selected in document.")
             self.set_status("RECORDING (Compose)... Speak prompt, click again to write!", "#F59E0B")
             self.btn_compose.config(text="🛑 FINISH RECORDING", bg="#DC2626")
             self.log(">>> RECORDING STARTED (Compose) <<< Speak your instruction into your microphone...")
@@ -377,6 +396,18 @@ class ComposeApp:
             daemon=True,
         ).start()
 
+    def _stay_local_if_cloud_blocked(self):
+        """A blocked school network should not add a cloud timeout to every later button press."""
+        speech_blocked = getattr(self.speech_pipeline, "cloud_down", False) is True
+        llm_blocked = getattr(self.llm_pipeline, "local_only", False) is True and getattr(self, "local_only", False) is not True
+        if getattr(self, "local_only", False) is True or not (speech_blocked or llm_blocked):
+            return
+        self.local_only = True
+        self.llm_pipeline.local_only = True
+        self.speech_pipeline.local_only = True
+        self.speech_pipeline.cloud_down = True
+        self.log("Cloud services are unreachable. Using local Whisper and Ollama for the rest of this session.")
+
     def _process_pipeline_worker(self, mode: str, wav_bytes: bytes, focus_snap: dict | None, selected_text: str):
         try:
             self.set_status("TRANSCRIBING: Sending speech to Whisper...", "#8B5CF6")
@@ -389,12 +420,25 @@ class ComposeApp:
                 return
 
             self.log(f"Transcript ({stt_prov}, {stt_lat:.2f}s): \"{transcript}\"")
+            self._stay_local_if_cloud_blocked()
 
             if mode == "compose":
+                web_context = ""
+                grounding = getattr(self, "web_grounding", None)
+                if grounding is not None:
+                    self.set_status("ROUTING: Checking if live web info is needed...", "#8B5CF6")
+                    web = grounding.fetch_context(
+                        transcript, selected_text, local_only=self.local_only,
+                        on_status=lambda msg: self.set_status(f"SEARCHING: {msg}", "#3B82F6"),
+                    )
+                    self.log(web.summary())
+                    web_context = web.context
+
                 self.set_status("WRITING: Synthesizing response with LLM...", "#8B5CF6")
                 self.log("Building prompt and generating response with LLM...")
-                messages = build_compose_messages(transcript, selected_text)
+                messages = build_compose_messages(transcript, selected_text, web_context)
                 reply, llm_prov, llm_lat, parts = self.llm_pipeline.generate(messages, temperature=0.3)
+                self._stay_local_if_cloud_blocked()
 
                 if not reply.strip():
                     self.log("⚠️ LLM returned empty reply.")
@@ -415,6 +459,7 @@ class ComposeApp:
                 except Exception:
                     self.log("Grammar cleanup unavailable; retaining the original transcript.")
                     candidate = transcript
+                self._stay_local_if_cloud_blocked()
 
                 final_text = verify_dictate_overlap(transcript, candidate)
                 self.log(f"Dictate output: {final_text}")

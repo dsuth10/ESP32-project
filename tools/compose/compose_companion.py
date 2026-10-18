@@ -25,6 +25,7 @@ from speech_pipeline import SpeechPipeline
 from llm_pipeline import LlmPipeline
 from clipboard_manager import ClipboardManager
 from status_overlay import StatusOverlay
+from web_grounding import WebGrounding
 
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(line_buffering=True, encoding='utf-8', errors='replace')
@@ -71,6 +72,14 @@ def load_env_config() -> dict:
         "AUDIO_SAMPLE_RATE",
         "CLIPBOARD_RESTORE_DELAY",
         "CONTINUATION_MAX_ROUNDS",
+        "WEB_SEARCH_ENABLED",
+        "BRAVE_API_KEY",
+        "BRAVE_COUNTRY",
+        "BRAVE_RESULT_COUNT",
+        "INTENT_ROUTER",
+        "OPENROUTER_API_KEY",
+        "JEV_MODEL",
+        "ROUTER_GROQ_MODEL",
     ]:
         if k in os.environ and os.environ[k]:
             env_vars[k] = os.environ[k]
@@ -121,6 +130,8 @@ class ComposeCompanion:
             local_only=self.local_only,
             max_continuation_rounds=int(self.config.get("CONTINUATION_MAX_ROUNDS", "4")),
         )
+        self.web_grounding = WebGrounding.from_config(self.config)
+        logging.info(self.web_grounding.describe())
         self.overlay = StatusOverlay()
 
         self.restore_delay = float(self.config.get("CLIPBOARD_RESTORE_DELAY", "0.15"))
@@ -139,6 +150,8 @@ class ComposeCompanion:
         self.local_only = value
         self.speech_pipeline.local_only = value
         self.llm_pipeline.local_only = value
+        if not value:
+            self.speech_pipeline.cloud_down = False
         logging.info("Privacy mode set: LOCAL_ONLY = %s", value)
         if self.tray_icon:
             self.tray_icon.icon = create_tray_icon_image(self.local_only)
@@ -165,7 +178,12 @@ class ComposeCompanion:
             logging.debug("Focus snapshot error: %s", e)
             self._focus_snapshot = None
         try:
-            self._selected_text = FocusTracker.capture_selected_text()
+            fg_hwnd = self._focus_snapshot.get("hwnd", 0) if self._focus_snapshot else 0
+            self._selected_text = FocusTracker.capture_selected_text(fg_hwnd)
+            if self._selected_text:
+                logging.info("[Compose] Captured selected text (%d chars): %s...", len(self._selected_text), self._selected_text[:60].replace("\n", " "))
+            else:
+                logging.info("[Compose] No text selected in active window.")
         except Exception as e:
             logging.debug("Capture selected text error: %s", e)
             self._selected_text = ""
@@ -250,6 +268,18 @@ class ComposeCompanion:
 
     # ── Pipeline Worker Threads ─────────────────────────────────────────
 
+    def _stay_local_if_cloud_blocked(self):
+        """A blocked school network should not add a cloud timeout to every later button press."""
+        speech_blocked = getattr(self.speech_pipeline, "cloud_down", False) is True
+        llm_blocked = getattr(self.llm_pipeline, "local_only", False) is True and getattr(self, "local_only", False) is not True
+        if getattr(self, "local_only", False) is True or not (speech_blocked or llm_blocked):
+            return
+        self.local_only = True
+        self.llm_pipeline.local_only = True
+        self.speech_pipeline.local_only = True
+        self.speech_pipeline.cloud_down = True
+        logging.info("Cloud services are unreachable. Using local Whisper and Ollama for the rest of this session.")
+
     def _process_compose_worker(self, wav_bytes: bytes, focus_snap: dict | None, selected_text: str):
         try:
             self.overlay.show_processing("Transcribing...")
@@ -261,14 +291,23 @@ class ComposeCompanion:
                 return
 
             logging.info("[Compose] Prompt: '%s' (via %s in %.2fs)", transcript, stt_prov, stt_lat)
+            self._stay_local_if_cloud_blocked()
+
+            web = self.web_grounding.fetch_context(
+                transcript, selected_text, local_only=self.local_only,
+                on_status=lambda msg: self.overlay.show_processing(msg),
+            )
+            logging.info("[Compose] %s", web.summary())
+
             self.overlay.show_processing("Writing...")
 
-            messages = build_compose_messages(transcript, selected_text)
+            messages = build_compose_messages(transcript, selected_text, web.context)
             reply_text, llm_prov, llm_lat, parts = self.llm_pipeline.generate(
                 messages,
                 temperature=0.3,
                 on_status_update=lambda msg: self.overlay.show_processing(msg),
             )
+            self._stay_local_if_cloud_blocked()
 
             if not reply_text.strip():
                 self.overlay.show_error("Empty generation")
@@ -302,6 +341,7 @@ class ComposeCompanion:
                 return
 
             logging.info("[Dictate] Raw transcript: '%s' (via %s in %.2fs)", raw_transcript, stt_prov, stt_lat)
+            self._stay_local_if_cloud_blocked()
             self.overlay.show_processing("Tidying text...")
 
             # Fast grammar clean
@@ -310,6 +350,7 @@ class ComposeCompanion:
                 dictate_msgs,
                 temperature=0.0,
             )
+            self._stay_local_if_cloud_blocked()
 
             # Strict Grammar Guard to eliminate hallucination
             final_text = verify_dictate_overlap(raw_transcript, cleaned_text)

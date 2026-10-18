@@ -7,6 +7,9 @@ import time
 import logging
 import requests
 from prompt_engine import sanitize_plain_text, CONTINUATION_PROMPT
+from speech_pipeline import is_cloud_network_failure
+
+_OLLAMA_FALLBACKS = ("llama3.2:latest", "qwen3.5:latest", "gemma3:latest", "phi4-mini:3.8b")
 
 
 class LlmPipeline:
@@ -49,6 +52,29 @@ class LlmPipeline:
         finish_reason = choice.get("finish_reason", "stop")
         return content, finish_reason
 
+    def _installed_ollama_models(self) -> list[str]:
+        resp = requests.get(f"{self.ollama_host}/api/tags", timeout=3.0)
+        resp.raise_for_status()
+        return [m.get("name") for m in resp.json().get("models", []) if m.get("name")]
+
+    def _pick_installed_model(self, installed: list[str]) -> str | None:
+        wanted = [self.ollama_model, *_OLLAMA_FALLBACKS]
+        for name in wanted:
+            if name in installed and name != self.ollama_model:
+                return name
+        base = self.ollama_model.split(":")[0]
+        for name in installed:
+            if name.split(":")[0] == base and name != self.ollama_model:
+                return name
+        return next((name for name in installed if name != self.ollama_model), None)
+
+    @staticmethod
+    def _model_missing(resp: requests.Response) -> bool:
+        if resp.status_code == 404:
+            return True
+        body = resp.text.lower()
+        return resp.status_code >= 400 and "not found" in body
+
     def _call_ollama(self, messages: list[dict], temperature: float = 0.3) -> tuple[str, str]:
         """Calls local Ollama chat completions endpoint. Returns (content, finish_reason)."""
         url = f"{self.ollama_host}/v1/chat/completions"
@@ -58,7 +84,20 @@ class LlmPipeline:
             "temperature": temperature,
             "max_tokens": 2048,
         }
-        resp = requests.post(url, json=payload, timeout=30.0)
+        # Cold school models can take well over 30s on the first lesson of the day.
+        resp = requests.post(url, json=payload, timeout=90.0)
+        if self._model_missing(resp):
+            try:
+                installed = self._installed_ollama_models()
+            except Exception as e:
+                logging.warning("Ollama model '%s' is missing and the model list could not be read: %s", self.ollama_model, e)
+                resp.raise_for_status()
+            replacement = self._pick_installed_model(installed)
+            if replacement:
+                logging.warning("Ollama model '%s' is not installed; using '%s'", self.ollama_model, replacement)
+                self.ollama_model = replacement
+                payload["model"] = replacement
+                resp = requests.post(url, json=payload, timeout=90.0)
         resp.raise_for_status()
         data = resp.json()
         choice = data["choices"][0]
@@ -102,7 +141,11 @@ class LlmPipeline:
                 content, finish_reason = call_fn(current_messages, temperature)
             except Exception as e:
                 if active_provider == "groq":
-                    logging.warning("Groq call failed (%s). Falling back to local Ollama...", e)
+                    if is_cloud_network_failure(e):
+                        self.local_only = True
+                        logging.warning("Groq unreachable (%s). Staying on local Ollama for this session.", e)
+                    else:
+                        logging.warning("Groq call failed (%s). Falling back to local Ollama...", e)
                     active_provider = "ollama"
                     call_fn = self._call_ollama
                     content, finish_reason = call_fn(current_messages, temperature)
