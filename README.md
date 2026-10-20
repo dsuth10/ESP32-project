@@ -2,7 +2,7 @@
 
 ![ESP32 classroom companion enclosure render](docs/dimensions/render_hero_front.png)
 
-A small touchscreen device for Bluetooth shortcuts, push-to-talk AI conversations and everyday classroom tasks. This repository contains the firmware, host receiver, hardware references and enclosure models for the **LCDWIKI / QD Electronic ES3C28P ESP32-S3 board**.
+A small touchscreen device for Bluetooth shortcuts, push-to-talk AI conversations, and spoken writing on a Windows PC. This repository contains the firmware, host receiver, Windows Compose companion, hardware references and enclosure models for the **LCDWIKI / QD Electronic ES3C28P ESP32-S3 board**.
 
 This guide shows how to take the project from a downloaded repository to a working device, using **Cursor or local Codex for development**, **USB for programming the ESP32**, and **Blender MCP to help design and refine its enclosure**.
 
@@ -25,6 +25,7 @@ Start by getting the existing firmware working. Add your own features and enclos
 |---|---|---|
 | Development computer to ESP32 | Build, upload firmware and read logs | USB data cable and PlatformIO |
 | ESP32 to the computer being controlled | Send keyboard shortcuts and media keys | Pair `ESP32 MacroPad` over Bluetooth |
+| ESP32 to the Windows Compose companion | Compose, Dictate, and Paste Ready on the focused document | Bluetooth keys from the Compose & Dictate page; the PC microphone does the recording |
 | ESP32 to voice receiver | Send recorded speech and receive replies | Wi-Fi to the host receiver on TCP port 8787 |
 | Local IDE agent to Blender | Inspect and edit the enclosure | Blender MCP server plus Blender add-on |
 | Voice receiver to AI backend | Transcribe speech and obtain a reply | Local Python receiver, Hermes and/or Ollama |
@@ -38,6 +39,7 @@ Blender MCP controls Blender. Firmware uploading uses PlatformIO. For the simple
 - Git, PlatformIO Core, and Cursor or a local Codex client with access to the project folder and terminal.
 - For enclosure work: Blender, Blender MCP and a slicer; a 3D printer if you want to print it.
 - For voice: Python, `faster-whisper`, Wi-Fi, and a configured Hermes installation and/or local Ollama model.
+- For Compose and Dictate: Windows, the companion in [tools/compose/](tools/compose/), and the PC microphone. Cloud speech and writing use Groq; with no key, or with `LOCAL_ONLY=1`, the companion uses local Whisper and Ollama. Live web lookup for Compose also needs a Brave Search key.
 - Optional: a compatible 3.7 V single-cell rechargeable battery and microSD card.
 
 ## 1. Download and open the project
@@ -112,11 +114,34 @@ The current profile order in [src/macropad_config.cpp](src/macropad_config.cpp) 
 | Windows Tools | Windows shortcuts such as Snipping Tool and File Explorer |
 | Custom Keys | Configurable key combinations, Enter and Shift+Enter |
 | Hermes Voice | Hold-to-talk, reply display, chat scrolling and audio toggle |
+| Compose & Dictate | Spoken writing, speech-to-text, and Paste Ready |
 | Storage Explorer | Browse a microSD card |
 
 These are the source profile names; older plans use different page numbers. Some shortcuts are Windows-specific and may need adapting for another operating system.
 
 **Checkpoint:** a touch on the device causes the expected action on the paired computer.
+
+### Compose, Dictate, and Paste Ready
+
+The **Compose & Dictate** page is a Windows writing remote. It does not use the ESP32 microphone or the Hermes voice receiver. The device sends Bluetooth keys; [tools/compose/start_compose.bat](tools/compose/start_compose.bat) must be running on the PC you are writing into. That companion records the PC microphone, then pastes plain text at the cursor.
+
+Leave an editable document focused, open the Compose & Dictate page, then:
+
+| Control | Gesture | What you get |
+|---|---|---|
+| Compose | Tap to latch, tap again to finish; or hold to talk and release to finish | The words you spoke, turned into the writing you asked for |
+| Dictate | Same tap or hold | Your speech as text, with light punctuation and capitals |
+| Paste Ready | A short tap | Inserts a result that was held because the document lost focus |
+
+A tap under about 350 ms latches recording and lights the button. A second tap anywhere on the screen finishes it. Holding the button is push-to-talk and stops on release. Recording stops by itself after 60 seconds. The same actions work from the companion window, and from the keyboard as F13 / Ctrl+Alt+Shift+F9 (Compose), F14 / Ctrl+Alt+Shift+F10 (Dictate), and F15 / Ctrl+Alt+Shift+F11 (Paste Ready).
+
+**Compose** treats the transcript as an instruction. You can ask it to draft a paragraph, answer in prose, or rewrite text you have already highlighted. Highlighted text is read with Windows UI Automation and sent as context, so “make this shorter” or “fix the grammar” applies to the selection. Output is Australian English and plain text meant to land straight in the document: no “here is your draft” wrapper, and no markdown unless you asked for it. A long answer can continue for up to four extra writing passes. If the request is about something current — today’s weather, news, a score, “look this up” — and web search is enabled with a Brave Search key, Compose can attach a few live search snippets before it writes. A straight rewrite of selected text skips that search. Dictate never searches. If the network blocks Groq, that session stays on local Whisper and Ollama after the first fallback.
+
+**Dictate** is speech-to-text, not a writing assistant. “Write an essay on biology” becomes that sentence, not the essay. A cleanup pass may add punctuation, capitals, and sentence breaks in Australian English. If the cleanup changes too many words, or grows or shrinks the transcript by more than about half, the companion keeps the original transcript instead.
+
+**Paste Ready** is the hold queue. When the same window and control are still focused, Compose and Dictate paste immediately with Ctrl+V, then put your previous clipboard contents back. If you switch windows while it is working, or you start a test from the companion’s own buttons, the text stays queued and the status shows ready to paste. Focus the document and tap Paste Ready. An empty queue does nothing to the document. A successful key injection means Windows accepted the paste; a given app can still ignore it.
+
+Copy [tools/compose/compose.env.example](tools/compose/compose.env.example) to `compose.env` in that folder before relying on cloud speech, cloud writing, or web search. Closing the companion stops the microphone and the hardware listener. It does not start automatically at Windows sign-in.
 
 ## 5. Make a small change with your IDE agent
 
@@ -172,6 +197,7 @@ Keep each improvement small enough to test and explain. Record your tool version
 ## Further reading
 
 - [Detailed build guide: tools, agent prompts, USB, Blender MCP and troubleshooting](docs/build-guide.md)
+- [Compose and Dictate repair notes](docs/Compose_Dictate_Repair_2026-10-17.md) — how Page 6 is meant to be used day to day
 - [Hardware identification and pinout](docs/hardware-reference.md)
 - [Home/Work architecture design notes](docs/home-work-architecture.md) — compare design intentions with the current receiver routing described above
 - [Portrait upload and landscape restore](docs/PORTRAIT_UI.md)
