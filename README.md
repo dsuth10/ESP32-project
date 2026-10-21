@@ -72,11 +72,13 @@ Plug the board's USB-C/native USB connection into the development computer using
 pio device list
 ```
 
-On Windows, check **Device Manager → Ports (COM & LPT)**. The repository currently specifies `COM5`, but your device may use another port. Update both `upload_port` and `monitor_port` in `platformio.ini`, or supply the port in the commands below.
+On Windows, check **Device Manager → Ports (COM & LPT)**. Supply the detected port explicitly. Uploads also verify the registered physical board, processor, flash capacity and firmware manifest; a COM number alone is insufficient. The original stable board is write-locked. See [board upload safety](docs/board-upload-safety.md).
 
 The [build guide](docs/build-guide.md#3-connect-the-board-build-and-upload) includes bootloader recovery if the board does not appear.
 
 ## 3. Configure, build and upload
+
+**Board safety:** the original device is write-locked while feature work is tested on the CYD. Build and read-only checks are supported; an upload to the stable device will be refused. See [the guarded workflow](docs/board-upload-safety.md).
 
 Copy the credentials template to a local configuration file. On Windows PowerShell:
 

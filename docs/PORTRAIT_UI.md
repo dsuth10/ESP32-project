@@ -1,35 +1,16 @@
-# Portrait UI — Flash & Revert Guide
+# Portrait UI — guarded build and recovery guide
 
-Portrait (240×320) is the default UI on `main`.
+Portrait (240 × 320) is the default S3 UI. `esp32-s3-portrait` selects portrait; `esp32-s3-devkitc-1` selects legacy landscape. These are ES3C28P ESP32-S3 builds, not CYD builds.
 
-Compile-time layout switch:
-- `-DUI_PORTRAIT` → default 240×320 UI (`esp32-s3-portrait`)
-- `-DUI_LANDSCAPE` → legacy 320×240 UI (`esp32-s3-devkitc-1`)
+The original device is stable and write-locked during feature development. Follow [board upload safety](board-upload-safety.md) for registration, read-only preflight and supported upload routes. Do not bypass a stable-device rejection to test a feature.
 
-## Flash portrait (default)
+Build without uploading:
 
-```bash
-python -m platformio run -t upload
-# or explicitly:
-python -m platformio run -e esp32-s3-portrait -t upload
+```powershell
+python -m platformio run -e esp32-s3-portrait
+python -m platformio run -e esp32-s3-devkitc-1
 ```
 
-## Revert to landscape (cheapest first)
+After a separately approved release and device-role change, the normal upload command must specify both environment and port, for example `python -m platformio run -e esp32-s3-portrait -t upload --upload-port COM5`. The guard still verifies the actual device; COM5 is only an example connection address.
 
-### 1. Flash legacy landscape env
-
-```bash
-python -m platformio run -e esp32-s3-devkitc-1 -t upload
-```
-
-### 2. Emergency: flash archived golden binaries (no rebuild)
-
-Golden landscape binaries live outside git at:
-
-`bin/golden-landscape-<sha>/` (`firmware.bin`, `bootloader.bin`, `partitions.bin`)
-
-Example with esptool (adjust COM port):
-
-```bash
-python -m esptool --chip esp32s3 --port COM5 write_flash 0x0 bin/golden-landscape-<sha>/bootloader.bin 0x8000 bin/golden-landscape-<sha>/partitions.bin 0x10000 bin/golden-landscape-<sha>/firmware.bin
-```
+Private golden landscape archives remain at `bin/golden-landscape-<sha>/`. They are preserved for recovery, but the old direct-esptool restoration instructions are retired. Archived binaries require a reviewed board-bound recovery manifest and a verified recovery backup before use. The current uploader refuses unmanifested binaries and provides no force or full-erase switch.
