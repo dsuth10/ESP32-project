@@ -32,47 +32,7 @@ from speech_pipeline import SpeechPipeline
 from llm_pipeline import LlmPipeline
 from clipboard_manager import ClipboardManager
 from web_grounding import WebGrounding
-
-
-def load_env_config() -> dict:
-    env_vars = {}
-    env_file = Path(__file__).parent / "compose.env"
-    if env_file.exists():
-        with open(env_file, "r", encoding="utf-8", errors="ignore") as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#") or "=" not in line:
-                    continue
-                k, v = line.split("=", 1)
-                env_vars[k.strip()] = v.strip()
-
-    for k in [
-        "GROQ_API_KEY",
-        "GROQ_BASE_URL",
-        "GROQ_STT_MODEL",
-        "GROQ_LLM_MODEL",
-        "LOCAL_WHISPER_MODEL",
-        "LOCAL_WHISPER_DEVICE",
-        "OLLAMA_HOST",
-        "OLLAMA_MODEL",
-        "LOCAL_ONLY",
-        "AUDIO_INPUT_DEVICE",
-        "AUDIO_SAMPLE_RATE",
-        "CLIPBOARD_RESTORE_DELAY",
-        "CONTINUATION_MAX_ROUNDS",
-        "WEB_SEARCH_ENABLED",
-        "BRAVE_API_KEY",
-        "BRAVE_COUNTRY",
-        "BRAVE_RESULT_COUNT",
-        "INTENT_ROUTER",
-        "OPENROUTER_API_KEY",
-        "JEV_MODEL",
-        "ROUTER_GROQ_MODEL",
-    ]:
-        if k in os.environ and os.environ[k]:
-            env_vars[k] = os.environ[k]
-
-    return env_vars
+from config_loader import load_env_config
 
 
 class ComposeApp:
@@ -119,6 +79,7 @@ class ComposeApp:
         self.is_recording = False
         self.recording_mode = "compose"  # "compose" or "dictate"
         self._target_focus_snap = None
+        self._last_external_snap = None
         self._target_selected_text = ""
         self._stop_poller = False
         self._busy = False
@@ -129,7 +90,7 @@ class ComposeApp:
         self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.root.after(20, self._drain_ui_events)
         self.log(f"Service initialized. Active Microphone: {self.audio_capture.device_name} (WASAPI)")
-        provider = "Local Whisper + Ollama" if self.local_only or not self.config.get("GROQ_API_KEY") else "Groq + local fallback"
+        provider = "Local Whisper + Ollama" if self.local_only or not self.config.get("GROQ_API_KEY") else "Groq Whisper + Groq LLM"
         self.log(f"Processing: {provider}")
         self.log(self.web_grounding.describe())
         self.log("Ready and listening for ESP32 MacroPad or keyboard hotkeys!")
@@ -282,7 +243,11 @@ class ComposeApp:
             return
         # A GUI click focuses this window. Keep the payload until the user
         # returns to their document and presses the hardware Paste Ready key.
+        target = self._target_focus_snap or self._last_external_snap
         snap = FocusTracker.get_focus_snapshot()
+        if snap.get("pid") == os.getpid() and target:
+            FocusTracker.restore_focus(target)
+            snap = FocusTracker.get_focus_snapshot()
         if snap.get("pid") == os.getpid():
             self.set_status("READY: Focus your document, then press PASTE READY", "#F59E0B")
             return
@@ -294,12 +259,14 @@ class ComposeApp:
 
     def _deliver_result(self, text, focus_snap):
         self.pending_ready_payload = text
-        if focus_snap and FocusTracker.is_focus_matched(focus_snap):
-            if ClipboardManager.inject_paste(text, restore_delay=self.restore_delay):
-                self.pending_ready_payload = None
-                self.log("Paste shortcut sent to the original document.")
-                self.set_status("COMPLETED: Paste shortcut sent", "#10B981")
-                return
+        if focus_snap:
+            FocusTracker.restore_focus(focus_snap)
+            if FocusTracker.is_focus_matched(focus_snap):
+                if ClipboardManager.inject_paste(text, restore_delay=self.restore_delay):
+                    self.pending_ready_payload = None
+                    self.log("Paste shortcut sent to the original document.")
+                    self.set_status("COMPLETED: Paste shortcut sent", "#10B981")
+                    return
         self.log("Text retained in READY. Focus your document and press PASTE READY.")
         self.set_status("READY: Focus document, then press PASTE READY", "#F59E0B")
 
@@ -340,11 +307,13 @@ class ComposeApp:
         try:
             self._target_focus_snap = FocusTracker.get_focus_snapshot()
             if self._target_focus_snap.get("pid") == os.getpid():
-                self._target_focus_snap = None
+                self._target_focus_snap = self._last_external_snap
             fg_hwnd = self._target_focus_snap.get("hwnd", 0) if self._target_focus_snap else 0
             self._target_selected_text = FocusTracker.capture_selected_text(fg_hwnd) if mode == "compose" else ""
+            if self._target_focus_snap and self._target_focus_snap.get("title"):
+                self.log(f"Target window: {self._target_focus_snap.get('title')}")
         except Exception as e:
-            self._target_focus_snap = None
+            self._target_focus_snap = self._last_external_snap
             self._target_selected_text = ""
 
         self._recording_timer = self.root.after(60000, self.stop_recording_flow)
@@ -491,6 +460,9 @@ class ComposeApp:
         user32 = ctypes.windll.user32
         while not self._stop_poller:
             try:
+                snap = FocusTracker.snapshot_foreground_window()
+                if snap.get("pid") and snap.get("pid") != os.getpid():
+                    self._last_external_snap = snap
                 for mode, edge in state.update(lambda key: bool(user32.GetAsyncKeyState(key) & 0x8000)):
                     self._ui_events.put((self._handle_hardware_event, (mode, edge)))
             except Exception:

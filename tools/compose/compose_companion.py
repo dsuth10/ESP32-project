@@ -26,6 +26,7 @@ from llm_pipeline import LlmPipeline
 from clipboard_manager import ClipboardManager
 from status_overlay import StatusOverlay
 from web_grounding import WebGrounding
+from config_loader import load_env_config
 
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(line_buffering=True, encoding='utf-8', errors='replace')
@@ -42,49 +43,6 @@ logging.basicConfig(
         logging.FileHandler(str(log_file), mode="a", encoding="utf-8"),
     ],
 )
-
-
-def load_env_config() -> dict:
-    """Loads configuration from compose.env and system environment."""
-    env_vars = {}
-    env_file = Path(__file__).parent / "compose.env"
-    if env_file.exists():
-        with open(env_file, "r", encoding="utf-8", errors="ignore") as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#") or "=" not in line:
-                    continue
-                k, v = line.split("=", 1)
-                env_vars[k.strip()] = v.strip()
-
-    # System environment overrides file
-    for k in [
-        "GROQ_API_KEY",
-        "GROQ_BASE_URL",
-        "GROQ_STT_MODEL",
-        "GROQ_LLM_MODEL",
-        "LOCAL_WHISPER_MODEL",
-        "LOCAL_WHISPER_DEVICE",
-        "OLLAMA_HOST",
-        "OLLAMA_MODEL",
-        "LOCAL_ONLY",
-        "AUDIO_INPUT_DEVICE",
-        "AUDIO_SAMPLE_RATE",
-        "CLIPBOARD_RESTORE_DELAY",
-        "CONTINUATION_MAX_ROUNDS",
-        "WEB_SEARCH_ENABLED",
-        "BRAVE_API_KEY",
-        "BRAVE_COUNTRY",
-        "BRAVE_RESULT_COUNT",
-        "INTENT_ROUTER",
-        "OPENROUTER_API_KEY",
-        "JEV_MODEL",
-        "ROUTER_GROQ_MODEL",
-    ]:
-        if k in os.environ and os.environ[k]:
-            env_vars[k] = os.environ[k]
-
-    return env_vars
 
 
 def create_tray_icon_image(local_only: bool = False) -> Image.Image:
@@ -315,7 +273,8 @@ class ComposeCompanion:
 
             logging.info("[Compose] Generated %d chars via %s in %.2fs (%d parts)", len(reply_text), llm_prov, llm_lat, parts)
 
-            # Check focus integrity
+            if focus_snap:
+                FocusTracker.restore_focus(focus_snap)
             if focus_snap and FocusTracker.is_focus_matched(focus_snap):
                 logging.info("[Compose] Focus matched. Injecting paste directly...")
                 ClipboardManager.inject_paste(reply_text, restore_delay=self.restore_delay)
@@ -356,7 +315,8 @@ class ComposeCompanion:
             final_text = verify_dictate_overlap(raw_transcript, cleaned_text)
             logging.info("[Dictate] Cleaned text: '%s' (via %s in %.2fs)", final_text, llm_prov, llm_lat)
 
-            # Check focus integrity
+            if focus_snap:
+                FocusTracker.restore_focus(focus_snap)
             if focus_snap and FocusTracker.is_focus_matched(focus_snap):
                 logging.info("[Dictate] Focus matched. Injecting paste directly...")
                 ClipboardManager.inject_paste(final_text, restore_delay=self.restore_delay)
