@@ -1,10 +1,12 @@
 # Hermes integration development checkpoint
 
-21 October 2026. Built from `f512a9f` on
-`codex/companion-hermes-integration`, an isolated continuation of
-`codex/companion-media-agent`. The original feature worktree belongs to another
-chat; the original working folder remains on main with its existing changes.
-No main merge, original-worktree overwrite or S3 firmware write occurred.
+21 October 2026. Historical implementation evidence, originally built from
+`f512a9f` on the temporary `codex/companion-hermes-integration` continuation.
+This work and the saved workspace have since been consolidated into
+`codex/companion-media-agent`, which is now the single development branch.
+`main` remains the stable reference; the original S3 firmware remains unchanged
+and write-locked. Earlier checkout descriptions below refer to the checks at
+the time, rather than the current two-branch layout.
 
 ## Implemented
 

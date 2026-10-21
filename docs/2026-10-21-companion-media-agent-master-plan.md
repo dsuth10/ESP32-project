@@ -1,6 +1,8 @@
 # Classroom companion: consolidated branch programme
 
-21 October 2026 — authoritative current plan for `codex/companion-media-agent`; implementation continues from `f512a9f` on isolated `codex/companion-hermes-integration`.
+21 October 2026 - authoritative current plan for `codex/companion-media-agent`.
+
+The repository has two branches: `main` preserves the stable reference, and `codex/companion-media-agent` contains all current companion, Hermes, SQLite/media-library and deployment development. Continue this work on the companion branch. Temporary implementation and preservation branches have been consolidated; their former histories remain recoverable from the local archive. The original S3 firmware remains unchanged and write-locked.
 
 **Documentation consolidated; product candidate implemented in part; deployment and classroom acceptance remain open.** This plan supersedes earlier roadmaps and resolves later hardware/network decisions. Historical implementation and research records retain their original evidence. Updating this plan does not deploy services, charge an image account, unlock a board or approve a release.
 

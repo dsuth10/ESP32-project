@@ -59,13 +59,17 @@
   "57": "LlmPipeline",
   "58": "AudioCapture",
   "59": "SpeechPipeline",
-  "60": ".run",
+  "60": "ComposeCompanion",
   "61": "ClipboardManager",
   "62": "ComposeApp",
   "63": "_coeff_div",
   "64": "test_compose.py",
   "65": "HostDiscovery",
-  "66": "ComposeCompanion",
+  "66": "WebGrounding",
   "67": "README.md",
-  "69": "check_ble.ps1"
+  "68": "HotkeyState",
+  "69": "check_ble.ps1",
+  "70": "clipboard_manager.py",
+  "71": ".fetch_context",
+  "72": "test_chord_ctrl_c_releases_ctrl_when_injection_fails"
 }

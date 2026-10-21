@@ -42,3 +42,6 @@ desktop.ini
 
 # Golden landscape firmware archives (local restore only)
 bin/golden-landscape-*/
+
+# Local diagnostic output (may contain authentication metadata)
+/optional-full-path-to-log-file
