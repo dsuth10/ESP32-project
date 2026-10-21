@@ -6,6 +6,7 @@ local Ollama fallback, and automatic multi-round continuation.
 import time
 import logging
 import requests
+from local_processing import local_request
 from prompt_engine import sanitize_plain_text, CONTINUATION_PROMPT
 from speech_pipeline import is_cloud_network_failure
 
@@ -53,7 +54,8 @@ class LlmPipeline:
         return content, finish_reason
 
     def _installed_ollama_models(self) -> list[str]:
-        resp = requests.get(f"{self.ollama_host}/api/tags", timeout=3.0)
+        call = local_request if self.local_only else lambda method, url, **kw: requests.get(url, **kw)
+        resp = call("GET", f"{self.ollama_host}/api/tags", timeout=3.0)
         resp.raise_for_status()
         return [m.get("name") for m in resp.json().get("models", []) if m.get("name")]
 
@@ -85,7 +87,8 @@ class LlmPipeline:
             "max_tokens": 2048,
         }
         # Cold school models can take well over 30s on the first lesson of the day.
-        resp = requests.post(url, json=payload, timeout=90.0)
+        call = local_request if self.local_only else lambda method, url, **kw: requests.post(url, **kw)
+        resp = call("POST", url, json=payload, timeout=90.0)
         if self._model_missing(resp):
             try:
                 installed = self._installed_ollama_models()
@@ -97,7 +100,7 @@ class LlmPipeline:
                 logging.warning("Ollama model '%s' is not installed; using '%s'", self.ollama_model, replacement)
                 self.ollama_model = replacement
                 payload["model"] = replacement
-                resp = requests.post(url, json=payload, timeout=90.0)
+                resp = call("POST", url, json=payload, timeout=90.0)
         resp.raise_for_status()
         data = resp.json()
         choice = data["choices"][0]

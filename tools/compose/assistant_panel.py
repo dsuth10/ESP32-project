@@ -83,6 +83,9 @@ class AssistantPanel(ttk.Frame):
         return "break"
 
     def send(self):
+        if getattr(self, "settings_saving", lambda: False)():
+            self.notice.configure(text="Wait until settings have finished saving.")
+            return
         if self._busy:
             return
         prompt = self.prompt.get("1.0", "end-1c").strip()

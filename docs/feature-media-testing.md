@@ -4,7 +4,7 @@
 
 This candidate lives on `codex/companion-media-agent` with isolated launch/data paths. The original main commit and installed S3 firmware remain stable/write-locked. S3 builds and upload-safety checks have run, but feature firmware has not been flashed to the original. Earlier CYD diagnostic flashes are historical evidence, not application support. The CYD port is abandoned.
 
-Use [the master programme](2026-10-21-companion-media-agent-master-plan.md) for scope and [the permanent connection runbook](hermes-tailscale-home-work.md) for required home/off-LAN/work acceptance. The in-app Hermes adapter and persistent Tailscale deployment are still open, despite a working development client and earlier LAN consultation. No paid image trial or live media-service deployment is established.
+Use [the master programme](2026-10-21-companion-media-agent-master-plan.md) for scope and [the permanent connection runbook](hermes-tailscale-home-work.md) for required home/off-LAN/work acceptance. The in-app Hermes adapter now has local fixture/native UI verification; persistent Tailscale deployment and real scoped-task acceptance remain open. No paid image trial or live media-service deployment is established.
 
 ## Start the feature preview
 
@@ -22,6 +22,37 @@ Image requests first become durable preparations. **Generate prepared image** di
 
 The Linux ledger coordinates a default A$30 monthly design allowance across clients. Allocation amounts are conservative estimates, not invoice amounts or currency conversions. An allocation becomes held before provider dispatch. Ambiguous dispatches are never automatically retried or released. Review the provider account and library, then use **Review selected job** to close an uncertain attempt while retaining its allocation. A fresh attempt is a deliberate new request.
 
+## Explicit Hermes tasks and offline policy
+
+Open **Ask your companion → Hermes tasks**. In Settings, enable Hermes and enter
+the private HTTPS origin and its separate bearer token. The token is entered
+only in the masked field and protected with Windows DPAPI. Test connection
+before use. The panel sends only the task and optional context entered there;
+Groq Ask and History remain separate.
+
+Prepare a preview, review it, then explicitly send that saved task. After restart
+select the saved request to inspect the same payload and identity. Reconcile
+known runs by status; retry only the same saved identity if the panel permits it.
+A stale dispatch lock requires manual reconciliation and is never removed
+automatically. Discard applies only to a preview that has never been dispatched.
+A cancellation request is not proof the remote run stopped. Pending remote
+approvals require separate exact review; the product grants no remote approvals.
+
+Results remain local until explicitly queued for Paste Ready. A stale selection
+or event failure cannot turn another run's output into the selected result.
+The existing server advertised events but returned HTTP 404 for the cancelled
+inventory run; the adapter retains polling/results when event retrieval fails.
+
+Local-only mode disables Groq, Hermes, media sync, external web and images.
+Ollama must be on loopback; proxies and redirects cannot route local text away.
+Saving this mode waits for old sync to finish and pauses only the feature-owned
+voice receiver/bridge, because its historical independent voice routing cannot
+promise local-only processing. Use the PC microphone/BLE controls; restart after
+leaving local-only mode to resume the optional handheld receiver. Independently
+running production listeners are not controlled by this feature setting.
+Protected settings use a recoverable journal so public settings and DPAPI
+credentials cannot be silently loaded as a mixed pair after an interrupted save.
+
 ## Word and OneNote
 
 For Word, focus the intended document with a collapsed caret and press Paste Ready. The adapter verifies foreground HWND/process, active document and caret before embedding an independent picture. A PC-microphone request to insert a uniquely matched saved image can use the original Word target only if those checks still match; otherwise it remains queued. Typed requests from the companion and handheld transcripts queue for a fresh destination gesture.
@@ -38,7 +69,7 @@ Use existing S3 firmware for host-side tests where possible; do not flash it wit
 
 ## Evidence and rollback
 
-Automated checks cover old writing/History/assistant behaviour, image validation and version integrity, conflicts, budgets, retry uncertainty, focus guards, protected settings, voice handoff and source-package privacy. Native Tk previews passed at 920 × 740 and 720 × 640. See [the implementation record](2026-10-21-media-feature-implementation.md) for final counts and remaining gates.
+Automated checks cover old writing/History/assistant behaviour, image validation and version integrity, conflicts, budgets, retry uncertainty, focus guards, protected settings, voice handoff and source-package privacy. Native Tk previews passed at 920 × 740 and 720 × 640. See [the original image record](2026-10-21-media-feature-implementation.md) and [current integration checkpoint](2026-10-21-hermes-integration-checkpoint.md) for test counts and remaining gates.
 
 To leave the preview, close its window and keep using the original `main` checkout and device. No merge, push, feature-firmware flash to the original S3, production database migration, live deployment or paid image generation is established. Historical CYD diagnostic flashes do not change that release status. Restore a media backup into a new folder, never over an active library. Source previews can be generated with `python tools/build_companion_preview.py --output <new-preview.zip>`; the allowlist excludes credentials, databases, virtual environments, logs and firmware binaries. Public licensing/provenance and signed packaging remain release work.
 

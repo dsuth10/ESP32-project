@@ -1,6 +1,6 @@
 # Private media sync service
 
-**Feature-branch candidate; deployment pending.** The permanent private Tailscale connection to the same Linux host from home/work is now required. Follow the [connection runbook](hermes-tailscale-home-work.md) and [master plan](2026-10-21-companion-media-agent-master-plan.md). This API is separate from Hermes; the product runtime Hermes adapter is a separate milestone.
+**Feature-branch candidate; deployment pending.** The permanent private Tailscale connection to the same Linux host from home/work is now required. Follow the [connection runbook](hermes-tailscale-home-work.md) and [master plan](2026-10-21-companion-media-agent-master-plan.md). This API is separate from Hermes; the product runtime Hermes adapter is implemented locally and awaits permanent-route acceptance. The [deployment kit](companion-deployment.md) adds staged service files and verified backup/restore.
 
 The service in `server/media_library_server.py` stores immutable PNG, JPEG and
 WebP blobs and an append-only media event log. Each Windows installation keeps

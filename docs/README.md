@@ -9,13 +9,16 @@
 | [Consolidated branch programme](2026-10-21-companion-media-agent-master-plan.md) | Fixed decisions, implemented versus unaccepted work, M0–M9 roadmap, dependencies and completion dashboard. |
 | [Permanent Hermes/Tailscale connection](hermes-tailscale-home-work.md) | Required same-agent home/work route, safe migration, protected setup, persistence and off-LAN acceptance. Configuration remains pending. |
 | [Home/work architecture](home-work-architecture.md) | Current S3/Windows/Groq/Hermes/library ownership and target topology. |
+| [Hermes integration checkpoint](2026-10-21-hermes-integration-checkpoint.md) | Current runtime/UI, recovery, packaging and bounded test evidence; deployment/user gates remain open. |
+| [Linux deployment kit](companion-deployment.md) | Safe endpoint migration, staged systemd service and verified media backup/restore. |
+| [Source-preview installation](companion-installation.md) | Per-user install/update/rollback/removal with user-data preservation. |
 | [Image candidate testing](feature-media-testing.md) | Isolated launch, image workflow, Office/microphone/sync acceptance and recovery. |
 | [Media server contract](media-sync-server.md) | Actual implemented media/budget API, privacy limits and undeployed Linux service boundary. |
 | [Board upload safety](board-upload-safety.md) | Guarded identities/manifests, stable write lock and explicit S3 trial/recovery gate. |
 | [Build guide](build-guide.md) and [portrait guide](PORTRAIT_UI.md) | Existing S3 builds, setup and guarded release constraints; no automatic permission to flash. |
 | [Hardware reference](hardware-reference.md) | Original ES3C28P pinout, configured memory and enclosure/manufacturer references. |
 | [Agent instructions](../AGENTS.md) and [engineering rules](../GEMINI.md) | Current scope and regression constraints for contributors/agents. |
-| [Hermes skill](../.agents/skills/hermes-collaboration/SKILL.md) | Bounded development-agent API workflow, not the unimplemented product adapter. |
+| [Hermes skill](../.agents/skills/hermes-collaboration/SKILL.md) | Bounded development-agent API workflow, separate from the implemented product adapter and its deployment acceptance. |
 
 ## Implementation and historical evidence
 

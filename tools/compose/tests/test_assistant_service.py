@@ -33,7 +33,7 @@ class FakeStore:
 
 
 def response(message):
-    result = Mock()
+    result = Mock(status_code=200)
     result.raise_for_status.return_value = None
     result.json.return_value = {"choices": [{"message": message}]}
     return result
@@ -126,7 +126,7 @@ def test_management_tool_rounds_are_bounded():
 @pytest.mark.parametrize("body", [{}, {"choices": []}, {"choices": [{"message": []}]}, {"choices": [{"message": {"content": 3}}]}])
 def test_malformed_model_responses_are_concise(body):
     service = make_service()
-    bad = Mock()
+    bad = Mock(status_code=200)
     bad.raise_for_status.return_value = None
     bad.json.return_value = body
     service.session.post = Mock(return_value=bad)

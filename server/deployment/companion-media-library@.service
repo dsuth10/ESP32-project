@@ -1,0 +1,27 @@
+[Unit]
+Description=Classroom Companion media library (%i)
+After=network.target
+
+[Service]
+Type=simple
+User=companion-media
+Group=companion-media
+EnvironmentFile=/etc/companion-media/%i.env
+Environment=MEDIA_SERVER_HOST=127.0.0.1
+Environment=MEDIA_SERVER_PORT=8765
+Environment=MEDIA_SERVER_DATA_DIR=/var/lib/companion-media-%i
+StateDirectory=companion-media-%i
+StateDirectoryMode=0700
+WorkingDirectory=/opt/companion-media
+ExecStart=/opt/companion-media/venv/bin/python /opt/companion-media/server/media_library_server.py --host 127.0.0.1 --port 8765
+Restart=on-failure
+RestartSec=5s
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/companion-media-%i
+
+[Install]
+WantedBy=multi-user.target

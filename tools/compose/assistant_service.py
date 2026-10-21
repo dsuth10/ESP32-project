@@ -14,6 +14,7 @@ import threading
 from typing import Any, Callable
 
 import requests
+from local_processing import require_loopback_origin
 
 
 _MAX_PROMPT_LENGTH = 16_000
@@ -39,6 +40,7 @@ class AssistantService:
         self.status_provider = status_provider
         self.store = store
         self.session = requests.Session()
+        self.session.trust_env = False
         self.cancel_event = cancel_event or threading.Event()
         self.history_access = self._truthy(self.config.get("ASSISTANT_HISTORY_ACCESS"))
         self.tools = [tool for tool in _TOOLS if tool["function"]["name"] != "search_history" or self.history_access]
@@ -92,13 +94,17 @@ class AssistantService:
             model = self.config.get("GROQ_ASSISTANT_MODEL") or self.config.get("GROQ_LLM_MODEL") or "llama-3.3-70b-versatile"
             return f"{base}/chat/completions", str(model), {"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"}
         host = str(self.config.get("OLLAMA_HOST") or "http://127.0.0.1:11434").rstrip("/")
+        if local_only:
+            require_loopback_origin(host)
         return f"{host}/v1/chat/completions", str(self.config.get("OLLAMA_MODEL") or "llama3.2:latest"), {"Content-Type": "application/json"}
 
     def _post(self, url: str, model: str, headers: dict[str, str], messages: list[dict], with_tools: bool) -> dict:
         payload: dict[str, Any] = {"model": model, "messages": messages, "temperature": 0.3, "max_tokens": 2048}
         if with_tools:
             payload.update(tools=self.tools, tool_choice="auto")
-        response = self.session.post(url, headers=headers, json=payload, timeout=_TIMEOUT)
+        response = self.session.post(url, headers=headers, json=payload, timeout=_TIMEOUT, allow_redirects=False)
+        if 300 <= response.status_code < 400:
+            raise ValueError("Assistant redirects are refused.")
         response.raise_for_status()
         data = response.json()
         if not isinstance(data, dict) or not isinstance(data.get("choices"), list) or not data["choices"]:
@@ -176,7 +182,10 @@ class AssistantService:
             return self._result("Please enter a non-empty prompt of at most 16000 characters.", "unavailable", ok=False)
         if mode not in {"ask", "manage"}:
             return self._result("Mode must be 'ask' or 'manage'.", "unavailable", ok=False)
-        url, model, headers = self._endpoint()
+        try:
+            url, model, headers = self._endpoint()
+        except ValueError:
+            return self._result("Local-only processing requires an Ollama service on this computer.", "unavailable", ok=False)
         provider = "groq" if "Authorization" in headers else "ollama"
         system = _ASK_SYSTEM if mode == "ask" else _MANAGE_SYSTEM
         messages: list[dict[str, Any]] = [{"role": "system", "content": system}]
