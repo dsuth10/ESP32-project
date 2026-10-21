@@ -83,13 +83,16 @@ class HermesPanel(ttk.Frame):
 
         actions = ttk.Frame(detail_frame)
         actions.grid(row=0, column=0, sticky="ew")
-        ttk.Button(actions, text="Refresh status and events", command=self.refresh_active).pack(side="left")
+        actions.columnconfigure(0, weight=1)
+        actions.columnconfigure(1, weight=1)
+        ttk.Button(actions, text="Refresh status and events", command=self.refresh_active).grid(
+            row=0, column=0, sticky="ew", padx=2, pady=2)
         self.stop_button = ttk.Button(actions, text="Request cancellation", command=self.stop_active, state="disabled")
-        self.stop_button.pack(side="left", padx=5)
+        self.stop_button.grid(row=0, column=1, sticky="ew", padx=2, pady=2)
         self.discard_button = ttk.Button(actions, text="Discard unsent preview", command=self.discard_active, state="disabled")
-        self.discard_button.pack(side="left", padx=5)
+        self.discard_button.grid(row=1, column=0, sticky="ew", padx=2, pady=2)
         self.queue_button = ttk.Button(actions, text="Queue result for Paste Ready", command=self.queue_result, state="disabled")
-        self.queue_button.pack(side="left")
+        self.queue_button.grid(row=1, column=1, sticky="ew", padx=2, pady=2)
         self.details = scrolledtext.ScrolledText(detail_frame, wrap="word", height=12, state="disabled", font=("Segoe UI", 9))
         self.details.grid(row=1, column=0, sticky="nsew", pady=(4, 0))
 

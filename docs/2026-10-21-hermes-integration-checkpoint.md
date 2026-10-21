@@ -33,19 +33,19 @@ No main merge, original-worktree overwrite or S3 firmware write occurred.
 
 ## Verification and limits
 
-The complete local command passed **249 tests, 3 skipped and 4 subtests**:
+The complete local command passed **250 tests, 4 skipped and 4 subtests**:
 
 ```powershell
 python -m pytest tools/compose/tests tests server/tests server/deployment/tests .agents/skills/hermes-collaboration/scripts/test_linux_hermes_client.py .agents/skills/hermes-collaboration/scripts/test_migrate_linux_hermes_endpoint.py -q -p no:cacheprovider
 ```
 
-The three skips are Windows symbolic-link creation fixtures. Real Windows
+Three skips are Windows symbolic-link creation fixtures; one native-display availability check was skipped in the combined run. The separate focused native action-bound suite subsequently passed both sizes (2 tests). Real Windows
 directory-junction packaging guards were exercised successfully. These totals
 include existing image, writing, history, board and media suites; do not add the
 earlier 164-test checkpoint to them.
 
 Native Tk checks exercised both panel sizes, 920 × 740 and 720 × 640, and
-Settings' modal grab/scrolling. A real Windows DPAPI round trip used synthetic
+Settings' modal grab/scrolling. Native nested-notebook checks also verify every Hermes action remains within the supported window bounds. A real Windows DPAPI round trip used synthetic
 credentials. Full companion startup/shutdown used disposable data, disabled
 hardware/receiver inputs and instrumented HTTP methods: zero HTTP calls.
 These checks do not establish teacher accessibility or physical speech.
