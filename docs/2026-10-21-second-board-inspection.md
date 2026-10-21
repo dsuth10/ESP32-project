@@ -33,3 +33,13 @@ No USB mass-storage device was exposed. A private complete 4,194,304-byte flash 
 Following the user's request for manual identification, the diagnostic in `tools/board_diagnostics/cyd_identifier` built successfully. The full original flash matched the backup by device-side digest immediately before installation. Only the diagnostic application was written at 0x10000 and its write hash verified. Neither the bootloader nor the partition table was uploaded. NVS initialisation is bypassed to preserve existing settings. The original application remains recoverable from the private backup; it has not yet been restored.
 
 The diagnostic runs and responds over serial. Initial repeated raw LCD reads were: 04=`40 C0 D9 FF 80 00`, 09=`52 29 82 00 00 00`, D3=`00 00 00 00 00 00`, DA/DB=`81 FF 00 00 00 00`, DC=`B3 FF 00 00 00 00`. These values have not been accepted as a unique controller ID. Default test profile is ST7789 candidate, inversion off. Physical colour-pattern confirmation and varying touch coordinates remain pending. No PSRAM, audio, Bluetooth or production UI compatibility is established by this diagnostic.
+
+### Physical confirmation
+
+The user confirmed the described pattern, viewed sideways: two white mode squares on the left and blue/green/red stripes from top to bottom. Rotating that view clockwise puts the squares at the top and the stripes in the expected red/green/blue left-to-right order. Thus the ST7789 candidate initialisation, inversion OFF, BGR colour order, 240 x 320 pixel address window, and GPIO21 backlight produce the expected visible image. Treat this as an ST7789-compatible working profile, not a unique readback identification of the silicon or exact production revision.
+
+While the user pressed the centre and opposite corners, the serial capture recorded 11 plausible pressure-bearing touch samples. Centre samples were approximately X=1912–2120, Y=1830–1885; corner readings spanned X=393–3567 and Y=369–3692. This confirms communication with an XPT2046-compatible touch device using clock=25, MOSI=32, MISO=39, CS=33 and IRQ=36. Calibration and rotation mapping remain to be implemented and checked across the full screen.
+
+A subsequent 65,536-byte readback from flash offset zero matched the original backup byte-for-byte, covering the bootloader, partition table, NVS and OTA metadata. The board remains running the diagnostic application. The original app0 can be restored from the verified private backup. Main and the existing S3 device were not changed.
+
+Next stage: add this as a separate hardware profile, calibrate touch, then test BLE shortcuts with the companion before porting the full UI. PSRAM, audio input/output and exact silicon/revision are still unverified.
