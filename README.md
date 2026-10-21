@@ -1,5 +1,9 @@
 # Build an ESP32 classroom companion with an AI coding agent
 
+**Image feature branch:** `codex/companion-media-agent` contains an isolated desktop preview with a versioned image library, provider/job workflow, private sync API and guarded Word/OneNote insertion. Start `start_companion_feature.bat`; hardware inputs default off and feature data is separate from the live companion. Read the [testing and recovery guide](docs/feature-media-testing.md) and [implementation record](docs/2026-10-21-media-feature-implementation.md). The original main checkout/device remain the baseline; this candidate has not been merged or flashed.
+
+Project agents can use the [Hermes collaboration skill](.agents/skills/hermes-collaboration/SKILL.md) for the configured Linux API. Credentials and connection details stay in ignored local storage.
+
 ![ESP32 classroom companion enclosure render](docs/dimensions/render_hero_front.png)
 
 A small touchscreen device for Bluetooth shortcuts, push-to-talk AI conversations, and spoken writing on a Windows PC. This repository contains the firmware, host receiver, Windows Compose companion, hardware references and enclosure models for the **LCDWIKI / QD Electronic ES3C28P ESP32-S3 board**.
@@ -142,6 +146,16 @@ A tap under about 350 ms latches recording and lights the button. A second tap a
 **Paste Ready** is the hold queue. When the same window and control are still focused, Compose and Dictate paste immediately with Ctrl+V, then put your previous clipboard contents back. If you switch windows while it is working, or you start a test from the companion’s own buttons, the text stays queued and the status shows ready to paste. Focus the document and tap Paste Ready. An empty queue does nothing to the document. A successful key injection means Windows accepted the paste; a given app can still ignore it.
 
 Copy [tools/compose/compose.env.example](tools/compose/compose.env.example) to `compose.env` in that folder before relying on cloud speech, cloud writing, or web search. Closing the companion stops the microphone and the hardware listener. It does not start automatically at Windows sign-in.
+
+### Embedded assistant and reusable writing
+
+Run `start_companion.bat` and open **Ask your companion**. **Ask / write** answers text requests; **Manage companion** can inspect limited live companion status and save text. It reuses your Groq configuration, with optional `GROQ_ASSISTANT_MODEL`. Without a Groq key, or with `LOCAL_ONLY=1`, it uses your configured Ollama endpoint. Management needs a model supporting tool calling. This assistant tab has no live web search; Compose retains its existing optional search path.
+
+**History & saved text** retains new Compose, Dictate and assistant text on this Windows account. Search previous results, save useful responses, copy, export or delete individual entries. **Queue for Paste Ready** holds the selected response; focus your document and use the hardware/keyboard Paste Ready shortcut to insert it. Queueing does not paste into the companion.
+
+The database normally lives at `%LOCALAPPDATA%\ESP32ClassroomCompanion\companion.sqlite3`, outside this repository. It contains request/response text, not raw recordings. Set `HISTORY_ENABLED=0` in `compose.env` to disable automatic history on startup, or use the session checkbox. Explicit **Save** operations still retain the text you choose. Deleting local History does not erase any content already sent to an AI provider. The assistant searches stored History only when **Allow History search for this request** is selected in Manage mode; matching text then goes to the selected AI. Recent conversation context is scoped separately to Ask and Manage and resets with **New conversation**.
+
+This first version cannot alter handheld buttons/pages, flash firmware, run shell commands or repair arbitrary faults. It reports that boundary instead of claiming a device change. Existing recording, Bluetooth shortcuts and receiver behaviour are retained. See [the implementation notes](docs/2026-10-21-companion-assistant-first-increment.md).
 
 ## 5. Make a small change with your IDE agent
 

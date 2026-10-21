@@ -12,10 +12,16 @@ __pycache__/
 *.pyc
 *.pyo
 venv/
+.venv/
 .env
 tools/compose/*.env
 !tools/compose/compose.env.example
 tools/compose/*.log
+.pytest-*/
+.local/
+# Private companion history and SQLite sidecars (never publish user writing)
+*.sqlite3
+*.sqlite3-*
 graphify-out/cache/
 
 # LLM benchmark output (server/bench_llm_paths.py)

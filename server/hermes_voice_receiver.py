@@ -1418,7 +1418,15 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             #    legacy order: Work = local Ollama primary, Home = Hermes Gateway primary)
             t_hermes_start = time.perf_counter()
             route = "legacy"
-            if FAST_LLM_PROVIDER != "off":
+            media_bridge_url = os.environ.get("COMPANION_MEDIA_BRIDGE_URL", "")
+            if media_bridge_url:
+                # Feature-owned receiver only: durable local handoff, no second
+                # agent response, external mirror or automatic image generation.
+                sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "tools" / "compose"))
+                from media_voice_bridge import forward_transcript
+                forward_transcript(media_bridge_url, os.environ.get("COMPANION_MEDIA_BRIDGE_TOKEN", ""), transcript)
+                reply, backend_used, route = "Media request queued in your companion. Review the screen.", "companion-media", "media"
+            elif FAST_LLM_PROVIDER != "off":
                 route = route_intent(transcript)
                 if route == "agent":
                     reply, _, backend_used = answer_agent_lane(transcript)
@@ -1524,7 +1532,8 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
                 pass
 
             # 8. Asynchronously mirror to Telegram (Phase 19: never blocks ESP32 or affects server_ms)
-            dispatch_telegram_mirror(transcript, reply, backend_used)
+            if not media_bridge_url:
+                dispatch_telegram_mirror(transcript, reply, backend_used)
 
             # Structured console performance logging
             print("\n========== VOICE REQUEST ==========")
@@ -1538,8 +1547,9 @@ class VoiceRequestHandler(BaseHTTPRequestHandler):
             print(f"[PERF] voicebox/tts: {tts_s:6.2f} s")
             print("-----------------------------------")
             print(f"[PERF] SERVER TOTAL: {server_total_s:6.2f} s")
-            print(f"[STT ] {transcript}")
-            print(f"[AI  ] {clean_reply}")
+            if not media_bridge_url:
+                print(f"[STT ] {transcript}")
+                print(f"[AI  ] {clean_reply}")
             print("===================================\n")
 
         except Exception as e:

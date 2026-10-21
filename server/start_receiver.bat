@@ -4,6 +4,8 @@ cd /d "%~dp0"
 
 echo =======================================================
 echo   Starting Hermes Voice Satellite Receiver
+echo   Receiver only. For the desktop window and receiver
+echo   together, run start_companion.bat in the project folder.
 echo =======================================================
 
 rem Phase 17 & 18: Tune Work Ollama and enforce privacy defaults

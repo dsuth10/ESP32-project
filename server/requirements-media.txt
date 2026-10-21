@@ -1,0 +1,2 @@
+# Validated in the isolated Linux Python 3.14.7 environment.
+Pillow==12.3.0
