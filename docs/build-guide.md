@@ -1,5 +1,7 @@
 # Detailed build guide
 
+**Branch programme:** [current S3-only plan](2026-10-21-companion-media-agent-master-plan.md), [permanent home/work Hermes connection](hermes-tailscale-home-work.md), [board trial/recovery gate](board-upload-safety.md). Existing stable firmware stays installed; the new route/product adapter are pending.
+
 [Back to the project overview](../README.md)
 
 This walkthrough uses Windows PowerShell for the main examples. Linux/macOS differences are noted where relevant. Start with the firmware and Bluetooth connection; enclosure editing and voice can be added independently.
@@ -61,7 +63,7 @@ The local agent needs access to the machine that owns the USB port. If your IDE 
 1. Connect the board with a USB data cable.
 2. Run `pio device list` and compare the list with the board disconnected.
 3. On Windows, check **Device Manager → Ports (COM & LPT)**. On Linux/macOS, use the path reported by PlatformIO.
-4. Replace the repository's `COM5` in both `upload_port` and `monitor_port`, or override it in each command.
+4. Supply the actual serial port explicitly and follow [board upload safety](board-upload-safety.md). Hardware identity is checked independently of the COM number; the original stable board is write-locked.
 
 No separate serial MCP server is required: an IDE agent with local terminal access can invoke PlatformIO directly.
 
@@ -91,7 +93,7 @@ Replace all placeholders before trying voice. A hostname or IP of `127.0.0.1` in
 
 ### Build, upload and inspect
 
-From the repository root, using your detected port:
+From the repository root, using your detected port. The upload command below is guarded and will refuse the current stable/write-locked device; use read-only checks during development:
 
 ```bash
 pio run -e esp32-s3-portrait
@@ -111,7 +113,7 @@ The existing landscape build is:
 pio run -e esp32-s3-devkitc-1 -t upload --upload-port COM5
 ```
 
-Both environments flash the same board. The older `flash.py` utility writes demo firmware from `bin/`; it is separate from the classroom companion build.
+Both environments target the ES3C28P S3 profile and use the board guard. `flash.py` also requires an explicit profile, port and build manifest; its old demo-bin arguments are disabled. See [board upload safety](board-upload-safety.md).
 
 ## 4. Test and customise Bluetooth
 

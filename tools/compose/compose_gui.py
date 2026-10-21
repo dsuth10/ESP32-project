@@ -31,7 +31,12 @@ from prompt_engine import (
 from speech_pipeline import SpeechPipeline
 from llm_pipeline import LlmPipeline
 from clipboard_manager import ClipboardManager
+from receiver_service import VoiceReceiver
 from web_grounding import WebGrounding
+from history_store import HistoryStore
+from library_panel import LibraryPanel
+from assistant_service import AssistantService
+from assistant_panel import AssistantPanel
 
 
 def load_env_config() -> dict:
@@ -51,6 +56,8 @@ def load_env_config() -> dict:
         "GROQ_BASE_URL",
         "GROQ_STT_MODEL",
         "GROQ_LLM_MODEL",
+        "GROQ_ASSISTANT_MODEL",
+        "HISTORY_ENABLED",
         "LOCAL_WHISPER_MODEL",
         "LOCAL_WHISPER_DEVICE",
         "OLLAMA_HOST",
@@ -79,7 +86,8 @@ class ComposeApp:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("🎙️ ESP32 Voice Compose & Dictate Companion")
-        self.root.geometry("640x540")
+        self.root.geometry("920x740")
+        self.root.minsize(720, 640)
         self.root.configure(bg="#0B0F19")
         self.root.lift()
         self.root.attributes("-topmost", True)
@@ -88,6 +96,14 @@ class ComposeApp:
 
         self.config = load_env_config()
         self.local_only = self.config.get("LOCAL_ONLY", "0").lower() in ("1", "true", "yes")
+        self.history_enabled = self.config.get("HISTORY_ENABLED", "1").lower() in ("1", "true", "yes")
+        self.history = None
+        self._history_error = False
+        try:
+            self.history = HistoryStore()
+        except Exception:
+            # Recording/paste should remain usable if local storage is unavailable.
+            self._history_error = True
 
         sample_rate = int(self.config.get("AUDIO_SAMPLE_RATE", "16000"))
         device = self.config.get("AUDIO_INPUT_DEVICE")
@@ -126,6 +142,8 @@ class ComposeApp:
         self._recording_timer = None
 
         self._build_ui()
+        self.receiver = VoiceReceiver()
+        self._receiver_watch_ticks = 0
         self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.root.after(20, self._drain_ui_events)
         self.log(f"Service initialized. Active Microphone: {self.audio_capture.device_name} (WASAPI)")
@@ -133,14 +151,54 @@ class ComposeApp:
         self.log(f"Processing: {provider}")
         self.log(self.web_grounding.describe())
         self.log("Ready and listening for ESP32 MacroPad or keyboard hotkeys!")
+        if self._history_error:
+            self.log("History unavailable. Check access to your companion data folder; writing still works.")
+        try:
+            self.log(self.receiver.start())
+        except Exception:
+            logging.exception("Voice receiver failed to start")
+            self.log("Voice receiver failed to start. See companion.log")
+        self.root.after(1000, self._watch_receiver)
 
         # Start hardware key listener thread
         self.poller_thread = threading.Thread(target=self._hardware_key_poller, daemon=True)
         self.poller_thread.start()
 
     def _build_ui(self):
+        self.tabs = ttk.Notebook(self.root)
+        self.tabs.pack(fill="both", expand=True, padx=8, pady=8)
+        self.writing_tab = tk.Frame(self.tabs, bg="#0B0F19")
+        self.tabs.add(self.writing_tab, text="Compose & Dictate")
+        self.assistant_tab = ttk.Frame(self.tabs)
+        self.tabs.add(self.assistant_tab, text="Ask your companion")
+        self.library_tab = ttk.Frame(self.tabs)
+        self.tabs.add(self.library_tab, text="History & saved text")
+
+        self.assistant_service = AssistantService(self.config, self._assistant_status, self.history)
+        self.assistant_panel = AssistantPanel(
+            self.assistant_tab, self.assistant_service, self._post_ui,
+            self._queue_library_text, self._record_history,
+        )
+        self.assistant_panel.pack(fill="both", expand=True)
+        if self.history is not None:
+            self.library_panel = LibraryPanel(
+                self.library_tab, self.history, self._queue_library_text,
+                on_notice=lambda text: self.set_status(text),
+            )
+            self.library_panel.pack(fill="both", expand=True)
+        else:
+            ttk.Label(self.library_tab, text="History could not open. Check access to your companion data folder.",
+                      wraplength=600).pack(padx=16, pady=16)
+        privacy = ttk.Frame(self.root)
+        privacy.pack(side="bottom", fill="x", padx=14, pady=(0, 8), before=self.tabs)
+        self.history_var = tk.BooleanVar(value=self.history_enabled)
+        ttk.Checkbutton(privacy, text="Save new requests in local History (this session)",
+                        variable=self.history_var, command=self._toggle_history).pack(side="left")
+        ttk.Label(privacy, text="No audio is stored in History.").pack(side="right")
+
+        parent = self.writing_tab
         # Header Frame
-        hdr = tk.Frame(self.root, bg="#111827", padx=16, pady=12, highlightthickness=1, highlightbackground="#374151")
+        hdr = tk.Frame(parent, bg="#111827", padx=16, pady=12, highlightthickness=1, highlightbackground="#374151")
         hdr.pack(fill="x", padx=14, pady=(14, 8))
 
         title_lbl = tk.Label(hdr, text="🎙️ ESP32 Voice Compose & Dictate", font=("Segoe UI", 13, "bold"), fg="#F9FAFB", bg="#111827")
@@ -150,8 +208,17 @@ class ComposeApp:
         sub_lbl = tk.Label(hdr, text=sub_text, font=("Segoe UI", 8), fg="#9CA3AF", bg="#111827")
         sub_lbl.pack(anchor="w", pady=(2, 0))
 
+        self.receiver_lbl = tk.Label(
+            hdr,
+            text="Voice receiver: starting…",
+            font=("Segoe UI", 8),
+            fg="#FBBF24",
+            bg="#111827",
+        )
+        self.receiver_lbl.pack(anchor="w", pady=(4, 0))
+
         # Status Bar Card
-        status_card = tk.Frame(self.root, bg="#1F2937", padx=14, pady=10, highlightthickness=1, highlightbackground="#374151")
+        status_card = tk.Frame(parent, bg="#1F2937", padx=14, pady=10, highlightthickness=1, highlightbackground="#374151")
         status_card.pack(fill="x", padx=14, pady=6)
 
         self.status_dot = tk.Label(status_card, text="●", font=("Segoe UI", 14), fg="#10B981", bg="#1F2937")
@@ -161,7 +228,7 @@ class ComposeApp:
         self.status_lbl.pack(side="left")
 
         # Quick Test Button Bar
-        btn_frame = tk.Frame(self.root, bg="#0B0F19")
+        btn_frame = tk.Frame(parent, bg="#0B0F19")
         btn_frame.pack(fill="x", padx=14, pady=8)
 
         self.btn_compose = tk.Button(
@@ -213,21 +280,21 @@ class ComposeApp:
         self.btn_paste.pack(side="left", expand=True, fill="x", padx=(6, 0))
 
         # Instructions / Shortcut Guide
-        guide_frame = tk.Frame(self.root, bg="#111827", padx=12, pady=8, highlightthickness=1, highlightbackground="#1F2937")
+        guide_frame = tk.Frame(parent, bg="#111827", padx=12, pady=8, highlightthickness=1, highlightbackground="#1F2937")
         guide_frame.pack(fill="x", padx=14, pady=4)
 
         guide_txt = (
             "ESP32 Page 6: Tap or Hold 'COMPOSE' or 'DICTATE'.\n"
             "PC Keyboard Shortcuts: F13 or Ctrl+Alt+Shift+F9 (Compose)  •  F14 or Ctrl+Alt+Shift+F10 (Dictate)  •  F15 or Ctrl+Alt+Shift+F11 (Paste)"
         )
-        tk.Label(guide_frame, text=guide_txt, font=("Segoe UI", 8), fg="#9CA3AF", bg="#111827", justify="left").pack(anchor="w")
+        tk.Label(guide_frame, text=guide_txt, font=("Segoe UI", 8), fg="#9CA3AF", bg="#111827", justify="left", wraplength=650).pack(anchor="w")
 
         # Live Event Log
-        log_header = tk.Label(self.root, text="LIVE EVENT & TRANSCRIPT LOG:", font=("Segoe UI", 9, "bold"), fg="#9CA3AF", bg="#0B0F19")
+        log_header = tk.Label(parent, text="LIVE EVENT & TRANSCRIPT LOG:", font=("Segoe UI", 9, "bold"), fg="#9CA3AF", bg="#0B0F19")
         log_header.pack(anchor="w", padx=16, pady=(10, 2))
 
         self.log_box = scrolledtext.ScrolledText(
-            self.root,
+            parent,
             bg="#030712",
             fg="#E5E7EB",
             font=("Consolas", 9),
@@ -237,14 +304,68 @@ class ComposeApp:
             highlightbackground="#374151",
             padx=10,
             pady=8,
+            height=8,
         )
         self.log_box.pack(fill="both", expand=True, padx=14, pady=(0, 14))
 
-    def log(self, text: str):
-        logging.info("%s", text)
+    def log(self, text: str, content: bool = False):
+        if not content:
+            logging.info("%s", text)
         t_str = time.strftime("%H:%M:%S")
         msg = f"[{t_str}] {text}\n"
         self._ui_events.put((self._append_log, (msg,)))
+
+    def _post_ui(self, callback, *args):
+        if not self._stop_poller:
+            self._ui_events.put((callback, args))
+
+    def _toggle_history(self):
+        self.history_enabled = self.history_var.get()
+
+    def _record_history(self, mode, request, response, provider="", status="completed"):
+        if getattr(self, "_stop_poller", False):
+            return None
+        if getattr(self, "history", None) is not None:
+            self._post_ui(self._refresh_library)
+        if not getattr(self, "history_enabled", False) or getattr(self, "history", None) is None:
+            return None
+        try:
+            entry_id = self.history.add_entry(mode, request, response, provider, status)
+            self._post_ui(self._refresh_library)
+            return entry_id
+        except Exception:
+            self.log("Could not save this response to History. The result remains available in this session.")
+            return None
+
+    def _refresh_library(self):
+        if hasattr(self, "library_panel"):
+            self.library_panel.refresh()
+
+    def _queue_library_text(self, text):
+        if self._busy or self.is_recording:
+            raise RuntimeError("Finish the current recording or writing task before queueing text.")
+        if not text.strip():
+            raise ValueError("There is no response text to queue.")
+        self.pending_ready_payload = text
+        self.set_status("READY: Focus your document, then press PASTE READY", "#F59E0B")
+
+    def _assistant_status(self):
+        # Return only explicit diagnostic fields: no config, keys, document or log content.
+        receiver = getattr(self, "receiver", None)
+        return {
+            "application": "ESP32 Classroom Companion",
+            "recording": self.is_recording,
+            "writing_busy": self._busy,
+            "microphone_configured": bool(getattr(self.audio_capture, "device_name", "")),
+            "processing_policy": "local_only" if self.local_only else "cloud_permitted",
+            "history_available": self.history is not None,
+            "save_new_history": self.history_enabled,
+            "paste_ready": bool(self.pending_ready_payload),
+            "receiver_port_open": bool(receiver and receiver.is_listening()),
+            "receiver_note": "An open port does not verify receiver identity or backend health.",
+            "device_configuration": "Firmware-defined pages; runtime button updates are not implemented.",
+            "bluetooth": "Not verified by this diagnostic; use a hardware shortcut to test.",
+        }
 
     def _append_log(self, msg: str):
         self.log_box.insert("end", msg)
@@ -317,11 +438,32 @@ class ComposeApp:
         if not self._stop_poller:
             self.root.after(20, self._drain_ui_events)
 
+    def _watch_receiver(self):
+        if self._stop_poller:
+            return
+        self._receiver_watch_ticks += 1
+        if self.receiver.is_listening():
+            note = "Closing this window stops it." if self.receiver.owns_process else "Already running; closing this window leaves it running."
+            self.receiver_lbl.config(text=f"Voice receiver: running on port 8787. {note}", fg="#34D399")
+            return
+        if self.receiver.exited():
+            self.receiver_lbl.config(text="Voice receiver stopped. See receiver.log", fg="#F87171")
+            self.log("Voice receiver exited. See tools/compose/receiver.log")
+            return
+        if self._receiver_watch_ticks < 60:
+            self.root.after(1000, self._watch_receiver)
+            return
+        self.receiver_lbl.config(text="Voice receiver is still starting. See receiver.log", fg="#FBBF24")
+
     def close(self):
         self._stop_poller = True
+        if hasattr(self, "assistant_panel"):
+            self.assistant_panel.close()
         if self._recording_timer is not None:
             self.root.after_cancel(self._recording_timer)
         self.audio_capture.stop_recording()
+        if hasattr(self, "receiver"):
+            self.receiver.stop()
         self.root.destroy()
 
     # ── Unified Recording & Synthesis Pipeline ──────────────────────────
@@ -354,7 +496,7 @@ class ComposeApp:
                 preview = self._target_selected_text.strip().replace("\n", " ")
                 if len(preview) > 60:
                     preview = preview[:57] + "..."
-                self.log(f"📋 Context captured from document ({len(self._target_selected_text)} chars): \"{preview}\"")
+                self.log(f"📋 Context captured from document ({len(self._target_selected_text)} chars): \"{preview}\"", content=True)
             else:
                 self.log("📋 Context: No text selected in document.")
             self.set_status("RECORDING (Compose)... Speak prompt, click again to write!", "#F59E0B")
@@ -406,9 +548,12 @@ class ComposeApp:
         self.llm_pipeline.local_only = True
         self.speech_pipeline.local_only = True
         self.speech_pipeline.cloud_down = True
+        if hasattr(self, "assistant_service"):
+            self.assistant_service.config["LOCAL_ONLY"] = "1"
         self.log("Cloud services are unreachable. Using local Whisper and Ollama for the rest of this session.")
 
     def _process_pipeline_worker(self, mode: str, wav_bytes: bytes, focus_snap: dict | None, selected_text: str):
+        transcript = ""
         try:
             self.set_status("TRANSCRIBING: Sending speech to Whisper...", "#8B5CF6")
             self.log("Transcribing audio via Speech Pipeline...")
@@ -419,7 +564,7 @@ class ComposeApp:
                 self.set_status("No speech detected", "#EF4444")
                 return
 
-            self.log(f"Transcript ({stt_prov}, {stt_lat:.2f}s): \"{transcript}\"")
+            self.log(f"Transcript ({stt_prov}, {stt_lat:.2f}s): \"{transcript}\"", content=True)
             self._stay_local_if_cloud_blocked()
 
             if mode == "compose":
@@ -446,14 +591,16 @@ class ComposeApp:
                     return
 
                 self.log(f"Generated text ({llm_prov}, {llm_lat:.2f}s, {len(reply)} chars):")
-                self.log(f"--- PREVIEW ---\n{reply}\n---------------")
+                self.log(f"--- PREVIEW ---\n{reply}\n---------------", content=True)
 
+                self._record_history("compose", transcript, reply, llm_prov)
                 self._ui_events.put((self._deliver_result, (reply, focus_snap)))
 
             else:  # Dictate
                 self.set_status("CLEANING: Polishing verbatim text...", "#8B5CF6")
                 self.log("Running Grammar Guard and formatting dictate output...")
                 messages = build_dictate_messages(transcript)
+                llm_prov = "original transcript"
                 try:
                     candidate, llm_prov, llm_lat, _ = self.llm_pipeline.generate(messages, temperature=0.0)
                 except Exception:
@@ -462,12 +609,14 @@ class ComposeApp:
                 self._stay_local_if_cloud_blocked()
 
                 final_text = verify_dictate_overlap(transcript, candidate)
-                self.log(f"Dictate output: {final_text}")
+                self.log(f"Dictate output: {final_text}", content=True)
+                self._record_history("dictate", transcript, final_text, f"{stt_prov}; {llm_prov}")
                 self._ui_events.put((self._deliver_result, (final_text, focus_snap)))
 
         except Exception as e:
-            self.log(f"❌ Pipeline Error: {e}")
-            self.set_status(f"Error: {e}", "#EF4444")
+            self._record_history(mode, transcript, "Writing could not complete.", status="failed")
+            self.log(f"Pipeline failed ({type(e).__name__}). Check the microphone and processing provider.")
+            self.set_status("Writing failed; check microphone and processing provider", "#EF4444")
         finally:
             self._ui_events.put((self._pipeline_finished, ()))
 

@@ -134,32 +134,6 @@
       "source_location": "L16"
     },
     {
-      "id": "tools_compose_web_grounding_bravesearchclient",
-      "label": "BraveSearchClient",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": "bravesearchclient",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L284"
-    },
-    {
-      "id": "tools_compose_web_grounding_groundingresult",
-      "label": "GroundingResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": "groundingresult",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L363"
-    },
-    {
       "id": "tools_compose_web_grounding_intentrouter",
       "label": "IntentRouter",
       "_callable": true,
@@ -184,19 +158,6 @@
       "norm_label": "routedecision",
       "source_file": "tools/compose/web_grounding.py",
       "source_location": "L116"
-    },
-    {
-      "id": "tools_compose_web_grounding_webgrounding",
-      "label": "WebGrounding",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": "webgrounding",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L393"
     },
     {
       "id": "src_audio_recorder_audiorecorder",
@@ -394,6 +355,19 @@
       "source_location": "L20"
     },
     {
+      "id": "tools_compose_compose_companion_composecompanion",
+      "label": "ComposeCompanion",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 60,
+      "community_name": "ComposeCompanion",
+      "file_type": "code",
+      "norm_label": "composecompanion",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L107"
+    },
+    {
       "id": "tools_compose_clipboard_manager_clipboardmanager",
       "label": "ClipboardManager",
       "_callable": true,
@@ -405,45 +379,6 @@
       "norm_label": "clipboardmanager",
       "source_file": "tools/compose/clipboard_manager.py",
       "source_location": "L42"
-    },
-    {
-      "id": "tools_compose_clipboard_manager_input",
-      "label": "_Input",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 61,
-      "community_name": "ClipboardManager",
-      "file_type": "code",
-      "norm_label": "_input",
-      "source_file": "tools/compose/clipboard_manager.py",
-      "source_location": "L25"
-    },
-    {
-      "id": "tools_compose_clipboard_manager_inputunion",
-      "label": "_InputUnion",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 61,
-      "community_name": "ClipboardManager",
-      "file_type": "code",
-      "norm_label": "_inputunion",
-      "source_file": "tools/compose/clipboard_manager.py",
-      "source_location": "L20"
-    },
-    {
-      "id": "tools_compose_clipboard_manager_keyboardinput",
-      "label": "_KeyboardInput",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 61,
-      "community_name": "ClipboardManager",
-      "file_type": "code",
-      "norm_label": "_keyboardinput",
-      "source_file": "tools/compose/clipboard_manager.py",
-      "source_location": "L14"
     },
     {
       "id": "tools_compose_compose_gui_composeapp",
@@ -472,19 +407,6 @@
       "source_location": "L14"
     },
     {
-      "id": "tools_compose_hotkey_state_hotkeystate",
-      "label": "HotkeyState",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "test_compose.py",
-      "file_type": "code",
-      "norm_label": "hotkeystate",
-      "source_file": "tools/compose/hotkey_state.py",
-      "source_location": "L4"
-    },
-    {
       "id": "src_host_discovery_hostdiscovery",
       "label": "HostDiscovery",
       "_callable": true,
@@ -498,17 +420,95 @@
       "source_location": "L13"
     },
     {
-      "id": "tools_compose_compose_companion_composecompanion",
-      "label": "ComposeCompanion",
+      "id": "tools_compose_web_grounding_bravesearchclient",
+      "label": "BraveSearchClient",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "ComposeCompanion",
+      "community_name": "WebGrounding",
       "file_type": "code",
-      "norm_label": "composecompanion",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L107"
+      "norm_label": "bravesearchclient",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L284"
+    },
+    {
+      "id": "tools_compose_web_grounding_webgrounding",
+      "label": "WebGrounding",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 66,
+      "community_name": "WebGrounding",
+      "file_type": "code",
+      "norm_label": "webgrounding",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L393"
+    },
+    {
+      "id": "tools_compose_hotkey_state_hotkeystate",
+      "label": "HotkeyState",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "HotkeyState",
+      "file_type": "code",
+      "norm_label": "hotkeystate",
+      "source_file": "tools/compose/hotkey_state.py",
+      "source_location": "L4"
+    },
+    {
+      "id": "tools_compose_clipboard_manager_input",
+      "label": "_Input",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 70,
+      "community_name": "clipboard_manager.py",
+      "file_type": "code",
+      "norm_label": "_input",
+      "source_file": "tools/compose/clipboard_manager.py",
+      "source_location": "L25"
+    },
+    {
+      "id": "tools_compose_clipboard_manager_inputunion",
+      "label": "_InputUnion",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 70,
+      "community_name": "clipboard_manager.py",
+      "file_type": "code",
+      "norm_label": "_inputunion",
+      "source_file": "tools/compose/clipboard_manager.py",
+      "source_location": "L20"
+    },
+    {
+      "id": "tools_compose_clipboard_manager_keyboardinput",
+      "label": "_KeyboardInput",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 70,
+      "community_name": "clipboard_manager.py",
+      "file_type": "code",
+      "norm_label": "_keyboardinput",
+      "source_file": "tools/compose/clipboard_manager.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "tools_compose_web_grounding_groundingresult",
+      "label": "GroundingResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 71,
+      "community_name": ".fetch_context",
+      "file_type": "code",
+      "norm_label": "groundingresult",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L363"
     },
     {
       "id": "src_gui_macropadgui_getstoragescrollindex",
@@ -1351,18 +1351,6 @@
       "source_location": "L5"
     },
     {
-      "id": "tools_compose_tests_test_web_grounding_test_brave_search_client_parses_results",
-      "label": "test_brave_search_client_parses_results()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": "test_brave_search_client_parses_results()",
-      "source_file": "tools/compose/tests/test_web_grounding.py",
-      "source_location": "L153"
-    },
-    {
       "id": "tools_compose_tests_test_web_grounding_test_build_search_query_strips_command_prefix",
       "label": "test_build_search_query_strips_command_prefix()",
       "_callable": true,
@@ -1507,30 +1495,6 @@
       "source_location": "L33"
     },
     {
-      "id": "tools_compose_tests_test_web_grounding_test_web_grounding_disabled_or_local_only",
-      "label": "test_web_grounding_disabled_or_local_only()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": "test_web_grounding_disabled_or_local_only()",
-      "source_file": "tools/compose/tests/test_web_grounding.py",
-      "source_location": "L180"
-    },
-    {
-      "id": "tools_compose_web_grounding_bravesearchclient_available",
-      "label": ".available()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": ".available()",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L304"
-    },
-    {
       "id": "tools_compose_web_grounding_bravesearchclient_init",
       "label": ".__init__()",
       "_callable": true,
@@ -1541,18 +1505,6 @@
       "norm_label": ".__init__()",
       "source_file": "tools/compose/web_grounding.py",
       "source_location": "L287"
-    },
-    {
-      "id": "tools_compose_web_grounding_bravesearchclient_search",
-      "label": ".search()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": ".search()",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L307"
     },
     {
       "id": "tools_compose_web_grounding_build_search_query",
@@ -1567,18 +1519,6 @@
       "source_location": "L104"
     },
     {
-      "id": "tools_compose_web_grounding_clean",
-      "label": "_clean()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": "_clean()",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L280"
-    },
-    {
       "id": "tools_compose_web_grounding_format_search_context",
       "label": "format_search_context()",
       "_callable": true,
@@ -1589,30 +1529,6 @@
       "norm_label": "format_search_context()",
       "source_file": "tools/compose/web_grounding.py",
       "source_location": "L347"
-    },
-    {
-      "id": "tools_compose_web_grounding_groundingresult_summary",
-      "label": ".summary()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": ".summary()",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L375"
-    },
-    {
-      "id": "tools_compose_web_grounding_groundingresult_used",
-      "label": ".used()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": ".used()",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L372"
     },
     {
       "id": "tools_compose_web_grounding_intentrouter_ask_groq",
@@ -1685,54 +1601,6 @@
       "norm_label": "keyword_route()",
       "source_file": "tools/compose/web_grounding.py",
       "source_location": "L72"
-    },
-    {
-      "id": "tools_compose_web_grounding_webgrounding_describe",
-      "label": ".describe()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": ".describe()",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L424"
-    },
-    {
-      "id": "tools_compose_web_grounding_webgrounding_fetch_context",
-      "label": ".fetch_context()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": ".fetch_context()",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L439"
-    },
-    {
-      "id": "tools_compose_web_grounding_webgrounding_from_config",
-      "label": ".from_config()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": ".from_config()",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L400"
-    },
-    {
-      "id": "tools_compose_web_grounding_webgrounding_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L394"
     },
     {
       "id": "agents_scratch_tts_test_sanitize_for_tts",
@@ -2857,18 +2725,6 @@
       "norm_label": "is_cloud_network_failure()",
       "source_file": "tools/compose/speech_pipeline.py",
       "source_location": "L13"
-    },
-    {
-      "id": "tools_compose_tests_test_compose_test_dictate_guard_accepts_punctuation",
-      "label": "test_dictate_guard_accepts_punctuation()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 43,
-      "community_name": "compose_companion.py",
-      "file_type": "code",
-      "norm_label": "test_dictate_guard_accepts_punctuation()",
-      "source_file": "tools/compose/tests/test_compose.py",
-      "source_location": "L149"
     },
     {
       "id": "tools_compose_tests_test_web_grounding_test_prompt_engine_build_compose_messages_with_web_context",
@@ -4117,6 +3973,30 @@
       "source_location": "L167"
     },
     {
+      "id": "tools_compose_compose_companion_composecompanion_handle_f13_down",
+      "label": ".handle_f13_down()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "FocusTracker",
+      "file_type": "code",
+      "norm_label": ".handle_f13_down()",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L161"
+    },
+    {
+      "id": "tools_compose_compose_companion_composecompanion_handle_f14_down",
+      "label": ".handle_f14_down()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "FocusTracker",
+      "file_type": "code",
+      "norm_label": ".handle_f14_down()",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L213"
+    },
+    {
       "id": "tools_compose_focus_tracker_focustracker_capture_selected_text",
       "label": ".capture_selected_text()",
       "_callable": true,
@@ -4129,16 +4009,16 @@
       "source_location": "L201"
     },
     {
-      "id": "tools_compose_focus_tracker_focustracker_capture_via_chord_ctrl_c",
-      "label": "._capture_via_chord_ctrl_c()",
+      "id": "tools_compose_focus_tracker_focustracker_get_focus_snapshot",
+      "label": ".get_focus_snapshot()",
       "_callable": true,
       "_origin": "ast",
       "community": 50,
       "community_name": "FocusTracker",
       "file_type": "code",
-      "norm_label": "._capture_via_chord_ctrl_c()",
+      "norm_label": ".get_focus_snapshot()",
       "source_file": "tools/compose/focus_tracker.py",
-      "source_location": "L152"
+      "source_location": "L47"
     },
     {
       "id": "tools_compose_focus_tracker_focustracker_get_focused_child_hwnd",
@@ -4151,30 +4031,6 @@
       "norm_label": ".get_focused_child_hwnd()",
       "source_file": "tools/compose/focus_tracker.py",
       "source_location": "L99"
-    },
-    {
-      "id": "tools_compose_focus_tracker_key_event",
-      "label": "_key_event()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "FocusTracker",
-      "file_type": "code",
-      "norm_label": "_key_event()",
-      "source_file": "tools/compose/focus_tracker.py",
-      "source_location": "L27"
-    },
-    {
-      "id": "tools_compose_focus_tracker_key_is_down",
-      "label": "_key_is_down()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "FocusTracker",
-      "file_type": "code",
-      "norm_label": "_key_is_down()",
-      "source_file": "tools/compose/focus_tracker.py",
-      "source_location": "L23"
     },
     {
       "id": "tools_compose_tests_test_compose_test_capture_selected_text_extracts_via_text_pattern",
@@ -4235,66 +4091,6 @@
       "norm_label": "test_capture_selected_text_ignores_this_process()",
       "source_file": "tools/compose/tests/test_compose.py",
       "source_location": "L288"
-    },
-    {
-      "id": "tools_compose_tests_test_compose_test_chord_ctrl_c_releases_ctrl_when_injection_fails",
-      "label": "test_chord_ctrl_c_releases_ctrl_when_injection_fails()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "FocusTracker",
-      "file_type": "code",
-      "norm_label": "test_chord_ctrl_c_releases_ctrl_when_injection_fails()",
-      "source_file": "tools/compose/tests/test_compose.py",
-      "source_location": "L268"
-    },
-    {
-      "id": "tools_compose_tests_test_compose_test_chord_ctrl_c_releases_ctrl_when_injection_fails_event",
-      "label": "event()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "FocusTracker",
-      "file_type": "code",
-      "norm_label": "event()",
-      "source_file": "tools/compose/tests/test_compose.py",
-      "source_location": "L273"
-    },
-    {
-      "id": "tools_compose_tests_test_compose_test_chord_ctrl_c_releases_keys_it_presses_and_restores_alt",
-      "label": "test_chord_ctrl_c_releases_keys_it_presses_and_restores_alt()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "FocusTracker",
-      "file_type": "code",
-      "norm_label": "test_chord_ctrl_c_releases_keys_it_presses_and_restores_alt()",
-      "source_file": "tools/compose/tests/test_compose.py",
-      "source_location": "L240"
-    },
-    {
-      "id": "tools_compose_tests_test_compose_test_chord_ctrl_c_releases_keys_it_presses_and_restores_alt_event",
-      "label": "event()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "FocusTracker",
-      "file_type": "code",
-      "norm_label": "event()",
-      "source_file": "tools/compose/tests/test_compose.py",
-      "source_location": "L245"
-    },
-    {
-      "id": "tools_compose_tests_test_compose_test_chord_ctrl_c_releases_keys_it_presses_and_restores_alt_sequence",
-      "label": "sequence()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "FocusTracker",
-      "file_type": "code",
-      "norm_label": "sequence()",
-      "source_file": "tools/compose/tests/test_compose.py",
-      "source_location": "L250"
     },
     {
       "id": "server_hermes_voice_receiver_check_voicebox_online",
@@ -4803,12 +4599,48 @@
       "source_location": "L23"
     },
     {
-      "id": "tools_compose_compose_companion_composecompanion_init",
+      "id": "tools_compose_compose_gui_composeapp_build_ui",
+      "label": "._build_ui()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "AudioCapture",
+      "file_type": "code",
+      "norm_label": "._build_ui()",
+      "source_file": "tools/compose/compose_gui.py",
+      "source_location": "L141"
+    },
+    {
+      "id": "tools_compose_compose_gui_composeapp_init",
       "label": ".__init__()",
       "_callable": true,
       "_origin": "ast",
       "community": 58,
       "community_name": "AudioCapture",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "tools/compose/compose_gui.py",
+      "source_location": "L79"
+    },
+    {
+      "id": "tools_compose_compose_gui_load_env_config",
+      "label": "load_env_config()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "AudioCapture",
+      "file_type": "code",
+      "norm_label": "load_env_config()",
+      "source_file": "tools/compose/compose_gui.py",
+      "source_location": "L37"
+    },
+    {
+      "id": "tools_compose_compose_companion_composecompanion_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "SpeechPipeline",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "tools/compose/compose_companion.py",
@@ -4819,8 +4651,8 @@
       "label": "load_env_config()",
       "_callable": true,
       "_origin": "ast",
-      "community": 58,
-      "community_name": "AudioCapture",
+      "community": 59,
+      "community_name": "SpeechPipeline",
       "file_type": "code",
       "norm_label": "load_env_config()",
       "source_file": "tools/compose/compose_companion.py",
@@ -4897,42 +4729,6 @@
       "norm_label": "run()",
       "source_file": "tools/compose/speech_pipeline.py",
       "source_location": "L82"
-    },
-    {
-      "id": "tools_compose_tests_test_compose_test_auto_whisper_retries_lazy_cuda_failure_on_cpu",
-      "label": "test_auto_whisper_retries_lazy_cuda_failure_on_cpu()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "SpeechPipeline",
-      "file_type": "code",
-      "norm_label": "test_auto_whisper_retries_lazy_cuda_failure_on_cpu()",
-      "source_file": "tools/compose/tests/test_compose.py",
-      "source_location": "L153"
-    },
-    {
-      "id": "tools_compose_tests_test_compose_test_auto_whisper_retries_lazy_cuda_failure_on_cpu_broken_segments",
-      "label": "broken_segments()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "SpeechPipeline",
-      "file_type": "code",
-      "norm_label": "broken_segments()",
-      "source_file": "tools/compose/tests/test_compose.py",
-      "source_location": "L156"
-    },
-    {
-      "id": "tools_compose_tests_test_compose_test_explicit_cuda_configuration_does_not_silently_switch_device",
-      "label": "test_explicit_cuda_configuration_does_not_silently_switch_device()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "SpeechPipeline",
-      "file_type": "code",
-      "norm_label": "test_explicit_cuda_configuration_does_not_silently_switch_device()",
-      "source_file": "tools/compose/tests/test_compose.py",
-      "source_location": "L170"
     },
     {
       "id": "es8311_bsp_es8311_clock_config",
@@ -5151,16 +4947,64 @@
       "source_location": "L161"
     },
     {
+      "id": "tools_compose_compose_companion_composecompanion_handle_f13_up",
+      "label": ".handle_f13_up()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 60,
+      "community_name": "ComposeCompanion",
+      "file_type": "code",
+      "norm_label": ".handle_f13_up()",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L191"
+    },
+    {
+      "id": "tools_compose_compose_companion_composecompanion_handle_f14_up",
+      "label": ".handle_f14_up()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 60,
+      "community_name": "ComposeCompanion",
+      "file_type": "code",
+      "norm_label": ".handle_f14_up()",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L233"
+    },
+    {
       "id": "tools_compose_compose_companion_composecompanion_handle_f15_tap",
       "label": ".handle_f15_tap()",
       "_callable": true,
       "_origin": "ast",
       "community": 60,
-      "community_name": ".run",
+      "community_name": "ComposeCompanion",
       "file_type": "code",
       "norm_label": ".handle_f15_tap()",
       "source_file": "tools/compose/compose_companion.py",
       "source_location": "L254"
+    },
+    {
+      "id": "tools_compose_compose_companion_composecompanion_process_compose_worker",
+      "label": "._process_compose_worker()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 60,
+      "community_name": "ComposeCompanion",
+      "file_type": "code",
+      "norm_label": "._process_compose_worker()",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L283"
+    },
+    {
+      "id": "tools_compose_compose_companion_composecompanion_process_dictate_worker",
+      "label": "._process_dictate_worker()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 60,
+      "community_name": "ComposeCompanion",
+      "file_type": "code",
+      "norm_label": "._process_dictate_worker()",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L333"
     },
     {
       "id": "tools_compose_compose_companion_composecompanion_run",
@@ -5168,7 +5012,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 60,
-      "community_name": ".run",
+      "community_name": "ComposeCompanion",
       "file_type": "code",
       "norm_label": ".run()",
       "source_file": "tools/compose/compose_companion.py",
@@ -5180,7 +5024,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 60,
-      "community_name": ".run",
+      "community_name": "ComposeCompanion",
       "file_type": "code",
       "norm_label": "clear_queue_action()",
       "source_file": "tools/compose/compose_companion.py",
@@ -5192,7 +5036,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 60,
-      "community_name": ".run",
+      "community_name": "ComposeCompanion",
       "file_type": "code",
       "norm_label": "open_config_action()",
       "source_file": "tools/compose/compose_companion.py",
@@ -5204,7 +5048,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 60,
-      "community_name": ".run",
+      "community_name": "ComposeCompanion",
       "file_type": "code",
       "norm_label": "paste_ready_action()",
       "source_file": "tools/compose/compose_companion.py",
@@ -5216,7 +5060,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 60,
-      "community_name": ".run",
+      "community_name": "ComposeCompanion",
       "file_type": "code",
       "norm_label": "quit_action()",
       "source_file": "tools/compose/compose_companion.py",
@@ -5228,7 +5072,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 60,
-      "community_name": ".run",
+      "community_name": "ComposeCompanion",
       "file_type": "code",
       "norm_label": "toggle_local_only()",
       "source_file": "tools/compose/compose_companion.py",
@@ -5240,11 +5084,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 60,
-      "community_name": ".run",
+      "community_name": "ComposeCompanion",
       "file_type": "code",
       "norm_label": ".set_local_only()",
       "source_file": "tools/compose/compose_companion.py",
       "source_location": "L149"
+    },
+    {
+      "id": "tools_compose_compose_companion_composecompanion_stay_local_if_cloud_blocked",
+      "label": "._stay_local_if_cloud_blocked()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 60,
+      "community_name": "ComposeCompanion",
+      "file_type": "code",
+      "norm_label": "._stay_local_if_cloud_blocked()",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L271"
     },
     {
       "id": "tools_compose_compose_companion_create_tray_icon_image",
@@ -5252,11 +5108,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 60,
-      "community_name": ".run",
+      "community_name": "ComposeCompanion",
       "file_type": "code",
       "norm_label": "create_tray_icon_image()",
       "source_file": "tools/compose/compose_companion.py",
       "source_location": "L90"
+    },
+    {
+      "id": "tools_compose_focus_tracker_focustracker_is_focus_matched",
+      "label": ".is_focus_matched()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 60,
+      "community_name": "ComposeCompanion",
+      "file_type": "code",
+      "norm_label": ".is_focus_matched()",
+      "source_file": "tools/compose/focus_tracker.py",
+      "source_location": "L74"
     },
     {
       "id": "tools_compose_clipboard_manager_clipboardmanager_empty_clipboard",
@@ -5319,16 +5187,16 @@
       "source_location": "L90"
     },
     {
-      "id": "tools_compose_clipboard_manager_send_paste_shortcut",
-      "label": "send_paste_shortcut()",
+      "id": "tools_compose_focus_tracker_focustracker_capture_via_chord_ctrl_c",
+      "label": "._capture_via_chord_ctrl_c()",
       "_callable": true,
       "_origin": "ast",
       "community": 61,
       "community_name": "ClipboardManager",
       "file_type": "code",
-      "norm_label": "send_paste_shortcut()",
-      "source_file": "tools/compose/clipboard_manager.py",
-      "source_location": "L29"
+      "norm_label": "._capture_via_chord_ctrl_c()",
+      "source_file": "tools/compose/focus_tracker.py",
+      "source_location": "L152"
     },
     {
       "id": "tools_compose_focus_tracker_focustracker_capture_via_wm_copy",
@@ -5341,6 +5209,30 @@
       "norm_label": "._capture_via_wm_copy()",
       "source_file": "tools/compose/focus_tracker.py",
       "source_location": "L114"
+    },
+    {
+      "id": "tools_compose_focus_tracker_key_event",
+      "label": "_key_event()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 61,
+      "community_name": "ClipboardManager",
+      "file_type": "code",
+      "norm_label": "_key_event()",
+      "source_file": "tools/compose/focus_tracker.py",
+      "source_location": "L27"
+    },
+    {
+      "id": "tools_compose_focus_tracker_key_is_down",
+      "label": "_key_is_down()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 61,
+      "community_name": "ClipboardManager",
+      "file_type": "code",
+      "norm_label": "_key_is_down()",
+      "source_file": "tools/compose/focus_tracker.py",
+      "source_location": "L23"
     },
     {
       "id": "tools_compose_tests_test_compose_test_paste_failure_restores_previous_clipboard",
@@ -5365,18 +5257,6 @@
       "norm_label": "._append_log()",
       "source_file": "tools/compose/compose_gui.py",
       "source_location": "L249"
-    },
-    {
-      "id": "tools_compose_compose_gui_composeapp_build_ui",
-      "label": "._build_ui()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 62,
-      "community_name": "ComposeApp",
-      "file_type": "code",
-      "norm_label": "._build_ui()",
-      "source_file": "tools/compose/compose_gui.py",
-      "source_location": "L141"
     },
     {
       "id": "tools_compose_compose_gui_composeapp_close",
@@ -5425,18 +5305,6 @@
       "norm_label": "._handle_hardware_event()",
       "source_file": "tools/compose/compose_gui.py",
       "source_location": "L479"
-    },
-    {
-      "id": "tools_compose_compose_gui_composeapp_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 62,
-      "community_name": "ComposeApp",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "tools/compose/compose_gui.py",
-      "source_location": "L79"
     },
     {
       "id": "tools_compose_compose_gui_composeapp_inject_paste_ui",
@@ -5571,78 +5439,6 @@
       "source_location": "L256"
     },
     {
-      "id": "tools_compose_compose_gui_load_env_config",
-      "label": "load_env_config()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 62,
-      "community_name": "ComposeApp",
-      "file_type": "code",
-      "norm_label": "load_env_config()",
-      "source_file": "tools/compose/compose_gui.py",
-      "source_location": "L37"
-    },
-    {
-      "id": "tools_compose_focus_tracker_focustracker_get_focus_snapshot",
-      "label": ".get_focus_snapshot()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 62,
-      "community_name": "ComposeApp",
-      "file_type": "code",
-      "norm_label": ".get_focus_snapshot()",
-      "source_file": "tools/compose/focus_tracker.py",
-      "source_location": "L47"
-    },
-    {
-      "id": "tools_compose_compose_companion_composecompanion_poll_keys_worker",
-      "label": "._poll_keys_worker()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "test_compose.py",
-      "file_type": "code",
-      "norm_label": "._poll_keys_worker()",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L376"
-    },
-    {
-      "id": "tools_compose_compose_gui_composeapp_hardware_key_poller",
-      "label": "._hardware_key_poller()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "test_compose.py",
-      "file_type": "code",
-      "norm_label": "._hardware_key_poller()",
-      "source_file": "tools/compose/compose_gui.py",
-      "source_location": "L489"
-    },
-    {
-      "id": "tools_compose_hotkey_state_hotkeystate_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "test_compose.py",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "tools/compose/hotkey_state.py",
-      "source_location": "L5"
-    },
-    {
-      "id": "tools_compose_hotkey_state_hotkeystate_update",
-      "label": ".update()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "test_compose.py",
-      "file_type": "code",
-      "norm_label": ".update()",
-      "source_file": "tools/compose/hotkey_state.py",
-      "source_location": "L8"
-    },
-    {
       "id": "tools_compose_tests_test_compose_make_app",
       "label": "make_app()",
       "_callable": true,
@@ -5653,6 +5449,30 @@
       "norm_label": "make_app()",
       "source_file": "tools/compose/tests/test_compose.py",
       "source_location": "L38"
+    },
+    {
+      "id": "tools_compose_tests_test_compose_test_auto_whisper_retries_lazy_cuda_failure_on_cpu",
+      "label": "test_auto_whisper_retries_lazy_cuda_failure_on_cpu()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 64,
+      "community_name": "test_compose.py",
+      "file_type": "code",
+      "norm_label": "test_auto_whisper_retries_lazy_cuda_failure_on_cpu()",
+      "source_file": "tools/compose/tests/test_compose.py",
+      "source_location": "L153"
+    },
+    {
+      "id": "tools_compose_tests_test_compose_test_auto_whisper_retries_lazy_cuda_failure_on_cpu_broken_segments",
+      "label": "broken_segments()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 64,
+      "community_name": "test_compose.py",
+      "file_type": "code",
+      "norm_label": "broken_segments()",
+      "source_file": "tools/compose/tests/test_compose.py",
+      "source_location": "L156"
     },
     {
       "id": "tools_compose_tests_test_compose_test_busy_pipeline_rejects_new_recording",
@@ -5667,18 +5487,6 @@
       "source_location": "L77"
     },
     {
-      "id": "tools_compose_tests_test_compose_test_cached_descriptor_standard_chord_survives_modifier_release",
-      "label": "test_cached_descriptor_standard_chord_survives_modifier_release()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "test_compose.py",
-      "file_type": "code",
-      "norm_label": "test_cached_descriptor_standard_chord_survives_modifier_release()",
-      "source_file": "tools/compose/tests/test_compose.py",
-      "source_location": "L27"
-    },
-    {
       "id": "tools_compose_tests_test_compose_test_changed_focus_keeps_result_ready_without_paste",
       "label": "test_changed_focus_keeps_result_ready_without_paste()",
       "_callable": true,
@@ -5689,6 +5497,18 @@
       "norm_label": "test_changed_focus_keeps_result_ready_without_paste()",
       "source_file": "tools/compose/tests/test_compose.py",
       "source_location": "L93"
+    },
+    {
+      "id": "tools_compose_tests_test_compose_test_dictate_guard_accepts_punctuation",
+      "label": "test_dictate_guard_accepts_punctuation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 64,
+      "community_name": "test_compose.py",
+      "file_type": "code",
+      "norm_label": "test_dictate_guard_accepts_punctuation()",
+      "source_file": "tools/compose/tests/test_compose.py",
+      "source_location": "L149"
     },
     {
       "id": "tools_compose_tests_test_compose_test_dictation_survives_unavailable_cleanup_provider",
@@ -5703,6 +5523,18 @@
       "source_location": "L128"
     },
     {
+      "id": "tools_compose_tests_test_compose_test_explicit_cuda_configuration_does_not_silently_switch_device",
+      "label": "test_explicit_cuda_configuration_does_not_silently_switch_device()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 64,
+      "community_name": "test_compose.py",
+      "file_type": "code",
+      "norm_label": "test_explicit_cuda_configuration_does_not_silently_switch_device()",
+      "source_file": "tools/compose/tests/test_compose.py",
+      "source_location": "L170"
+    },
+    {
       "id": "tools_compose_tests_test_compose_test_failed_paste_keeps_payload_for_retry",
       "label": "test_failed_paste_keeps_payload_for_retry()",
       "_callable": true,
@@ -5713,18 +5545,6 @@
       "norm_label": "test_failed_paste_keeps_payload_for_retry()",
       "source_file": "tools/compose/tests/test_compose.py",
       "source_location": "L101"
-    },
-    {
-      "id": "tools_compose_tests_test_compose_test_firmware_dual_keys_produce_one_press_and_one_release",
-      "label": "test_firmware_dual_keys_produce_one_press_and_one_release()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "test_compose.py",
-      "file_type": "code",
-      "norm_label": "test_firmware_dual_keys_produce_one_press_and_one_release()",
-      "source_file": "tools/compose/tests/test_compose.py",
-      "source_location": "L16"
     },
     {
       "id": "tools_compose_tests_test_compose_test_groq_stt_network_failure_stays_on_local_whisper",
@@ -5847,18 +5667,6 @@
       "source_location": "L108"
     },
     {
-      "id": "tools_compose_tests_test_compose_test_unmodified_function_keys_do_not_record",
-      "label": "test_unmodified_function_keys_do_not_record()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "test_compose.py",
-      "file_type": "code",
-      "norm_label": "test_unmodified_function_keys_do_not_record()",
-      "source_file": "tools/compose/tests/test_compose.py",
-      "source_location": "L34"
-    },
-    {
       "id": "src_host_discovery_hostdiscovery_hostdiscovery",
       "label": "HostDiscovery::HostDiscovery()",
       "_callable": true,
@@ -5871,100 +5679,184 @@
       "source_location": "L5"
     },
     {
-      "id": "tools_compose_compose_companion_composecompanion_handle_f13_down",
-      "label": ".handle_f13_down()",
+      "id": "tools_compose_tests_test_web_grounding_test_brave_search_client_parses_results",
+      "label": "test_brave_search_client_parses_results()",
       "_callable": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "ComposeCompanion",
+      "community_name": "WebGrounding",
       "file_type": "code",
-      "norm_label": ".handle_f13_down()",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L161"
+      "norm_label": "test_brave_search_client_parses_results()",
+      "source_file": "tools/compose/tests/test_web_grounding.py",
+      "source_location": "L153"
     },
     {
-      "id": "tools_compose_compose_companion_composecompanion_handle_f13_up",
-      "label": ".handle_f13_up()",
+      "id": "tools_compose_tests_test_web_grounding_test_web_grounding_disabled_or_local_only",
+      "label": "test_web_grounding_disabled_or_local_only()",
       "_callable": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "ComposeCompanion",
+      "community_name": "WebGrounding",
       "file_type": "code",
-      "norm_label": ".handle_f13_up()",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L191"
+      "norm_label": "test_web_grounding_disabled_or_local_only()",
+      "source_file": "tools/compose/tests/test_web_grounding.py",
+      "source_location": "L180"
     },
     {
-      "id": "tools_compose_compose_companion_composecompanion_handle_f14_down",
-      "label": ".handle_f14_down()",
+      "id": "tools_compose_web_grounding_bravesearchclient_available",
+      "label": ".available()",
       "_callable": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "ComposeCompanion",
+      "community_name": "WebGrounding",
       "file_type": "code",
-      "norm_label": ".handle_f14_down()",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L213"
+      "norm_label": ".available()",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L304"
     },
     {
-      "id": "tools_compose_compose_companion_composecompanion_handle_f14_up",
-      "label": ".handle_f14_up()",
+      "id": "tools_compose_web_grounding_bravesearchclient_search",
+      "label": ".search()",
       "_callable": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "ComposeCompanion",
+      "community_name": "WebGrounding",
       "file_type": "code",
-      "norm_label": ".handle_f14_up()",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L233"
+      "norm_label": ".search()",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L307"
     },
     {
-      "id": "tools_compose_compose_companion_composecompanion_process_compose_worker",
-      "label": "._process_compose_worker()",
+      "id": "tools_compose_web_grounding_clean",
+      "label": "_clean()",
       "_callable": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "ComposeCompanion",
+      "community_name": "WebGrounding",
       "file_type": "code",
-      "norm_label": "._process_compose_worker()",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L283"
+      "norm_label": "_clean()",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L280"
     },
     {
-      "id": "tools_compose_compose_companion_composecompanion_process_dictate_worker",
-      "label": "._process_dictate_worker()",
+      "id": "tools_compose_web_grounding_webgrounding_describe",
+      "label": ".describe()",
       "_callable": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "ComposeCompanion",
+      "community_name": "WebGrounding",
       "file_type": "code",
-      "norm_label": "._process_dictate_worker()",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L333"
+      "norm_label": ".describe()",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L424"
     },
     {
-      "id": "tools_compose_compose_companion_composecompanion_stay_local_if_cloud_blocked",
-      "label": "._stay_local_if_cloud_blocked()",
+      "id": "tools_compose_web_grounding_webgrounding_from_config",
+      "label": ".from_config()",
       "_callable": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "ComposeCompanion",
+      "community_name": "WebGrounding",
       "file_type": "code",
-      "norm_label": "._stay_local_if_cloud_blocked()",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L271"
+      "norm_label": ".from_config()",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L400"
     },
     {
-      "id": "tools_compose_focus_tracker_focustracker_is_focus_matched",
-      "label": ".is_focus_matched()",
+      "id": "tools_compose_web_grounding_webgrounding_init",
+      "label": ".__init__()",
       "_callable": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "ComposeCompanion",
+      "community_name": "WebGrounding",
       "file_type": "code",
-      "norm_label": ".is_focus_matched()",
-      "source_file": "tools/compose/focus_tracker.py",
-      "source_location": "L74"
+      "norm_label": ".__init__()",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L394"
+    },
+    {
+      "id": "tools_compose_compose_companion_composecompanion_poll_keys_worker",
+      "label": "._poll_keys_worker()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "HotkeyState",
+      "file_type": "code",
+      "norm_label": "._poll_keys_worker()",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L376"
+    },
+    {
+      "id": "tools_compose_compose_gui_composeapp_hardware_key_poller",
+      "label": "._hardware_key_poller()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "HotkeyState",
+      "file_type": "code",
+      "norm_label": "._hardware_key_poller()",
+      "source_file": "tools/compose/compose_gui.py",
+      "source_location": "L489"
+    },
+    {
+      "id": "tools_compose_hotkey_state_hotkeystate_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "HotkeyState",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "tools/compose/hotkey_state.py",
+      "source_location": "L5"
+    },
+    {
+      "id": "tools_compose_hotkey_state_hotkeystate_update",
+      "label": ".update()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "HotkeyState",
+      "file_type": "code",
+      "norm_label": ".update()",
+      "source_file": "tools/compose/hotkey_state.py",
+      "source_location": "L8"
+    },
+    {
+      "id": "tools_compose_tests_test_compose_test_cached_descriptor_standard_chord_survives_modifier_release",
+      "label": "test_cached_descriptor_standard_chord_survives_modifier_release()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "HotkeyState",
+      "file_type": "code",
+      "norm_label": "test_cached_descriptor_standard_chord_survives_modifier_release()",
+      "source_file": "tools/compose/tests/test_compose.py",
+      "source_location": "L27"
+    },
+    {
+      "id": "tools_compose_tests_test_compose_test_firmware_dual_keys_produce_one_press_and_one_release",
+      "label": "test_firmware_dual_keys_produce_one_press_and_one_release()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "HotkeyState",
+      "file_type": "code",
+      "norm_label": "test_firmware_dual_keys_produce_one_press_and_one_release()",
+      "source_file": "tools/compose/tests/test_compose.py",
+      "source_location": "L16"
+    },
+    {
+      "id": "tools_compose_tests_test_compose_test_unmodified_function_keys_do_not_record",
+      "label": "test_unmodified_function_keys_do_not_record()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "HotkeyState",
+      "file_type": "code",
+      "norm_label": "test_unmodified_function_keys_do_not_record()",
+      "source_file": "tools/compose/tests/test_compose.py",
+      "source_location": "L34"
     },
     {
       "id": "src_es8311_es8311_clock_config",
@@ -6293,6 +6185,114 @@
       "norm_label": "get_coeff()",
       "source_file": "src/es8311.cpp",
       "source_location": "L77"
+    },
+    {
+      "id": "tools_compose_clipboard_manager_send_paste_shortcut",
+      "label": "send_paste_shortcut()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 70,
+      "community_name": "clipboard_manager.py",
+      "file_type": "code",
+      "norm_label": "send_paste_shortcut()",
+      "source_file": "tools/compose/clipboard_manager.py",
+      "source_location": "L29"
+    },
+    {
+      "id": "tools_compose_web_grounding_groundingresult_summary",
+      "label": ".summary()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 71,
+      "community_name": ".fetch_context",
+      "file_type": "code",
+      "norm_label": ".summary()",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L375"
+    },
+    {
+      "id": "tools_compose_web_grounding_groundingresult_used",
+      "label": ".used()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 71,
+      "community_name": ".fetch_context",
+      "file_type": "code",
+      "norm_label": ".used()",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L372"
+    },
+    {
+      "id": "tools_compose_web_grounding_webgrounding_fetch_context",
+      "label": ".fetch_context()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 71,
+      "community_name": ".fetch_context",
+      "file_type": "code",
+      "norm_label": ".fetch_context()",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L439"
+    },
+    {
+      "id": "tools_compose_tests_test_compose_test_chord_ctrl_c_releases_ctrl_when_injection_fails",
+      "label": "test_chord_ctrl_c_releases_ctrl_when_injection_fails()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "test_chord_ctrl_c_releases_ctrl_when_injection_fails",
+      "file_type": "code",
+      "norm_label": "test_chord_ctrl_c_releases_ctrl_when_injection_fails()",
+      "source_file": "tools/compose/tests/test_compose.py",
+      "source_location": "L268"
+    },
+    {
+      "id": "tools_compose_tests_test_compose_test_chord_ctrl_c_releases_ctrl_when_injection_fails_event",
+      "label": "event()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "test_chord_ctrl_c_releases_ctrl_when_injection_fails",
+      "file_type": "code",
+      "norm_label": "event()",
+      "source_file": "tools/compose/tests/test_compose.py",
+      "source_location": "L273"
+    },
+    {
+      "id": "tools_compose_tests_test_compose_test_chord_ctrl_c_releases_keys_it_presses_and_restores_alt",
+      "label": "test_chord_ctrl_c_releases_keys_it_presses_and_restores_alt()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "test_chord_ctrl_c_releases_ctrl_when_injection_fails",
+      "file_type": "code",
+      "norm_label": "test_chord_ctrl_c_releases_keys_it_presses_and_restores_alt()",
+      "source_file": "tools/compose/tests/test_compose.py",
+      "source_location": "L240"
+    },
+    {
+      "id": "tools_compose_tests_test_compose_test_chord_ctrl_c_releases_keys_it_presses_and_restores_alt_event",
+      "label": "event()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "test_chord_ctrl_c_releases_ctrl_when_injection_fails",
+      "file_type": "code",
+      "norm_label": "event()",
+      "source_file": "tools/compose/tests/test_compose.py",
+      "source_location": "L245"
+    },
+    {
+      "id": "tools_compose_tests_test_compose_test_chord_ctrl_c_releases_keys_it_presses_and_restores_alt_sequence",
+      "label": "sequence()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "test_chord_ctrl_c_releases_ctrl_when_injection_fails",
+      "file_type": "code",
+      "norm_label": "sequence()",
+      "source_file": "tools/compose/tests/test_compose.py",
+      "source_location": "L250"
     },
     {
       "id": "generate_case_create_enclosure",
@@ -8298,28 +8298,6 @@
       "norm_label": "formats snippets into a compact block for the llm prompt.",
       "source_file": "tools/compose/web_grounding.py",
       "source_location": "L348"
-    },
-    {
-      "id": "tools_compose_web_grounding_rationale_376",
-      "label": "One-line, human readable description for logs / the GUI event log.",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "rationale",
-      "norm_label": "one-line, human readable description for logs / the gui event log.",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L376"
-    },
-    {
-      "id": "tools_compose_web_grounding_rationale_441",
-      "label": "Never raises. Returns an empty context when search is not needed or fails.",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "test_web_grounding.py",
-      "file_type": "rationale",
-      "norm_label": "never raises. returns an empty context when search is not needed or fails.",
-      "source_file": "tools/compose/web_grounding.py",
-      "source_location": "L441"
     },
     {
       "id": "tools_compose_web_grounding_rationale_73",
@@ -12309,7 +12287,7 @@
       "node_kind": "heading",
       "norm_label": "1. download and open the project",
       "source_file": "README.md",
-      "source_location": "L43"
+      "source_location": "L45"
     },
     {
       "id": "readme_2_connect_the_esp32_over_usb",
@@ -12321,7 +12299,7 @@
       "node_kind": "heading",
       "norm_label": "2. connect the esp32 over usb",
       "source_file": "README.md",
-      "source_location": "L61"
+      "source_location": "L63"
     },
     {
       "id": "readme_3_configure_build_and_upload",
@@ -12333,7 +12311,7 @@
       "node_kind": "heading",
       "norm_label": "3. configure, build and upload",
       "source_file": "README.md",
-      "source_location": "L73"
+      "source_location": "L75"
     },
     {
       "id": "readme_4_pair_bluetooth_and_try_a_shortcut",
@@ -12345,7 +12323,7 @@
       "node_kind": "heading",
       "norm_label": "4. pair bluetooth and try a shortcut",
       "source_file": "README.md",
-      "source_location": "L101"
+      "source_location": "L103"
     },
     {
       "id": "readme_5_make_a_small_change_with_your_ide_agent",
@@ -12357,7 +12335,7 @@
       "node_kind": "heading",
       "norm_label": "5. make a small change with your ide agent",
       "source_file": "README.md",
-      "source_location": "L121"
+      "source_location": "L146"
     },
     {
       "id": "readme_6_connect_blender_mcp_and_refine_the_case",
@@ -12369,7 +12347,7 @@
       "node_kind": "heading",
       "norm_label": "6. connect blender mcp and refine the case",
       "source_file": "README.md",
-      "source_location": "L131"
+      "source_location": "L156"
     },
     {
       "id": "readme_7_add_voice_once_the_basic_device_works",
@@ -12381,7 +12359,7 @@
       "node_kind": "heading",
       "norm_label": "7. add voice once the basic device works",
       "source_file": "README.md",
-      "source_location": "L147"
+      "source_location": "L172"
     },
     {
       "id": "readme_8_test_print_and_keep_improving",
@@ -12393,7 +12371,7 @@
       "node_kind": "heading",
       "norm_label": "8. test, print and keep improving",
       "source_file": "README.md",
-      "source_location": "L164"
+      "source_location": "L189"
     },
     {
       "id": "readme_build_an_esp32_classroom_companion_with_an_ai_coding_agent",
@@ -12408,6 +12386,18 @@
       "source_location": "L1"
     },
     {
+      "id": "readme_compose_dictate_and_paste_ready",
+      "label": "Compose, Dictate, and Paste Ready",
+      "_origin": "ast",
+      "community": 42,
+      "community_name": "Build an ESP32 classroom companion with an AI coding agent",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "compose, dictate, and paste ready",
+      "source_file": "README.md",
+      "source_location": "L124"
+    },
+    {
       "id": "readme_further_reading",
       "label": "Further reading",
       "_origin": "ast",
@@ -12417,7 +12407,7 @@
       "node_kind": "heading",
       "norm_label": "further reading",
       "source_file": "README.md",
-      "source_location": "L172"
+      "source_location": "L197"
     },
     {
       "id": "readme_the_development_process",
@@ -12453,7 +12443,7 @@
       "node_kind": "heading",
       "norm_label": "what you need",
       "source_file": "README.md",
-      "source_location": "L34"
+      "source_location": "L35"
     },
     {
       "id": "tools_compose_compose_companion",
@@ -13419,26 +13409,26 @@
       "source_location": "L1"
     },
     {
-      "id": "tools_compose_focus_tracker",
-      "label": "focus_tracker.py",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "FocusTracker",
-      "file_type": "code",
-      "norm_label": "focus_tracker.py",
-      "source_file": "tools/compose/focus_tracker.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "tools_compose_focus_tracker_rationale_1",
-      "label": "Focus tracking, UI Automation target lock, and multi-tier selection capture for\u2026",
+      "id": "tools_compose_compose_companion_rationale_162",
+      "label": "F13 Pressed: Begin Compose recording.",
       "_origin": "ast",
       "community": 50,
       "community_name": "FocusTracker",
       "file_type": "rationale",
-      "norm_label": "focus tracking, ui automation target lock, and multi-tier selection capture for...",
-      "source_file": "tools/compose/focus_tracker.py",
-      "source_location": "L1"
+      "norm_label": "f13 pressed: begin compose recording.",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L162"
+    },
+    {
+      "id": "tools_compose_compose_companion_rationale_214",
+      "label": "F14 Pressed: Begin Dictate recording.",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "FocusTracker",
+      "file_type": "rationale",
+      "norm_label": "f14 pressed: begin dictate recording.",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L214"
     },
     {
       "id": "tools_compose_focus_tracker_rationale_100",
@@ -13452,17 +13442,6 @@
       "source_location": "L100"
     },
     {
-      "id": "tools_compose_focus_tracker_rationale_153",
-      "label": "Synthesizes Ctrl+C while the ESP32 chord is holding Alt/Shift. Keys this method\u2026",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "FocusTracker",
-      "file_type": "rationale",
-      "norm_label": "synthesizes ctrl+c while the esp32 chord is holding alt/shift. keys this method...",
-      "source_file": "tools/compose/focus_tracker.py",
-      "source_location": "L153"
-    },
-    {
       "id": "tools_compose_focus_tracker_rationale_202",
       "label": "Multi-tier document selection extraction: 1. UI Automation TextPattern (Word,\u2026",
       "_origin": "ast",
@@ -13472,6 +13451,17 @@
       "norm_label": "multi-tier document selection extraction: 1. ui automation textpattern (word,...",
       "source_file": "tools/compose/focus_tracker.py",
       "source_location": "L202"
+    },
+    {
+      "id": "tools_compose_focus_tracker_rationale_48",
+      "label": "Snapshots the active foreground window HWND and focused UI Automation control.",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "FocusTracker",
+      "file_type": "rationale",
+      "norm_label": "snapshots the active foreground window hwnd and focused ui automation control.",
+      "source_file": "tools/compose/focus_tracker.py",
+      "source_location": "L48"
     },
     {
       "id": "server_hermes_voice_receiver_rationale_1032",
@@ -13962,6 +13952,17 @@
       "source_location": ""
     },
     {
+      "id": "tk",
+      "label": "Tk",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "AudioCapture",
+      "file_type": "code",
+      "norm_label": "tk",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "tools_compose_audio_capture",
       "label": "audio_capture.py",
       "_origin": "ast",
@@ -14020,8 +14021,8 @@
       "id": "tools_compose_compose_companion_rationale_48",
       "label": "Loads configuration from compose.env and system environment.",
       "_origin": "ast",
-      "community": 58,
-      "community_name": "AudioCapture",
+      "community": 59,
+      "community_name": "SpeechPipeline",
       "file_type": "rationale",
       "norm_label": "loads configuration from compose.env and system environment.",
       "source_file": "tools/compose/compose_companion.py",
@@ -14164,54 +14165,87 @@
       "label": "Image",
       "_origin": "ast",
       "community": 60,
-      "community_name": ".run",
+      "community_name": "ComposeCompanion",
       "file_type": "code",
       "norm_label": "image",
       "source_file": "",
       "source_location": ""
     },
     {
+      "id": "tools_compose_compose_companion_rationale_192",
+      "label": "F13 Released: Stop recording and dispatch Compose pipeline.",
+      "_origin": "ast",
+      "community": 60,
+      "community_name": "ComposeCompanion",
+      "file_type": "rationale",
+      "norm_label": "f13 released: stop recording and dispatch compose pipeline.",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L192"
+    },
+    {
+      "id": "tools_compose_compose_companion_rationale_234",
+      "label": "F14 Released: Stop recording and dispatch Dictate pipeline.",
+      "_origin": "ast",
+      "community": 60,
+      "community_name": "ComposeCompanion",
+      "file_type": "rationale",
+      "norm_label": "f14 released: stop recording and dispatch dictate pipeline.",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L234"
+    },
+    {
       "id": "tools_compose_compose_companion_rationale_255",
       "label": "F15 Tapped: Inject pending payload if in READY status.",
       "_origin": "ast",
       "community": 60,
-      "community_name": ".run",
+      "community_name": "ComposeCompanion",
       "file_type": "rationale",
       "norm_label": "f15 tapped: inject pending payload if in ready status.",
       "source_file": "tools/compose/compose_companion.py",
       "source_location": "L255"
     },
     {
+      "id": "tools_compose_compose_companion_rationale_272",
+      "label": "A blocked school network should not add a cloud timeout to every later button\u2026",
+      "_origin": "ast",
+      "community": 60,
+      "community_name": "ComposeCompanion",
+      "file_type": "rationale",
+      "norm_label": "a blocked school network should not add a cloud timeout to every later button...",
+      "source_file": "tools/compose/compose_companion.py",
+      "source_location": "L272"
+    },
+    {
       "id": "tools_compose_compose_companion_rationale_91",
       "label": "Creates a tray icon with amber/emerald indicator dot.",
       "_origin": "ast",
       "community": 60,
-      "community_name": ".run",
+      "community_name": "ComposeCompanion",
       "file_type": "rationale",
       "norm_label": "creates a tray icon with amber/emerald indicator dot.",
       "source_file": "tools/compose/compose_companion.py",
       "source_location": "L91"
     },
     {
-      "id": "tools_compose_clipboard_manager",
-      "label": "clipboard_manager.py",
+      "id": "tools_compose_focus_tracker_rationale_75",
+      "label": "Verifies if the current foreground window and control still match the snapshot.",
+      "_origin": "ast",
+      "community": 60,
+      "community_name": "ComposeCompanion",
+      "file_type": "rationale",
+      "norm_label": "verifies if the current foreground window and control still match the snapshot.",
+      "source_file": "tools/compose/focus_tracker.py",
+      "source_location": "L75"
+    },
+    {
+      "id": "tools_compose_focus_tracker",
+      "label": "focus_tracker.py",
       "_origin": "ast",
       "community": 61,
       "community_name": "ClipboardManager",
       "file_type": "code",
-      "norm_label": "clipboard_manager.py",
-      "source_file": "tools/compose/clipboard_manager.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "tools_compose_clipboard_manager_rationale_1",
-      "label": "Clipboard manager for Windows with atomic snapshot, paste injection, prior\u2026",
-      "_origin": "ast",
-      "community": 61,
-      "community_name": "ClipboardManager",
-      "file_type": "rationale",
-      "norm_label": "clipboard manager for windows with atomic snapshot, paste injection, prior...",
-      "source_file": "tools/compose/clipboard_manager.py",
+      "norm_label": "focus_tracker.py",
+      "source_file": "tools/compose/focus_tracker.py",
       "source_location": "L1"
     },
     {
@@ -14224,17 +14258,6 @@
       "norm_label": "injects text at the current cursor position: 1. snapshots prior clipboard. 2....",
       "source_file": "tools/compose/clipboard_manager.py",
       "source_location": "L110"
-    },
-    {
-      "id": "tools_compose_clipboard_manager_rationale_30",
-      "label": "Send a checked native Ctrl+V, independently of the pointer position.",
-      "_origin": "ast",
-      "community": 61,
-      "community_name": "ClipboardManager",
-      "file_type": "rationale",
-      "norm_label": "send a checked native ctrl+v, independently of the pointer position.",
-      "source_file": "tools/compose/clipboard_manager.py",
-      "source_location": "L30"
     },
     {
       "id": "tools_compose_clipboard_manager_rationale_45",
@@ -14281,6 +14304,17 @@
       "source_location": "L91"
     },
     {
+      "id": "tools_compose_focus_tracker_rationale_1",
+      "label": "Focus tracking, UI Automation target lock, and multi-tier selection capture for\u2026",
+      "_origin": "ast",
+      "community": 61,
+      "community_name": "ClipboardManager",
+      "file_type": "rationale",
+      "norm_label": "focus tracking, ui automation target lock, and multi-tier selection capture for...",
+      "source_file": "tools/compose/focus_tracker.py",
+      "source_location": "L1"
+    },
+    {
       "id": "tools_compose_focus_tracker_rationale_115",
       "label": "Sends WM_COPY directly to window handle without simulating keyboard events.",
       "_origin": "ast",
@@ -14292,15 +14326,15 @@
       "source_location": "L115"
     },
     {
-      "id": "tk",
-      "label": "Tk",
+      "id": "tools_compose_focus_tracker_rationale_153",
+      "label": "Synthesizes Ctrl+C while the ESP32 chord is holding Alt/Shift. Keys this method\u2026",
       "_origin": "ast",
-      "community": 62,
-      "community_name": "ComposeApp",
-      "file_type": "code",
-      "norm_label": "tk",
-      "source_file": "",
-      "source_location": ""
+      "community": 61,
+      "community_name": "ClipboardManager",
+      "file_type": "rationale",
+      "norm_label": "synthesizes ctrl+c while the esp32 chord is holding alt/shift. keys this method...",
+      "source_file": "tools/compose/focus_tracker.py",
+      "source_location": "L153"
     },
     {
       "id": "tools_compose_compose_gui_rationale_400",
@@ -14312,17 +14346,6 @@
       "norm_label": "a blocked school network should not add a cloud timeout to every later button...",
       "source_file": "tools/compose/compose_gui.py",
       "source_location": "L400"
-    },
-    {
-      "id": "tools_compose_focus_tracker_rationale_48",
-      "label": "Snapshots the active foreground window HWND and focused UI Automation control.",
-      "_origin": "ast",
-      "community": 62,
-      "community_name": "ComposeApp",
-      "file_type": "rationale",
-      "norm_label": "snapshots the active foreground window hwnd and focused ui automation control.",
-      "source_file": "tools/compose/focus_tracker.py",
-      "source_location": "L48"
     },
     {
       "id": "src_es8311_coeff_div_adc_div",
@@ -14917,72 +14940,6 @@
       "source_location": ""
     },
     {
-      "id": "tools_compose_compose_companion_rationale_162",
-      "label": "F13 Pressed: Begin Compose recording.",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "ComposeCompanion",
-      "file_type": "rationale",
-      "norm_label": "f13 pressed: begin compose recording.",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L162"
-    },
-    {
-      "id": "tools_compose_compose_companion_rationale_192",
-      "label": "F13 Released: Stop recording and dispatch Compose pipeline.",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "ComposeCompanion",
-      "file_type": "rationale",
-      "norm_label": "f13 released: stop recording and dispatch compose pipeline.",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L192"
-    },
-    {
-      "id": "tools_compose_compose_companion_rationale_214",
-      "label": "F14 Pressed: Begin Dictate recording.",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "ComposeCompanion",
-      "file_type": "rationale",
-      "norm_label": "f14 pressed: begin dictate recording.",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L214"
-    },
-    {
-      "id": "tools_compose_compose_companion_rationale_234",
-      "label": "F14 Released: Stop recording and dispatch Dictate pipeline.",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "ComposeCompanion",
-      "file_type": "rationale",
-      "norm_label": "f14 released: stop recording and dispatch dictate pipeline.",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L234"
-    },
-    {
-      "id": "tools_compose_compose_companion_rationale_272",
-      "label": "A blocked school network should not add a cloud timeout to every later button\u2026",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "ComposeCompanion",
-      "file_type": "rationale",
-      "norm_label": "a blocked school network should not add a cloud timeout to every later button...",
-      "source_file": "tools/compose/compose_companion.py",
-      "source_location": "L272"
-    },
-    {
-      "id": "tools_compose_focus_tracker_rationale_75",
-      "label": "Verifies if the current foreground window and control still match the snapshot.",
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "ComposeCompanion",
-      "file_type": "rationale",
-      "norm_label": "verifies if the current foreground window and control still match the snapshot.",
-      "source_file": "tools/compose/focus_tracker.py",
-      "source_location": "L75"
-    },
-    {
       "id": "docs_build_guide",
       "label": "build-guide.md",
       "_origin": "ast",
@@ -15117,6 +15074,61 @@
       "norm_label": "es8311.cpp",
       "source_file": "src/es8311.cpp",
       "source_location": "L1"
+    },
+    {
+      "id": "tools_compose_clipboard_manager",
+      "label": "clipboard_manager.py",
+      "_origin": "ast",
+      "community": 70,
+      "community_name": "clipboard_manager.py",
+      "file_type": "code",
+      "norm_label": "clipboard_manager.py",
+      "source_file": "tools/compose/clipboard_manager.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "tools_compose_clipboard_manager_rationale_1",
+      "label": "Clipboard manager for Windows with atomic snapshot, paste injection, prior\u2026",
+      "_origin": "ast",
+      "community": 70,
+      "community_name": "clipboard_manager.py",
+      "file_type": "rationale",
+      "norm_label": "clipboard manager for windows with atomic snapshot, paste injection, prior...",
+      "source_file": "tools/compose/clipboard_manager.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "tools_compose_clipboard_manager_rationale_30",
+      "label": "Send a checked native Ctrl+V, independently of the pointer position.",
+      "_origin": "ast",
+      "community": 70,
+      "community_name": "clipboard_manager.py",
+      "file_type": "rationale",
+      "norm_label": "send a checked native ctrl+v, independently of the pointer position.",
+      "source_file": "tools/compose/clipboard_manager.py",
+      "source_location": "L30"
+    },
+    {
+      "id": "tools_compose_web_grounding_rationale_376",
+      "label": "One-line, human readable description for logs / the GUI event log.",
+      "_origin": "ast",
+      "community": 71,
+      "community_name": ".fetch_context",
+      "file_type": "rationale",
+      "norm_label": "one-line, human readable description for logs / the gui event log.",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L376"
+    },
+    {
+      "id": "tools_compose_web_grounding_rationale_441",
+      "label": "Never raises. Returns an empty context when search is not needed or fails.",
+      "_origin": "ast",
+      "community": 71,
+      "community_name": ".fetch_context",
+      "file_type": "rationale",
+      "norm_label": "never raises. returns an empty context when search is not needed or fails.",
+      "source_file": "tools/compose/web_grounding.py",
+      "source_location": "L441"
     },
     {
       "id": "docs_portrait_ui",
@@ -29665,6 +29677,17 @@
       "weight": 1.0
     },
     {
+      "source": "readme_4_pair_bluetooth_and_try_a_shortcut",
+      "target": "readme_compose_dictate_and_paste_ready",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "L124",
+      "weight": 1.0
+    },
+    {
       "source": "readme_build_an_esp32_classroom_companion_with_an_ai_coding_agent",
       "target": "readme_4_pair_bluetooth_and_try_a_shortcut",
       "relation": "contains",
@@ -29672,7 +29695,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L101",
+      "source_location": "L103",
       "weight": 1.0
     },
     {
@@ -29694,7 +29717,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L121",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -29705,7 +29728,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L131",
+      "source_location": "L156",
       "weight": 1.0
     },
     {
@@ -29716,7 +29739,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L147",
+      "source_location": "L172",
       "weight": 1.0
     },
     {
@@ -29727,7 +29750,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L164",
+      "source_location": "L189",
       "weight": 1.0
     },
     {
@@ -29738,7 +29761,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L172",
+      "source_location": "L197",
       "weight": 1.0
     },
     {
@@ -29760,7 +29783,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -29771,7 +29794,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L43",
+      "source_location": "L45",
       "weight": 1.0
     },
     {
@@ -29782,7 +29805,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L61",
+      "source_location": "L63",
       "weight": 1.0
     },
     {
@@ -29793,7 +29816,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L73",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -35898,7 +35921,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L129",
+      "source_location": "L154",
+      "weight": 1.0
+    },
+    {
+      "source": "readme",
+      "target": "docs_compose_dictate_repair_2026_10_17",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -35909,7 +35943,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L176",
+      "source_location": "L202",
       "weight": 1.0
     },
     {
@@ -35920,7 +35954,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L59",
+      "source_location": "L61",
       "weight": 1.0
     },
     {
@@ -35931,7 +35965,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L97",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -37499,5 +37533,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "364e48fe93310f4390ced5b446b401e5521545c4"
+  "built_at_commit": "e98b7bc7831d49a283104c1b41215843b684492a"
 }

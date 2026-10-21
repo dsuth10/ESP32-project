@@ -1,5 +1,7 @@
 Yes. I would treat this as a proper **Portable Home/Work Architecture** rather than a small dashboard feature. The goal is that you can carry the ESP32 between home and school, press one button, and the device reconfigures itself while also telling you exactly what is and is not working.
 
+> Historical design, investigation or checkpoint evidence. Current scope/status is governed by the [consolidated branch programme](2026-10-21-companion-media-agent-master-plan.md): original S3 only, CYD application port abandoned, Groq primary and the same Linux Hermes over permanent private Tailscale required at home/work. Earlier proposals and test observations below are not proof of current deployment or release acceptance.
+
 The repository is already well positioned for this. `main` has multi-network awareness and can report its current SSID/IP, while the other branch contains the persistent Hermes gateway work and performance telemetry.  The existing GUI is also already organised around numbered pages, so adding a specialised sixth dashboard page does not require redesigning the first five.
 
 # Target end state

@@ -1,5 +1,9 @@
 # Build an ESP32 classroom companion with an AI coding agent
 
+**Current branch programme:** [holistic plan and completion dashboard](docs/2026-10-21-companion-media-agent-master-plan.md). ES3C28P ESP32-S3 is our sole application target; its installed firmware remains stable/write-locked. The CYD application port is abandoned. Feature implementation remains in the isolated checkout on `codex/companion-media-agent`; this working folder stays on main.
+
+**Permanent home/work Hermes:** the same Linux agent over private Tailscale is now a required delivery milestone, with Groq primary. Route configuration/off-LAN acceptance and the in-app Hermes adapter remain pending. See [connection runbook](docs/hermes-tailscale-home-work.md) and [document index](docs/README.md). Run `start_companion_feature.bat` only from the feature checkout; ordinary `start_companion.bat` here retains the existing companion.
+
 ![ESP32 classroom companion enclosure render](docs/dimensions/render_hero_front.png)
 
 A small touchscreen device for Bluetooth shortcuts, push-to-talk AI conversations, and spoken writing on a Windows PC. This repository contains the firmware, host receiver, Windows Compose companion, hardware references and enclosure models for the **LCDWIKI / QD Electronic ES3C28P ESP32-S3 board**.
@@ -68,11 +72,13 @@ Plug the board's USB-C/native USB connection into the development computer using
 pio device list
 ```
 
-On Windows, check **Device Manager → Ports (COM & LPT)**. The repository currently specifies `COM5`, but your device may use another port. Update both `upload_port` and `monitor_port` in `platformio.ini`, or supply the port in the commands below.
+On Windows, check **Device Manager → Ports (COM & LPT)**. Supply the detected port explicitly. Uploads also verify the registered physical board, processor, flash capacity and firmware manifest; a COM number alone is insufficient. The original stable board is write-locked. See [board upload safety](docs/board-upload-safety.md).
 
 The [build guide](docs/build-guide.md#3-connect-the-board-build-and-upload) includes bootloader recovery if the board does not appear.
 
 ## 3. Configure, build and upload
+
+**Board safety:** the original S3 stays write-locked. Use isolated host-side previews with unchanged firmware where possible; any firmware trial requires explicit approval and verified recovery. The CYD application port is abandoned. See [the guarded workflow](docs/board-upload-safety.md).
 
 Copy the credentials template to a local configuration file. On Windows PowerShell:
 
@@ -88,11 +94,11 @@ cp src/wifi_config.h.example src/wifi_config.h
 
 Fill in your own Wi-Fi names, passwords and receiver addresses. The local file is excluded by `.gitignore`. For Bluetooth-only testing, use valid C strings with placeholder network values until you are ready to configure voice.
 
-Build first, then upload and monitor. Replace `COM5` with your detected port:
+Build and perform a read-only preflight first. Replace `COM5` with the identified port. An actual upload requires the stable-device trial/release gate:
 
 ```bash
 pio run -e esp32-s3-portrait
-pio run -e esp32-s3-portrait -t upload --upload-port COM5
+python tools/board_safety.py check --profile es3c28p-s3 --port COM5 --manifest .pio/build/esp32-s3-portrait/board-upload.json
 pio device monitor --port COM5 --baud 115200
 ```
 
@@ -143,6 +149,16 @@ A tap under about 350 ms latches recording and lights the button. A second tap a
 
 Copy [tools/compose/compose.env.example](tools/compose/compose.env.example) to `compose.env` in that folder before relying on cloud speech, cloud writing, or web search. Closing the companion stops the microphone and the hardware listener. It does not start automatically at Windows sign-in.
 
+### Embedded assistant and reusable writing
+
+Run `start_companion.bat` and open **Ask your companion**. **Ask / write** answers text requests; **Manage companion** can inspect limited live companion status and save text. It reuses your Groq configuration, with optional `GROQ_ASSISTANT_MODEL`. Without a Groq key, or with `LOCAL_ONLY=1`, it uses your configured Ollama endpoint. Management needs a model supporting tool calling. This assistant tab has no live web search; Compose retains its existing optional search path.
+
+**History & saved text** retains new Compose, Dictate and assistant text on this Windows account. Search previous results, save useful responses, copy, export or delete individual entries. **Queue for Paste Ready** holds the selected response; focus your document and use the hardware/keyboard Paste Ready shortcut to insert it. Queueing does not paste into the companion.
+
+The database normally lives at `%LOCALAPPDATA%\ESP32ClassroomCompanion\companion.sqlite3`, outside this repository. It contains request/response text, not raw recordings. Set `HISTORY_ENABLED=0` in `compose.env` to disable automatic history on startup, or use the session checkbox. Explicit **Save** operations still retain the text you choose. Deleting local History does not erase any content already sent to an AI provider. The assistant searches stored History only when **Allow History search for this request** is selected in Manage mode; matching text then goes to the selected AI. Recent conversation context is scoped separately to Ask and Manage and resets with **New conversation**.
+
+This first version cannot alter handheld buttons/pages, flash firmware, run shell commands or repair arbitrary faults. It reports that boundary instead of claiming a device change. Existing recording, Bluetooth shortcuts and receiver behaviour are retained. See [the implementation notes](docs/2026-10-21-companion-assistant-first-increment.md).
+
 ## 5. Make a small change with your IDE agent
 
 For example:
@@ -175,14 +191,7 @@ The ESP32 records speech; the host computer runs transcription and AI processing
 
 Follow [the receiver setup](docs/build-guide.md#5-set-up-the-optional-voice-receiver) to install dependencies, configure authentication, start the service and test its health endpoint.
 
-The current receiver has two routes:
-
-| Receiver mode | First backend attempted | Fallback |
-|---|---|---|
-| Home | Hermes session API | Direct local Ollama |
-| Work | Direct local Ollama | Hermes session API |
-
-A reply alone does not prove Hermes handled it. Check `Backend used` in the receiver log. Work mode disables Telegram mirroring, but a local-only setup also requires local models and a local Hermes fallback configuration.
+The production receiver retains legacy routing until an approved integration trial. The branch target reaches the same Linux Hermes over Tailscale from home/work, while the desktop assistant stays Groq-primary and explicit local-only operation remains independent. See [current architecture](docs/home-work-architecture.md) and the still-pending [connection runbook](docs/hermes-tailscale-home-work.md). Keep backend provenance and readiness separate; a reply alone does not identify the backend.
 
 **Checkpoint:** hold the talk button, speak a short question, release it, and receive a transcription and reply.
 

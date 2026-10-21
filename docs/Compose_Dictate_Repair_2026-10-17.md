@@ -1,5 +1,7 @@
 # Windows Compose and Dictate repair — 17 October 2026
 
+> Historical design, investigation or checkpoint evidence. Current scope/status is governed by the [consolidated branch programme](2026-10-21-companion-media-agent-master-plan.md): original S3 only, CYD application port abandoned, Groq primary and the same Linux Hermes over permanent private Tailscale required at home/work. Earlier proposals and test observations below are not proof of current deployment or release acceptance.
+
 The immediate reason Page 6 produced no response was that no Windows companion was running. USB COM5 supplies the programming/serial connection; Page 6 control events travel over Bluetooth to the Windows companion. The Linux Page 5 receiver is a separate path.
 
 ## Repairs

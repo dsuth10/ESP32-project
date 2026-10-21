@@ -1,5 +1,7 @@
 # ESP32 Portable MacroPad & Hermes Satellite: Core Engineering Rules
 
+Current programme/policy: [master plan](docs/2026-10-21-companion-media-agent-master-plan.md), [board safety](docs/board-upload-safety.md), [permanent Hermes route](docs/hermes-tailscale-home-work.md). Use Australian English and metric measurements. ES3C28P S3 is the sole application target; keep original installed firmware/write lock until an explicitly approved recoverable trial. CYD records are historical. The route below is a target where implementation/acceptance remains open; preserve production behaviour until staged migration is tested.
+
 These rules represent proven architectural invariants established to prevent regression, network hangs, concurrency deadlocks, and display corruption.
 
 ---
@@ -13,12 +15,10 @@ These rules represent proven architectural invariants established to prevent reg
 
 ---
 
-### Rule 2: The Contract Principle & Visible Degradation
-- **Invariant**: The ESP32 only ever talks to the Voice Receiver (`:8787`); the Receiver only ever orchestrates through Hermes (`:8642`).
-- **Enforcement**:
-  - At Home: Hermes uses its configured cloud/local provider.
-  - At School/Work: Hermes uses local Ollama via `127.0.0.1:11434/v1`.
-  - Never allow silent bypassing of Hermes. If a diagnostic fallback is used, it must explicitly tag `[Fallback]` and reflect in telemetry and the dashboard so the system never reports "All Green" when Hermes is offline.
+### Rule 2: Host ownership and explicit backend routing
+- The ESP32 sends audio to its local receiver; Windows owns agent/provider credentials and local document actions. Original receiver TCP 8787 and preview TCP 8788 are separate until an approved integration trial.
+- Groq remains the embedded assistant's primary provider. This installation will use the same Linux Hermes over private Tailscale at home/work for selected bounded tasks; it is not an already-deployed runtime feature.
+- Keep explicit local-only Whisper/Ollama operation independent. Local-only forbids remote Hermes/media/provider calls too. Preserve backend provenance; unavailable or untested components cannot be reported ready.
 
 ---
 
@@ -40,8 +40,8 @@ These rules represent proven architectural invariants established to prevent reg
 - **Invariant**: MacroPad (BLE HID) and Voice Satellite (Wi-Fi + AI) are separate subsystems.
 - **Enforcement**:
   - If BLE is connected, macros are ready.
-  - If Wi-Fi is connected, local voice is ready.
-  - At School/Work, mobile internet is optional because Ollama runs 100% locally on the GPU. Never mark the device as globally "FAILED" if mobile data is toggled off on your phone.
+  - Wi-Fi association alone does not prove capture, receiver, transcription or AI readiness; report those separately.
+  - Remote Groq/Hermes/media services require connectivity; explicitly configured local models and cached assets have their own offline readiness. A remote outage does not disable working BLE controls.
 
 ---
 
@@ -109,7 +109,7 @@ These rules represent proven architectural invariants established to prevent reg
 ---
 
 ### Rule 13: Gateway Tiering & Zero-Zombie Receiver Daemon Semantics
-- **Invariant**: The Voice Receiver (`:8787`) is the sole telemetry bridge to the ESP32. If the receiver restarts or stops, telemetry displays Voice Host, Hermes, and AI as Offline simultaneously.
+- **Invariant**: The active local receiver is the device-facing voice telemetry bridge. Receiver loss means local voice unavailable; remote agent/model status is unknown unless independently checked, not falsely proven offline.
 - **Enforcement**:
-  - Always verify port `:8787` is listening after workspace or IDE restarts (`netstat -ano | findstr 8787`).
+  - Verify the configured receiver port/process and instance identity after restarts (production 8787, preview 8788); avoid duplicate global listeners.
   - Local LLM backends (`gemma3:latest` on Ollama) must be pre-warmed in GPU VRAM with `keep_alive: 8h` to ensure sub-second inference and prevent ESP32 HTTP client timeouts.

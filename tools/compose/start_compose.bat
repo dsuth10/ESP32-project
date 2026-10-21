@@ -3,7 +3,8 @@ title ESP32 and Windows Compose Companion
 cd /d "%~dp0"
 
 echo =======================================================
-echo   Starting ESP32 Voice Compose and Dictate Companion
+echo   Starting the ESP32 classroom companion
+echo   This window also starts the voice receiver.
 echo =======================================================
 
 rem Work PC keeps its packages on Python 3.12. This machine uses 3.13.

@@ -1,195 +1,46 @@
-# Portable Home/Work Architecture & System Dashboard Guide
+# Home/work architecture
 
-This document describes the unified architecture for the **ESP32-S3 Touch MacroPad & Hermes Voice Satellite**, enabling zero-reflash portability between **Home** (Linux server) and **Work/School** (Windows PC + mobile phone hotspot) environments.
+21 October 2026 — current target architecture; see the [master plan](2026-10-21-companion-media-agent-master-plan.md) for implementation status.
 
----
+## One handheld, same personal agent
 
-## 1. System Topology
+Use the original ES3C28P ESP32-S3. Preserve installed stable firmware/write lock until an approved recoverable trial. The CYD application port is abandoned; keep diagnostic records and upload safeguards.
 
-The ESP32 communicates solely with a local **Voice Satellite Receiver** service running on port `:8787`, which in turn orchestrates with Hermes on localhost `:8642`.
+At home and work, Windows will reach the same Linux Hermes through a permanent private Tailscale endpoint. Groq remains the primary embedded assistant. A separate Linux library API synchronises images/allowlisted metadata. The permanent route and in-app Hermes adapter are still deployment/implementation milestones, not accepted current features.
 
-```text
-                           ESP32-S3 (ES3C28P)
-                                   │
-                    ┌──────────────┴──────────────┐
-                    │                             │
-               HOME Profile                  WORK Profile
-                    │                             │
-              Home Wi-Fi LAN                Phone Hotspot
-                    │                             │
-          Home Linux Server :8787         School Windows PC :8787
-                    │                             │
-            localhost:8642                localhost:8642
-                    │                             │
-             Hermes Gateway                Hermes Gateway
-                    │                             │
-           Configured Provider                  Ollama
-                                                  │
-                                            Local GPU Model
+```mermaid
+flowchart LR
+  BOARD[ES3C28P S3] -->|Bluetooth controls| WINDOWS[Windows companion at home or work]
+  BOARD -->|local Wi-Fi / hotspot audio| RECEIVER[Local receiver]
+  RECEIVER --> WINDOWS
+  WINDOWS -->|primary assistant| GROQ[Groq]
+  WINDOWS -->|explicit task over HTTPS / Tailscale| HERMES[Same Linux Hermes]
+  WINDOWS <-->|media and metadata over HTTPS / Tailscale| LIBRARY[Separate Linux media service]
+  WINDOWS -->|guarded local insertion| OFFICE[Word / OneNote]
 ```
 
-### Architectural Principles
+Tailscale runs on Windows and Linux, not on the handheld. Local device profiles can differ while the remote Hermes identity stays the same. Moving locations must not require a reflash merely because a LAN address changes.
 
-1. **Strict Environment Binding**:
-   - Each environment is an atomic composite profile:
-     $$\text{Environment} = \{\text{SSID}, \text{Password}, \text{Receiver URL}, \text{Status URL}, \text{Timeout}, \text{Auth Token}, \text{Expected BLE Host}\}$$
-   - Switching environments reconfigures the network stack simultaneously, preventing cross-subnet hangs.
+| Layer | Owns | Current limit |
+| --- | --- | --- |
+| S3 | Controls, touch, capture, existing environment selections | Stable installation unchanged; new firmware requires trial approval. |
+| Windows | Groq/Ollama, local History/cache/jobs, permissions and Office insertion | Image candidate exists; physical target/microphone acceptance open. |
+| Local receiver | Authenticated audio/transcription/local handoff | Feature bridge implemented; physical acceptance open. |
+| Linux Hermes | Explicit bounded remote work | Historical LAN consultation; permanent route/product adapter pending. |
+| Linux library | Versions, blobs, conflicts and budget authority | Portable candidate tested; persistent deployment/two-host acceptance pending. |
 
-2. **The Contract Principle**:
-   - The ESP32 only ever talks to `:8787`.
-   - The Receiver service on `:8787` is the authoritative health and AI proxy.
-   - The ESP32 never bypasses the receiver or interrogates Ollama/Hermes directly.
+Production receiver routing remains legacy behaviour. Do not relocate/reconfigure the running receiver merely to match this diagram. Stage the new route in isolation first.
 
-3. **Zero-Reflash Portability**:
-   - Mode selection (`HOME` vs `WORK`) is stored in ESP32 Non-Volatile Storage (NVS via Arduino `Preferences`) and survives power cycles and reboots.
+## Connectivity and independent readiness
 
----
+Keep local Wi-Fi credentials/receiver URLs/tokens together in device profiles; keep private remote origins in Windows protected settings. Phone hotspot supplies internet/local networking; the Windows Tailscale client supplies the remote route.
 
-## 2. Component Directory
+BLE controls, local capture/transcription, Groq, Hermes, library sync and image-provider readiness are separate. Wi-Fi alone does not prove voice readiness. HTTP liveness does not prove model/tool readiness. Remote services need connectivity; explicit local Whisper/Ollama and cached assets can remain usable offline. Local-only mode suppresses private-tailnet traffic too.
 
-| Component | Port / Interface | Role |
-|---|---|---|
-| **ESP32 MacroPad** | BLE HID + Wi-Fi | Key macro injection + 16kHz audio capture + 2.8" LCD GUI |
-| **Voice Receiver** | HTTP `:8787` | Speech transcription (faster-whisper) + Health authority + Hermes dispatch |
-| **Hermes Gateway** | HTTP `:8642` | Persistent agent session server (`/v1/chat/completions`, `/health`, `/health/detailed`) |
-| **Local Ollama** | HTTP `:11434` | Local GPU LLM provider (Work mode offline intelligence) |
+Original receiver TCP 8787 remains separate from preview TCP 8788/discovery UDP 8789 until an approved trial. Start preview with hardware inputs off. Two companions sharing global shortcuts are not isolated by using another handheld; coordinate listener ownership.
 
----
+## Data and credentials
 
-## 3. Security Model: Secret Separation
+Separate receiver/Hermes/library/provider secrets. Use application authentication behind private HTTPS and scoped access, without public Funnel/port-forwarding. Sync validated media/metadata only; History, full prompts, secrets, settings and jobs remain local. Never synchronise live SQLite files.
 
-The architecture strictly separates peripheral credentials from backend API keys:
-
-```text
-ESP32 MacroPad
-      │
-      │  Authorization: Bearer <VOICE_RECEIVER_TOKEN>
-      ▼
-Voice Receiver (:8787)
-      │
-      │  Authorization: Bearer <API_SERVER_KEY>
-      ▼
-Hermes Gateway (:8642)
-```
-
-- **`VOICE_RECEIVER_TOKEN`**: Configured in `src/wifi_config.h` on the ESP32 and in the receiver's `.env`. Used to authenticate requests across the local Wi-Fi / hotspot network.
-- **`API_SERVER_KEY`**: Kept exclusively on the host PC in `~/.hermes/.env`. Never exposed to the ESP32 or the Wi-Fi subnet.
-- **Unauthenticated Probe**: `GET /health` remains open for lightweight pinging without credentials.
-
----
-
-## 4. Work Privacy Hardening & Ollama Performance
-
-To ensure school and enterprise privacy:
-1. **Local-Only Inference**: All speech processing (Whisper) and LLM inference (Ollama) run on the workstation GPU.
-2. **Automatic Telegram Mirroring Suppression**:
-   - In `WORK` mode (`RECEIVER_ENV=work`), Telegram mirroring is automatically forced off to prevent voice audio or prompts from leaving the machine.
-3. **Model Warmup & Keep-Alive**:
-   - Work scripts launch Ollama with `OLLAMA_KEEP_ALIVE=8h` and `OLLAMA_NO_CLOUD=1`.
-   - On receiver startup, a background thread issues a keep-alive preload request to ensure the model resides in GPU VRAM, eliminating first-query cold-start latency.
-
----
-
-## 5. Page 6 System Dashboard
-
-The firmware provides a dedicated telemetry card on Page 6 (`< [6/6] >`):
-
-```text
-┌──────────────────────────────────────────────┐
-│ SYSTEM TELEMETRY         ALL SYSTEMS READY   │
-├──────────────────────────────────────────────┤
-│ ● Wi-Fi       Galaxy A55 5G (-48 dBm)        │
-│ ● Internet    Online                         │
-│ ● Bluetooth   Connected (School Desktop)     │
-│ ● Voice Host  Online (:8787)                 │
-│ ● Hermes      Ready (:8642)                  │
-│ ● AI Model    Ollama • Warm                  │
-├──────────────────────────────────────────────┤
-│    [ SWITCH TO HOME ]      [ WORK ACTIVE ]   │
-└──────────────────────────────────────────────┘
-```
-
-### Telemetry Status Semantics
-
-- **Green (`HEALTH_READY`)**: Service is fully verified, reachable, and ready to respond.
-- **Amber (`HEALTH_DEGRADED`)**:
-  - `Internet`: Wi-Fi connected to local LAN / hotspot, but no WAN route (valid at school).
-  - `Hermes`: Process is live (`/health` ok), but backend model is still loading.
-- **Red (`HEALTH_FAILED`)**: Component is unreachable or returned an error code.
-- **Grey (`HEALTH_UNKNOWN`)**: State has not yet been polled or is not required.
-
-### Subsystem Decoupling
-
-The dashboard evaluates two independent subsystems:
-- **MacroPad Subsystem**: Requires Bluetooth connection to host (`bleKeyboard.isConnected()`).
-- **Voice Subsystem**: Requires Wi-Fi + Voice Host + Hermes or Ollama.
-- *Internet is never required for voice operation in Work mode.*
-
----
-
-## 6. Host Setup Instructions
-
-### Work Setup (Windows)
-
-1. **Prerequisites**:
-   - Install [Ollama for Windows](https://ollama.com/) and pull the desired model:
-     ```cmd
-     ollama pull qwen3.5:latest
-     ```
-   - Start Hermes Gateway on `:8642`:
-     ```cmd
-     hermes gateway
-     ```
-
-2. **Configure Environment**:
-   - Copy `server/receiver.env.example` to `server/.env`:
-     ```ini
-     RECEIVER_PORT=8787
-     RECEIVER_ENV=work
-     VOICE_RECEIVER_TOKEN=your_token_here
-     OLLAMA_HOST=http://127.0.0.1:11434
-     OLLAMA_MODEL=qwen3.5:latest
-     OLLAMA_KEEP_ALIVE=8h
-     ```
-
-3. **Start Receiver**:
-   - Double-click `server/start_receiver.bat`.
-
----
-
-### Home Setup (Linux Server)
-
-1. **Configure Environment**:
-   - Copy `server/receiver.env.example` to `/opt/hermes-voice/.env` or `~/.hermes/.env`:
-     ```ini
-     RECEIVER_PORT=8787
-     RECEIVER_ENV=home
-     VOICE_RECEIVER_TOKEN=c945e29742f53b370c07894f41e5251cd54738132de43f39
-     HERMES_GATEWAY_URL=http://127.0.0.1:8642/v1/chat/completions
-     API_SERVER_KEY=your_hermes_api_server_key
-     ```
-
-2. **Install as a Systemd Service**:
-   Create `/etc/systemd/system/hermes-voice-receiver.service`:
-   ```ini
-   [Unit]
-   Description=Hermes Voice Satellite Receiver
-   After=network.target
-
-   [Service]
-   Type=simple
-   User=hermes
-   WorkingDirectory=/opt/hermes-voice
-   ExecStart=/usr/bin/python3 hermes_voice_receiver.py
-   Restart=on-failure
-   RestartSec=5
-   EnvironmentFile=/opt/hermes-voice/.env
-
-   [Install]
-   WantedBy=multi-user.target
-   ```
-   Enable and start:
-   ```bash
-   sudo systemctl daemon-reload
-   sudo systemctl enable --now hermes-voice-receiver
-   ```
+Operational guides: [permanent connection](hermes-tailscale-home-work.md), [media server](media-sync-server.md), [acceptance tests](feature-media-testing.md), [board safety](board-upload-safety.md). This topology is a target, not proof of deployed services.

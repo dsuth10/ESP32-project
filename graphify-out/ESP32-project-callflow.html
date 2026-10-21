@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>ESP32 project — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 1117 nodes, 1933 edges, 69 communities. Commit: 364e48f</p>
+<p class="subtitle">Generated from graphify knowledge graph: 1118 nodes, 1935 edges, 73 communities. Commit: e98b7bc</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -74,10 +74,10 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#network-manager-cpp">network_manager.cpp</a>
     <a href="#esp32-windows-compose-dictate-companion-architec">ESP32 &amp; Windows Compose / Dictate Companion: Architecture &amp; Implementation Plan</a>
     <a href="#macropadgui">MacroPadGUI</a>
-    <a href="#composeapp">ComposeApp</a>
     <a href="#hostdiscovery">HostDiscovery</a>
     <a href="#gui-cpp">gui.cpp</a>
     <a href="#power-manager-cpp">power_manager.cpp</a>
+    <a href="#composeapp">ComposeApp</a>
     <a href="#other">Other</a>
 </div>
 
@@ -88,17 +88,17 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>167 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>194 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>51 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
     CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>128 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>104 nodes</small>")
+    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>124 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
-    SERVE_API_35EC8E86("Serving API<br/><small>91 nodes</small>")
+    SERVE_API_35EC8E86("Serving API<br/><small>99 nodes</small>")
     class SERVE_API_35EC8E86 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>197 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>154 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     ENVIRONMENTMANAGER_5897C7D1("EnvironmentManager<br/><small>41 nodes</small>")
     class ENVIRONMENTMANAGER_5897C7D1 module;
@@ -108,28 +108,28 @@ flowchart LR
     class ESP32_WINDOWS_COMPOSE_DICTATE_COMPANION_ARCHITEC_16DAF23C module;
     MACROPADGUI_41F3827F("MacroPadGUI<br/><small>25 nodes</small>")
     class MACROPADGUI_41F3827F module;
-    COMPOSEAPP_38606CCE("ComposeApp<br/><small>24 nodes</small>")
-    class COMPOSEAPP_38606CCE module;
     HOSTDISCOVERY_9CAFC6FD("HostDiscovery<br/><small>20 nodes</small>")
     class HOSTDISCOVERY_9CAFC6FD module;
     GUI_CPP_EB7BCAF2("gui.cpp<br/><small>19 nodes</small>")
     class GUI_CPP_EB7BCAF2 module;
     POWER_MANAGER_CPP_2229D128("power_manager.cpp<br/><small>18 nodes</small>")
     class POWER_MANAGER_CPP_2229D128 module;
-    OTHER_D0941E68("Other<br/><small>171 nodes</small>")
+    COMPOSEAPP_38606CCE("ComposeApp<br/><small>18 nodes</small>")
+    class COMPOSEAPP_38606CCE module;
+    OTHER_D0941E68("Other<br/><small>166 nodes</small>")
     class OTHER_D0941E68 module;
     MACROPADGUI_41F3827F -->|defines x22| OTHER_D0941E68
     GUI_CPP_EB7BCAF2 -->|contains x22| OTHER_D0941E68
     INGEST_CACHE_UPDATE_FF457338 -->|contains x19| OTHER_D0941E68
     MACROPADGUI_41F3827F -->|defines x18| GUI_CPP_EB7BCAF2
-    COMPOSEAPP_38606CCE -->|calls x13| TESTS_FIXTURES_B84B1DCC
-    SERVE_API_35EC8E86 -->|calls x12| TESTS_FIXTURES_B84B1DCC
-    INGEST_CACHE_UPDATE_FF457338 -->|contains x12| SERVE_API_35EC8E86
+    INGEST_CACHE_UPDATE_FF457338 -->|calls x13| SERVE_API_35EC8E86
+    BUILD_GRAPH_321CBB04 -->|imports x11| TESTS_FIXTURES_B84B1DCC
+    SERVE_API_35EC8E86 -->|method x9| TESTS_FIXTURES_B84B1DCC
+    COMPOSEAPP_38606CCE -->|calls x9| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|imports x9| BUILD_GRAPH_321CBB04
     INGEST_CACHE_UPDATE_FF457338 -->|contains x9| CLI_SKILLS_9964CBB8
-    TESTS_FIXTURES_B84B1DCC -->|imports x8| SERVE_API_35EC8E86
-    OTHER_D0941E68 -->|calls x6| CLI_SKILLS_9964CBB8
-    CLI_SKILLS_9964CBB8 -->|calls x6| SERVE_API_35EC8E86
-    TESTS_FIXTURES_B84B1DCC -->|contains x5| COMPOSEAPP_38606CCE
+    BUILD_GRAPH_321CBB04 -->|contains x8| INGEST_CACHE_UPDATE_FF457338
+    TESTS_FIXTURES_B84B1DCC -->|calls x6| INGEST_CACHE_UPDATE_FF457338
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,19 +146,19 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Graph Build</td><td>167</td><td><code>10, 31, 34, 41, 42, 67, 24, 25, 26, 27</code></td></tr><tr><td>Outputs &amp; Docs</td><td>51</td><td><code>32, 54</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>128</td><td><code>5, 38, 47, 30, 23</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>104</td><td><code>3, 1, 58, 17</code></td></tr><tr><td>Serving API</td><td>91</td><td><code>6, 7, 66, 49, 57</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>197</td><td><code>22, 15, 43, 64, 50, 61, 59, 28</code></td></tr><tr><td>EnvironmentManager</td><td>41</td><td><code>2</code></td></tr><tr><td>network_manager.cpp</td><td>33</td><td><code>4</code></td></tr><tr><td>ESP32 &amp; Windows Compose / Dictate Companion: Architecture &amp; Implementation Plan</td><td>28</td><td><code>39</code></td></tr><tr><td>MacroPadGUI</td><td>25</td><td><code>0</code></td></tr><tr><td>ComposeApp</td><td>24</td><td><code>62</code></td></tr><tr><td>HostDiscovery</td><td>20</td><td><code>65</code></td></tr><tr><td>gui.cpp</td><td>19</td><td><code>35</code></td></tr><tr><td>power_manager.cpp</td><td>18</td><td><code>33</code></td></tr><tr><td>Other</td><td>171</td><td><code>56, 63, 16, 44, 60, 37, 45, 48, 36, 9, 40, 51, 46, 52, 53, 8, 55, 11, 12, 13, 20, 21, 14, 18, 19, 29, 69</code></td></tr>
+      <tr><td>Graph Build</td><td>194</td><td><code>10, 31, 34, 43, 41, 42, 67, 24, 25, 26, 27</code></td></tr><tr><td>Outputs &amp; Docs</td><td>51</td><td><code>32, 54</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>128</td><td><code>5, 38, 47, 30, 23</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>124</td><td><code>3, 1, 58, 17, 59, 71</code></td></tr><tr><td>Serving API</td><td>99</td><td><code>6, 7, 60, 49, 57</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>154</td><td><code>15, 22, 64, 61, 50, 66, 68, 72, 28</code></td></tr><tr><td>EnvironmentManager</td><td>41</td><td><code>2</code></td></tr><tr><td>network_manager.cpp</td><td>33</td><td><code>4</code></td></tr><tr><td>ESP32 &amp; Windows Compose / Dictate Companion: Architecture &amp; Implementation Plan</td><td>28</td><td><code>39</code></td></tr><tr><td>MacroPadGUI</td><td>25</td><td><code>0</code></td></tr><tr><td>HostDiscovery</td><td>20</td><td><code>65</code></td></tr><tr><td>gui.cpp</td><td>19</td><td><code>35</code></td></tr><tr><td>power_manager.cpp</td><td>18</td><td><code>33</code></td></tr><tr><td>ComposeApp</td><td>18</td><td><code>62</code></td></tr><tr><td>Other</td><td>166</td><td><code>56, 63, 16, 44, 37, 45, 48, 36, 9, 40, 51, 70, 46, 52, 53, 8, 55, 11, 12, 13, 20, 21, 14, 18, 19, 29, 69</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Outputs &amp; Docs -&gt; Graph Build -&gt; Other -&gt; CLI &amp; Skill Installers -&gt; Serving API -&gt; Tests &amp; Fixtures -&gt; ComposeApp</div>
+    <div class="arrow-chain">ESP32 &amp; Windows Compose / Dictate Companion: Architecture &amp; Implementation Plan -&gt; Graph Build -&gt; Tests &amp; Fixtures -&gt; Ingestion &amp; Updates -&gt; Other -&gt; CLI &amp; Skill Installers -&gt; Serving API</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>1117 nodes · 1933 edges · 69 communities (52 shown, 8 thin omitted)</li>
+      <li>1118 nodes · 1935 edges · 73 communities (55 shown, 9 thin omitted)</li>
       <li>Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 132 edges (avg confidence: 0.87)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `MacroPadGUI` - 68 edges</li>
@@ -170,15 +170,14 @@ flowchart LR
 <hr>
 <!-- ====== 2. Graph Build ====== -->
 <h2 id="build-graph">2. Graph Build</h2>
-<p>Graph Build groups implementation around llm, bench, pathspy, case, mostly in server/bench_llm_paths.py, generate_case_battery.py, generate_case_battery_only.py. This section covers 167 nodes and 329 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around llm, bench, pathspy, case, mostly in server/bench_llm_paths.py, generate_case_battery.py, generate_case_battery_only.py. This section covers 194 nodes and 369 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (167 nodes, 329 edges)
+    %% Section: Graph Build (194 nodes, 369 edges)
     subgraph build_graph_server_bench_llm_paths_py_e9283dad["server/bench_llm_paths.py"]
         server_bench_llm_paths_main_c81d6f76("main()<br/><small>server/bench_llm_paths.py</small>")
-        server_bench_llm_paths_build_adapters_822f5e4f("build_adapters()<br/><small>server/bench_llm_paths.py</small>")
         server_bench_llm_paths_adapter_9c13db57("Adapter<br/><small>server/bench_llm_paths.py</small>")
         server_bench_llm_paths_adapter_init_03676b69("__init__()<br/><small>server/bench_llm_paths.py</small>")
         server_bench_llm_paths_adapter_unavailable_reaso_0c042a26("unavailable_reason()<br/><small>server/bench_llm_paths.py</small>")
@@ -200,6 +199,7 @@ flowchart LR
         generate_case_battery_only_create_enclosure_b76819c7("create_enclosure()<br/><small>generate_case_battery_only.py</small>")
         generate_case_battery_only_build_case_bottom_358556af("build_case_bottom()<br/><small>generate_case_battery_only.py</small>")
     end
+    tools_compose_compose_companion_7a32170b("compose_companion.py")
     server_bench_llm_paths_adapter_9c13db57 -->|method| server_bench_llm_paths_adapter_init_03676b69
     server_bench_llm_paths_adapter_9c13db57 -->|method| server_bench_llm_paths_adapter_unavailable_reaso_0c042a26
     server_bench_llm_paths_adapter_9c13db57 -->|method| server_bench_llm_paths_adapter_setup_8f9a502d
@@ -209,15 +209,11 @@ flowchart LR
     server_bench_llm_paths_hermescliadapter_c5e4adcc -->|method| server_bench_llm_paths_hermescliadapter_unavaila_5a606890
     server_bench_llm_paths_hermescliadapter_c5e4adcc -->|method| server_bench_llm_paths_hermescliadapter_ask_12ca9a52
     server_bench_llm_paths_hermessessionadapter_811d8abf -->|method| server_bench_llm_paths_hermessessionadapter_init_23c96076
-    server_bench_llm_paths_build_adapters_822f5e4f -->|calls| server_bench_llm_paths_hermessessionadapter_811d8abf
-    server_bench_llm_paths_build_adapters_822f5e4f -->|calls| server_bench_llm_paths_hermescliadapter_c5e4adcc
     server_bench_llm_paths_hermessessionadapter_init_23c96076 -->|calls| server_bench_llm_paths_hermescliadapter_init_0f58ef7a
-    server_bench_llm_paths_main_c81d6f76 -->|calls| server_bench_llm_paths_build_adapters_822f5e4f
     generate_case_battery_create_enclosure_3f70d94a -->|calls| generate_case_battery_build_case_bottom_b81ddba7
     generate_case_battery_only_create_enclosure_b76819c7 -->|calls| generate_case_battery_only_build_case_bottom_358556af
-    %% Omitted for readability: 149 nodes, 0 edges
+    %% Omitted for readability: 176 nodes, 0 edges
     class server_bench_llm_paths_main_c81d6f76 function;
-    class server_bench_llm_paths_build_adapters_822f5e4f function;
     class server_bench_llm_paths_adapter_9c13db57 klass;
     class server_bench_llm_paths_adapter_init_03676b69 function;
     class server_bench_llm_paths_adapter_unavailable_reaso_0c042a26 function;
@@ -234,6 +230,7 @@ flowchart LR
     class generate_case_battery_build_case_bottom_b81ddba7 function;
     class generate_case_battery_only_create_enclosure_b76819c7 function;
     class generate_case_battery_only_build_case_bottom_358556af function;
+    class tools_compose_compose_companion_7a32170b module;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -506,15 +503,15 @@ flowchart LR
 <tr><td><code>generate_case_battery.py</code></td><td>29 nodes</td></tr>
 <tr><td><code>generate_case_battery_only.py</code></td><td>27 nodes</td></tr>
 <tr><td><code>docs/build-guide.md</code></td><td>20 nodes</td></tr>
-<tr><td><code>README.md</code></td><td>14 nodes</td></tr>
-<tr><td><code>.agents/workflows/graph-query.md</code></td><td>3 nodes</td></tr>
-<tr><td><code>.agents/workflows/graph-update.md</code></td><td>3 nodes</td></tr>
-<tr><td><code>.agents/workflows/graph-visualize.md</code></td><td>3 nodes</td></tr>
+<tr><td><code>README.md</code></td><td>15 nodes</td></tr>
+<tr><td><code>tools/compose/prompt_engine.py</code></td><td>10 nodes</td></tr>
+<tr><td><code>tools/compose/llm_pipeline.py</code></td><td>4 nodes</td></tr>
+<tr><td><code>tools/compose/speech_pipeline.py</code></td><td>4 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x157, contains x125, method x25, references x14. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x160, contains x131, method x25, references x15. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1224,12 +1221,12 @@ flowchart LR
 
 <!-- ====== 5. Ingestion & Updates ====== -->
 <h2 id="ingest-cache-update">5. Ingestion &amp; Updates</h2>
-<p>Ingestion &amp; Updates groups implementation around audio, recorderh, hermes, voice, mostly in src/audio_recorder.h, server/hermes_voice_receiver.py, GEMINI.md. This section covers 104 nodes and 125 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Ingestion &amp; Updates groups implementation around audio, recorderh, compose, tools, mostly in src/audio_recorder.h, server/hermes_voice_receiver.py, GEMINI.md. This section covers 124 nodes and 148 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Ingestion &amp; Updates (104 nodes, 125 edges)
+    %% Section: Ingestion &amp; Updates (124 nodes, 148 edges)
     subgraph ingest_cache_update_src_audio_recorder_h_ad2e6707["src/audio_recorder.h"]
         src_audio_recorder_audiorecorder_b4022ebd("AudioRecorder<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_channelstats_b437c15e("ChannelStats<br/><small>src/audio_recorder.h</small>")
@@ -1249,9 +1246,9 @@ flowchart LR
         tools_compose_audio_capture_audiocapture_f17688ff("AudioCapture<br/><small>tools/compose/audio_capture.py</small>")
         tools_compose_audio_capture_audiocapture_start_r_99dbbb57("start_recording()<br/><small>tools/compose/audio_capture.py</small>")
     end
-    server_hermes_voice_receiver_ask_hermes_gateway_25949aca("ask_hermes_gateway()<br/><small>server/hermes_voice_receiver.py</small>")
-    src_audio_recorder_cpp_src_audio_recorder_9215fedd("audio_recorder.cpp")
     tools_compose_compose_companion_composecompanion_74d91191("__init__()<br/><small>tools/compose/compose_companion.py</small>")
+    tools_compose_compose_gui_composeapp_init_43a937e6("__init__()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_speech_pipeline_speechpipeline_578839c9("SpeechPipeline<br/><small>tools/compose/speech_pipeline.py</small>")
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_isrecording_3baca3b6
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getrecorddurati_7af30ad5
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getwavbuffer_898064a8
@@ -1264,8 +1261,11 @@ flowchart LR
     src_audio_recorder_channelstats_b437c15e -->|method| src_audio_recorder_channelstats_getnonzeropct_b7c18466
     src_audio_recorder_channelstats_b437c15e -->|method| src_audio_recorder_channelstats_getclippct_5ab7f089
     tools_compose_audio_capture_audiocapture_f17688ff -->|method| tools_compose_audio_capture_audiocapture_start_r_99dbbb57
+    tools_compose_compose_gui_composeapp_init_43a937e6 -->|calls| tools_compose_speech_pipeline_speechpipeline_578839c9
+    tools_compose_compose_companion_composecompanion_74d91191 -->|calls| tools_compose_speech_pipeline_speechpipeline_578839c9
+    tools_compose_compose_gui_composeapp_init_43a937e6 -->|calls| tools_compose_audio_capture_audiocapture_f17688ff
     tools_compose_compose_companion_composecompanion_74d91191 -->|calls| tools_compose_audio_capture_audiocapture_f17688ff
-    %% Omitted for readability: 86 nodes, 0 edges
+    %% Omitted for readability: 106 nodes, 0 edges
     class src_audio_recorder_audiorecorder_b4022ebd klass;
     class src_audio_recorder_channelstats_b437c15e klass;
     class src_audio_recorder_audiorecorder_isrecording_3baca3b6 function;
@@ -1281,9 +1281,9 @@ flowchart LR
     class src_audio_recorder_channelstats_getclippct_5ab7f089 entry;
     class tools_compose_audio_capture_audiocapture_f17688ff klass;
     class tools_compose_audio_capture_audiocapture_start_r_99dbbb57 function;
-    class server_hermes_voice_receiver_ask_hermes_gateway_25949aca function;
-    class src_audio_recorder_cpp_src_audio_recorder_9215fedd function;
     class tools_compose_compose_companion_composecompanion_74d91191 function;
+    class tools_compose_compose_gui_composeapp_init_43a937e6 function;
+    class tools_compose_speech_pipeline_speechpipeline_578839c9 klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1556,32 +1556,33 @@ flowchart LR
 <tr><td><code>server/hermes_voice_receiver.py</code></td><td>23 nodes</td></tr>
 <tr><td><code>GEMINI.md</code></td><td>14 nodes</td></tr>
 <tr><td><code>tools/compose/audio_capture.py</code></td><td>13 nodes</td></tr>
+<tr><td><code>tools/compose/speech_pipeline.py</code></td><td>10 nodes</td></tr>
+<tr><td><code>tools/compose/web_grounding.py</code></td><td>6 nodes</td></tr>
 <tr><td><code>tools/compose/compose_companion.py</code></td><td>3 nodes</td></tr>
-<tr><td><code>src/audio_recorder.cpp</code></td><td>2 nodes</td></tr>
-<tr><td><code>src/es8311.h</code></td><td>1 nodes</td></tr>
+<tr><td><code>tools/compose/compose_gui.py</code></td><td>3 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x41, defines x31, method x17, calls x14. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x42, defines x31, method x24, calls x23. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 6. Serving API ====== -->
 <h2 id="serve-api">6. Serving API</h2>
-<p>Serving API groups implementation around es8311, compose, tools, es8311cpp, mostly in src/es8311.cpp, es8311_bsp.c, tools/compose/compose_companion.py. This section covers 91 nodes and 211 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Serving API groups implementation around es8311, compose, tools, es8311cpp, mostly in src/es8311.cpp, tools/compose/compose_companion.py, es8311_bsp.c. This section covers 99 nodes and 222 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Serving API (91 nodes, 211 edges)
+    %% Section: Serving API (99 nodes, 222 edges)
     subgraph serve_api_tools_compose_compose_companion_py_9ee8819e["tools/compose/compose_companion.py"]
         tools_compose_compose_companion_composecompanion_c68eb781("ComposeCompanion<br/><small>tools/compose/compose_companion.py</small>")
-        tools_compose_compose_companion_composecompanion_51f37e50("handle_f13_down()<br/><small>tools/compose/compose_companion.py</small>")
+        tools_compose_compose_companion_composecompanion_b74d045a("set_local_only()<br/><small>tools/compose/compose_companion.py</small>")
         tools_compose_compose_companion_composecompanion_b1ad9796("handle_f13_up()<br/><small>tools/compose/compose_companion.py</small>")
-        tools_compose_compose_companion_composecompanion_028b60ce("handle_f14_down()<br/><small>tools/compose/compose_companion.py</small>")
         tools_compose_compose_companion_composecompanion_6af1b9d2("handle_f14_up()<br/><small>tools/compose/compose_companion.py</small>")
+        tools_compose_compose_companion_composecompanion_df60e334("handle_f15_tap()<br/><small>tools/compose/compose_companion.py</small>")
         tools_compose_compose_companion_composecompanion_276940af("_stay_local_if_cloud_blocked()<br/><small>tools/compose/compose_companion.py</small>")
         tools_compose_compose_companion_composecompanion_68efdd1f("_process_compose_worker()<br/><small>tools/compose/compose_companion.py</small>")
     end
@@ -1606,10 +1607,10 @@ flowchart LR
     tools_compose_llm_pipeline_llmpipeline_dc067dd3 -->|method| tools_compose_llm_pipeline_llmpipeline_pick_inst_dbe4b943
     tools_compose_llm_pipeline_llmpipeline_dc067dd3 -->|method| tools_compose_llm_pipeline_llmpipeline_model_mis_25efd9fb
     tools_compose_llm_pipeline_llmpipeline_dc067dd3 -->|method| tools_compose_llm_pipeline_llmpipeline_call_olla_a9ff556a
-    tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_51f37e50
+    tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_b74d045a
     tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_b1ad9796
-    tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_028b60ce
     tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_6af1b9d2
+    tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_df60e334
     tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_276940af
     tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_68efdd1f
     tools_compose_llm_pipeline_llmpipeline_call_olla_a9ff556a -->|calls| tools_compose_llm_pipeline_llmpipeline_model_mis_25efd9fb
@@ -1618,12 +1619,12 @@ flowchart LR
     es8311_bsp_es8311_init_6335de17 -->|calls| es8311_bsp_es8311_clock_config_c11bbb7e
     tools_compose_compose_companion_composecompanion_68efdd1f -->|calls| tools_compose_compose_companion_composecompanion_276940af
     tools_compose_compose_companion_composecompanion_c68eb781 -->|uses| tools_compose_llm_pipeline_llmpipeline_dc067dd3
-    %% Omitted for readability: 73 nodes, 0 edges
+    %% Omitted for readability: 81 nodes, 0 edges
     class tools_compose_compose_companion_composecompanion_c68eb781 klass;
-    class tools_compose_compose_companion_composecompanion_51f37e50 function;
+    class tools_compose_compose_companion_composecompanion_b74d045a function;
     class tools_compose_compose_companion_composecompanion_b1ad9796 function;
-    class tools_compose_compose_companion_composecompanion_028b60ce function;
     class tools_compose_compose_companion_composecompanion_6af1b9d2 function;
+    class tools_compose_compose_companion_composecompanion_df60e334 function;
     class tools_compose_compose_companion_composecompanion_276940af function;
     class tools_compose_compose_companion_composecompanion_68efdd1f function;
     class tools_compose_llm_pipeline_llmpipeline_dc067dd3 klass;
@@ -1906,8 +1907,8 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>src/es8311.cpp</code></td><td>21 nodes</td></tr>
+<tr><td><code>tools/compose/compose_companion.py</code></td><td>20 nodes</td></tr>
 <tr><td><code>es8311_bsp.c</code></td><td>19 nodes</td></tr>
-<tr><td><code>tools/compose/compose_companion.py</code></td><td>13 nodes</td></tr>
 <tr><td><code>server/hermes_voice_receiver.py</code></td><td>10 nodes</td></tr>
 <tr><td><code>tools/compose/llm_pipeline.py</code></td><td>9 nodes</td></tr>
 <tr><td><code>tools/compose/focus_tracker.py</code></td><td>2 nodes</td></tr>
@@ -1917,77 +1918,88 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x78, calls x67, contains x38, method x13. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x79, calls x71, contains x38, method x14. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 7. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">7. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around compose, tools, test, web, mostly in docs/Dashboard-plan.md, compose/tests/test_compose.py, tools/compose/web_grounding.py. This section covers 197 nodes and 328 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around compose, tools, test, tests, mostly in docs/Dashboard-plan.md, compose/tests/test_compose.py, tools/compose/web_grounding.py. This section covers 154 nodes and 233 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (197 nodes, 328 edges)
+    %% Section: Tests &amp; Fixtures (154 nodes, 233 edges)
+    subgraph tests_fixtures_tools_compose_focus_tracker_py_837b4f5b["tools/compose/focus_tracker.py"]
+        tools_compose_focus_tracker_focustracker_077b797a("FocusTracker<br/><small>tools/compose/focus_tracker.py</small>")
+        tools_compose_focus_tracker_focustracker_capture_0a03cad4("_capture_via_wm_copy()<br/><small>tools/compose/focus_tracker.py</small>")
+        tools_compose_focus_tracker_focustracker_capture_4c51195c("_capture_via_chord_ctrl_c()<br/><small>tools/compose/focus_tracker.py</small>")
+        tools_compose_focus_tracker_focustracker_capture_e568ec4b("capture_selected_text()<br/><small>tools/compose/focus_tracker.py</small>")
+        tools_compose_focus_tracker_focustracker_get_foc_6762dfdd("get_focus_snapshot()<br/><small>tools/compose/focus_tracker.py</small>")
+        tools_compose_focus_tracker_focustracker_get_foc_07c89a23("get_focused_child_hwnd()<br/><small>tools/compose/focus_tracker.py</small>")
+    end
     subgraph tests_fixtures_tools_compose_web_grounding_py_490a4869["tools/compose/web_grounding.py"]
         tools_compose_web_grounding_intentrouter_classif_0ca0ff25("classify()<br/><small>tools/compose/web_grounding.py</small>")
-        tools_compose_web_grounding_bravesearchclient_82d6028c("BraveSearchClient<br/><small>tools/compose/web_grounding.py</small>")
-        tools_compose_web_grounding_bravesearchclient_in_978560e0("__init__()<br/><small>tools/compose/web_grounding.py</small>")
-        tools_compose_web_grounding_bravesearchclient_av_7bfed245("available()<br/><small>tools/compose/web_grounding.py</small>")
-        tools_compose_web_grounding_bravesearchclient_se_1d80238f("search()<br/><small>tools/compose/web_grounding.py</small>")
-        tools_compose_web_grounding_groundingresult_15259f46("GroundingResult<br/><small>tools/compose/web_grounding.py</small>")
-        tools_compose_web_grounding_groundingresult_used_46ff6c28("used()<br/><small>tools/compose/web_grounding.py</small>")
-        tools_compose_web_grounding_groundingresult_summ_366564ee("summary()<br/><small>tools/compose/web_grounding.py</small>")
         tools_compose_web_grounding_intentrouter_79b0ccf6("IntentRouter<br/><small>tools/compose/web_grounding.py</small>")
         tools_compose_web_grounding_intentrouter_init_fa666c95("__init__()<br/><small>tools/compose/web_grounding.py</small>")
         tools_compose_web_grounding_intentrouter_ask_jev_95e53eb1("_ask_jev()<br/><small>tools/compose/web_grounding.py</small>")
         tools_compose_web_grounding_intentrouter_ask_gro_313f02df("_ask_groq()<br/><small>tools/compose/web_grounding.py</small>")
-        tools_compose_web_grounding_webgrounding_63450f69("WebGrounding<br/><small>tools/compose/web_grounding.py</small>")
     end
-    tools_compose_tests_test_compose_26058455("test_compose.py")
+    subgraph tests_fixtures_compose_tests_test_compose_py_2cc92741["compose/tests/test_compose.py"]
+        tools_compose_tests_test_compose_26058455("test_compose.py")
+        tools_compose_tests_test_compose_test_capture_se_ed3dfe3a("via text pattern()<br/><small>compose/tests/test_compose.py</small>")
+        tools_compose_tests_test_compose_test_capture_se_bdeb2e5c("chord ctrl c()<br/><small>compose/tests/test_compose.py</small>")
+    end
+    subgraph tests_fixtures_tools_compose_clipboard_manager_p_4a48b608["tools/compose/clipboard_manager.py"]
+        tools_compose_clipboard_manager_clipboardmanager_add6d3aa("ClipboardManager<br/><small>tools/compose/clipboard_manager.py</small>")
+        tools_compose_clipboard_manager_clipboardmanager_5b0ecc1e("inject_paste()<br/><small>tools/compose/clipboard_manager.py</small>")
+    end
     tools_compose_tests_test_web_grounding_459fe7e8("test_web_grounding.py")
-    tools_compose_compose_companion_7a32170b("compose_companion.py")
-    tools_compose_compose_gui_f5879275("compose_gui.py")
-    tools_compose_llm_pipeline_315ead11("llm_pipeline.py")
-    tools_compose_web_grounding_bravesearchclient_82d6028c -->|method| tools_compose_web_grounding_bravesearchclient_in_978560e0
-    tools_compose_web_grounding_bravesearchclient_82d6028c -->|method| tools_compose_web_grounding_bravesearchclient_av_7bfed245
-    tools_compose_web_grounding_bravesearchclient_82d6028c -->|method| tools_compose_web_grounding_bravesearchclient_se_1d80238f
-    tools_compose_web_grounding_groundingresult_15259f46 -->|method| tools_compose_web_grounding_groundingresult_used_46ff6c28
-    tools_compose_web_grounding_groundingresult_15259f46 -->|method| tools_compose_web_grounding_groundingresult_summ_366564ee
+    tools_compose_compose_companion_composecompanion_51f37e50("handle_f13_down()<br/><small>tools/compose/compose_companion.py</small>")
     tools_compose_web_grounding_intentrouter_79b0ccf6 -->|method| tools_compose_web_grounding_intentrouter_init_fa666c95
     tools_compose_web_grounding_intentrouter_79b0ccf6 -->|method| tools_compose_web_grounding_intentrouter_ask_jev_95e53eb1
     tools_compose_web_grounding_intentrouter_79b0ccf6 -->|method| tools_compose_web_grounding_intentrouter_ask_gro_313f02df
     tools_compose_web_grounding_intentrouter_79b0ccf6 -->|method| tools_compose_web_grounding_intentrouter_classif_0ca0ff25
+    tools_compose_focus_tracker_focustracker_077b797a -->|method| tools_compose_focus_tracker_focustracker_capture_0a03cad4
+    tools_compose_focus_tracker_focustracker_077b797a -->|method| tools_compose_focus_tracker_focustracker_capture_4c51195c
+    tools_compose_focus_tracker_focustracker_077b797a -->|method| tools_compose_focus_tracker_focustracker_capture_e568ec4b
+    tools_compose_focus_tracker_focustracker_077b797a -->|method| tools_compose_focus_tracker_focustracker_get_foc_6762dfdd
+    tools_compose_focus_tracker_focustracker_077b797a -->|method| tools_compose_focus_tracker_focustracker_get_foc_07c89a23
+    tools_compose_clipboard_manager_clipboardmanager_add6d3aa -->|method| tools_compose_clipboard_manager_clipboardmanager_5b0ecc1e
     tools_compose_web_grounding_intentrouter_classif_0ca0ff25 -->|calls| tools_compose_web_grounding_intentrouter_ask_jev_95e53eb1
     tools_compose_web_grounding_intentrouter_classif_0ca0ff25 -->|calls| tools_compose_web_grounding_intentrouter_ask_gro_313f02df
-    tools_compose_tests_test_web_grounding_459fe7e8 -->|imports| tools_compose_web_grounding_bravesearchclient_82d6028c
+    tools_compose_compose_companion_composecompanion_51f37e50 -->|calls| tools_compose_focus_tracker_focustracker_get_foc_6762dfdd
+    tools_compose_compose_companion_composecompanion_51f37e50 -->|calls| tools_compose_focus_tracker_focustracker_capture_e568ec4b
+    tools_compose_focus_tracker_focustracker_capture_e568ec4b -->|calls| tools_compose_focus_tracker_focustracker_get_foc_07c89a23
+    tools_compose_focus_tracker_focustracker_capture_e568ec4b -->|calls| tools_compose_focus_tracker_focustracker_capture_0a03cad4
+    tools_compose_focus_tracker_focustracker_capture_e568ec4b -->|calls| tools_compose_focus_tracker_focustracker_capture_4c51195c
+    tools_compose_tests_test_compose_test_capture_se_ed3dfe3a -->|calls| tools_compose_focus_tracker_focustracker_capture_e568ec4b
+    tools_compose_tests_test_compose_test_capture_se_bdeb2e5c -->|calls| tools_compose_focus_tracker_focustracker_capture_e568ec4b
     tools_compose_tests_test_web_grounding_459fe7e8 -->|imports| tools_compose_web_grounding_intentrouter_79b0ccf6
-    tools_compose_tests_test_web_grounding_459fe7e8 -->|imports| tools_compose_web_grounding_webgrounding_63450f69
-    tools_compose_compose_companion_7a32170b -->|imports| tools_compose_web_grounding_webgrounding_63450f69
-    tools_compose_compose_companion_7a32170b -->|imports| tools_compose_llm_pipeline_315ead11
-    tools_compose_compose_gui_f5879275 -->|imports| tools_compose_web_grounding_webgrounding_63450f69
-    tools_compose_compose_gui_f5879275 -->|imports| tools_compose_llm_pipeline_315ead11
-    tools_compose_tests_test_compose_26058455 -->|imports| tools_compose_compose_gui_f5879275
-    %% Omitted for readability: 179 nodes, 0 edges
+    tools_compose_tests_test_compose_26058455 -->|imports| tools_compose_clipboard_manager_clipboardmanager_add6d3aa
+    tools_compose_tests_test_compose_26058455 -->|imports| tools_compose_focus_tracker_focustracker_077b797a
+    tools_compose_focus_tracker_focustracker_077b797a -->|uses| tools_compose_clipboard_manager_clipboardmanager_add6d3aa
+    tools_compose_tests_test_compose_test_capture_se_ed3dfe3a -->|uses| tools_compose_focus_tracker_focustracker_077b797a
+    %% Omitted for readability: 136 nodes, 1 edges
+    class tools_compose_focus_tracker_focustracker_077b797a klass;
+    class tools_compose_focus_tracker_focustracker_capture_0a03cad4 function;
+    class tools_compose_focus_tracker_focustracker_capture_4c51195c function;
+    class tools_compose_focus_tracker_focustracker_capture_e568ec4b function;
+    class tools_compose_focus_tracker_focustracker_get_foc_6762dfdd function;
+    class tools_compose_focus_tracker_focustracker_get_foc_07c89a23 function;
     class tools_compose_web_grounding_intentrouter_classif_0ca0ff25 function;
-    class tools_compose_web_grounding_bravesearchclient_82d6028c entry;
-    class tools_compose_web_grounding_bravesearchclient_in_978560e0 function;
-    class tools_compose_web_grounding_bravesearchclient_av_7bfed245 function;
-    class tools_compose_web_grounding_bravesearchclient_se_1d80238f function;
-    class tools_compose_web_grounding_groundingresult_15259f46 klass;
-    class tools_compose_web_grounding_groundingresult_used_46ff6c28 function;
-    class tools_compose_web_grounding_groundingresult_summ_366564ee function;
     class tools_compose_web_grounding_intentrouter_79b0ccf6 api;
     class tools_compose_web_grounding_intentrouter_init_fa666c95 function;
     class tools_compose_web_grounding_intentrouter_ask_jev_95e53eb1 function;
     class tools_compose_web_grounding_intentrouter_ask_gro_313f02df function;
-    class tools_compose_web_grounding_webgrounding_63450f69 klass;
     class tools_compose_tests_test_compose_26058455 test;
+    class tools_compose_tests_test_compose_test_capture_se_ed3dfe3a test;
+    class tools_compose_tests_test_compose_test_capture_se_bdeb2e5c test;
+    class tools_compose_clipboard_manager_clipboardmanager_add6d3aa entry;
+    class tools_compose_clipboard_manager_clipboardmanager_5b0ecc1e function;
     class tools_compose_tests_test_web_grounding_459fe7e8 test;
-    class tools_compose_compose_companion_7a32170b module;
-    class tools_compose_compose_gui_f5879275 module;
-    class tools_compose_llm_pipeline_315ead11 module;
+    class tools_compose_compose_companion_composecompanion_51f37e50 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2011,243 +2023,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>BraveSearchClient</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-cmd">Entry</span></td>
-  <td><code>client parses results()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small><br><code>from_config()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>test_web_grounding.py</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>available()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>search()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>BraveSearchClient node in tools/compose/web_grounding.py.</td>
+  <td><code>Dashboard-plan.md</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Dashboard-plan.md.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>GroundingResult</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>fetch_context()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><code>summary()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>used()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>GroundingResult node in tools/compose/web_grounding.py.</td>
+  <td><code>MacroPad readiness</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing MacroPad readiness.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>IntentRouter</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-endpoint">API</span></td>
-  <td><code>ambiguous triggers api()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small><br><code>back to groq()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small><br><code>failure degrades gracefully()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small><br>+3 more</td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>_ask_groq()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>_ask_jev()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br>+1 more</td>
-  <td>IntentRouter node in tools/compose/web_grounding.py.</td>
+  <td><code>Phase 0 — Protect what currently works</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 0 — Protect what currently works.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>RouteDecision</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-endpoint">API</span></td>
-  <td><code>classify()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>test_web_grounding.py</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
+  <td><code>Phase 10 — Define proper status semantics</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>RouteDecision node in tools/compose/web_grounding.py.</td>
+  <td>Documentation node describing Phase 10 — Define proper status semantics.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>WebGrounding</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>compose_companion.py</code><br><small style="color:var(--muted)">tools/compose/compose_companion.py</small><br><code>compose_gui.py</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+3 more</td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>describe()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>fetch_context()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br>+1 more</td>
-  <td>WebGrounding node in tools/compose/web_grounding.py.</td>
+  <td><code>Phase 11 — Separate Macro readiness from Voice readiness</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 11 — Separate Macro readiness from Voice readiness.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>test_brave_search_client_parses_results()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 12 — Wi-Fi health information</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>BraveSearchClient</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 12 — Wi-Fi health information.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>test_build_search_query_strips_command_prefix()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 13 — Add a genuine Internet test</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>build_search_query()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 13 — Add a genuine Internet test.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>test_format_search_context()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 14 — Avoid dashboard probes interfering with voice</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>format_search_context()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 14 — Avoid dashboard probes interfering with voice.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>test_intent_router_jev_ambiguous_triggers_api()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 15 — Make the Python receiver concurrent</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>IntentRouter</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 15 — Make the Python receiver concurrent.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>test_intent_router_jev_failure_falls_back_to_groq()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 16 — Preserve the latency improvements</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>IntentRouter</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 16 — Preserve the latency improvements.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>test_intent_router_jev_success()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 17 — Tune Work Ollama</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>IntentRouter</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 17 — Tune Work Ollama.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>test_intent_router_total_failure_degrades_gracefully()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 18 — Make Work genuinely private</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>IntentRouter</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 18 — Make Work genuinely private.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>test_keyword_freshness()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 19 — Optional Telegram mirroring becomes profile-specific</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>keyword_freshness()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 19 — Optional Telegram mirroring becomes profile-specific.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>test_keyword_route_ambiguous()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 1 — Reconcile the two voice architectures</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>keyword_route()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 1 — Reconcile the two voice architectures.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>test_keyword_route_explicit_no_search()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 20 — Secure the ESP32 → Receiver connection</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>keyword_route()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 20 — Secure the ESP32 → Receiver connection.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>test_keyword_route_explicit_search()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 21 — Bluetooth host identification, stage one</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>keyword_route()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 21 — Bluetooth host identification, stage one.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>test_keyword_route_time_sensitive()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 22 — Bluetooth host identification, stage two</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>keyword_route()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 22 — Bluetooth host identification, stage two.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>test_keyword_route_transform_only()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 23 — Make server addressing resilient</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>keyword_route()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 23 — Make server addressing resilient.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>test_web_grounding_disabled_or_local_only()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Phase 24 — Home deployment</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>from_config()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>WebGrounding</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 24 — Home deployment.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>.available()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>BraveSearchClient</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
+  <td><code>Phase 25 — Work deployment</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.available() node in tools/compose/web_grounding.py.</td>
+  <td>Documentation node describing Phase 25 — Work deployment.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>.__init__()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>BraveSearchClient</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
+  <td><code>Phase 26 — Dashboard detail view</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.__init__() node in tools/compose/web_grounding.py.</td>
+  <td>Documentation node describing Phase 26 — Dashboard detail view.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>.search()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>BraveSearchClient</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><code>_clean()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td>.search() node in tools/compose/web_grounding.py.</td>
+  <td><code>Phase 27 — Failure testing</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 27 — Failure testing.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>build_search_query()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>fetch_context()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>strips command prefix()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small><br><code>test_web_grounding.py</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
+  <td><code>Phase 28 — Home-to-Work field test</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>build_search_query() node in tools/compose/web_grounding.py.</td>
+  <td>Documentation node describing Phase 28 — Home-to-Work field test.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>_clean()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>search()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
+  <td><code>Phase 29 — Performance acceptance</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>_clean() node in tools/compose/web_grounding.py.</td>
+  <td>Documentation node describing Phase 29 — Performance acceptance.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>format_search_context()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>fetch_context()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>test_format_search_context()</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small><br><code>test_web_grounding.py</code><br><small style="color:var(--muted)">compose/tests/test_web_grounding.py</small></td>
+  <td><code>Phase 2 — Make the receiver platform-independent</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>format_search_context() node in tools/compose/web_grounding.py.</td>
+  <td>Documentation node describing Phase 2 — Make the receiver platform-independent.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>.summary()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>GroundingResult</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
+  <td><code>Phase 30 — Repository clean-up and documentation</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.summary() node in tools/compose/web_grounding.py.</td>
+  <td>Documentation node describing Phase 30 — Repository clean-up and documentation.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>.used()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>GroundingResult</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
+  <td><code>Phase 3 — Turn the receiver into the health authority</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.used() node in tools/compose/web_grounding.py.</td>
+  <td>Documentation node describing Phase 3 — Turn the receiver into the health authority.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>._ask_groq()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>classify()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>IntentRouter</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
+  <td><code>Phase 4 — Add a specific Work/Ollama health test</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>._ask_groq() node in tools/compose/web_grounding.py.</td>
+  <td>Documentation node describing Phase 4 — Add a specific Work/Ollama health test.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>._ask_jev()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>classify()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>IntentRouter</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
+  <td><code>Phase 5 — Create the Home/Work Profile Manager</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>._ask_jev() node in tools/compose/web_grounding.py.</td>
+  <td>Documentation node describing Phase 5 — Create the Home/Work Profile Manager.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>.classify()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>IntentRouter</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small></td>
-  <td><code>_ask_groq()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>_ask_jev()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br><code>keyword_freshness()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br>+2 more</td>
-  <td>.classify() node in tools/compose/web_grounding.py.</td>
+  <td><code>Phase 6 — Stop automatically mixing Home and Work</code><br><small style="color:var(--muted)">docs/Dashboard-plan.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 6 — Stop automatically mixing Home and Work.</td>
 </tr>
 </table>
 
@@ -2258,17 +2270,17 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>docs/Dashboard-plan.md</code></td><td>37 nodes</td></tr>
 <tr><td><code>compose/tests/test_compose.py</code></td><td>35 nodes</td></tr>
-<tr><td><code>tools/compose/web_grounding.py</code></td><td>33 nodes</td></tr>
-<tr><td><code>tools/compose/clipboard_manager.py</code></td><td>18 nodes</td></tr>
-<tr><td><code>compose/tests/test_web_grounding.py</code></td><td>17 nodes</td></tr>
-<tr><td><code>tools/compose/focus_tracker.py</code></td><td>14 nodes</td></tr>
-<tr><td><code>tools/compose/speech_pipeline.py</code></td><td>14 nodes</td></tr>
-<tr><td><code>tools/compose/prompt_engine.py</code></td><td>10 nodes</td></tr>
+<tr><td><code>tools/compose/web_grounding.py</code></td><td>27 nodes</td></tr>
+<tr><td><code>tools/compose/focus_tracker.py</code></td><td>16 nodes</td></tr>
+<tr><td><code>compose/tests/test_web_grounding.py</code></td><td>16 nodes</td></tr>
+<tr><td><code>tools/compose/clipboard_manager.py</code></td><td>11 nodes</td></tr>
+<tr><td><code>tools/compose/compose_companion.py</code></td><td>5 nodes</td></tr>
+<tr><td><code>tools/compose/hotkey_state.py</code></td><td>3 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x109, calls x77, explains x38, imports x31. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x94, calls x64, method x22, explains x22. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3572,308 +3584,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 12. ComposeApp ====== -->
-<h2 id="composeapp">12. ComposeApp</h2>
-<p>ComposeApp groups implementation around compose, tools, guipy, focus, mostly in tools/compose/compose_gui.py, tools/compose/focus_tracker.py. This section covers 24 nodes and 47 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: ComposeApp (24 nodes, 47 edges)
-    tools_compose_compose_gui_composeapp_ad4910da("ComposeApp<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_handle_hard_ff920bbf("_handle_hardware_event()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_init_43a937e6("__init__()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_process_pip_ed41c401("_process_pipeline_worker()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_inject_past_d87a4682("inject_paste_ui()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_deliver_res_f401ced3("_deliver_result()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_build_ui_1c4bd9d7("_build_ui()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_log_601a10dd("log()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_append_log_81fa084d("_append_log()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_set_status_6f571dbf("set_status()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_update_stat_7bbc7730("_update_status()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_toggle_comp_92d6f0cd("toggle_compose_ui()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_toggle_dict_079923d3("toggle_dictate_ui()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_drain_ui_ev_a1b0c68a("_drain_ui_events()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_close_7deba83c("close()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_start_recor_942d9831("start_recording_flow()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_stop_record_3e08f303("stop_recording_flow()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_stay_local_a213e0ae("_stay_local_if_cloud_blocked()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_build_ui_1c4bd9d7
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_log_601a10dd
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_append_log_81fa084d
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_set_status_6f571dbf
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_update_stat_7bbc7730
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_toggle_comp_92d6f0cd
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_toggle_dict_079923d3
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_inject_past_d87a4682
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_deliver_res_f401ced3
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_drain_ui_ev_a1b0c68a
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_close_7deba83c
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_start_recor_942d9831
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_stop_record_3e08f303
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_stay_local_a213e0ae
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_process_pip_ed41c401
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_handle_hard_ff920bbf
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_init_43a937e6
-    tools_compose_compose_gui_composeapp_deliver_res_f401ced3 -->|calls| tools_compose_compose_gui_composeapp_log_601a10dd
-    tools_compose_compose_gui_composeapp_deliver_res_f401ced3 -->|calls| tools_compose_compose_gui_composeapp_set_status_6f571dbf
-    tools_compose_compose_gui_composeapp_drain_ui_ev_a1b0c68a -->|calls| tools_compose_compose_gui_composeapp_update_stat_7bbc7730
-    tools_compose_compose_gui_composeapp_handle_hard_ff920bbf -->|calls| tools_compose_compose_gui_composeapp_log_601a10dd
-    tools_compose_compose_gui_composeapp_handle_hard_ff920bbf -->|calls| tools_compose_compose_gui_composeapp_inject_past_d87a4682
-    tools_compose_compose_gui_composeapp_handle_hard_ff920bbf -->|calls| tools_compose_compose_gui_composeapp_start_recor_942d9831
-    tools_compose_compose_gui_composeapp_handle_hard_ff920bbf -->|calls| tools_compose_compose_gui_composeapp_stop_record_3e08f303
-    %% Omitted for readability: 6 nodes, 16 edges
-    class tools_compose_compose_gui_composeapp_ad4910da klass;
-    class tools_compose_compose_gui_composeapp_handle_hard_ff920bbf function;
-    class tools_compose_compose_gui_composeapp_init_43a937e6 function;
-    class tools_compose_compose_gui_composeapp_process_pip_ed41c401 function;
-    class tools_compose_compose_gui_composeapp_inject_past_d87a4682 function;
-    class tools_compose_compose_gui_composeapp_deliver_res_f401ced3 function;
-    class tools_compose_compose_gui_composeapp_build_ui_1c4bd9d7 function;
-    class tools_compose_compose_gui_composeapp_log_601a10dd function;
-    class tools_compose_compose_gui_composeapp_append_log_81fa084d function;
-    class tools_compose_compose_gui_composeapp_set_status_6f571dbf function;
-    class tools_compose_compose_gui_composeapp_update_stat_7bbc7730 function;
-    class tools_compose_compose_gui_composeapp_toggle_comp_92d6f0cd function;
-    class tools_compose_compose_gui_composeapp_toggle_dict_079923d3 function;
-    class tools_compose_compose_gui_composeapp_drain_ui_ev_a1b0c68a function;
-    class tools_compose_compose_gui_composeapp_close_7deba83c function;
-    class tools_compose_compose_gui_composeapp_start_recor_942d9831 function;
-    class tools_compose_compose_gui_composeapp_stop_record_3e08f303 function;
-    class tools_compose_compose_gui_composeapp_stay_local_a213e0ae function;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>make_app()</code><br><small style="color:var(--muted)">compose/tests/test_compose.py</small><br><code>test_compose.py</code><br><small style="color:var(--muted)">compose/tests/test_compose.py</small></td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_append_log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_build_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+21 more</td>
-  <td>ComposeApp node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>._append_log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>._append_log() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>._build_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>._build_ui() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>.close()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>.close() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>._deliver_result()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>inject_paste()</code><br><small style="color:var(--muted)">tools/compose/clipboard_manager.py</small><br><code>is_focus_matched()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
-  <td>._deliver_result() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>._drain_ui_events()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>_update_status()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>._drain_ui_events() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>._handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>inject_paste_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>start_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
-  <td>._handle_hardware_event() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>.__init__()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>_build_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>AudioCapture</code><br><small style="color:var(--muted)">tools/compose/audio_capture.py</small><br><code>from_config()</code><br><small style="color:var(--muted)">tools/compose/web_grounding.py</small><br>+4 more</td>
-  <td>.__init__() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>.inject_paste_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>get_focus_snapshot()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>inject_paste()</code><br><small style="color:var(--muted)">tools/compose/clipboard_manager.py</small><br><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
-  <td>.inject_paste_ui() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>.log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_deliver_result()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+6 more</td>
-  <td>No direct outbound edge</td>
-  <td>.log() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>._pipeline_finished()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>._pipeline_finished() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>._process_pipeline_worker()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>_stay_local_if_cloud_blocked()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>build_compose_messages()</code><br><small style="color:var(--muted)">tools/compose/prompt_engine.py</small><br><code>build_dictate_messages()</code><br><small style="color:var(--muted)">tools/compose/prompt_engine.py</small><br>+3 more</td>
-  <td>._process_pipeline_worker() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>.set_status()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_deliver_result()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_process_pipeline_worker()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+3 more</td>
-  <td>No direct outbound edge</td>
-  <td>.set_status() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>.start_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>toggle_compose_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
-  <td><code>capture_selected_text()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>get_focus_snapshot()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
-  <td>.start_recording_flow() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>._stay_local_if_cloud_blocked()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_process_pipeline_worker()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>._stay_local_if_cloud_blocked() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>.stop_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>toggle_compose_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
-  <td><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>set_status()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>.stop_recording_flow() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>.toggle_compose_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>start_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>stop_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>.toggle_compose_ui() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>.toggle_dictate_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>start_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>stop_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>.toggle_dictate_ui() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>._update_status()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_drain_ui_events()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>._update_status() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>load_env_config()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>Reads, resolves, or persists project configuration.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>.get_focus_snapshot()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>FocusTracker</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>handle_f13_down()</code><br><small style="color:var(--muted)">tools/compose/compose_companion.py</small><br><code>handle_f14_down()</code><br><small style="color:var(--muted)">tools/compose/compose_companion.py</small><br>+2 more</td>
-  <td>No direct outbound edge</td>
-  <td>.get_focus_snapshot() node in tools/compose/focus_tracker.py.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>Tk</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Tk node in project.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>A blocked school network should not add a cloud timeout to every later button…</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for A blocked school network should not add a cloud timeout to every later button….</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>Snapshots the active foreground window HWND and focused UI Automation control.</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Snapshots the active foreground window HWND and focused UI Automation control..</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>tools/compose/compose_gui.py</code></td><td>21 nodes</td></tr>
-<tr><td><code>tools/compose/focus_tracker.py</code></td><td>2 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x26, method x18, explains x2, references x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 13. HostDiscovery ====== -->
-<h2 id="hostdiscovery">13. HostDiscovery</h2>
+<!-- ====== 12. HostDiscovery ====== -->
+<h2 id="hostdiscovery">12. HostDiscovery</h2>
 <p>HostDiscovery groups implementation around host, discoveryh, discoverycpp, hostdiscovery, mostly in src/host_discovery.h, src/host_discovery.cpp. This section covers 20 nodes and 39 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -4134,8 +3846,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 14. gui.cpp ====== -->
-<h2 id="gui-cpp">14. gui.cpp</h2>
+<!-- ====== 13. gui.cpp ====== -->
+<h2 id="gui-cpp">13. gui.cpp</h2>
 <p>gui.cpp groups implementation around guih, guicpp, highlightstoragerow, setvoiceaudioenabled, mostly in src/gui.h, src/gui.cpp. This section covers 19 nodes and 23 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -4377,8 +4089,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 15. power_manager.cpp ====== -->
-<h2 id="power-manager-cpp">15. power_manager.cpp</h2>
+<!-- ====== 14. power_manager.cpp ====== -->
+<h2 id="power-manager-cpp">14. power_manager.cpp</h2>
 <p>power_manager.cpp groups implementation around power, managerh, managercpp, powermanager, mostly in src/power_manager.h, src/power_manager.cpp. This section covers 18 nodes and 33 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -4620,14 +4332,265 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 16. Other ====== -->
-<h2 id="other">16. Other</h2>
-<p>Other groups implementation around server, compose, hermes, voice, mostly in server/hermes_voice_receiver.py, src/gui.h, tools/compose/status_overlay.py. This section covers 171 nodes and 171 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 15. ComposeApp ====== -->
+<h2 id="composeapp">15. ComposeApp</h2>
+<p>ComposeApp groups implementation around compose, tools, guipy, log, mostly in tools/compose/compose_gui.py. This section covers 18 nodes and 38 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (171 nodes, 171 edges)
+    %% Section: ComposeApp (18 nodes, 38 edges)
+    tools_compose_compose_gui_composeapp_ad4910da("ComposeApp<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_handle_hard_ff920bbf("_handle_hardware_event()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_process_pip_ed41c401("_process_pipeline_worker()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_deliver_res_f401ced3("_deliver_result()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_toggle_comp_92d6f0cd("toggle_compose_ui()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_toggle_dict_079923d3("toggle_dictate_ui()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_log_601a10dd("log()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_append_log_81fa084d("_append_log()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_set_status_6f571dbf("set_status()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_update_stat_7bbc7730("_update_status()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_inject_past_d87a4682("inject_paste_ui()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_drain_ui_ev_a1b0c68a("_drain_ui_events()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_close_7deba83c("close()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_start_recor_942d9831("start_recording_flow()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_stop_record_3e08f303("stop_recording_flow()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_stay_local_a213e0ae("_stay_local_if_cloud_blocked()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_pipeline_fi_599c8683("_pipeline_finished()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_rationale_400_f63412b9("A blocked school network should not add...<br/><small>tools/compose/compose_gui.py</small>")
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_log_601a10dd
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_append_log_81fa084d
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_set_status_6f571dbf
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_update_stat_7bbc7730
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_toggle_comp_92d6f0cd
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_toggle_dict_079923d3
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_inject_past_d87a4682
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_deliver_res_f401ced3
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_drain_ui_ev_a1b0c68a
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_close_7deba83c
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_start_recor_942d9831
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_stop_record_3e08f303
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_stay_local_a213e0ae
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_process_pip_ed41c401
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_pipeline_fi_599c8683
+    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_handle_hard_ff920bbf
+    tools_compose_compose_gui_composeapp_deliver_res_f401ced3 -->|calls| tools_compose_compose_gui_composeapp_log_601a10dd
+    tools_compose_compose_gui_composeapp_deliver_res_f401ced3 -->|calls| tools_compose_compose_gui_composeapp_set_status_6f571dbf
+    tools_compose_compose_gui_composeapp_drain_ui_ev_a1b0c68a -->|calls| tools_compose_compose_gui_composeapp_update_stat_7bbc7730
+    tools_compose_compose_gui_composeapp_handle_hard_ff920bbf -->|calls| tools_compose_compose_gui_composeapp_log_601a10dd
+    tools_compose_compose_gui_composeapp_handle_hard_ff920bbf -->|calls| tools_compose_compose_gui_composeapp_inject_past_d87a4682
+    tools_compose_compose_gui_composeapp_handle_hard_ff920bbf -->|calls| tools_compose_compose_gui_composeapp_start_recor_942d9831
+    tools_compose_compose_gui_composeapp_handle_hard_ff920bbf -->|calls| tools_compose_compose_gui_composeapp_stop_record_3e08f303
+    tools_compose_compose_gui_composeapp_inject_past_d87a4682 -->|calls| tools_compose_compose_gui_composeapp_log_601a10dd
+    %% Omitted for readability: 0 nodes, 13 edges
+    class tools_compose_compose_gui_composeapp_ad4910da klass;
+    class tools_compose_compose_gui_composeapp_handle_hard_ff920bbf function;
+    class tools_compose_compose_gui_composeapp_process_pip_ed41c401 function;
+    class tools_compose_compose_gui_composeapp_deliver_res_f401ced3 function;
+    class tools_compose_compose_gui_composeapp_toggle_comp_92d6f0cd function;
+    class tools_compose_compose_gui_composeapp_toggle_dict_079923d3 function;
+    class tools_compose_compose_gui_composeapp_log_601a10dd function;
+    class tools_compose_compose_gui_composeapp_append_log_81fa084d function;
+    class tools_compose_compose_gui_composeapp_set_status_6f571dbf function;
+    class tools_compose_compose_gui_composeapp_update_stat_7bbc7730 function;
+    class tools_compose_compose_gui_composeapp_inject_past_d87a4682 function;
+    class tools_compose_compose_gui_composeapp_drain_ui_ev_a1b0c68a function;
+    class tools_compose_compose_gui_composeapp_close_7deba83c function;
+    class tools_compose_compose_gui_composeapp_start_recor_942d9831 function;
+    class tools_compose_compose_gui_composeapp_stop_record_3e08f303 function;
+    class tools_compose_compose_gui_composeapp_stay_local_a213e0ae function;
+    class tools_compose_compose_gui_composeapp_pipeline_fi_599c8683 function;
+    class tools_compose_compose_gui_rationale_400_f63412b9 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>make_app()</code><br><small style="color:var(--muted)">compose/tests/test_compose.py</small><br><code>test_compose.py</code><br><small style="color:var(--muted)">compose/tests/test_compose.py</small></td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_append_log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_build_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+21 more</td>
+  <td>ComposeApp node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>._append_log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>._append_log() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>.close()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.close() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>._deliver_result()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><code>inject_paste()</code><br><small style="color:var(--muted)">tools/compose/clipboard_manager.py</small><br><code>is_focus_matched()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
+  <td>._deliver_result() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>._drain_ui_events()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><code>_update_status()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td>._drain_ui_events() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>._handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><code>inject_paste_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>start_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
+  <td>._handle_hardware_event() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>.inject_paste_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><code>get_focus_snapshot()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>inject_paste()</code><br><small style="color:var(--muted)">tools/compose/clipboard_manager.py</small><br><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
+  <td>.inject_paste_ui() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>.log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_deliver_result()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+6 more</td>
+  <td>No direct outbound edge</td>
+  <td>.log() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>._pipeline_finished()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>._pipeline_finished() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>._process_pipeline_worker()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><code>_stay_local_if_cloud_blocked()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>build_compose_messages()</code><br><small style="color:var(--muted)">tools/compose/prompt_engine.py</small><br><code>build_dictate_messages()</code><br><small style="color:var(--muted)">tools/compose/prompt_engine.py</small><br>+3 more</td>
+  <td>._process_pipeline_worker() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>.set_status()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_deliver_result()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_process_pipeline_worker()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+3 more</td>
+  <td>No direct outbound edge</td>
+  <td>.set_status() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>.start_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>toggle_compose_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
+  <td><code>capture_selected_text()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>get_focus_snapshot()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
+  <td>.start_recording_flow() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>._stay_local_if_cloud_blocked()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_process_pipeline_worker()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td>._stay_local_if_cloud_blocked() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>.stop_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>toggle_compose_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
+  <td><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>set_status()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td>.stop_recording_flow() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>.toggle_compose_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><code>start_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>stop_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td>.toggle_compose_ui() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>.toggle_dictate_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><code>start_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>stop_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td>.toggle_dictate_ui() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>._update_status()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_drain_ui_events()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>._update_status() node in tools/compose/compose_gui.py.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>A blocked school network should not add a cloud timeout to every later button…</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for A blocked school network should not add a cloud timeout to every later button….</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>tools/compose/compose_gui.py</code></td><td>18 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x21, method x16, explains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 16. Other ====== -->
+<h2 id="other">16. Other</h2>
+<p>Other groups implementation around server, hermes, voice, receiverpy, mostly in server/hermes_voice_receiver.py, src/gui.h, tools/compose/status_overlay.py. This section covers 166 nodes and 166 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Other (166 nodes, 166 edges)
     subgraph other_tools_compose_status_overlay_py_9c9faf22["tools/compose/status_overlay.py"]
         tools_compose_status_overlay_statusoverlay_c5dc3547("StatusOverlay<br/><small>tools/compose/status_overlay.py</small>")
         tools_compose_status_overlay_statusoverlay_show_d60d9498("show()<br/><small>tools/compose/status_overlay.py</small>")
@@ -4674,7 +4637,7 @@ flowchart LR
     tools_compose_status_overlay_statusoverlay_show_7a8f1c9d -->|calls| tools_compose_status_overlay_statusoverlay_show_d60d9498
     tools_compose_status_overlay_statusoverlay_show_8b44d69f -->|calls| tools_compose_status_overlay_statusoverlay_show_d60d9498
     tools_compose_status_overlay_statusoverlay_show_e5eaa2f8 -->|calls| tools_compose_status_overlay_statusoverlay_show_d60d9498
-    %% Omitted for readability: 153 nodes, 0 edges
+    %% Omitted for readability: 148 nodes, 0 edges
     class tools_compose_status_overlay_statusoverlay_c5dc3547 klass;
     class tools_compose_status_overlay_statusoverlay_show_d60d9498 function;
     class tools_compose_status_overlay_statusoverlay_hide_9be1e4d3 function;
@@ -4966,14 +4929,14 @@ flowchart LR
 <tr><td><code>tools/compose/status_overlay.py</code></td><td>17 nodes</td></tr>
 <tr><td><code>src/es8311.cpp</code></td><td>13 nodes</td></tr>
 <tr><td><code>docs/home-work-architecture.md</code></td><td>12 nodes</td></tr>
-<tr><td><code>tools/compose/compose_companion.py</code></td><td>11 nodes</td></tr>
 <tr><td><code>docs/hardware-reference.md</code></td><td>9 nodes</td></tr>
 <tr><td><code>generate_case.py</code></td><td>8 nodes</td></tr>
+<tr><td><code>tools/compose/clipboard_manager.py</code></td><td>7 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x55, contains x38, explains x21, references x17. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x52, contains x42, explains x21, defines x16. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4984,17 +4947,17 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>1117</td></tr>
-      <tr><td>Edges</td><td>1933</td></tr>
+      <tr><td>Nodes</td><td>1118</td></tr>
+      <tr><td>Edges</td><td>1935</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>69</td></tr>
+      <tr><td>Communities</td><td>73</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>1801</td></tr>
+      <tr><td>EXTRACTED</td><td>1803</td></tr>
       <tr><td>INFERRED</td><td>132</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
@@ -5003,7 +4966,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>ESP32 project — Architecture Documentation</p>
-  <p>Generated: 2026-10-18 10:06 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-10-20 09:13 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
