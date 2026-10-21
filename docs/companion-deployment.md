@@ -52,21 +52,65 @@ this document, shell history, or a deployment report. The listener template is
 for one isolated instance; inventory port 8765 and the Hermes listener before
 choosing whether the port or instance name needs reviewed adjustment.
 
-On a Linux staging checkout, first review the exact bundle list and target:
+On a Linux staging checkout, first review and stage the exact bundle:
 
 ```sh
 python3 server/deployment/stage_media_service.py --destination /var/tmp/companion-media-stage
 ```
 
 Only after reviewing that output and confirming the destination is new, add
-`--apply-reviewed` to stage the files there. This command writes only that
-new staging directory; it does not install files, create accounts, enable a
-unit, create a secret, modify a firewall, or start a service. The deployment
-owner must separately review the staged files, package Pillow and dependencies
-in a controlled virtual environment, create the dedicated account and private
-data/environment directories, install the unit, then verify ownership and
-configuration before starting it. Keep the database and `blobs/` on a local
-filesystem and do not share them with Windows clients.
+`--apply-reviewed` to stage the files there. This writes only that new staging
+directory. It does not install files, create accounts, enable a unit, create a
+secret, modify a firewall, or start a service.
+
+Before installation, the Linux owner must provision the dedicated
+`companion-media` system account and group, and an isolated
+`/opt/companion-media/venv` with the exact Pillow dependency from
+`server/requirements-media.txt`. The venv must be executable at
+`venv/bin/python` and pass `import PIL` as `companion-media`. Create it with
+`python3 -m venv --copies /opt/companion-media/venv`; the interpreter, venv and
+app root must be root-owned and not group/world writable. The installer never downloads or
+executes package installation. The app directory may contain only this
+owner-provisioned `venv`. Inventory port 8765, the Hermes listener, and the
+systemd template path before proceeding. The installer refuses existing unit,
+environment, data, receipt or application-source targets and requires the
+reviewed bundle hash.
+
+Run the installer once without `--apply`; compare its reported source hash and
+paths with the reviewed stage. Then explicitly apply that exact hash:
+
+```sh
+python3 /var/tmp/companion-media-stage/server/deployment/install_media_service.py install \
+  --stage /var/tmp/companion-media-stage --instance primary
+python3 /var/tmp/companion-media-stage/server/deployment/install_media_service.py install \
+  --stage /var/tmp/companion-media-stage --instance primary \
+  --expected-package-sha256 <reviewed-sha256> --apply
+```
+
+The apply path writes the separate app sources, root-owned mode-0600
+environment file with a random token, systemd template and a private receipt.
+The stage manifest records SHA-256 for every source and staged file; the
+installer verifies that manifest and rechecks each source as it copies it.
+The token is never passed on argv or printed. It first runs
+`systemd-analyze verify`, then reloads systemd and enables/starts only the
+named instance. It checks local `/health` and authenticated `/v1/capabilities`
+against the media-library contract before recording the install as active. On
+a command or readiness failure it attempts stop/disable of that instance
+and preserves all installed files, token and data for review. Rollback is a
+separate reviewed stop/disable operation using the saved receipt:
+
+```sh
+python3 /var/tmp/companion-media-stage/server/deployment/install_media_service.py rollback \
+  --receipt /var/lib/companion-media-install/primary.json
+python3 /var/tmp/companion-media-stage/server/deployment/install_media_service.py rollback \
+  --receipt /var/lib/companion-media-install/primary.json --apply
+```
+
+Rollback verifies the receipt and installed unit hash, and stops/disables only
+the receipt-owned instance. It does not remove files, token, account or data.
+The operator must separately verify ownership and configuration. Keep the
+database and `blobs/` on a local filesystem and do not share them with Windows
+clients.
 
 ### Required inventory before Tailscale Serve changes
 
@@ -77,7 +121,7 @@ for the change record:
 tailscale version
 tailscale status
 tailscale serve status --json
-tailscale serve get-config --all
+tailscale serve get-config /private/path/pre-change-serve.json --all
 sudo ss -ltnp
 systemctl --no-pager --type=service --state=running
 ```
@@ -95,7 +139,7 @@ After inventory and approval, start the media service and verify its local
 durable state path. For remote access, Tailscale Serve is an HTTPS proxy for
 tailnet devices and applies tailnet access-control rules; it requires HTTPS to
 be enabled in the tailnet. The current CLI reference documents `serve status
---json`, `serve get-config --all`, `--https`, `--bg`, and the `reset` command;
+--json`, `serve get-config <file> --all`, `--https`, `--bg`, and the `reset` command;
 the latter clears the current Serve configuration and is deliberately excluded
 from this procedure. Check the installed version's help and actual existing
 configuration before making a scoped route change. See [Tailscale Serve CLI](https://tailscale.com/docs/reference/tailscale-cli/serve)
@@ -108,6 +152,17 @@ inventoried HTTPS origin. A current CLI syntax example is:
 ```sh
 sudo tailscale serve --https=8443 --bg http://127.0.0.1:8765
 ```
+
+If the reviewed route must be removed, first check the installed CLI help and
+the saved pre-change configuration, then turn off only its HTTPS port:
+
+```sh
+sudo tailscale serve --https=8443 off
+```
+
+This scoped removal is version-sensitive and must be checked against the
+installed `tailscale serve --help`; do not restore the complete saved config
+over later changes or use `tailscale serve reset`.
 
 Treat this as a reviewed example, not a command to run blindly: confirm the
 version's accepted syntax, existing listener/rules, target service readiness,

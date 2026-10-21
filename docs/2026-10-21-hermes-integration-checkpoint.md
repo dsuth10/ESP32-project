@@ -25,21 +25,24 @@ No main merge, original-worktree overwrite or S3 firmware write occurred.
   outside this feature's authority.
 - Safe developer endpoint migration and guarded rollback without replacing
   credentials; unresolved dispatches block migration in either direction.
-- A separate loopback Linux media service template, reviewed staging tool,
-  private environment example and verified no-overwrite backup/restore.
+- A separate loopback Linux media service template, source-hashed staging,
+  private environment example and verified no-overwrite backup/restore. The
+  reviewed installer checks prerequisites/collisions, copied hashes, systemd
+  validation and authenticated readiness before marking its new instance active.
+  Receipt-bound rollback only stops/disables that instance and preserves data.
 - Source-preview install/update/rollback/removal with archive/hash validation,
   Windows path and ancestor-junction guards, edited-source preservation and
   separate user data. Packaging excludes private consultation reports.
 
 ## Verification and limits
 
-The complete local command passed **250 tests, 4 skipped and 4 subtests**:
+The complete local command passed **263 tests, 3 skipped and 8 subtests**:
 
 ```powershell
 python -m pytest tools/compose/tests tests server/tests server/deployment/tests .agents/skills/hermes-collaboration/scripts/test_linux_hermes_client.py .agents/skills/hermes-collaboration/scripts/test_migrate_linux_hermes_endpoint.py -q -p no:cacheprovider
 ```
 
-Three skips are Windows symbolic-link creation fixtures; one native-display availability check was skipped in the combined run. The separate focused native action-bound suite subsequently passed both sizes (2 tests). Real Windows
+The three skips are Windows symbolic-link creation fixtures. Native action-bound checks passed at both supported sizes in this final combined run. Real Windows
 directory-junction packaging guards were exercised successfully. These totals
 include existing image, writing, history, board and media suites; do not add the
 earlier 164-test checkpoint to them.
@@ -70,6 +73,28 @@ the advertised capability; the runtime now preserves polling/terminal results
 when an event route is unavailable. No Linux service or tailnet change occurred.
 Private request/status/stop receipts remain ignored in the original checkout;
 no endpoint, key or private hostname is copied into this record.
+
+## Verified host identity and administrator prerequisite
+
+The user independently checked the intended Linux computer's public SSH
+fingerprint. The existing LAN Hermes endpoint's SSH identity matches that
+attestation; the previously visible Linux Tailscale peer presents a different
+identity and is excluded from deployment. No key was accepted, no SSH login
+occurred and no trust record was changed. Continue using the existing
+authenticated LAN Hermes collaboration client, not the unrelated peer.
+
+That verified LAN agent subsequently reported its own fingerprint match,
+Tailscale absent from the checked paths, tailscaled inactive, no listeners on
+443/8443/8765, and the existing Hermes listener on 8642. Its non-interactive
+privilege check failed. The authenticated API remains usable for bounded
+development; installing/enrolling Tailscale needs a local Linux administrator.
+
+An ephemeral, syntax-checked three-stage bootstrap helper was prepared in the
+ignored development area from the wizard template. It validates the physical
+host attestation, downloads the official Tailscale installer for human review,
+then asks the human to run local sudo/enrolment. It does not configure Serve,
+SSH trust, ACLs, exit nodes, application services or firmware. This is a manual
+administrator prerequisite, not a completed transport deployment.
 
 ## Remaining delivery gates
 

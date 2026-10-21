@@ -72,3 +72,17 @@ One laptop moved between networks can prove Hermes connectivity; library sync ad
 ## Completion record
 
 Fill during deployment: date, versions, private host attestation/configuration location, owner, reboot/restore evidence, home/hotspot/work results, failure/revocation checks and unresolved limits. Public reports contain sanitised outcomes only. **Current state: local integration/migration/deployment tooling implemented; permanent private route not yet configured or accepted off-LAN. Windows Tailscale and authenticated existing HTTP/LAN readiness were checked on 21 October; that is not private HTTPS or same-host acceptance. A read-only remote inventory reached a security guard and was cancelled without approval or host changes.**
+
+
+## Host identity check during implementation
+
+The intended existing LAN Hermes host was independently matched to the user's
+physical SSH fingerprint. A different online Linux tailnet peer had a
+mismatched identity and was excluded; no SSH trust changes or logins occurred.
+Use the existing authenticated LAN collaboration client until the correct
+host is enrolled. The LAN agent's read-only inventory reported Tailscale absent,
+tailscaled inactive, and non-interactive administrator access unavailable.
+A human Linux administrator must complete installation and tailnet enrolment
+locally. Do not solve this by accepting the other peer's key or changing agent
+identity. The [integration checkpoint](2026-10-21-hermes-integration-checkpoint.md)
+records local implementation and remaining acceptance separately.
