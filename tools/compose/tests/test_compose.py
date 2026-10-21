@@ -344,9 +344,8 @@ def test_ollama_uses_installed_model_when_configured_model_is_missing():
     ok.json.return_value = {"choices": [{"message": {"content": "hi"}, "finish_reason": "stop"}]}
     tags = Mock(status_code=200)
     tags.json.return_value = {"models": [{"name": "qwen3.5:latest"}]}
-    with patch("llm_pipeline.requests.post", side_effect=[missing, ok]) as post, \
-         patch("llm_pipeline.requests.get", return_value=tags):
+    with patch("llm_pipeline.local_request", side_effect=[missing, tags, ok]) as post:
         text, provider, _, _ = pipeline.generate([{"role": "user", "content": "hi"}])
     assert (text, provider, pipeline.ollama_model) == ("hi", "ollama", "qwen3.5:latest")
-    assert post.call_args_list[1].kwargs["json"]["model"] == "qwen3.5:latest"
+    assert post.call_args_list[-1].kwargs["json"]["model"] == "qwen3.5:latest"
 

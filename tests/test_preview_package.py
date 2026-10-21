@@ -13,7 +13,7 @@ def test_preview_source_package_excludes_private_configuration_and_data(tmp_path
         target=tmp_path/path.relative_to(ROOT);target.parent.mkdir(parents=True,exist_ok=True)
         target.write_bytes(path.read_bytes())
     private_marker='must-not-package-'+uuid.uuid4().hex
-    for name in ['tools/compose/compose.env','tools/compose/companion.log','.local/private.txt','tools/compose/.venv/private.py','tools/compose/private.sqlite3']:
+    for name in ['tools/compose/compose.env','tools/compose/companion.log','.local/private.txt','tools/compose/.venv/private.py','tools/compose/private.sqlite3','docs/research/private-consultation.md','.agents/skills/private.py']:
         path=tmp_path/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text(private_marker)
     output=tmp_path/'preview.zip'
     manifest=builder.build(output,tmp_path)
@@ -23,4 +23,5 @@ def test_preview_source_package_excludes_private_configuration_and_data(tmp_path
         assert 'preview-manifest.json' in names
         assert all(private_marker.encode() not in archive.read(name) for name in names)
         assert not any(name.endswith(('.env','.log','.sqlite3')) or '/.venv/' in name or name.startswith('.local/') for name in names)
+    assert not any(name.startswith(('docs/research/', '.agents/')) for name in names)
     assert manifest

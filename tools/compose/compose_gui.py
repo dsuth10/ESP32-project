@@ -47,6 +47,8 @@ except ImportError:
     MediaStore = MediaService = MediaPanel = SyncClient = None
 from settings_panel import SettingsPanel
 from media_voice_bridge import VoiceBridge
+from hermes_panel import HermesPanel
+from hermes_service import HermesService, HermesServiceError
 
 
 def truthy(value):
@@ -63,6 +65,8 @@ def load_env_config() -> dict:
                 if not line or line.startswith("#") or "=" not in line:
                     continue
                 k, v = line.split("=", 1)
+                if k.strip() == "HERMES_TOKEN":
+                    continue
                 env_vars[k.strip()] = v.strip()
 
     try:
@@ -95,9 +99,9 @@ def load_env_config() -> dict:
         "OPENROUTER_API_KEY",
         "JEV_MODEL",
         "ROUTER_GROQ_MODEL",
-        "MEDIA_SERVER_URL", "MEDIA_SERVER_TOKEN", "MEDIA_SYNC_ENABLED", "ALLOW_PRIVATE_SYNC",
+        "MEDIA_SERVER_URL", "MEDIA_SERVER_TOKEN", "MEDIA_SYNC_ENABLED",
         "IMAGE_MODEL", "OPENAI_API_KEY", "IMAGE_GENERATION_ENABLED", "IMAGE_ESTIMATE_AUD_CENTS",
-        "ESP32_START_RECEIVER", "ESP32_ENABLE_HOTKEYS",
+        "ESP32_START_RECEIVER", "ESP32_ENABLE_HOTKEYS", "HERMES_ENABLED", "HERMES_URL",
     ]:
         if k in os.environ and os.environ[k]:
             env_vars[k] = os.environ[k]
@@ -176,7 +180,7 @@ class ComposeApp:
         self._build_ui()
         self.voice_bridge = None
         receiver_env = {}
-        if self.media_store and truthy(self.config.get("ESP32_START_RECEIVER", "1")):
+        if self.media_store and not self.local_only and truthy(self.config.get("ESP32_START_RECEIVER", "1")):
             self.voice_bridge = VoiceBridge(self.media_store)
             receiver_env = {"COMPANION_MEDIA_BRIDGE_URL": self.voice_bridge.url, "COMPANION_MEDIA_BRIDGE_TOKEN": self.voice_bridge.token,
                             "DISCOVERY_UDP_PORT": os.environ.get("ESP32_DISCOVERY_UDP_PORT", "8789")}
@@ -191,7 +195,7 @@ class ComposeApp:
         self.log("Ready and listening for ESP32 MacroPad or keyboard hotkeys!")
         if self._history_error:
             self.log("History unavailable. Check access to your companion data folder; writing still works.")
-        if truthy(self.config.get("ESP32_START_RECEIVER", "1")):
+        if not self.local_only and truthy(self.config.get("ESP32_START_RECEIVER", "1")):
             try:
                 self.log(self.receiver.start())
             except Exception:
@@ -199,7 +203,8 @@ class ComposeApp:
                 self.log("Voice receiver failed to start. See companion.log")
             self.root.after(1000, self._watch_receiver)
         else:
-            self.receiver_lbl.configure(text="Feature preview: receiver startup disabled; live receiver left alone.")
+            self.receiver_lbl.configure(text=("Local-only mode: feature voice receiver paused; use the PC microphone or BLE controls."
+                if self.local_only else "Feature preview: receiver startup disabled; live receiver left alone."))
 
         # Start hardware key listener thread
         if truthy(self.config.get("ESP32_ENABLE_HOTKEYS", "1")):
@@ -215,6 +220,12 @@ class ComposeApp:
         self.tabs.add(self.writing_tab, text="Compose & Dictate")
         self.assistant_tab = ttk.Frame(self.tabs)
         self.tabs.add(self.assistant_tab, text="Ask your companion")
+        self.assistant_tabs = ttk.Notebook(self.assistant_tab)
+        self.assistant_tabs.pack(fill="both", expand=True)
+        self.ask_tab = ttk.Frame(self.assistant_tabs)
+        self.assistant_tabs.add(self.ask_tab, text="Groq Ask / Manage")
+        self.hermes_tab = ttk.Frame(self.assistant_tabs)
+        self.assistant_tabs.add(self.hermes_tab, text="Hermes tasks")
         self.library_tab = ttk.Frame(self.tabs)
         self.tabs.add(self.library_tab, text="History & saved text")
         self.media_tab = ttk.Frame(self.tabs)
@@ -226,6 +237,7 @@ class ComposeApp:
             self.media_service.recover_interrupted_jobs()
             self.media_panel = MediaPanel(self.media_tab, self.media_service, self._post_ui,
                                           self._queue_media, self._toggle_media_recording, self._record_history)
+            self.media_panel.settings_saving = self._settings_saving
             self.media_panel.pack(fill="both", expand=True)
             media_options = ttk.Frame(self.media_tab)
             media_options.pack(fill="x", before=self.media_panel)
@@ -234,15 +246,25 @@ class ComposeApp:
             ttk.Button(media_options, text="Clear queued image", command=self._clear_media_queue).pack(side="right")
         else:
             ttk.Label(self.media_tab, text="Media storage unavailable. Existing writing and History remain usable.").pack()
-        self.settings_panel = SettingsPanel(self.settings_tab, self.config, self._apply_media_settings)
+        self.settings_panel = SettingsPanel(self.settings_tab, self.config,
+                                            self._validate_settings_before_save, self._apply_saved_settings,
+                                            self._post_ui)
         self.settings_panel.pack(fill="both", expand=True)
 
         self.assistant_service = AssistantService(self.config, self._assistant_status, self.history)
         self.assistant_panel = AssistantPanel(
-            self.assistant_tab, self.assistant_service, self._post_ui,
+            self.ask_tab, self.assistant_service, self._post_ui,
             self._queue_library_text, self._record_history,
         )
+        self.assistant_panel.settings_saving = self._settings_saving
         self.assistant_panel.pack(fill="both", expand=True)
+        self.hermes_panel = HermesPanel(self.hermes_tab, None, self._post_ui,
+                                        self._queue_library_text, lambda: self.local_only,
+                                        lambda: self.settings_panel._saving,
+                                        lambda: truthy(self.config.get("HERMES_ENABLED")))
+        self.hermes_panel.pack(fill="both", expand=True)
+        self.hermes_service = None
+        self._start_hermes_service()
         if self.history is not None:
             self.library_panel = LibraryPanel(
                 self.library_tab, self.history, self._queue_library_text,
@@ -423,7 +445,7 @@ class ComposeApp:
     def _drain_media_voice_requests(self):
         if self._stop_poller:
             return
-        if self.media_store and not self._busy and not self.is_recording and not self.media_panel._busy:
+        if self.media_store and not self._settings_saving() and not self._busy and not self.is_recording and not self.media_panel._busy:
             for job in reversed(self.media_store.list_jobs()):
                 if job['kind'] == 'voice_request' and job['phase'] == 'queued':
                     self.media_store.update_job(job['job_id'], 'interpreting')
@@ -479,9 +501,60 @@ class ComposeApp:
             self.set_status("Check the target document before retrying; image attempt needs recovery.", "#F59E0B")
         self._post_ui(self.media_panel.refresh_jobs)
 
-    def _apply_media_settings(self, values):
-        if self._busy or self.is_recording or (hasattr(self, "media_panel") and self.media_panel._busy):
-            raise ValueError("Finish recording and media operations before applying settings.")
+    def _settings_saving(self):
+        return bool(getattr(getattr(self, "settings_panel", None), "_saving", False))
+
+    def _quiesce_sync(self):
+        self._sync_stop.set()
+        worker = getattr(self, "_sync_thread", None)
+        if worker is not None and worker.is_alive():
+            worker.join(timeout=18.0)
+            if worker.is_alive():
+                raise ValueError("Media sync is still finishing a network request. Settings have not changed; wait and save again.")
+
+    def _hermes_values(self, values):
+        selected = {key: values.get(key, self.config.get(key, ""))
+                    for key in ("HERMES_ENABLED", "HERMES_URL", "HERMES_TOKEN", "LOCAL_ONLY")}
+        selected["HERMES_ENABLED"] = truthy(selected["HERMES_ENABLED"])
+        selected["LOCAL_ONLY"] = truthy(selected["LOCAL_ONLY"])
+        return selected
+
+    def _validate_settings_before_save(self, values):
+        if (self._busy or self.is_recording or
+                (hasattr(self, "media_panel") and self.media_panel._busy) or
+                (hasattr(self, "assistant_panel") and self.assistant_panel._busy) or
+                (hasattr(self, "hermes_panel") and self.hermes_panel._busy)):
+            raise ValueError("Finish recording, media and Hermes operations before applying settings.")
+        old_hermes = self._hermes_values(self.config)
+        new_hermes = self._hermes_values(values)
+        if self.hermes_service is not None:
+            try:
+                self.hermes_service.update_config(new_hermes)
+            except HermesServiceError as error:
+                raise ValueError(str(error)) from None
+
+        try:
+            self._quiesce_sync()
+            if new_hermes["LOCAL_ONLY"]:
+                receiver = getattr(self, "receiver", None)
+                if receiver is not None and receiver.owns_process:
+                    receiver.stop()
+                bridge = getattr(self, "voice_bridge", None)
+                if bridge is not None:
+                    bridge.close()
+                    self.voice_bridge = None
+        except Exception:
+            if self.hermes_service is not None:
+                self.hermes_service.update_config(old_hermes)
+            raise
+
+        def rollback():
+            if self.hermes_service is not None:
+                self.hermes_service.update_config(old_hermes)
+            self._post_ui(self._configure_media_sync)
+        return rollback
+
+    def _apply_saved_settings(self, values):
         self.config.update(values)
         self.local_only = truthy(self.config.get("LOCAL_ONLY"))
         self.speech_pipeline.local_only = self.local_only
@@ -490,6 +563,58 @@ class ComposeApp:
         if self.media_service:
             self.media_service.config = dict(self.config)
         self._configure_media_sync()
+        if self.local_only:
+            self.receiver_lbl.configure(text="Local-only mode: feature voice receiver paused; use the PC microphone or BLE controls.")
+        if hasattr(self, "hermes_panel"):
+            self.hermes_panel._sync_controls()
+            if truthy(self.config.get("HERMES_ENABLED")):
+                self.hermes_panel.set_notice("Hermes settings updated. Test the connection before sending a task.")
+
+    def _start_hermes_service(self):
+        config = dict(self.config)
+        root = data_directory()
+        threading.Thread(target=self._hermes_service_worker, args=(config, root), daemon=True).start()
+
+    def _hermes_service_worker(self, config, root):
+        try:
+            service = HermesService(config, root)
+            if self._stop_poller:
+                service.close()
+                return
+            self._post_ui(self._hermes_service_created, service)
+        except Exception:
+            self._post_ui(self.hermes_panel.set_notice,
+                          "Hermes local request storage is unavailable. Other companion features remain usable.")
+
+    def _hermes_service_created(self, service):
+        if self._stop_poller:
+            service.close()
+            return
+        config = self._hermes_values(self.config)
+        threading.Thread(target=self._configure_hermes_worker, args=(service, config), daemon=True).start()
+
+    def _configure_hermes_worker(self, service, config):
+        try:
+            service.update_config(config)
+            if not self._stop_poller:
+                self._post_ui(self._hermes_service_ready, service)
+            else:
+                service.close()
+        except Exception:
+            service.close()
+            self._post_ui(self.hermes_panel.set_notice,
+                          "Hermes could not load safely. Review its settings and unresolved requests.")
+
+    def _hermes_service_ready(self, service):
+        if self._stop_poller:
+            service.close()
+            return
+        latest = self._hermes_values(self.config)
+        if any(service.config.get(key) != value for key, value in latest.items()):
+            threading.Thread(target=self._configure_hermes_worker, args=(service, latest), daemon=True).start()
+            return
+        self.hermes_service = service
+        self.hermes_panel.set_service(service)
 
     def _configure_media_sync(self):
         self._sync_stop.set()
@@ -498,12 +623,15 @@ class ComposeApp:
         if not self.media_service:
             return
         self.media_service.sync = None
+        if self.local_only:
+            self.settings_panel.set_status("Local-only mode is active. Hermes, Groq, web, image providers and media sync make no remote calls.")
+            return
         if not truthy(self.config.get("MEDIA_SYNC_ENABLED")):
             self.settings_panel.set_status("Automatic sync is disabled. Media stays on this computer. Restart after changing text-provider keys or hardware options.")
             return
         try:
             client = SyncClient(self.media_store, self.config.get("MEDIA_SERVER_URL", ""), self.config.get("MEDIA_SERVER_TOKEN", ""),
-                local_only=self.local_only and not truthy(self.config.get("ALLOW_PRIVATE_SYNC")), allow_private_sync=True)
+                local_only=False, allow_private_sync=True)
             client.cancel_event = stop
             self.media_service.sync = client
         except Exception:
@@ -619,7 +747,7 @@ class ComposeApp:
             self.root.after(20, self._drain_ui_events)
 
     def _watch_receiver(self):
-        if self._stop_poller:
+        if self._stop_poller or self.local_only or self._settings_saving():
             return
         self._receiver_watch_ticks += 1
         if self.receiver.is_listening():
@@ -636,6 +764,9 @@ class ComposeApp:
         self.receiver_lbl.config(text="Voice receiver is still starting. See receiver.log", fg="#FBBF24")
 
     def close(self):
+        if self._settings_saving():
+            self.settings_panel.set_status("Settings are still being protected. Wait for saving to finish, then close again.")
+            return
         self._stop_poller = True
         if hasattr(self, "_sync_stop"):
             self._sync_stop.set()
@@ -643,6 +774,12 @@ class ComposeApp:
             self.media_panel.close()
         if hasattr(self, "assistant_panel"):
             self.assistant_panel.close()
+        if hasattr(self, "hermes_panel"):
+            self.hermes_panel.close()
+        if hasattr(self, "settings_panel"):
+            self.settings_panel.close()
+        if getattr(self, "hermes_service", None):
+            self.hermes_service.close()
         if self._recording_timer is not None:
             self.root.after_cancel(self._recording_timer)
         self.audio_capture.stop_recording()
@@ -655,7 +792,7 @@ class ComposeApp:
     # ── Unified Recording & Synthesis Pipeline ──────────────────────────
 
     def start_recording_flow(self, mode: str = "compose"):
-        if self.is_recording or self._busy:
+        if self.is_recording or self._busy or self._settings_saving():
             return
         if not self.audio_capture.start_recording():
             self.log("Microphone could not open. Check Windows microphone permissions and device selection.")
@@ -827,6 +964,8 @@ class ComposeApp:
     # ── Hardware & Global Hotkey Poller ─────────────────────────────────
 
     def _handle_hardware_event(self, mode, edge):
+        if self._settings_saving():
+            return
         self.log(f"[HOTKEY] {mode} {edge}")
         if mode == "compose" and hasattr(self, "media_hotkey") and self.media_hotkey.get():
             mode = "media"

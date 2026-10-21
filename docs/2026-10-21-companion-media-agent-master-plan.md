@@ -1,6 +1,6 @@
 # Classroom companion: consolidated branch programme
 
-21 October 2026 — authoritative current plan for `codex/companion-media-agent`.
+21 October 2026 — authoritative current plan for `codex/companion-media-agent`; implementation continues from `f512a9f` on isolated `codex/companion-hermes-integration`.
 
 **Documentation consolidated; product candidate implemented in part; deployment and classroom acceptance remain open.** This plan supersedes earlier roadmaps and resolves later hardware/network decisions. Historical implementation and research records retain their original evidence. Updating this plan does not deploy services, charge an image account, unlock a board or approve a release.
 
@@ -35,7 +35,7 @@ These are recorded results, not tests rerun during this documentation pass. Coun
 | Insertion | Guarded Word COM and OneNote UI Automation/clipboard adapters. Hidden synthetic Word save/reopen passed. | Real foreground/caret/selection/undo/save-reopen on supported editions. A paste request is not embedding/save proof. |
 | Sync/budget | Authenticated allowlisted library API, local outbox/cache, revisions/conflicts, shared AUD reservations and automatic sync worker. | Persistent Linux deployment, HTTPS, restore and two actual Windows installations across locations. Loopback convergence is not that proof. |
 | Voice | Existing PC speech path and authenticated receiver-to-media-job bridge. | Both physical microphones, unchanged text workflow and original S3 acceptance. |
-| Hermes | Authenticated LAN consultation and reusable collaboration skill/client; 9 recorded offline client tests. | Permanent Tailscale deployment plus companion runtime adapter/settings/status. A development skill is not an embedded Hermes feature. |
+| Hermes | Runtime adapter and explicit task UI now implemented: DPAPI settings, bounded previews/runs/events/cancel/results, durable identities and terminal-state recovery. Development skill remains separate. | Same-host private HTTPS/Tailscale deployment, off-LAN and real task acceptance. Local fixtures do not establish deployment. |
 | Isolation/safety | Separate launch/data/receiver ports; hardware inputs default off. 26 guard tests plus physical wrong-board/stable-lock rejection; test upload only to CYD diagnostic. | Approved S3 trial/recovery when firmware changes are necessary. Installed S3 firmware remains unchanged. |
 | Local QA | 164 integrated feature tests, native UI previews, synthetic DPAPI roundtrip and 4 portable Linux server tests recorded. | Release matrix and classroom acceptance. Neither main merge nor live deployment is established. |
 
@@ -82,12 +82,12 @@ Each milestone closes only with the evidence below. Work proceeds in reversible 
 | ID | Delivery slice | State now | Completion evidence |
 | --- | --- | --- | --- |
 | M0 | Consolidate scope, decision register, document map and hardware policy. | Complete in this documentation update. | Active guides agree on S3-only scope, Groq primary, permanent Hermes route, local data boundaries and open gates. |
-| M1 | Permanent Tailscale transport to existing Linux Hermes: inventory host/versions, private HTTPS, restart persistence, scoped access and safe endpoint migration. | Required; not deployed/accepted. | Same authenticated host from home and off-LAN hotspot/work; restart, denial, outage, reconnection and revocation tests; private configuration and rollback recorded. |
-| M2 | In-app Hermes adapter: protected settings/test/status, bounded runs/events/cancel, application knowledge/capabilities and result states. Reuse proven client semantics. | Development client/skill exists; product adapter missing. | Selected tasks use permanent endpoint; Ask stays Groq; no implicit History transfer, duplicate dispatch or unrestricted shell/SQL authority. Local-only/offline tests pass. |
-| M3 | Deploy separate Linux media/budget service with durable storage, ownership, HTTPS and backups; finish setup/conflict/recovery UX. | Server/client candidate implemented; deployment missing. | Two actual Windows stores converge; offline versions/conflicts retained; restart/backup restore proven; no History/prompts/secrets transferred. |
+| M1 | Permanent Tailscale transport to existing Linux Hermes: inventory host/versions, private HTTPS, restart persistence, scoped access and safe endpoint migration. | Migration and deployment tooling implemented; private HTTPS route not deployed/accepted. | Same authenticated host from home and off-LAN hotspot/work; restart, denial, outage, reconnection and revocation tests; private configuration and rollback recorded. |
+| M2 | In-app Hermes adapter: protected settings/test/status, bounded runs/events/cancel, application knowledge/capabilities and result states. Reuse proven client semantics. | Runtime adapter/UI and offline/native checks implemented; permanent-route acceptance open. | Selected tasks use permanent endpoint; Ask stays Groq; no implicit History transfer, duplicate dispatch or unrestricted shell/SQL authority. Local-only/offline tests pass. |
+| M3 | Deploy separate Linux media/budget service with durable storage, ownership, HTTPS and backups; finish setup/conflict/recovery UX. | Server/client and deployment kit implemented; tested backup/restore with fresh HTTP retrieval; live deployment missing. | Two actual Windows stores converge; offline versions/conflicts retained; restart/backup restore proven; no History/prompts/secrets transferred. |
 | M4 | Image conversation: retrieval, generation, refinement, naming, previews, recovery and budget UX. | Candidate implemented; live paid evaluation missing. | Teacher completes water-cycle workflow; approved version survives edits/restarts; provider receipts reconcile; ambiguous failure safe. Paid trial only within explicit authority. |
 | M5 | Accept Word/OneNote and both microphones with existing S3 functionality. Prefer unchanged installed firmware for host-side tests. | Partial local/synthetic QA; physical acceptance open. | Disposable documents prove placement/selection/focus change/undo/save-reopen; both microphones; no duplicate listeners; S3 regression checks accepted. |
-| M6 | Package/pilot first complete image release. | Source preview/isolation exists; release packaging/pilot missing. | Repeatable Windows install/update/uninstall, accessible controls, school permissions/network acceptance, two-location lesson rehearsal, support/rollback; image gates signed off. |
+| M6 | Package/pilot first complete image release. | Verified source-preview install/update/rollback/removal exists; signed packaging and teacher pilot remain open. | Repeatable Windows install/update/uninstall, accessible controls, school permissions/network acceptance, two-location lesson rehearsal, support/rollback; image gates signed off. |
 | M7 | Agent administration and runtime S3 controls: shortcut/button/profile schema, capabilities, previews, expected revisions, device acknowledgement and rollback. | Mostly design; small Manage allowlist exists. | Plain-language configuration produces validated changes/acknowledgements without unnecessary reflashing; failures preserve last profile. Firmware changes get explicitly approved backed-up trials. |
 | M8 | Reviewed code-update worker, PowerPoint, then audio/video library and target-specific insertion. | Future work. | Patches isolated/tested/reviewed/revertible; app/media matrix proves embedding/link/playback semantics, storage/codec/rights limits and uncertainty handling. |
 | M9 | Open-source/public distribution and teacher adoption. | Research/recommendations only. | Ownership/provenance resolved; approved licence map/notices; secret-free generic release/history; reproducible signed packages; quick-start, accessibility/pilot evidence and public-release approval. |
@@ -108,7 +108,8 @@ Documentation completion does not close implementation/deployment/user gates.
 - [x] Isolated image candidate and bounded local QA recorded.
 - [x] Registered-board identity/stable-write protections implemented/tested.
 - [ ] Permanent Tailscale route, persistent services and off-LAN acceptance.
-- [ ] In-app Hermes adapter with bounded permissions/diagnostics.
+- [x] In-app Hermes adapter with bounded tasks/diagnostics and local fixture/native UI checks.
+- [ ] Adapter accepted through the permanent private route with real scoped tasks.
 - [ ] Linux media deployment, restore and two-host sync acceptance.
 - [ ] Paid image quality/refinement/cost acceptance.
 - [ ] Real Word/OneNote insertion and both microphones.
@@ -116,6 +117,8 @@ Documentation completion does not close implementation/deployment/user gates.
 - [ ] Installed teacher pilot, accessibility/privacy/school checks and regression acceptance.
 - [ ] Later configuration/update/PowerPoint/audio/video increments accepted.
 - [ ] Licensing, public packaging and distribution approval.
+
+Latest development evidence and limitations: [Hermes integration checkpoint](2026-10-21-hermes-integration-checkpoint.md), [deployment kit](companion-deployment.md), [source-preview lifecycle](companion-installation.md).
 
 Evidence records need date, component/version, synthetic versus real inputs, result and remaining limit. Unknown checks stay unknown. A programme finish date depends on host/network, Office and provider prerequisites; use these completion gates rather than invent a schedule.
 

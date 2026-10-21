@@ -83,6 +83,8 @@ class MediaPanel(ttk.Frame):
             self.notice.configure(text=text)
 
     def run(self,work,done):
+        if getattr(self, "settings_saving", lambda: False)():
+            self.tell("Wait until settings have finished saving.");return
         if self._busy:
             self.tell('Finish the current media operation first.');return
         self._busy=True

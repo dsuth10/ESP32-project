@@ -69,13 +69,14 @@ class VoiceReceiver:
 
     def stop(self) -> None:
         process = self.process
-        self.process = None
         if process is not None and process.poll() is None:
             process.terminate()
             try:
                 process.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 process.kill()
+                process.wait(timeout=5)
+        self.process = None
         if self._log_file is not None:
             self._log_file.close()
             self._log_file = None

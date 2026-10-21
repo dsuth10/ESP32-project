@@ -2,7 +2,7 @@
 
 **Current branch programme:** [holistic plan and completion dashboard](docs/2026-10-21-companion-media-agent-master-plan.md). We are continuing with the original ES3C28P ESP32-S3; its installed firmware stays stable/write-locked. The CYD application port is abandoned. The branch contains an isolated image-library candidate; live deployment and teacher acceptance are still open.
 
-**Permanent home/work connection:** the same Linux Hermes will be integrated over private Tailscale at both locations, while Groq remains primary. See [the connection runbook](docs/hermes-tailscale-home-work.md). Transport configuration/off-LAN acceptance and the companion's runtime Hermes adapter are not complete.
+**Permanent home/work connection:** the same Linux Hermes will be integrated over private Tailscale at both locations, while Groq remains primary. See [the connection runbook](docs/hermes-tailscale-home-work.md). The companion runtime Hermes adapter is implemented with local fixture/native UI checks; transport configuration and off-LAN acceptance remain open. See the [integration checkpoint](docs/2026-10-21-hermes-integration-checkpoint.md).
 
 Start `start_companion_feature.bat` from the feature checkout for the isolated preview. Hardware inputs default off, feature data is separate, and the original stable board has not received feature firmware. See [testing/recovery](docs/feature-media-testing.md), [implementation evidence](docs/2026-10-21-media-feature-implementation.md) and [document index](docs/README.md).
 

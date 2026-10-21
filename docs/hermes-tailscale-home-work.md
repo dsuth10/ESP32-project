@@ -36,9 +36,9 @@ Serve's documented `--bg` mode persists across restarts; it does not supervise H
 3. **Connect privately.** Verify Linux/Windows enrolment, scoped access and full DNS/service reachability. Peer visibility alone is insufficient. The companion computer runs Tailscale; the phone's VPN is not the bridge in this design.
 4. **Make services persistent.** Set supervised Hermes startup/restart, protected service credentials, process ownership and stable storage. Record Linux sleep/power, Tailscale device-key expiry, proxy persistence and operational owner. Bind backends to loopback only after dependants/new proxy are verified.
 5. **Authenticate and inspect readiness.** Check TLS identity, protected-route denial without a valid key, authenticated capabilities and a useful bounded response. `/health` is liveness; interpret authenticated detailed readiness when supported, including degraded HTTP 200 responses. [Hermes API](https://hermes-agent.nousresearch.com/docs/user-guide/features/api-server)
-6. **Migrate development-client settings safely.** Existing `.local/linux-hermes.json` and DPAPI credential belong to that Windows account/computer. The configure script is first-time-only and refuses overwrites. Implement a safe endpoint-update helper: preserve old settings, validate/test an HTTPS origin, atomically switch only the URL and retain the encrypted credential. This helper is not implemented yet; changing a URL should not require exposing/replacing the key.
+6. **Migrate development-client settings safely.** Existing `.local/linux-hermes.json` and DPAPI credential belong to that Windows account/computer. The configure script is first-time-only and refuses overwrites. The implemented [endpoint-update helper](../.agents/skills/hermes-collaboration/scripts/update-linux-hermes-endpoint.ps1) preserves old settings, validates/tests an authenticated HTTPS origin, atomically switches only the URL and retains the encrypted credential. Forward switch and rollback refuse unresolved dispatches. Follow [deployment instructions](companion-deployment.md); no live endpoint has been switched.
 7. **Reconcile in-flight requests.** Existing requests are endpoint/credential-bound. Finish/reconcile LAN-bound runs before switching. Never redispatch an uncertain request under a new identity or endpoint. Preserve receipts privately and poll the original run through its valid connection where needed.
-8. **Integrate the companion.** Add protected settings, test/status, bounded context, durable dispatch identity, progress/cancel/results and clear errors. Reuse proven client semantics without requiring a coding-agent skill runner inside the product. Detect server capabilities rather than assuming every API exists.
+8. **Accept the implemented companion adapter.** Settings and the Hermes tasks panel now provide protected setup, test/status, selected context, durable dispatch identity, progress/cancel/results and safe retries. Groq Ask stays separate. No coding-agent skill runner is required. Validate the adapter against the permanent endpoint; local fixtures are recorded in the [integration checkpoint](2026-10-21-hermes-integration-checkpoint.md).
 9. **Accept both locations.** Complete the matrix below and independently test the media API. Save final private configuration, ownership and recovery steps. Only then mark the permanent-route milestone complete.
 
 The development skill provides health/capabilities, prepare/submit, poll/events, stop and exact one-time approval handling through its [scripts and instructions](../.agents/skills/hermes-collaboration/SKILL.md). It neither configures Tailscale nor integrates itself into the companion UI.
@@ -71,4 +71,18 @@ One laptop moved between networks can prove Hermes connectivity; library sync ad
 
 ## Completion record
 
-Fill during deployment: date, versions, private host attestation/configuration location, owner, reboot/restore evidence, home/hotspot/work results, failure/revocation checks and unresolved limits. Public reports contain sanitised outcomes only. **Current state: planned permanent route; not yet configured or accepted off-LAN.**
+Fill during deployment: date, versions, private host attestation/configuration location, owner, reboot/restore evidence, home/hotspot/work results, failure/revocation checks and unresolved limits. Public reports contain sanitised outcomes only. **Current state: local integration/migration/deployment tooling implemented; permanent private route not yet configured or accepted off-LAN. Windows Tailscale and authenticated existing HTTP/LAN readiness were checked on 21 October; that is not private HTTPS or same-host acceptance. A read-only remote inventory reached a security guard and was cancelled without approval or host changes.**
+
+
+## Host identity check during implementation
+
+The intended existing LAN Hermes host was independently matched to the user's
+physical SSH fingerprint. A different online Linux tailnet peer had a
+mismatched identity and was excluded; no SSH trust changes or logins occurred.
+Use the existing authenticated LAN collaboration client until the correct
+host is enrolled. The LAN agent's read-only inventory reported Tailscale absent,
+tailscaled inactive, and non-interactive administrator access unavailable.
+A human Linux administrator must complete installation and tailnet enrolment
+locally. Do not solve this by accepting the other peer's key or changing agent
+identity. The [integration checkpoint](2026-10-21-hermes-integration-checkpoint.md)
+records local implementation and remaining acceptance separately.
