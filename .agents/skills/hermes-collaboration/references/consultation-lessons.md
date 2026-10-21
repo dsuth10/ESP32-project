@@ -31,4 +31,23 @@ The [consolidated programme](../../../../docs/2026-10-21-companion-media-agent-m
 
 ## Sources and privacy
 
-The full consultation record is docs/research/2026-10-21-hermes-consultation.md. It includes historical endpoint and environment details. Keep it linked locally and out of public reports. Do not copy endpoint values, credentials, private user names or paths into this skill or other tracked source.
+The tracked consultation record is `docs/research/2026-10-21-hermes-consultation.md`; publish only sanitised findings. Raw connection details and run receipts belong in ignored `.local/` records. Audit unpublished history as well as the current file before pushing. Do not copy endpoint values, credentials, private usernames or paths into this skill or other tracked source.
+
+
+## Later host verification and helper staging
+
+Observed on 21 October 2026; these are dated results, not assumptions for the next session.
+
+- The established authenticated LAN API reached the intended Linux Hermes. The user independently attested its SSH fingerprint. A visible online Linux tailnet peer presented a different fingerprint. That peer was not accepted as the same host, no SSH host key was accepted, and the LAN API remained the valid development route. Resolve identity before configuring a permanent endpoint.
+- A bounded own-host inventory found no Tailscale executable in the checked paths, an inactive `tailscaled`, and unavailable non-interactive sudo. This did not remove API access or prove that every possible installation was absent. Privileged setup needed a local administrator handoff.
+- Tell Hermes to inspect its own host explicitly. Separate host identity, installation, listener, privilege and service-readiness questions so a blocked check does not invalidate independent evidence.
+- Inline diagnostic code and a grouped shell existence check triggered scanner refusals. One narrower follow-up used a simple directory check, the dedicated file writer, then separate syntax and hash commands successfully. Do not treat that success as permission to route around a future refusal.
+- A bootstrap helper was staged without replacing an existing file; shell syntax and matching SHA-256 were reported. It was not executed for privileged setup. Keep actual paths, hashes and execution receipts private, and verify them again before use.
+- A pending command disappeared when its run completed before approval. The client refused the stale approval. Re-poll immediately before granting a one-time approval; do not revive a completed run or substitute a broader approval.
+
+## API lifecycle observations
+
+- Capabilities advertised run submission, status, idempotency, stop and SSE events. An events request for a finished cancelled run returned HTTP 404 while its run status remained readable. Treat event availability and run existence separately, preserve the status result and avoid duplicate dispatch.
+- Completed responses used the `output` field. Review the bounded content and actual evidence, rather than interpreting an empty `message` field as missing work.
+- A stop request first returned `stopping`; cancellation required a subsequent terminal-state poll. Include `interrupted` among terminal states.
+- A companion runtime and endpoint migration helper were implemented and tested on the continuation branch. Their existence is branch-specific and does not prove installed services, persistent private transport, or home/work acceptance. Consult the current consolidated programme rather than copying a historical implementation claim.
