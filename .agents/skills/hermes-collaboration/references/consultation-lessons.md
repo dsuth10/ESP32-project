@@ -2,6 +2,10 @@
 
 These notes record what was observed during the authorised October 2026 consultation. They help plan the next interaction; verify any state that may have changed.
 
+## Current direction after the consultation
+
+The [consolidated programme](../../../../docs/2026-10-21-companion-media-agent-master-plan.md) now requires the same Linux Hermes over permanent private Tailscale for home/work. Follow the [connection runbook](../../../../docs/hermes-tailscale-home-work.md) for staged deployment/acceptance and safe endpoint migration. Existing observations below remain dated evidence; do not convert prior LAN success or an inactive-service observation into a current network-state claim. No credential, endpoint or request identity was changed by this documentation update.
+
 ## Connection and identity
 
 - Direct API calls to the supplied Linux LAN endpoint worked. Remote-peer registration was unnecessary. Earlier, a local Hermes gateway was reachable too, but that did not mean it ran on or proxied to Linux.

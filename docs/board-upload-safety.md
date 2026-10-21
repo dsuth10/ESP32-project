@@ -1,15 +1,15 @@
 # Board upload safety
 
-The original ES3C28P ESP32-S3 is the stable device. Keep its installed firmware unchanged while developing on the CYD. Registration reads identity and partition metadata; it does not install firmware, but briefly resets the board.
+The original ES3C28P ESP32-S3 is the stable device. Keep its installed firmware unchanged during isolated desktop development. The user has abandoned the CYD application port; the S3 is the sole application target. See the [master plan](2026-10-21-companion-media-agent-master-plan.md). Registration reads identity and partition metadata; it does not install firmware, but briefly resets the board.
 
 ## Registered hardware and roles
 
 | Profile | Hardware | Supported builds | Current role |
 | --- | --- | --- | --- |
 | `es3c28p-s3` | ESP32-S3, 16 MB flash | `esp32-s3-portrait`, `esp32-s3-devkitc-1` | Original board: stable, write-locked |
-| `cyd-2432s028` | ESP32, 4 MB flash | Standalone `cyd-identify` diagnostic only | New board: test |
+| `cyd-2432s028` | ESP32, 4 MB flash | Standalone `cyd-identify` diagnostic only | Historical diagnostic test device; not an application target |
 
-The complete application has not yet been ported to the CYD. Its screen and touch configuration have been tested; audio and other peripherals remain unverified.
+The CYD application port is abandoned, not queued for later completion in this branch. Its diagnostic profile remains to preserve evidence and wrong-board protection. No registry/role is changed by this scope decision.
 
 Install the tested host uploader with `python -m pip install -r tools/board-safety-requirements.txt`. PlatformIO's bundled esptool remains a build dependency; guarded uploading uses the host's pinned esptool API.
 
@@ -36,13 +36,13 @@ python tools/board_safety.py check --profile cyd-2432s028 --port COM6 --manifest
 
 Each compiled image gets a `board-upload.json` manifest with image SHA-256 hashes, processor/profile/environment binding, region limits and build-setting fingerprints. The manifest records image integrity and selected build settings; it is not a signed source-provenance attestation. Builds regenerate the upload binary and manifest even when compilation is cached. If build settings change, rebuild; leave the recorded hashes intact.
 
-## Guarded test upload
+## Historical CYD diagnostic upload route
 
 ```powershell
 python -m platformio run -d tools/board_diagnostics/cyd_identifier -e cyd-identify -t upload --upload-port COM6
 ```
 
-The root PlatformIO environments and diagnostic environment route `upload` through the same guard. Always supply the port explicitly. With both boards connected, a CYD build aimed at COM5 is refused; an S3 build aimed at COM6 is refused. Even a correctly matched S3 upload to the original is refused because it is stable/write-locked. Close serial monitors first; a busy, missing or unreadable port is a refusal, never a reason to select another port automatically.
+The command above records the already-tested diagnostic route; it is not the current application development workflow. For a future S3 trial use the gate below. The root PlatformIO environments and diagnostic environment route `upload` through the same guard. Always supply the port explicitly. With both boards connected, a CYD build aimed at COM5 is refused; an S3 build aimed at COM6 is refused. Even a correctly matched S3 upload to the original is refused because it is stable/write-locked. Close serial monitors first; a busy, missing or unreadable port is a refusal, never a reason to select another port automatically.
 
 `flash.py` is now a manifest-based guarded entry point, for example:
 
@@ -57,6 +57,10 @@ Before any write, the guard checks the explicit port, manifest and file hashes, 
 PlatformIO erase, filesystem/OTA upload and standalone bootloader/programming targets are disabled pending separately reviewed guarded workflows. Unsupported profiles, missing/corrupt registry or manifest, unknown devices, changed files/layouts and inspection failures stop the operation. Read-only `check` can inspect a stable board.
 
 These safeguards cover the repository's supported upload routes. A person can still deliberately run an external raw esptool, OpenOCD or ESP-IDF command, modify the guard, or check out an older unguarded version. Local scripts cannot prevent those bypasses. Do not use those routes for routine uploads.
+
+## Future S3 trial gate
+
+The S3 remains stable/write-locked. Before any firmware trial: obtain explicit user approval for the candidate, make/fingerprint a complete private recovery backup, preserve matching build/configuration metadata, verify the restoration procedure, coordinate listener ownership, then review a scoped device-role change. Keep processor/identity/flash/partition/image checks active. Restore/relock as agreed after testing. A scoped trial/relock helper and reviewed recovery manifest are still to be implemented; this document does not provide an unlock flag or authorise manual bypasses. Prefer unchanged-firmware host-side testing first.
 
 ## Verification
 

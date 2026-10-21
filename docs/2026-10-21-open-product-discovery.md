@@ -1,5 +1,7 @@
 # Making the classroom companion accessible
 
+> Historical design, investigation or checkpoint evidence. Current scope/status is governed by the [consolidated branch programme](2026-10-21-companion-media-agent-master-plan.md): original S3 only, CYD application port abandoned, Groq primary and the same Linux Hermes over permanent private Tailscale required at home/work. Earlier proposals and test observations below are not proof of current deployment or release acceptance.
+
 Product discovery and recommended direction — 21 October 2026
 
 Status: recommendations, not an implemented release plan. Based on the current working tree, including existing uncommitted companion changes. No firmware, application behaviour, licensing or repository visibility was changed by this review. Hardware and classroom operation were not retested. Remote repository visibility could not be confirmed because the GitHub CLI could not connect.

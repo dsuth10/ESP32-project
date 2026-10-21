@@ -1,5 +1,7 @@
 # CYD identification diagnostic
 
+**Historical diagnostic only.** The CYD application port is abandoned; ES3C28P S3 is the programme's sole application target. Retain this source and its recorded checks for recovery/guard evidence, not as a scheduled development path. See [current scope](../../../docs/2026-10-21-companion-media-agent-master-plan.md).
+
 Standalone diagnostic for the second ESP32-2432S028 candidate board; not a target for the existing ESP32-S3 firmware.
 
 Build with `python -m platformio run -d tools/board_diagnostics/cyd_identifier`.

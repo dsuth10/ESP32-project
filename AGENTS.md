@@ -2,12 +2,14 @@
 
 Use Australian English and metric measurements.
 
-## Firmware and physical boards
+## Current programme
 
-The original ES3C28P ESP32-S3 is the stable device; preserve its installed firmware and stable/write-locked registration while developing on the CYD test board.
+Before planning or changing the application, read the relevant milestones/status in [the consolidated branch plan](docs/2026-10-21-companion-media-agent-master-plan.md). ES3C28P ESP32-S3 is the sole supported application target; the CYD port is abandoned and its records are historical.
 
-Before registering a board, uploading firmware, changing upload tooling or planning recovery, read [board upload safety](docs/board-upload-safety.md). Use the guarded PlatformIO or manifest-based `flash.py` route with an explicit profile/port and the registered physical identity. Keep hardware identities, settings and flash backups private in `.local/`.
+Preserve the original stable firmware and write-locked registration. Develop on the feature branch with isolated desktop data/listeners. Use existing S3 firmware for host-side tests where possible. A firmware trial needs explicit user approval, a verified recovery backup/procedure and the reviewed role change in [board safety](docs/board-upload-safety.md). Guard rejections stop that write; investigate rather than editing identity/fingerprints to make it pass.
 
-A stable-device upload requires the user's explicit release decision and the reviewed role change described in that runbook. Treat a guard rejection as a stop for that write: investigate the mismatch rather than changing registrations, fingerprints or ports to make it pass. Use the registered test device for feature trials.
+Before registration, flashing, upload-tool changes or recovery, read the board-safety runbook. Use only guarded, explicitly targeted upload routes. Keep identities, credentials and flash backups private in `.local/`. Keep main as the reference until the user approves a release.
 
-Keep development on the feature branch. The original main commit and stable-device firmware remain the reference until the user approves a release. Report build/automated checks separately from physical board and application acceptance.
+For Hermes tasks, endpoint migration or home/work connectivity, read [the permanent-route runbook](docs/hermes-tailscale-home-work.md) and the [Hermes collaboration skill](.agents/skills/hermes-collaboration/SKILL.md). The required target is the same Linux Hermes over persistent private Tailscale at both locations; Groq stays primary. Distinguish the development skill from the unfinished in-app adapter and planned transport from verified deployment.
+
+Report local builds/tests, deployment checks and physical application/classroom acceptance separately. Documentation or a healthy HTTP endpoint does not close the corresponding acceptance gates.

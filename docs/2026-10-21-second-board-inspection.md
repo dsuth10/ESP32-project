@@ -1,5 +1,9 @@
 # Second board: initial inspection
 
+> Historical design, investigation or checkpoint evidence. Current scope/status is governed by the [consolidated branch programme](2026-10-21-companion-media-agent-master-plan.md): original S3 only, CYD application port abandoned, Groq primary and the same Linux Hermes over permanent private Tailscale required at home/work. Earlier proposals and test observations below are not proof of current deployment or release acceptance.
+
+> The diagnostic investigation is complete enough to retain as evidence. No CYD application port or further CYD development is scheduled. Preserve its backup and guard registration.
+
 21 October 2026 — USB/serial inspection only
 
 The user connected a different touchscreen board with both USB-C and micro-USB connectors. After reconnecting via micro-USB, Windows exposed **COM6**, `USB-SERIAL CH340`, USB VID/PID `1A86:7523`, status OK. The USB-C connector's function has not been established. A separate unidentified USB device remained present; it has not been attributed to this board.

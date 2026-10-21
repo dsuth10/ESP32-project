@@ -1,5 +1,7 @@
 # Private media sync service
 
+**Feature-branch candidate; deployment pending.** The permanent private Tailscale connection to the same Linux host from home/work is now required. Follow the [connection runbook](hermes-tailscale-home-work.md) and [master plan](2026-10-21-companion-media-agent-master-plan.md). This API is separate from Hermes; the product runtime Hermes adapter is a separate milestone.
+
 The service in `server/media_library_server.py` stores immutable PNG, JPEG and
 WebP blobs and an append-only media event log. Each Windows installation keeps
 its own `MediaStore`; its SQLite database, History, prompts, credentials,
@@ -32,8 +34,9 @@ rejected.
 
 This Python server does not provide TLS. For another device, bind it to a
 private interface only when the host firewall and private-network policy are
-already configured, then put it behind an authenticated TLS endpoint such as
-Tailscale Serve. Use the tailnet DNS name with HTTPS from Windows clients. Do
+already configured, then place it behind the selected private HTTPS proxy.
+For this installation, plan loopback backend binding behind Tailscale Serve
+after verifying existing dependants and access rules. Use the tailnet DNS name with HTTPS from Windows clients. Do
 not expose the service through public port forwarding, Tailscale Funnel, or an
 unauthenticated proxy. Tailscale access controls and the application bearer
 token are separate protections. No network, ACL, firewall, service, or live

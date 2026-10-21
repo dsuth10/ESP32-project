@@ -1,5 +1,7 @@
 # Detailed build guide
 
+**Branch programme:** [current S3-only plan](2026-10-21-companion-media-agent-master-plan.md), [permanent home/work Hermes connection](hermes-tailscale-home-work.md), [board trial/recovery gate](board-upload-safety.md). Existing stable firmware stays installed; the new route/product adapter are pending.
+
 [Back to the project overview](../README.md)
 
 This walkthrough uses Windows PowerShell for the main examples. Linux/macOS differences are noted where relevant. Start with the firmware and Bluetooth connection; enclosure editing and voice can be added independently.

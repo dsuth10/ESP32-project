@@ -2,6 +2,8 @@
 
 [Back to the build guide](../README.md)
 
+**Current scope:** ES3C28P ESP32-S3 is the sole application target. CYD inspection is historical; its application port is abandoned. Preserve the installed stable S3 firmware until the approved trial/recovery gate. See [programme](2026-10-21-companion-media-agent-master-plan.md) and [board safety](board-upload-safety.md).
+
 This pinout is retained from the project's technical reference. Confirm it against your board revision, the [schematic](schematic.pdf) and [user manual](user_manual.pdf) before adding external hardware. The primary PlatformIO environment uses Arduino; its CPU is set to 240 MHz, with 16 MB flash and 8 MB PSRAM configuration.
 
 ## Hardware Overview & Board Identification

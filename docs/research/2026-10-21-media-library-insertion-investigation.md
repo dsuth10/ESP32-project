@@ -1,5 +1,7 @@
 # Media library and insertion workflow investigation
 
+> Historical design, investigation or checkpoint evidence. Current scope/status is governed by the [consolidated branch programme](../2026-10-21-companion-media-agent-master-plan.md): original S3 only, CYD application port abandoned, Groq primary and the same Linux Hermes over permanent private Tailscale required at home/work. Earlier proposals and test observations below are not proof of current deployment or release acceptance.
+
 21 October 2026
 
 This evidence note was drafted before the requirements interview concluded. The confirmed destination, automatic sync and insertion choices in [the master plan](../2026-10-21-companion-media-agent-master-plan.md) supersede its provisional workflow recommendations.

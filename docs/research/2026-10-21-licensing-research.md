@@ -1,5 +1,7 @@
 # Licensing recommendation for the ESP32 classroom companion
 
+> Historical design, investigation or checkpoint evidence. Current scope/status is governed by the [consolidated branch programme](../2026-10-21-companion-media-agent-master-plan.md): original S3 only, CYD application port abandoned, Groq primary and the same Linux Hermes over permanent private Tailscale required at home/work. Earlier proposals and test observations below are not proof of current deployment or release acceptance.
+
 Research date: 21 October 2026. This is a practical licensing review, not legal advice. It is based on the repository files visible on this date; it is not a complete source-code provenance or dependency audit.
 
 ## Recommendation

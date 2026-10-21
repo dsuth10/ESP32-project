@@ -1,5 +1,7 @@
 # Image provider investigation: classroom companion
 
+> Historical design, investigation or checkpoint evidence. Current scope/status is governed by the [consolidated branch programme](../2026-10-21-companion-media-agent-master-plan.md): original S3 only, CYD application port abandoned, Groq primary and the same Linux Hermes over permanent private Tailscale required at home/work. Earlier proposals and test observations below are not proof of current deployment or release acceptance.
+
 **Retrieved:** 21 October 2026. **Scope:** provider capability and decision evidence for a Windows voice agent that can find or generate an educational image, refine it by conversation, retain named versions, and insert an approved asset at the active cursor. No provider account, key, paid generation, or installation was created. This is provider research only; destination approval and product requirements remain open.
 
 ## Recommendation

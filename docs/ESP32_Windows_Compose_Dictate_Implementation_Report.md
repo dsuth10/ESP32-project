@@ -1,5 +1,7 @@
 # ESP32 & Windows Voice Compose & Dictate: Comprehensive Engineering & Diagnostic Report
 
+> Historical design, investigation or checkpoint evidence. Current scope/status is governed by the [consolidated branch programme](2026-10-21-companion-media-agent-master-plan.md): original S3 only, CYD application port abandoned, Groq primary and the same Linux Hermes over permanent private Tailscale required at home/work. Earlier proposals and test observations below are not proof of current deployment or release acceptance.
+
 > Follow-up, 17 October 2026: the Windows companion has been repaired and launched, and the user confirmed hardware dictation records and inserts text. See [the verified repair record](Compose_Dictate_Repair_2026-10-17.md). The descriptions below document the earlier state; some functional claims did not match the source inspected during repair.
 
 **Date**: 2026-10-17  

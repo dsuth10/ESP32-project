@@ -1,6 +1,10 @@
 # Build an ESP32 classroom companion with an AI coding agent
 
-**Image feature branch:** `codex/companion-media-agent` contains an isolated desktop preview with a versioned image library, provider/job workflow, private sync API and guarded Word/OneNote insertion. Start `start_companion_feature.bat`; hardware inputs default off and feature data is separate from the live companion. Read the [testing and recovery guide](docs/feature-media-testing.md) and [implementation record](docs/2026-10-21-media-feature-implementation.md). The original main checkout/device remain the baseline; this candidate has not been merged or flashed.
+**Current branch programme:** [holistic plan and completion dashboard](docs/2026-10-21-companion-media-agent-master-plan.md). We are continuing with the original ES3C28P ESP32-S3; its installed firmware stays stable/write-locked. The CYD application port is abandoned. The branch contains an isolated image-library candidate; live deployment and teacher acceptance are still open.
+
+**Permanent home/work connection:** the same Linux Hermes will be integrated over private Tailscale at both locations, while Groq remains primary. See [the connection runbook](docs/hermes-tailscale-home-work.md). Transport configuration/off-LAN acceptance and the companion's runtime Hermes adapter are not complete.
+
+Start `start_companion_feature.bat` from the feature checkout for the isolated preview. Hardware inputs default off, feature data is separate, and the original stable board has not received feature firmware. See [testing/recovery](docs/feature-media-testing.md), [implementation evidence](docs/2026-10-21-media-feature-implementation.md) and [document index](docs/README.md).
 
 Project agents can use the [Hermes collaboration skill](.agents/skills/hermes-collaboration/SKILL.md) for the configured Linux API. Credentials and connection details stay in ignored local storage.
 
@@ -78,7 +82,7 @@ The [build guide](docs/build-guide.md#3-connect-the-board-build-and-upload) incl
 
 ## 3. Configure, build and upload
 
-**Board safety:** the original device is write-locked while feature work is tested on the CYD. Build and read-only checks are supported; an upload to the stable device will be refused. See [the guarded workflow](docs/board-upload-safety.md).
+**Board safety:** the original S3 remains write-locked. Use isolated host-side previews with unchanged firmware where possible; any S3 firmware trial requires explicit approval and verified recovery. The CYD is no longer our application test target. See [the guarded workflow](docs/board-upload-safety.md).
 
 Copy the credentials template to a local configuration file. On Windows PowerShell:
 
@@ -94,11 +98,11 @@ cp src/wifi_config.h.example src/wifi_config.h
 
 Fill in your own Wi-Fi names, passwords and receiver addresses. The local file is excluded by `.gitignore`. For Bluetooth-only testing, use valid C strings with placeholder network values until you are ready to configure voice.
 
-Build first, then upload and monitor. Replace `COM5` with your detected port:
+Build and perform a read-only preflight first. Replace `COM5` with the explicitly identified port. Actual uploads remain governed by the stable-device trial/release gate:
 
 ```bash
 pio run -e esp32-s3-portrait
-pio run -e esp32-s3-portrait -t upload --upload-port COM5
+python tools/board_safety.py check --profile es3c28p-s3 --port COM5 --manifest .pio/build/esp32-s3-portrait/board-upload.json
 pio device monitor --port COM5 --baud 115200
 ```
 
@@ -191,14 +195,9 @@ The ESP32 records speech; the host computer runs transcription and AI processing
 
 Follow [the receiver setup](docs/build-guide.md#5-set-up-the-optional-voice-receiver) to install dependencies, configure authentication, start the service and test its health endpoint.
 
-The current receiver has two routes:
+The production receiver retains its existing routing until an approved integration trial. Historically Home tried Hermes first and Work tried local Ollama first; that is not the new permanent-route design.
 
-| Receiver mode | First backend attempted | Fallback |
-|---|---|---|
-| Home | Hermes session API | Direct local Ollama |
-| Work | Direct local Ollama | Hermes session API |
-
-A reply alone does not prove Hermes handled it. Check `Backend used` in the receiver log. Work mode disables Telegram mirroring, but a local-only setup also requires local models and a local Hermes fallback configuration.
+The branch target uses the same Linux Hermes over Tailscale from both locations, with Groq primary for the desktop assistant and explicitly selected local-only operation available independently. A local-only mode must suppress remote Hermes too. See [home/work architecture](docs/home-work-architecture.md) for the target and [the permanent connection runbook](docs/hermes-tailscale-home-work.md) for its still-pending setup/acceptance. A reply alone does not prove which backend handled it; preserve backend provenance and independent readiness indicators.
 
 **Checkpoint:** hold the talk button, speak a short question, release it, and receive a transcription and reply.
 

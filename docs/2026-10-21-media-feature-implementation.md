@@ -1,10 +1,12 @@
 # Image feature implementation record
 
-21 October 2026 — development candidate
+21 October 2026 — recorded development candidate; later scope consolidated.
+
+**Current direction:** [master programme](2026-10-21-companion-media-agent-master-plan.md), S3-only application target, permanent Hermes/Tailscale required at home/work, Groq primary. The code/test evidence below belongs to the initial image checkpoint; it does not establish an in-app Hermes adapter, live service deployment or off-LAN acceptance. Later upload guards were built/tested and only CYD diagnostics flashed; the original S3 firmware remains unchanged. The CYD application port is abandoned.
 
 ## Isolation and preservation
 
-The user authorised implementation and requested a new feature branch while leaving the live device on the original baseline. `codex/companion-media-agent` was created from `main` at `e98b7bc7831d49a283104c1b41215843b684492a` in a separate managed worktree. The existing companion/History/assistant source and research documents were copied into the feature checkout with SHA-256 comparison. User credentials, databases, logs, firmware configuration and unrelated Graphify changes were excluded. The original source files remain byte-identical to that preservation manifest; only the separately requested Hermes skill was added to the original checkout.
+The user authorised implementation and requested a new feature branch while leaving the live device on the original baseline. `codex/companion-media-agent` was created from `main` at `e98b7bc7831d49a283104c1b41215843b684492a` in a separate managed worktree. The existing companion/History/assistant source and research documents were copied into the feature checkout with SHA-256 comparison. User credentials, databases, logs, firmware configuration and unrelated Graphify changes were excluded. At that checkpoint, the copied application sources matched the preservation manifest. Later safety tooling and current documentation were also mirrored into the original working folder; main was not advanced and the installed original S3 firmware was not changed.
 
 ## Implemented candidate
 

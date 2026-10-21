@@ -1,5 +1,7 @@
 # ESP32 & Windows Compose / Dictate Companion: Architecture & Implementation Plan
 
+> Historical design, investigation or checkpoint evidence. Current scope/status is governed by the [consolidated branch programme](2026-10-21-companion-media-agent-master-plan.md): original S3 only, CYD application port abandoned, Groq primary and the same Linux Hermes over permanent private Tailscale required at home/work. Earlier proposals and test observations below are not proof of current deployment or release acceptance.
+
 > **Project Concept**: Douglas Idea (12 Oct 2026)  
 > **Status**: Queued after Phase 28 / Item #13 Field Test  
 > **Target Environments**: School / Work (Windows PC) & Home (Windows PC + Linux Hermes Server)  

@@ -1,5 +1,7 @@
 # An assistant built into the desktop companion
 
+> Historical design, investigation or checkpoint evidence. Current scope/status is governed by the [consolidated branch programme](2026-10-21-companion-media-agent-master-plan.md): original S3 only, CYD application port abandoned, Groq primary and the same Linux Hermes over permanent private Tailscale required at home/work. Earlier proposals and test observations below are not proof of current deployment or release acceptance.
+
 Design recommendation — 21 October 2026
 
 This follows the request to make conversational administration part of the desktop application itself. It proposes future architecture; it does not implement history, an agent, a database, runtime device configuration or firmware changes. Existing application and device behaviour is preserved.
