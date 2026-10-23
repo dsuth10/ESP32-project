@@ -33,6 +33,7 @@ from llm_pipeline import LlmPipeline
 from clipboard_manager import ClipboardManager
 from receiver_service import VoiceReceiver
 from web_grounding import WebGrounding
+from config_loader import load_env_config as load_shared_env_config
 from history_store import HistoryStore
 from library_panel import LibraryPanel
 from assistant_service import AssistantService
@@ -56,62 +57,19 @@ def truthy(value):
 
 
 def load_env_config() -> dict:
-    env_vars = {"ESP32_START_RECEIVER": "0", "ESP32_ENABLE_HOTKEYS": "0"}
-    env_file = Path(__file__).parent / "compose.env"
-    if env_file.exists():
-        with open(env_file, "r", encoding="utf-8", errors="ignore") as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#") or "=" not in line:
-                    continue
-                k, v = line.split("=", 1)
-                if k.strip() == "HERMES_TOKEN":
-                    continue
-                env_vars[k.strip()] = v.strip()
-
-    try:
-        env_vars.update(load_settings())
-    except Exception:
-        # An inaccessible credential file must not disable offline writing.
-        pass
-
-    for k in [
-        "GROQ_API_KEY",
-        "GROQ_BASE_URL",
-        "GROQ_STT_MODEL",
-        "GROQ_LLM_MODEL",
-        "GROQ_ASSISTANT_MODEL",
-        "HISTORY_ENABLED",
-        "LOCAL_WHISPER_MODEL",
-        "LOCAL_WHISPER_DEVICE",
-        "OLLAMA_HOST",
-        "OLLAMA_MODEL",
-        "LOCAL_ONLY",
-        "AUDIO_INPUT_DEVICE",
-        "AUDIO_SAMPLE_RATE",
-        "CLIPBOARD_RESTORE_DELAY",
-        "CONTINUATION_MAX_ROUNDS",
-        "WEB_SEARCH_ENABLED",
-        "BRAVE_API_KEY",
-        "BRAVE_COUNTRY",
-        "BRAVE_RESULT_COUNT",
-        "INTENT_ROUTER",
-        "OPENROUTER_API_KEY",
-        "JEV_MODEL",
-        "ROUTER_GROQ_MODEL",
-        "MEDIA_SERVER_URL", "MEDIA_SERVER_TOKEN", "MEDIA_SYNC_ENABLED",
-        "IMAGE_MODEL", "OPENAI_API_KEY", "IMAGE_GENERATION_ENABLED", "IMAGE_ESTIMATE_AUD_CENTS",
-        "ESP32_START_RECEIVER", "ESP32_ENABLE_HOTKEYS", "HERMES_ENABLED", "HERMES_URL",
-    ]:
-        if k in os.environ and os.environ[k]:
-            env_vars[k] = os.environ[k]
-
-    return env_vars
+    return load_shared_env_config(
+        Path(__file__).parent,
+        settings_loader=load_settings,
+        defaults={"ESP32_START_RECEIVER": "0", "ESP32_ENABLE_HOTKEYS": "0"},
+    )
 
 
 class ComposeApp:
     def __init__(self, root: tk.Tk):
         self.root = root
+        self._last_external_snap = FocusTracker.snapshot_foreground_window()
+        if self._last_external_snap.get("pid") == os.getpid():
+            self._last_external_snap = None
         self.root.title("🎙️ ESP32 Voice Compose & Dictate Companion")
         self.root.geometry("920x740")
         self.root.minsize(720, 640)
@@ -189,7 +147,7 @@ class ComposeApp:
         self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.root.after(20, self._drain_ui_events)
         self.log(f"Service initialized. Active Microphone: {self.audio_capture.device_name} (WASAPI)")
-        provider = "Local Whisper + Ollama" if self.local_only or not self.config.get("GROQ_API_KEY") else "Groq + local fallback"
+        provider = "Local Whisper + Ollama" if self.local_only or not self.config.get("GROQ_API_KEY") else "Groq Whisper + Groq LLM"
         self.log(f"Processing: {provider}")
         self.log(self.web_grounding.describe())
         self.log("Ready and listening for ESP32 MacroPad or keyboard hotkeys!")
@@ -212,6 +170,7 @@ class ComposeApp:
             self.poller_thread.start()
         self._configure_media_sync()
         self.root.after(500, self._drain_media_voice_requests)
+        self.root.after(200, self._remember_external_focus)
 
     def _build_ui(self):
         self.tabs = ttk.Notebook(self.root)
@@ -709,12 +668,13 @@ class ComposeApp:
         if not payload:
             self.log("Ready queue is empty. Nothing to paste.")
             return
-        # A GUI click focuses this window. Keep the payload until the user
-        # returns to their document and presses the hardware Paste Ready key.
+        # Only the explicit Paste Ready gesture may restore a document window.
         snap = FocusTracker.get_focus_snapshot()
         if snap.get("pid") == os.getpid():
-            self.set_status("READY: Focus your document, then press PASTE READY", "#F59E0B")
-            return
+            target = getattr(self, "_last_external_snap", None)
+            if not target or not FocusTracker.restore_focus(target) or not FocusTracker.is_focus_matched(target):
+                self.set_status("READY: Focus your document, then press PASTE READY", "#F59E0B")
+                return
         if ClipboardManager.inject_paste(payload, restore_delay=self.restore_delay):
             self.pending_ready_payload = None
             self.set_status("Paste shortcut sent", "#10B981")
@@ -812,9 +772,12 @@ class ComposeApp:
         try:
             self._target_focus_snap = FocusTracker.get_focus_snapshot()
             if self._target_focus_snap.get("pid") == os.getpid():
+                previous = getattr(self, "_last_external_snap", None)
                 self._target_focus_snap = None
+                if mode != "media" and previous and FocusTracker.restore_focus(previous) and FocusTracker.is_focus_matched(previous):
+                    self._target_focus_snap = FocusTracker.get_focus_snapshot()
             fg_hwnd = self._target_focus_snap.get("hwnd", 0) if self._target_focus_snap else 0
-            self._target_selected_text = FocusTracker.capture_selected_text(fg_hwnd) if mode == "compose" else ""
+            self._target_selected_text = FocusTracker.capture_selected_text(fg_hwnd) if mode == "compose" and fg_hwnd else ""
         except Exception as e:
             self._target_focus_snap = None
             self._target_selected_text = ""
@@ -962,6 +925,17 @@ class ComposeApp:
         self._busy = False
 
     # ── Hardware & Global Hotkey Poller ─────────────────────────────────
+
+    def _remember_external_focus(self):
+        if self._stop_poller:
+            return
+        try:
+            snap = FocusTracker.snapshot_foreground_window()
+            if snap.get("pid") and snap.get("pid") != os.getpid():
+                self._last_external_snap = snap
+        except Exception:
+            logging.debug("Foreground window tracking unavailable", exc_info=True)
+        self.root.after(200, self._remember_external_focus)
 
     def _handle_hardware_event(self, mode, edge):
         if self._settings_saving():

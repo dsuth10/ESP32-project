@@ -122,3 +122,44 @@ M7/M8 remain the later programme described by the master plan.
 Use [the programme dashboard](2026-10-21-companion-media-agent-master-plan.md),
 [connection runbook](hermes-tailscale-home-work.md) and
 [installation guide](companion-installation.md) for the next checks.
+
+## Main reconciliation: 24 October 2026
+
+Reconciled `main` commit `4f07c0b` into `codex/companion-media-agent`.
+The shared configuration loader now retains feature defaults, assistant/History
+options, protected credentials and process overrides. Existing Hermes/server
+environment files supply Groq settings only; they cannot activate feature
+listeners or redirect Hermes/media. Hermes tokens remain protected-settings-only.
+
+Imported CUDA readiness checks and isolated GPU transcription, including CPU
+fallback when automatic GPU selection fails. GUI Compose/Dictate and Paste Ready
+can restore a remembered external window on an explicit gesture, checking its
+process and title. Automatic asynchronous delivery retains the original control
+lock and does not pull focus back after a window switch. Image destination and
+caret guards remain unchanged. Fixed the imported thread-ID lookup to use
+Windows kernel32 rather than user32. Window titles are not added to logs.
+
+Fresh local verification:
+
+```powershell
+python -m pytest tools/compose/tests tests tools/tests server/tests server/deployment/tests .agents/skills/hermes-collaboration/scripts/test_linux_hermes_client.py .agents/skills/hermes-collaboration/scripts/test_migrate_linux_hermes_endpoint.py -q -p no:cacheprovider --tb=short
+```
+
+**302 passed, 3 skipped, 14 subtests passed.** The skips are Windows symbolic-link
+creation fixtures. This command includes board-safety tests; it supersedes, rather
+than adds to, earlier test totals. Regression cases cover configuration precedence,
+protected Hermes tokens, changed-focus queueing, failed explicit focus restoration,
+and tracking the last external window while hardware inputs are disabled.
+
+At home, the guarded read-only preflight matched the connected device to the
+registered S3; its stable write lock remains set. No firmware or registration
+change occurred. Windows lists the MacroPad Bluetooth device with status OK;
+that listing alone does not verify a physical button event.
+
+The native feature companion launched with all five main tabs and both assistant
+panels present, with a responding UI event loop. Session-only hardware hotkeys
+were enabled after checking for duplicate companion processes. Feature data is
+separate; receiver startup, media sync, Hermes dispatch and paid images were kept
+disabled for this launch. Groq configuration is available. Physical recording,
+speech quality, foreground insertion and classroom acceptance remain open.
+Remote transport and Linux deployment were not changed or revalidated here.

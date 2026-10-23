@@ -6,6 +6,8 @@ The repository has two branches: `main` preserves the stable reference, and `cod
 
 **Documentation consolidated; product candidate implemented in part; deployment and classroom acceptance remain open.** This plan supersedes earlier roadmaps and resolves later hardware/network decisions. Historical implementation and research records retain their original evidence. Updating this plan does not deploy services, charge an image account, unlock a board or approve a release.
 
+24 October 2026 checkpoint: the companion branch has reconciled core `main` fixes from `4f07c0b`, retaining protected feature configuration and insertion guards. Fresh automated checks and a native desktop launch passed; the registered S3 was checked read-only at home. See [the reconciliation record](2026-10-21-hermes-integration-checkpoint.md#main-reconciliation-24-october-2026). Deployment and physical/classroom acceptance gates remain open.
+
 ## Outcome and fixed decisions
 
 Build an accessible, openly distributable presentation companion: a teacher asks for text, a saved image, a new/refined image or a supported device change; the desktop performs bounded actions, retains useful work and explains progress. Preserve existing Compose, Dictate, Paste Ready, shortcuts, receiver and speech capabilities.

@@ -1,5 +1,6 @@
 """Regression checks without recording, network requests or desktop keystrokes."""
 import ctypes
+import os
 import queue
 import sys
 from pathlib import Path
@@ -52,6 +53,8 @@ def make_app():
     app.set_status = Mock()
     app.pending_ready_payload = None
     app.restore_delay = 0
+    app._target_focus_snap = None
+    app._last_external_snap = None
     return app
 
 
@@ -92,7 +95,7 @@ def test_paste_runs_on_release_after_hid_modifiers_are_up():
 
 def test_changed_focus_keeps_result_ready_without_paste():
     app = make_app()
-    with patch('compose_gui.FocusTracker.is_focus_matched', return_value=False), patch('compose_gui.ClipboardManager.inject_paste') as paste:
+    with patch('compose_gui.FocusTracker.restore_focus', return_value=False), patch('compose_gui.FocusTracker.is_focus_matched', return_value=False), patch('compose_gui.ClipboardManager.inject_paste') as paste:
         app._deliver_result('Keep this text', {'hwnd': 42})
         paste.assert_not_called()
     assert app.pending_ready_payload == 'Keep this text'
@@ -100,16 +103,101 @@ def test_changed_focus_keeps_result_ready_without_paste():
 
 def test_failed_paste_keeps_payload_for_retry():
     app = make_app()
-    with patch('compose_gui.FocusTracker.is_focus_matched', return_value=True), patch('compose_gui.ClipboardManager.inject_paste', return_value=False):
+    with patch('compose_gui.FocusTracker.restore_focus', return_value=True), patch('compose_gui.FocusTracker.is_focus_matched', return_value=True), patch('compose_gui.ClipboardManager.inject_paste', return_value=False):
         app._deliver_result('Keep this text', {'hwnd': 42})
     assert app.pending_ready_payload == 'Keep this text'
 
 
 def test_successful_paste_clears_pending_payload():
     app = make_app()
-    with patch('compose_gui.FocusTracker.is_focus_matched', return_value=True), patch('compose_gui.ClipboardManager.inject_paste', return_value=True):
+    with patch('compose_gui.FocusTracker.restore_focus', return_value=True), patch('compose_gui.FocusTracker.is_focus_matched', return_value=True), patch('compose_gui.ClipboardManager.inject_paste', return_value=True):
         app._deliver_result('Final text', {'hwnd': 42})
     assert app.pending_ready_payload is None
+
+
+def test_changed_control_in_same_window_keeps_result_queued():
+    from focus_tracker import FocusTracker
+    snap = {'hwnd': 99, 'runtime_id': [1, 2, 3]}
+    focused = Mock()
+    focused.GetRuntimeId.return_value = [4, 5, 6]
+    with patch('focus_tracker.win32gui.GetForegroundWindow', return_value=99), \
+         patch('focus_tracker.auto.GetFocusedControl', return_value=focused):
+        assert FocusTracker.is_focus_matched(snap) is False
+
+
+def test_result_never_restores_focus_after_user_switches_windows():
+    app = make_app()
+    with patch('compose_gui.FocusTracker.is_focus_matched', return_value=False), \
+         patch('compose_gui.FocusTracker.restore_focus') as restore, \
+         patch('compose_gui.ClipboardManager.inject_paste') as paste:
+        app._deliver_result('Retain this result', {'hwnd': 99})
+    restore.assert_not_called()
+    paste.assert_not_called()
+    assert app.pending_ready_payload == 'Retain this result'
+
+
+def test_gui_compose_uses_last_document_when_companion_has_focus():
+    app = make_app()
+    app._last_external_snap = {'hwnd': 77, 'pid': 555, 'title': 'OneNote'}
+    with patch('compose_gui.FocusTracker.get_focus_snapshot', side_effect=[
+             {'hwnd': 1, 'pid': os.getpid(), 'title': 'Companion'},
+             {'hwnd': 77, 'pid': 555, 'runtime_id': [1, 2], 'title': 'OneNote'}]), \
+         patch('compose_gui.FocusTracker.restore_focus', return_value=True), \
+         patch('compose_gui.FocusTracker.is_focus_matched', return_value=True), \
+         patch('compose_gui.FocusTracker.capture_selected_text', return_value=''), \
+         patch('os.getpid', return_value=os.getpid()):
+        app.start_recording_flow('compose')
+    assert app._target_focus_snap['hwnd'] == 77
+    assert app._target_focus_snap['runtime_id'] == [1, 2]
+
+
+def test_failed_gui_target_restore_does_not_capture_companion_selection():
+    app = make_app()
+    app._last_external_snap = {'hwnd': 77, 'pid': 555}
+    with patch('compose_gui.FocusTracker.get_focus_snapshot', return_value={'hwnd': 1, 'pid': os.getpid()}), \
+         patch('compose_gui.FocusTracker.restore_focus', return_value=False), \
+         patch('compose_gui.FocusTracker.capture_selected_text') as capture:
+        app.start_recording_flow('compose')
+    capture.assert_not_called()
+    assert app._target_focus_snap is None
+    assert app._target_selected_text == ''
+
+
+def test_paste_ready_failed_restore_does_not_inject_into_another_window():
+    app = make_app()
+    app.pending_ready_payload = 'Retain text'
+    app._last_external_snap = {'hwnd': 77, 'pid': 555}
+    with patch('compose_gui.FocusTracker.get_focus_snapshot', return_value={'pid': os.getpid()}), \
+         patch('compose_gui.FocusTracker.restore_focus', return_value=False), \
+         patch('compose_gui.ClipboardManager.inject_paste') as paste:
+        app.inject_paste_ui()
+    paste.assert_not_called()
+    assert app.pending_ready_payload == 'Retain text'
+
+
+def test_focus_tracking_remains_available_without_hardware_hotkeys():
+    app = make_app()
+    with patch('compose_gui.FocusTracker.snapshot_foreground_window', return_value={'hwnd': 77, 'pid': 555}):
+        app._remember_external_focus()
+    assert app._last_external_snap['hwnd'] == 77
+    app.root.after.assert_called_once_with(200, app._remember_external_focus)
+
+
+def test_env_loader_reuses_hermes_groq_key_when_compose_env_is_empty(tmp_path, monkeypatch):
+    from config_loader import load_env_config
+    hermes = tmp_path / 'hermes.env'
+    hermes.write_text('GROQ_API_KEY=gsk_home_speed_key\n', encoding='utf-8')
+    compose = tmp_path / 'compose.env'
+    compose.write_text('GROQ_API_KEY=\nLOCAL_ONLY=0\n', encoding='utf-8')
+    monkeypatch.setenv('LOCALAPPDATA', str(tmp_path))
+    monkeypatch.delenv('GROQ_API_KEY', raising=False)
+    # Point fallbacks at our temp files by writing hermes/.env where loader expects it
+    hermes_dir = tmp_path / 'hermes'
+    hermes_dir.mkdir()
+    (hermes_dir / '.env').write_text('GROQ_API_KEY=gsk_home_speed_key\n', encoding='utf-8')
+    cfg = load_env_config(tmp_path)
+    assert cfg.get('GROQ_API_KEY') == 'gsk_home_speed_key'
+    assert cfg.get('LOCAL_ONLY') == '0'
 
 
 def test_rejected_cleanup_is_not_treated_as_truthy_boolean():
@@ -148,6 +236,26 @@ def test_paste_failure_restores_previous_clipboard():
 
 def test_dictate_guard_accepts_punctuation():
     assert verify_dictate_overlap('hello there', 'Hello there.') == 'Hello there.'
+
+
+def test_auto_device_uses_cpu_when_cublas_missing():
+    pipeline = SpeechPipeline(local_only=True)
+    with patch('speech_pipeline.cuda_runtime_usable', return_value=False):
+        assert pipeline._choose_device() == 'cpu'
+
+
+def test_cuda_child_crash_retries_cpu_without_loading_gpu_in_gui():
+    pipeline = SpeechPipeline(local_only=True)
+    cpu = Mock()
+    cpu.transcribe.return_value = ([Mock(text='Hello there')], None)
+    with patch('speech_pipeline.cuda_runtime_usable', return_value=True), \
+         patch.object(pipeline, '_transcribe_subprocess', return_value=(None, 'exit -1073740791')) as isolated, \
+         patch('faster_whisper.WhisperModel', return_value=cpu) as model:
+        assert pipeline._transcribe_local(b'fixture') == 'Hello there'
+        isolated.assert_called_once_with(b'fixture', 'cuda')
+        model.assert_called_once_with('base', device='cpu', compute_type='int8')
+    assert pipeline._cuda_unusable is True
+    assert pipeline._resolved_device == 'cpu'
 
 
 def test_auto_whisper_retries_lazy_cuda_failure_on_cpu():

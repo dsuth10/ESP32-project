@@ -71,6 +71,59 @@ class FocusTracker:
         }
 
     @staticmethod
+    def snapshot_foreground_window() -> dict:
+        """HWND/title/pid only. Safe to call from the hotkey poller."""
+        hwnd = win32gui.GetForegroundWindow()
+        title = win32gui.GetWindowText(hwnd) if hwnd else ""
+        _, pid = win32process.GetWindowThreadProcessId(hwnd) if hwnd else (0, 0)
+        return {
+            "hwnd": hwnd,
+            "title": title,
+            "pid": pid,
+            "runtime_id": None,
+            "timestamp": time.time(),
+        }
+
+    @staticmethod
+    def restore_focus(snapshot: dict | None) -> bool:
+        """Bring the recorded document window back to the foreground."""
+        hwnd = snapshot.get("hwnd") if snapshot else 0
+        if not hwnd:
+            return False
+        try:
+            if not win32gui.IsWindow(hwnd):
+                return False
+            _, pid = win32process.GetWindowThreadProcessId(hwnd)
+            if snapshot.get("pid") and pid != snapshot["pid"]:
+                return False
+            if snapshot.get("title") and win32gui.GetWindowText(hwnd) != snapshot["title"]:
+                return False
+            if win32gui.GetForegroundWindow() == hwnd:
+                return True
+            user32 = ctypes.windll.user32
+            foreground = win32gui.GetForegroundWindow()
+            fg_tid, _ = win32process.GetWindowThreadProcessId(foreground) if foreground else (0, 0)
+            tgt_tid, _ = win32process.GetWindowThreadProcessId(hwnd)
+            cur_tid = ctypes.windll.kernel32.GetCurrentThreadId()
+            attached = []
+            if fg_tid:
+                user32.AttachThreadInput(cur_tid, fg_tid, True)
+                attached.append(fg_tid)
+            if tgt_tid and tgt_tid not in attached:
+                user32.AttachThreadInput(cur_tid, tgt_tid, True)
+                attached.append(tgt_tid)
+            try:
+                win32gui.ShowWindow(hwnd, 9)  # SW_RESTORE
+                win32gui.SetForegroundWindow(hwnd)
+            finally:
+                for tid in reversed(attached):
+                    user32.AttachThreadInput(cur_tid, tid, False)
+            return win32gui.GetForegroundWindow() == hwnd
+        except Exception as e:
+            logging.debug("[FocusTracker] restore_focus error: %s", e)
+            return False
+
+    @staticmethod
     def is_focus_matched(snapshot: dict) -> bool:
         """
         Verifies if the current foreground window and control still match the snapshot.
@@ -82,17 +135,23 @@ class FocusTracker:
         if current_hwnd != snapshot["hwnd"]:
             return False
 
-        # If a specific runtime_id was recorded, verify it hasn't shifted to another control
+        if snapshot.get("pid"):
+            _, pid = win32process.GetWindowThreadProcessId(current_hwnd)
+            if pid != snapshot["pid"]:
+                return False
+        if snapshot.get("title") and win32gui.GetWindowText(current_hwnd) != snapshot["title"]:
+            return False
+        # Preserve the control lock: another control in the same window is not
+        # an authorised automatic insertion target. Use Paste Ready if UIA IDs rotate.
         expected_rid = snapshot.get("runtime_id")
         if expected_rid:
             try:
                 with auto.UIAutomationInitializerInThread():
-                    current_focused = auto.GetFocusedControl()
-                    if not current_focused or current_focused.GetRuntimeId() != expected_rid:
+                    focused = auto.GetFocusedControl()
+                    if not focused or focused.GetRuntimeId() != expected_rid:
                         return False
             except Exception:
                 return False
-
         return True
 
     @staticmethod
