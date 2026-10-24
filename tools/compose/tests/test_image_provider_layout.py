@@ -153,3 +153,39 @@ def test_frozen_choice_and_image_actions_fit_nested_media_page(tmp_path, width, 
         assert 'Google Gemini' in panel.prepared_choice.cget('text')
     finally:
         root.destroy()
+
+
+@pytest.mark.parametrize('width,height', [(920,740),(720,640)])
+def test_full_companion_device_feedback_and_media_actions_fit(tmp_path,width,height,monkeypatch):
+    from unittest.mock import patch
+    from compose_gui import ComposeApp
+    monkeypatch.setenv('ESP32_COMPANION_DATA_DIR',str(tmp_path))
+    config={'LOCAL_ONLY':'1','MEDIA_SYNC_ENABLED':'0','HERMES_ENABLED':'0','WEB_SEARCH_ENABLED':'0',
+            'ESP32_START_RECEIVER':'0','ESP32_ENABLE_HOTKEYS':'0','DEVICE_FEEDBACK_PORT':'COM5',
+            'DEVICE_FEEDBACK_ID':'a'*12}
+    link=Mock();link.status.return_value='USB feedback linked'
+    microphone=Mock(device_name='Synthetic microphone; capture disabled')
+    with patch('compose_gui.load_env_config',return_value=config), patch('compose_gui.AudioCapture',return_value=microphone), \
+         patch('device_feedback.DeviceFeedback',return_value=link), patch('requests.sessions.Session.request') as network:
+        try:root=tk.Tk()
+        except tk.TclError:pytest.skip('Native Tk unavailable')
+        app=None
+        try:
+            root.attributes('-alpha',0)
+            app=ComposeApp(root)
+            root.geometry(f'{width}x{height}')
+            app.tabs.select(app.media_tab)
+            root.after(300,root.quit);root.mainloop()
+            app.media_panel.prepare(prompt='Synthetic image brief')
+            root.update()
+            assert app.device_feedback_label.winfo_ismapped()
+            assert app.device_feedback_label.cget('text')=='USB: linked'
+            for widget in (app.device_feedback_label,app.media_panel.jobs,app.media_panel.generate_button):
+                assert widget.winfo_rootx()+widget.winfo_width()<=root.winfo_rootx()+width
+                assert widget.winfo_rooty()+widget.winfo_height()<=root.winfo_rooty()+height
+            network.assert_not_called()
+            microphone.start_recording.assert_not_called()
+            link.submit.assert_called()
+        finally:
+            if app is not None:app.close()
+            else:root.destroy()

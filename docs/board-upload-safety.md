@@ -58,9 +58,54 @@ PlatformIO erase, filesystem/OTA upload and standalone bootloader/programming ta
 
 These safeguards cover the repository's supported upload routes. A person can still deliberately run an external raw esptool, OpenOCD or ESP-IDF command, modify the guard, or check out an older unguarded version. Local scripts cannot prevent those bypasses. Do not use those routes for routine uploads.
 
-## Future S3 trial gate
+## Scoped S3 application trial and recovery
 
-The S3 remains stable/write-locked. Before any firmware trial: obtain explicit user approval for the candidate, make/fingerprint a complete private recovery backup, preserve matching build/configuration metadata, verify the restoration procedure, coordinate listener ownership, then review a scoped device-role change. Keep processor/identity/flash/partition/image checks active. Restore/relock as agreed after testing. A scoped trial/relock helper and reviewed recovery manifest are still to be implemented; this document does not provide an unlock flag or authorise manual bypasses. Prefer unchanged-firmware host-side testing first.
+The ordinary uploader and stable registration remain write-locked. The separate
+`tools/board_trial.py` route implements a **single-candidate application trial**
+after explicit human authorisation. Its temporary write role is recorded in a
+private candidate authorisation, rather than changing the registry to `test`.
+It supports the original S3's default app0 boot selection only. It cannot write
+bootloaders, partition tables, OTA selection, NVS or filesystems.
+
+1. Identify the explicit port/profile and close serial monitors/USB feedback.
+2. Run `backup --port COM5 --destination .local/<trial>/recovery`. It validates
+   registered hardware/partitions and saves the complete 16 MiB image only after
+   two independent full device reads match. Keep it private.
+3. Build the portrait candidate. Run `prepare --manifest <board-upload.json>
+   --recovery <recovery.json> --destination <authorisation.json> --approval
+   "<recorded explicit human authorisation>"`. The receipt binds physical identity,
+   partition fingerprint, exact candidate bytes/manifest and verified recovery.
+   This command is not itself human authorisation.
+4. Review the exact application-only write and recovery range. `check --port COM5
+   --authorisation <authorisation.json>` verifies the physical target and unchanged
+   original application/boot selection without writing. Ordinary runtime NVS
+   changes are preserved; they are never replaced from the old snapshot.
+5. Only within the authorised trial, run `upload` with that same explicit port and
+   authorisation. It claims a single write durably before dispatch, writes only
+   app0, independently reads back the application, and verifies boot/settings
+   regions unchanged. A failed or uncertain dispatch cannot be replayed.
+6. `check-restore` validates recovery without a write. `restore` uses the original
+   bytes for exactly the sectors the candidate could overwrite, leaving all
+   other current data intact. It works even if the candidate source is later
+   unavailable. Restoration also has a single durable dispatch and read-back.
+
+The normal guard still refuses a stable-board upload before, during and after
+this route. No identity, fingerprint or registry role is edited to defeat a
+rejection. Investigate any refusal; do not modify receipts to make it pass.
+Recovery files and candidate receipts are recovery-critical private data. Retain
+matching source/tool/build metadata. A passing fake-device recovery test and
+read-only physical check establish the executable procedure; report an actual
+physical restoration separately if one is performed.
+
+## S3 trial approval gate
+
+The S3 remains stable/write-locked. Before any firmware trial: obtain explicit
+user approval for the candidate, make/fingerprint a complete private recovery
+backup, preserve matching build/configuration metadata, verify the restoration
+procedure, coordinate listener ownership, then review the scoped write role
+above. Keep processor/identity/flash/partition/image checks active. Restore as
+agreed after testing; the stable registration stays locked throughout. This
+document does not provide an unlock flag or authorise manual bypasses.
 
 ## Verification
 

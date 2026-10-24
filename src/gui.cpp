@@ -29,6 +29,14 @@ void MacroPadGUI::setVoiceAudioEnabled(bool enabled) {
 }
 
 void MacroPadGUI::getButtonRect(uint8_t pageIndex, uint8_t btnIndex, int16_t& x, int16_t& y, int16_t& w, int16_t& h) {
+  if (pageIndex == PAGE_COMPOSE) {
+    if (btnIndex == 4) { x=8; w=SCREEN_WIDTH-16; y=SCREEN_HEIGHT-66; h=58; }
+    else {
+      w=(SCREEN_WIDTH-24)/2; h=(SCREEN_HEIGHT-STATUS_BAR_H-134)/2;
+      x=8+(btnIndex%2)*(w+8); y=STATUS_BAR_H+54+(btnIndex/2)*(h+7);
+    }
+    return;
+  }
   if (pageIndex == PAGE_VOICE) {
     w = UI_VOICE_BTN_W;
     h = UI_VOICE_BTN_H;
@@ -179,6 +187,21 @@ void MacroPadGUI::drawButton(uint8_t pageIndex, uint8_t btnIndex, bool pressed) 
   uint16_t border = pressed ? 0xFFFF : btn.borderColor;
   uint16_t textPrimary = pressed ? 0x0000 : C_TEXT_WHITE;
   uint16_t textSub = pressed ? 0x2965 : C_TEXT_MUTED;
+
+  if (pageIndex == PAGE_COMPOSE) {
+    bool disabled = btnIndex == 4 && !companionCanPaste();
+    if (disabled) { bg=0x2124; border=0x632C; textPrimary=C_TEXT_MUTED; }
+    _tft.fillRoundRect(x,y,w,h,7,bg);
+    _tft.drawRoundRect(x,y,w,h,7,border);
+    _tft.setTextDatum(MC_DATUM);
+    _tft.setTextColor(textPrimary,bg);
+    _tft.drawString(btn.label,x+w/2,y+h/2-8,2);
+    _tft.setTextColor(textSub,bg);
+    String help = btnIndex==0 ? "Write a brief" : btnIndex==1 ? "My exact words" : btn.subtitle;
+    if (btnIndex==4) help = _companionLinked ? (_companionState=="text_ready" ? "Text ready" : _companionState=="image_ready" ? "Reviewed image ready" : "Nothing queued") : "Check ready item on PC";
+    _tft.drawString(help,x+w/2,y+h/2+11,1);
+    return;
+  }
 
   // Background & border
   _tft.fillRoundRect(x, y, w, h, 8, bg);
@@ -1004,10 +1027,31 @@ void MacroPadGUI::drawAll(bool isConnected, uint8_t currentPage) {
   for (uint8_t i = 0; i < count; i++) {
     drawButton(currentPage, i, false);
   }
+  if (currentPage == PAGE_COMPOSE) drawCompanionStatus();
   if (currentPage == PAGE_VOICE) {
     drawVoiceAudioToggle(false);
     redrawVoiceCard();
   }
+}
+
+bool MacroPadGUI::companionCanPaste() const {
+  // With no feedback link retain the established BLE gesture; Windows still
+  // validates the queue and destination. Never pretend that unknown means ready.
+  return !_companionLinked || _companionState=="text_ready" || _companionState=="image_ready";
+}
+
+void MacroPadGUI::setCompanionStatus(const String& state, const String& title, const String& detail, bool linked) {
+  _companionState=state; _companionTitle=title; _companionDetail=detail; _companionLinked=linked;
+}
+
+void MacroPadGUI::drawCompanionStatus() {
+  const int y=STATUS_BAR_H+7, w=SCREEN_WIDTH-16;
+  _tft.fillRoundRect(8,y,w,40,5,C_STATUS_BG);
+  _tft.setTextDatum(TL_DATUM);
+  _tft.setTextColor(_companionLinked ? C_TEXT_WHITE : C_TEXT_MUTED,C_STATUS_BG);
+  _tft.drawString(_companionTitle.substring(0,27),14,y+4,2);
+  _tft.setTextColor(C_TEXT_MUTED,C_STATUS_BG);
+  _tft.drawString(_companionDetail.substring(0,33),14,y+24,1);
 }
 
 int16_t MacroPadGUI::getTouchTarget(int16_t x, int16_t y, uint8_t currentPage) {

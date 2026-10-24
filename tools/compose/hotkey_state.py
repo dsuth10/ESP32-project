@@ -3,7 +3,7 @@
 
 class HotkeyState:
     def __init__(self):
-        self.held = {mode: set() for mode in ("compose", "dictate", "paste")}
+        self.held = {mode: set() for mode in ("compose", "dictate", "paste", "media", "library")}
 
     def update(self, is_down):
         events = []
@@ -12,6 +12,8 @@ class HotkeyState:
             ("compose", 0x7C, 0x78),
             ("dictate", 0x7D, 0x79),
             ("paste", 0x7E, 0x7A),
+            ("media", 0x7F, 0x77),
+            ("library", 0x80, 0x76),
         ):
             previous = self.held[mode]
             # Once a chord starts, track its function key until release, even if

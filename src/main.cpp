@@ -15,6 +15,7 @@
 #include "sd_card.h"
 #include "host_discovery.h"
 #include "power_manager.h"
+#include "compose_gesture.h"
 
 // Set to 1 for raw microphone isolation diagnostic (Wi-Fi, TLS & Hermes upload disabled).
 // Once genuine microphone PCM is proven, set to 0 to restore full network pipeline.
@@ -54,9 +55,14 @@ static TaskHandle_t g_telemetryTask = NULL;
 static volatile bool g_voiceBusy = false;
 static bool s_powerConfirmOpen = false;
 
-// Compose & Dictate latching state (Tap-to-Toggle + Hold-to-Talk)
-static int s_composeLatchedBtn = -1;
-static uint32_t s_composeLatchStart = 0;
+static ComposeGesture::State s_createGesture;
+static uint32_t s_createPulseStart = 0;
+static int s_createPulseButton = -1;
+static String s_companionNonce;
+static uint32_t s_companionSeen = 0, s_companionSequence = 0;
+static bool s_companionLinked = false;
+static String s_serialLine;
+static bool s_serialDiscard = false;
 
 // Li-Po battery measurement & smoothing
 static float g_filteredBatVoltage = 0.0f;
@@ -354,14 +360,97 @@ void setup() {
   }
 }
 
+static bool readCommandLine(String& line) {
+  // Bounded work per loop; partial USB packets never stall touch/rendering.
+  for (int budget=0; budget<64 && Serial.available(); ++budget) {
+    char c=Serial.read();
+    if (c=='\n') {
+      bool valid=!s_serialDiscard;
+      line=s_serialLine; line.trim(); s_serialLine=""; s_serialDiscard=false;
+      return valid && line.length()>0;
+    }
+    if (c=='\r') continue;
+    if (s_serialLine.length()>=192) { s_serialDiscard=true; s_serialLine=""; }
+    if (!s_serialDiscard) s_serialLine+=c;
+  }
+  return false;
+}
+
+static bool companionCommand(const String& cmd) {
+  if (!cmd.startsWith("CP1")) return false;
+  if (cmd.startsWith("CP1? ")) {
+    String nonce=cmd.substring(5);
+    if (nonce.length()!=24) return true;
+    for (unsigned i=0;i<nonce.length();++i) if (!isxdigit(nonce[i])) return true;
+    s_companionNonce=nonce; s_companionSequence=0;
+    uint64_t identity=ESP.getEfuseMac(); uint8_t* mac=(uint8_t*)&identity;
+    Serial.printf("CP1! %s %02x%02x%02x%02x%02x%02x page7-v1\n",nonce.c_str(),mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
+    return true;
+  }
+  if (!cmd.startsWith("CP1|")) return true;
+  String fields[6]; int at=0;
+  for (int i=0;i<5;++i) { int end=cmd.indexOf('|',at); if(end<0)return true; fields[i]=cmd.substring(at,end); at=end+1; }
+  fields[5]=cmd.substring(at);
+  if (s_companionNonce.length()!=24 || fields[1]!=s_companionNonce || fields[2].length()<1 || fields[2].length()>9 || fields[5].indexOf('|')>=0) return true;
+  for(unsigned i=0;i<fields[2].length();++i) if(!isdigit(fields[2][i]))return true;
+  uint32_t sequence=strtoul(fields[2].c_str(),nullptr,10);
+  if(sequence<=s_companionSequence)return true;
+  const String states="|idle|record_compose|record_dictate|record_media|working|review|text_ready|image_ready|error|";
+  if(fields[3].length()==0 || states.indexOf("|"+fields[3]+"|")<0 || fields[4].length()>27 || fields[5].length()>33)return true;
+  for(int f=4;f<=5;++f) for(unsigned i=0;i<fields[f].length();++i) if(fields[f][i]<32 || fields[f][i]>126)return true;
+  static String oldState,oldTitle,oldDetail;
+  bool changed=!s_companionLinked || oldState!=fields[3] || oldTitle!=fields[4] || oldDetail!=fields[5];
+  s_companionLinked=true; s_companionSeen=millis(); s_companionSequence=sequence;
+  if(changed) {
+    oldState=fields[3];oldTitle=fields[4];oldDetail=fields[5];
+    gui.setCompanionStatus(fields[3],fields[4],fields[5],true);
+    if(currentPage==PAGE_COMPOSE) { gui.drawCompanionStatus();gui.drawButton(PAGE_COMPOSE,4,false); }
+  }
+  Serial.printf("CP1+ %s %lu %u\n",s_companionNonce.c_str(),(unsigned long)sequence,currentPage+1);
+  return true;
+}
+
+static bool handleCreateTouch(bool bleConnected) {
+  if(s_createPulseButton>=0 && (millis()-s_createPulseStart>=60 || currentPage!=PAGE_COMPOSE || !bleConnected)) {
+    bleKeyboard.releaseAll();
+    if(currentPage==PAGE_COMPOSE)gui.drawButton(PAGE_COMPOSE,s_createPulseButton,false);
+    s_createPulseButton=-1;
+  }
+  int target=currentPage==PAGE_COMPOSE && ts.isTouched ? gui.getTouchTarget(ts.points[0].x,ts.points[0].y,currentPage) : -1;
+  bool consumed=currentPage==PAGE_COMPOSE && ((target>=0 && target<=4) || s_createGesture.active>=0);
+  int allowedTarget=target;
+  if(s_createGesture.active<0 && target>=0 && target<=2 && !gui.companionCanRecord())allowedTarget=-1;
+  ComposeGesture::Step step=ComposeGesture::update(s_createGesture,ts.isTouched,allowedTarget,millis(),bleConnected && currentPage==PAGE_COMPOSE);
+  s_createGesture=step.next;
+  if(step.action==ComposeGesture::Stop) {
+    bleKeyboard.releaseAll();
+    if(currentPage==PAGE_COMPOSE)gui.drawButton(PAGE_COMPOSE,step.button,false);
+    Serial.println("[Create] Recording gesture finished.");
+  } else if(step.action==ComposeGesture::Start) {
+    const uint8_t standard[]={KEY_F9,KEY_F10,KEY_F8}, extended[]={KEY_F13,KEY_F14,KEY_F16};
+    bleKeyboard.press(KEY_LEFT_CTRL);bleKeyboard.press(KEY_LEFT_ALT);bleKeyboard.press(KEY_LEFT_SHIFT);
+    bleKeyboard.press(standard[step.button]);bleKeyboard.press(extended[step.button]);
+    gui.drawButton(PAGE_COMPOSE,step.button,true);
+    Serial.printf("[Create] Recording gesture %d started.\n",step.button);
+  } else if(step.action==ComposeGesture::Library || step.action==ComposeGesture::Paste) {
+    if(step.action==ComposeGesture::Paste && !gui.companionCanPaste())return true;
+    bleKeyboard.press(KEY_LEFT_CTRL);bleKeyboard.press(KEY_LEFT_ALT);bleKeyboard.press(KEY_LEFT_SHIFT);
+    bleKeyboard.press(step.action==ComposeGesture::Library?KEY_F7:KEY_F11);
+    bleKeyboard.press(step.action==ComposeGesture::Library?KEY_F17:KEY_F15);
+    s_createPulseButton=step.button;s_createPulseStart=millis();gui.drawButton(PAGE_COMPOSE,step.button,true);
+  }
+  return consumed;
+}
+
 void loop() {
   bool currentBleState = bleKeyboard.isConnected();
 
   // 0. Check Serial Commands for Speaker & SD Card Tests
-  if (Serial.available()) {
-    String cmd = Serial.readStringUntil('\n');
-    cmd.trim();
-    if (cmd.equalsIgnoreCase("test_speaker") || cmd.equalsIgnoreCase("chime") || 
+  String cmd;
+  if (readCommandLine(cmd)) {
+    if (companionCommand(cmd)) {
+      // Display-only, sequenced and session-bound host feedback.
+    } else if (cmd.equalsIgnoreCase("test_speaker") || cmd.equalsIgnoreCase("chime") ||
         cmd.equalsIgnoreCase("beep") || cmd.equalsIgnoreCase("spk")) {
       Serial.println("[Command] Running speaker chime test...");
       recorder.playChime();
@@ -411,6 +500,12 @@ void loop() {
         Serial.printf("  Page %d: %s\n", i + 1, PROFILES[i].title);
       }
     }
+  }
+
+  if(s_companionLinked && millis()-s_companionSeen>4000) {
+    s_companionLinked=false;
+    gui.setCompanionStatus("offline","PC status unavailable","Connect USB companion",false);
+    if(currentPage==PAGE_COMPOSE){gui.drawCompanionStatus();gui.drawButton(PAGE_COMPOSE,4,false);}
   }
 
 #if !AUDIO_DIAGNOSTIC_MODE
@@ -475,16 +570,8 @@ void loop() {
   }
 
   // 5. Touch Handling
-  // Auto-release Compose recording if 60s safety timeout is reached
-  if (s_composeLatchedBtn != -1 && (millis() - s_composeLatchStart >= 60000)) {
-    Serial.println("[Compose] Safety timeout reached (60s). Auto-stopping recording.");
-    bleKeyboard.releaseAll();
-    gui.drawButton(PAGE_COMPOSE, s_composeLatchedBtn, false);
-    s_composeLatchedBtn = -1;
-    if (currentBleState) setLedColor(0, 50, 15);
-  }
-
   ts.read();
+  if (handleCreateTouch(currentBleState)) return;
 #if TOUCH_WAKE_DIAG
   {
     static bool s_prevTouched = false;
@@ -500,17 +587,6 @@ void loop() {
   if (ts.isTouched) {
     int16_t tx = ts.points[0].x;
     int16_t ty = ts.points[0].y;
-
-    // Check if we are currently latched in recording mode (Tap-to-Toggle)
-    if (s_composeLatchedBtn != -1) {
-      Serial.printf("[Compose] Second tap received! Stopping recording for button %d.\n", s_composeLatchedBtn);
-      bleKeyboard.releaseAll();
-      gui.drawButton(PAGE_COMPOSE, s_composeLatchedBtn, false);
-      s_composeLatchedBtn = -1;
-      if (currentBleState) setLedColor(0, 50, 15);
-      waitTouchRelease(500);
-      return;
-    }
 
     // Constrain coordinates to active UI orientation
     tx = constrain(tx, 0, SCREEN_WIDTH - 1);
@@ -927,88 +1003,7 @@ void loop() {
         }
       } 
       else {
-        // === PAGE 6: COMPOSE & DICTATE (TAP-TO-TOGGLE + HOLD-TO-TALK) ===
-        if (currentPage == PAGE_COMPOSE) {
-          if (btnIndex == 0 || btnIndex == 1) { // 0 = COMPOSE, 1 = DICTATE
-            uint8_t targetKey = (btnIndex == 0) ? KEY_F9 : KEY_F10;
-            uint8_t extKey = (btnIndex == 0) ? KEY_F13 : KEY_F14;
-
-            gui.drawButton(currentPage, btnIndex, true);
-            if (btnIndex == 0) {
-              setLedColor(120, 60, 0);  // Amber for Compose
-            } else {
-              setLedColor(0, 80, 120); // Cyan for Dictate
-            }
-
-            if (bleKeyboard.isConnected()) {
-              Serial.printf("[Compose] Recording started: %s (Ctrl+Alt+Shift+F%d + F%d)\n", 
-                            btn.label, (btnIndex == 0 ? 9 : 10), (btnIndex == 0 ? 13 : 14));
-              // Send both standard modifiers combo AND extended F-key for universal compatibility
-              bleKeyboard.press(KEY_LEFT_CTRL);
-              bleKeyboard.press(KEY_LEFT_ALT);
-              bleKeyboard.press(KEY_LEFT_SHIFT);
-              bleKeyboard.press(targetKey);
-              bleKeyboard.press(extKey);
-            } else {
-              Serial.println("[Compose] BLE not connected. Keystroke dropped.");
-            }
-
-            uint32_t pressStart = millis();
-            bool isHold = false;
-            while (ts.isTouched) {
-              ts.read();
-              if (millis() - pressStart >= 350) {
-                isHold = true;
-                break;
-              }
-              delay(15);
-            }
-
-            if (isHold) {
-              // User is HOLDING (Push-To-Talk). Continue waiting until finger released.
-              Serial.println("[Compose] Operating in Push-To-Talk (Hold) mode.");
-              while (ts.isTouched) {
-                ts.read();
-                if (millis() - pressStart >= 60000) { // Rule 10 safety cap (60s)
-                  Serial.println("[Compose] Safety cap reached (60s). Forcing release.");
-                  break;
-                }
-                delay(15);
-              }
-              bleKeyboard.releaseAll();
-              gui.drawButton(currentPage, btnIndex, false);
-              if (currentBleState) setLedColor(0, 50, 15);
-              Serial.printf("[Compose] Push-to-Talk finished (%lu ms).\n", millis() - pressStart);
-            } else {
-              // User TAPPED/CLICKED (< 350ms). Latch recording ON!
-              Serial.println("[Compose] Tap detected! Latching recording ON. Tap again anywhere to finish.");
-              s_composeLatchedBtn = btnIndex;
-              s_composeLatchStart = millis();
-              // Leave button pressed, leave LED on, leave keys down!
-            }
-            delay(30);
-            return;
-          }
-          else if (btnIndex == 2) {
-            // PASTE READY (Button 2)
-            gui.drawButton(currentPage, btnIndex, true);
-            setLedColor(0, 120, 30); // Bright Green
-            if (bleKeyboard.isConnected()) {
-              Serial.println("[Compose] Tapped PASTE READY (Ctrl+Alt+Shift+F11 + F15)");
-              bleKeyboard.press(KEY_LEFT_CTRL);
-              bleKeyboard.press(KEY_LEFT_ALT);
-              bleKeyboard.press(KEY_LEFT_SHIFT);
-              bleKeyboard.press(KEY_F11);
-              bleKeyboard.press(KEY_F15);
-              delay(40);
-              bleKeyboard.releaseAll();
-            }
-            waitTouchRelease(500);
-            gui.drawButton(currentPage, btnIndex, false);
-            if (currentBleState) setLedColor(0, 50, 15);
-            return;
-          }
-        } else {
+        {
           // Standard tap macro keystroke flow
           gui.drawButton(currentPage, btnIndex, true);
           setLedColor(120, 120, 120); // Bright White flash

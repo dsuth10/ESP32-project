@@ -91,20 +91,19 @@ const MacroProfile PROFILES[NUM_PAGES] = {
     }
   },
 
-  // Page 6: Compose & Dictate
+  // Display page 7/8: dedicated writing/image actions and fixed Paste Ready.
   {
-    "Compose & Dictate",
+    "Create & Paste",
     0xFD20, // Amber / Warm Orange accent
-    3,      // 3 large buttons
+    5,
     {
       // Button 0: COMPOSE (Tap or Hold)
       { "COMPOSE", "Tap/Hold to Speak", 0x3186, 0xFD20, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F13, nullptr },
       // Button 1: DICTATE (Tap or Hold)
       { "DICTATE", "Tap/Hold to Dictate", 0x1A28, 0x051D, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F14, nullptr },
-      // Button 2: PASTE READY (Tap F15)
-      { "PASTE READY", "Tap: Paste Pending", 0x1245, 0x07E0, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F15, nullptr },
-      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
-      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "IMAGES", "Find/create/edit", 0x2949, 0xA35F, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F16, nullptr },
+      { "LIBRARY", "Open on PC", 0x2124, 0x632C, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F17, nullptr },
+      { "PASTE READY", "Nothing queued", 0x1245, 0x07E0, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F15, nullptr },
       { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr }
     }
   },

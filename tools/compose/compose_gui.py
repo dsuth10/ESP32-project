@@ -169,8 +169,19 @@ class ComposeApp:
             self.poller_thread = threading.Thread(target=self._hardware_key_poller, daemon=True)
             self.poller_thread.start()
         self._configure_media_sync()
+        self.device_feedback = None
+        if self.config.get('DEVICE_FEEDBACK_PORT') and hasattr(self,'device_feedback_label'):
+            try:
+                from device_feedback import DeviceFeedback
+                self.device_feedback = DeviceFeedback(self.config['DEVICE_FEEDBACK_PORT'],self.config.get('DEVICE_FEEDBACK_ID',''),
+                                                     audit_path=data_directory()/'device-feedback-events.jsonl')
+                self.device_feedback_label.pack(side='right',padx=5)
+                self.root.after(250,self._device_feedback_tick)
+            except Exception:
+                self.log('USB device feedback could not start; existing Bluetooth controls remain available.')
         self.root.after(500, self._drain_media_voice_requests)
         self.root.after(200, self._remember_external_focus)
+        self.root.after(350, self._restore_queued_image)
 
     def _build_ui(self):
         status = tk.Frame(self.root, bg="#111827")
@@ -208,8 +219,8 @@ class ComposeApp:
             self.media_panel.pack(fill="both", expand=True)
             media_options = ttk.Frame(self.media_tab)
             media_options.pack(fill="x", before=self.media_panel)
-            self.media_hotkey = tk.BooleanVar(value=False)
-            ttk.Checkbutton(media_options, text="Route Compose hotkey to media requests this session", variable=self.media_hotkey).pack(side="left")
+            ttk.Label(media_options, text="Images button: speak an image request using the PC microphone").pack(side="left")
+            self.device_feedback_label = ttk.Label(media_options,text='USB: connecting')
             ttk.Button(media_options, text="Clear queued image", command=self._clear_media_queue).pack(side="right")
         else:
             ttk.Label(self.media_tab, text="Media storage unavailable. Existing writing and History remain usable.").pack()
@@ -409,6 +420,17 @@ class ComposeApp:
         elif self.media_service:
             self.start_recording_flow("media")
 
+    def _device_feedback_tick(self):
+        if self._stop_poller or not self.device_feedback:return
+        from device_feedback import snapshot
+        try:
+            self.device_feedback.submit(snapshot(self))
+            linked=self.device_feedback.status()=='USB feedback linked'
+            self.device_feedback_label.configure(text='USB: linked' if linked else 'USB: offline')
+        except Exception:
+            self.log('USB feedback snapshot unavailable; no device action was dispatched.')
+        self.root.after(250,self._device_feedback_tick)
+
     def _drain_media_voice_requests(self):
         if self._stop_poller:
             return
@@ -435,6 +457,24 @@ class ComposeApp:
         self.set_status("IMAGE READY: Focus Word or OneNote, then press PASTE READY", "#F59E0B")
         if target and target.get('executable') == 'WINWORD.EXE':
             self._insert_ready_image(target)
+
+    def _restore_queued_image(self):
+        # Only undispatched explicit queues resume. Inserting/uncertain jobs
+        # require review and can never be replayed by startup.
+        if self._stop_poller or self.pending_media or self.pending_ready_payload or not self.media_store:return
+        jobs=[job for job in self.media_store.list_jobs(500)
+              if job['kind']=='insert' and job['phase']=='insert_queued']
+        if not jobs:return
+        if len(jobs)!=1:
+            self._report_image_status('Multiple saved image queues need review in the library. Nothing was inserted.', '#F59E0B')
+            return
+        job=jobs[0];version=self.media_store.get_version(job.get('version_id'))
+        if not version or not self.media_store.blob_path(version['sha256']).is_file():
+            self._report_image_status('The saved queued image is unavailable locally. Restore it before pasting.', '#F59E0B')
+            return
+        self.pending_media,self.pending_media_job=version,job['job_id']
+        self.media_panel.show_version(version)
+        self._report_image_status('IMAGE READY (restored): Focus Word or OneNote, then press PASTE READY.', '#F59E0B')
 
     def _clear_media_queue(self):
         if self.pending_media_job:
@@ -745,6 +785,7 @@ class ComposeApp:
             self.settings_panel.set_status("Settings are still being protected. Wait for saving to finish, then close again.")
             return
         self._stop_poller = True
+        if getattr(self,'device_feedback',None):self.device_feedback.close()
         if hasattr(self, "_sync_stop"):
             self._sync_stop.set()
         if hasattr(self, "media_panel"):
@@ -769,7 +810,10 @@ class ComposeApp:
     # ── Unified Recording & Synthesis Pipeline ──────────────────────────
 
     def start_recording_flow(self, mode: str = "compose"):
-        if self.is_recording or self._busy or self._settings_saving():
+        if self.is_recording or self._busy or self._settings_saving() or getattr(getattr(self,'media_panel',None),'_busy',False):
+            return
+        if getattr(self,'pending_ready_payload',None) or getattr(self,'pending_media',None):
+            self.set_status('Paste or clear the queued item before recording another request.', '#F59E0B')
             return
         if not self.audio_capture.start_recording():
             self.log("Microphone could not open. Check Windows microphone permissions and device selection.")
@@ -958,8 +1002,12 @@ class ComposeApp:
         if self._settings_saving():
             return
         self.log(f"[HOTKEY] {mode} {edge}")
-        if mode == "compose" and hasattr(self, "media_hotkey") and self.media_hotkey.get():
-            mode = "media"
+        if mode == 'library':
+            if edge == 'down' and hasattr(self,'media_tab'):
+                self.tabs.select(self.media_tab)
+                self.root.deiconify();self.root.lift();self.root.focus_force()
+                self.media_panel.refresh()
+            return
         if mode == "paste":
             if edge == "up":
                 self.inject_paste_ui()

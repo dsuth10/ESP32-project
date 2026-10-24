@@ -55,6 +55,10 @@ public:
   int16_t getPowerDialogTarget(int16_t x, int16_t y);
   void drawVoiceAudioToggle(bool pressed = false);
   void setVoiceAudioEnabled(bool enabled);
+  void setCompanionStatus(const String& state, const String& title, const String& detail, bool linked);
+  void drawCompanionStatus();
+  bool companionCanPaste() const;
+  bool companionCanRecord() const { return !_companionLinked || _companionState=="idle" || _companionState=="error"; }
   bool isVoiceAudioEnabled() const { return _voiceAudioEnabled; }
 
   // Page 7 Storage Explorer
@@ -73,6 +77,10 @@ public:
 
 private:
   TFT_eSPI& _tft;
+  String _companionState = "offline";
+  String _companionTitle = "PC status unavailable";
+  String _companionDetail = "Connect USB companion";
+  bool _companionLinked = false;
 
   uint8_t _lastDrawnBatPercent;
   bool _lastDrawnCharging;
