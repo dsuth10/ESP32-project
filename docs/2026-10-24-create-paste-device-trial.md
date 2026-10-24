@@ -77,7 +77,7 @@ bounded reconnect succeeded. This repeated no generation, insertion or flash.
 
 The user confirmed **“Layout visible and Library works”**. This is user-reported
 physical evidence, distinct from automated tests and the serial page/status
-acknowledgement. Full end-to-end Compose and Images checks
+acknowledgement. Full end-to-end Images checks
 on this candidate remain open; prior home acceptance is not automatically
 transferred to a new firmware build.
 
@@ -106,6 +106,15 @@ microphone capture, successful transcription and a paste request to the original
 document. USB feedback progressed through recording, processing and idle. This
 accepts basic physical Dictate through the PC microphone on the new candidate;
 it does not establish handheld-microphone audio or every target-application case.
+
+The user subsequently confirmed **Compose succeeded in both Word and OneNote**,
+and reported another successful dictation test. The latter application's name
+is awaiting clarification and is not assigned to OneNote by assumption. Host
+logs show successful recording/transcription/composition and paste requests;
+the USB display returned from recording and processing to idle. Compose therefore
+has user acceptance in both target apps on this candidate. Images remains the
+next workflow check. Image placement/undo/save-reopen and handheld audio retain
+their separate acceptance gates.
 
 An image had been explicitly queued before the trial. Its durable undispatched
 queue was preserved and restored with the same version and insertion job. The
