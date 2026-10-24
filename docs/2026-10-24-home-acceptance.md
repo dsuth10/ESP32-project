@@ -21,6 +21,7 @@ close M5, deployment, paid-provider or classroom-release gates.
 - Text input into the disposable OneNote page works.
 - After the approved keyboard-paste change, a physical handheld Paste Ready press
   inserts one new image correctly into the disposable OneNote page.
+- OneNote image undo, redo and saving/reopening pass on that disposable page.
 
 These observations do not independently review generated scientific content.
 
@@ -69,7 +70,7 @@ databases and disposable documents remain private and are excluded from previews
 
 ## Remaining acceptance
 
-OneNote undo/redo and save/reopen; remaining image selection/caret/focus guards; handheld
+Remaining image selection/caret/focus guards; handheld
 microphone audio; full S3 regressions; Windows reboot; authorised image-provider
 quality/cost tests; deployed private HTTPS, library restore and two-host sync;
 installed accessibility/school/classroom pilot. The existing authenticated Hermes
@@ -100,8 +101,10 @@ the grouped native run encountered Tcl resource skips. The full-app layout check
 passed at both supported sizes. After restarting the companion with the new route,
 the user queued the test image, focused the disposable OneNote page and pressed
 physical handheld Paste Ready once. The user confirmed: “One new image appears
-correctly”. This accepts insertion on this installation; undo/redo and save/reopen
-remain separate checks. The actual paste receipt remains `paste_requested`,
+correctly”. The user then confirmed that Ctrl+Z removes the image, Ctrl+Y restores
+it, and it remains correct after OneNote finishes saving and the test page is
+closed and reopened. This accepts insertion, undo/redo and save/reopen on this
+installation. The actual paste receipt remains `paste_requested`,
 not a declaration that OneNote saved the image.
 
 Microsoft documents [OneNote selection export](https://learn.microsoft.com/en-us/office/client-developer/onenote/application-interface-onenote)
