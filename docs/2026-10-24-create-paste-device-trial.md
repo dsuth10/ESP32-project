@@ -77,7 +77,7 @@ bounded reconnect succeeded. This repeated no generation, insertion or flash.
 
 The user confirmed **“Layout visible and Library works”**. This is user-reported
 physical evidence, distinct from automated tests and the serial page/status
-acknowledgement. Full end-to-end Images checks
+acknowledgement. Voice creation/refinement and broader Images checks
 on this candidate remain open; prior home acceptance is not automatically
 transferred to a new firmware build.
 
@@ -113,9 +113,22 @@ additional dictation test was in **OneNote**, confirming basic Dictate in both
 Word and OneNote. Host
 logs show successful recording/transcription/composition and paste requests;
 the USB display returned from recording and processing to idle. Compose therefore
-has user acceptance in both target apps on this candidate. Images remains the
-next workflow check. Image placement/undo/save-reopen and handheld audio retain
+has user acceptance in both target apps on this candidate. Image
+placement/undo/save-reopen and handheld audio retain
 their separate acceptance gates.
+
+The user then confirmed the **Images voice-search workflow**: the library opens,
+the spoken query appears in its search field, and the displayed saved images are
+filtered accordingly. Host logs show the distinct media recording and Library
+gestures; display feedback progresses through image recording, processing and
+idle. This accepts voice retrieval of saved images on the new candidate.
+
+All five page controls now have a basic physical pass: Compose and Dictate in
+Word/OneNote, Library opening, Images voice search, and Paste Ready inserting the
+queued generated image in Word. This does not yet accept voice-created/refined
+image briefs or paid dispatch from that voice workflow. Those, image
+placement/undo/save-reopen, handheld microphone audio and wireless return feedback
+remain separate checks. No broad classroom/stable release is implied.
 
 An image had been explicitly queued before the trial. Its durable undispatched
 queue was preserved and restored with the same version and insertion job. The

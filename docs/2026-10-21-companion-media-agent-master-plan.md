@@ -20,8 +20,10 @@ write and independent read-back passed; USB identity/status acknowledgements
 passed, and the user confirmed the new layout, Library action and generated
 kangaroo insertion through physical Paste Ready in Word. Physical Dictate through
 the PC microphone also passed with correct text insertion and live status
-transitions. The user also confirmed Compose in both Word and OneNote; Images
-remains the next live workflow check. The original
+transitions. The user also confirmed Compose and Dictate in both Word and
+OneNote, followed by Images voice search populating and filtering the desktop
+library. All five page controls have a basic physical pass; voice image
+creation/refinement and broader acceptance remain separate. The original
 16 MiB recovery image matched two complete device reads. The stable registry and
 `main` remain unchanged. See [Create & Paste device trial](2026-10-24-create-paste-device-trial.md).
 Other new-firmware button/workflow, microphone and classroom gates remain open.
