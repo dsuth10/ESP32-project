@@ -108,8 +108,9 @@ accepts basic physical Dictate through the PC microphone on the new candidate;
 it does not establish handheld-microphone audio or every target-application case.
 
 The user subsequently confirmed **Compose succeeded in both Word and OneNote**,
-and reported another successful dictation test. The latter application's name
-is awaiting clarification and is not assigned to OneNote by assumption. Host
+and reported another successful dictation test. The user clarified that the
+additional dictation test was in **OneNote**, confirming basic Dictate in both
+Word and OneNote. Host
 logs show successful recording/transcription/composition and paste requests;
 the USB display returned from recording and processing to idle. Compose therefore
 has user acceptance in both target apps on this candidate. Images remains the
