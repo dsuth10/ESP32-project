@@ -1,0 +1,14 @@
+[
+  {"name":"set_parameter","arguments":{"name":"clearance","value":"0.6 mm"}},
+  {"name":"measure","arguments":{}},
+  {"name":"set_parameter","arguments":{"name":"clearance","value":"0.4 mm"}},
+  {"name":"measure","arguments":{}},
+  {"name":"save","arguments":{"path":"C:/Users/dsuth/Documents/Code Projects/ESP32 project/docs/dimensions/solidcraft/ESP32-S3-enclosure-pilot.solidcraft"}},
+  {"name":"export","arguments":{"path":"C:/Users/dsuth/Documents/Code Projects/ESP32 project/docs/dimensions/solidcraft/pilot-base.step","bodies":["Case base"]}},
+  {"name":"export","arguments":{"path":"C:/Users/dsuth/Documents/Code Projects/ESP32 project/docs/dimensions/solidcraft/pilot-lid.step","bodies":["Case lid"]}},
+  {"name":"export","arguments":{"path":"C:/Users/dsuth/Documents/Code Projects/ESP32 project/docs/dimensions/solidcraft/pilot-base.stl","bodies":["Case base"]}},
+  {"name":"export","arguments":{"path":"C:/Users/dsuth/Documents/Code Projects/ESP32 project/docs/dimensions/solidcraft/pilot-lid.stl","bodies":["Case lid"]}},
+  {"name":"open","arguments":{"path":"C:/Users/dsuth/Documents/Code Projects/ESP32 project/docs/dimensions/solidcraft/ESP32-S3-enclosure-pilot.solidcraft"}},
+  {"name":"inspect_design","arguments":{"measure":true,"sketches":true}},
+  {"name":"screenshot","arguments":{"source":"model","view":"iso","width":960,"height":720,"grid":false,"axes":false,"path":"C:/Users/dsuth/Documents/Code Projects/ESP32 project/docs/dimensions/solidcraft/pilot-preview.png"}}
+]

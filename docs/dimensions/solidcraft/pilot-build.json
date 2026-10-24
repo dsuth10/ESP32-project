@@ -1,0 +1,38 @@
+[
+  {"name":"inspect_design","arguments":{"measure":false,"sketches":true},"_assert_empty":true},
+  {"name":"batch","arguments":{"verbose":false,"commands":[
+    {"command":"parameters.add","params":{"name":"board_width","expression":"50 mm","comment":"Existing generator input; physical fit remains to be checked"}},
+    {"command":"parameters.add","params":{"name":"board_length","expression":"86 mm"}},
+    {"command":"parameters.add","params":{"name":"clearance","expression":"0.4 mm","comment":"Clearance per side"}},
+    {"command":"parameters.add","params":{"name":"wall","expression":"2 mm"}},
+    {"command":"parameters.add","params":{"name":"outer_width","expression":"board_width + 2 * clearance + 2 * wall"}},
+    {"command":"parameters.add","params":{"name":"outer_length","expression":"board_length + 2 * clearance + 2 * wall"}},
+    {"command":"parameters.add","params":{"name":"base_height","expression":"18 mm","comment":"Pilot height, not an accepted hardware envelope"}},
+    {"command":"parameters.add","params":{"name":"corner_radius","expression":"6 mm"}},
+    {"command":"parameters.add","params":{"name":"lid_thickness","expression":"2 mm"}},
+    {"command":"parameters.add","params":{"name":"preview_gap","expression":"12 mm","comment":"Exploded display separation"}},
+    {"command":"sketch.create","params":{"plane":"XY","name":"Base outline"}},
+    {"command":"sketch.draw.dimensioned","params":{"command":"sketch.rectangle.center","params":{"center":[0,0],"corner":[27.4,45.4]},"dimensions":{"width":"outer_width","height":"outer_length"}}},
+    {"command":"sketch.solve","params":{}},
+    {"command":"sketch.finish","params":{}},
+    {"command":"solid.extrude","params":{"distance":"base_height","operation":"new","name":"Base block"}},
+    {"command":"body.rename","params":{"body":"Body1","name":"Case base"}}
+  ]}},
+  {"name":"measure","arguments":{}},
+  {"name":"batch","arguments":{"verbose":false,"commands":[
+    {"command":"solid.fillet","params":{"edges":[[27.4,45.4,9],[-27.4,45.4,9],[27.4,-45.4,9],[-27.4,-45.4,9]],"radius":"corner_radius","name":"Base rounded corners"}},
+    {"command":"solid.shell","params":{"faces":[[0,0,18]],"thickness":"wall","name":"Base cavity"}}
+  ]}},
+  {"name":"measure","arguments":{}},
+  {"name":"batch","arguments":{"verbose":false,"commands":[
+    {"command":"sketch.create","params":{"plane":"XY","offset":"base_height + preview_gap","name":"Lid outline"}},
+    {"command":"sketch.draw.dimensioned","params":{"command":"sketch.rectangle.center","params":{"center":[0,0],"corner":[27.4,45.4]},"dimensions":{"width":"outer_width","height":"outer_length"}}},
+    {"command":"sketch.solve","params":{}},
+    {"command":"sketch.finish","params":{}},
+    {"command":"solid.extrude","params":{"distance":"lid_thickness","operation":"new","name":"Lid plate"}},
+    {"command":"body.rename","params":{"body":"Body2","name":"Case lid"}},
+    {"command":"solid.fillet","params":{"edges":[[27.4,45.4,31],[-27.4,45.4,31],[27.4,-45.4,31],[-27.4,-45.4,31]],"radius":"corner_radius","name":"Lid rounded corners"}}
+  ]}},
+  {"name":"measure","arguments":{}},
+  {"name":"inspect_design","arguments":{"measure":false,"sketches":false}}
+]

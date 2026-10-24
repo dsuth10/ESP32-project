@@ -1,0 +1,5 @@
+[
+  {"name": "inspect_design", "arguments": {}},
+  {"name": "list_commands", "arguments": {"filter": "sketch.dimension"}},
+  {"name": "skill_reference", "arguments": {"skill": "solidcraft-modeling", "file": "SKILL.md"}}
+]
