@@ -2,7 +2,7 @@
 
 21 October 2026 - authoritative current plan for `codex/companion-media-agent`.
 
-The repository has two branches: `main` preserves the stable reference, and `codex/companion-media-agent` contains all current companion, Hermes, SQLite/media-library and deployment development. Continue this work on the companion branch. Temporary implementation and preservation branches have been consolidated; their former histories remain recoverable from the local archive. The original S3 firmware remains unchanged and write-locked.
+The repository has two branches: `main` preserves the stable reference, and `codex/companion-media-agent` contains all current companion, Hermes, SQLite/media-library and deployment development. Continue this work on the companion branch. Temporary implementation and preservation branches have been consolidated; their former histories remain recoverable from the local archive. The original S3 firmware is preserved in a verified private recovery image. Its registration remains write-locked; the explicitly approved local page 7 trial is recorded below.
 
 **Documentation consolidated; product candidate implemented in part; deployment and classroom acceptance remain open.** This plan supersedes earlier roadmaps and resolves later hardware/network decisions. Historical implementation and research records retain their original evidence. Updating this plan does not deploy services, charge an image account, unlock a board or approve a release.
 
@@ -13,6 +13,14 @@ Subsequent [home acceptance](2026-10-24-home-acceptance.md) records user-confirm
 The user then approved normal OneNote Ctrl+V semantics for an explicit Paste Ready gesture when selection inspection is unavailable. The native-canvas-bound keyboard-paste path is implemented. After restarting, the user confirmed that one physical handheld Paste Ready press inserts one new image correctly, followed by successful undo, redo and save/reopen checks. Background OneNote insertion stays restricted. See the follow-up in the home acceptance record.
 
 ## Outcome and fixed decisions
+
+24 October 2026 device follow-up: the user explicitly approved the Dedicated
+actions layout and flashing a recoverable original-S3 trial. The application-only
+write and independent read-back passed; USB identity/status acknowledgements
+passed, and the user confirmed the new layout and Library action. The original
+16 MiB recovery image matched two complete device reads. The stable registry and
+`main` remain unchanged. See [Create & Paste device trial](2026-10-24-create-paste-device-trial.md).
+Other new-firmware button/workflow, microphone and classroom gates remain open.
 
 Build an accessible, openly distributable presentation companion: a teacher asks for text, a saved image, a new/refined image or a supported device change; the desktop performs bounded actions, retains useful work and explains progress. Preserve existing Compose, Dictate, Paste Ready, shortcuts, receiver and speech capabilities.
 
@@ -96,7 +104,7 @@ Each milestone closes only with the evidence below. Work proceeds in reversible 
 | M4 | Image conversation: retrieval, generation, refinement, naming, previews, recovery and budget UX. | OpenAI/Gemini candidates and [G1–G4 workflow](2026-10-24-image-provider-g3-g4-implementation.md) implemented; G5 readiness passed. [Authorised G6 provider trial](2026-10-24-gemini-live-trial.md) saved ten images including four refinements. Native preview, durable parents and verified private backup/restore passed. | Failed allocations/provider invoice reconciliation, teacher quality and physical generated-image acceptance remain open. Teacher completes water-cycle workflow; versions survive edits/restarts; receipts reconcile; ambiguous failure safe. |
 | M5 | Accept Word/OneNote and both microphones with existing S3 functionality. Prefer unchanged installed firmware for host-side tests. | Home Word/PC-microphone, History, image and restart checks passed. Explicit handheld OneNote image insertion, undo/redo and save/reopen user-confirmed after the approved Ctrl+V change. Handheld audio and remaining guards open. | Disposable documents prove placement/selection/focus change/undo/save-reopen; both microphones; no duplicate listeners; S3 regression checks accepted. |
 | M6 | Package/pilot first complete image release. | Verified source-preview install/update/rollback/removal exists; signed packaging and teacher pilot remain open. | Repeatable Windows install/update/uninstall, accessible controls, school permissions/network acceptance, two-location lesson rehearsal, support/rollback; image gates signed off. |
-| M7 | Agent administration and runtime S3 controls: shortcut/button/profile schema, capabilities, previews, expected revisions, device acknowledgement and rollback. | Mostly design; small Manage allowlist exists. | Plain-language configuration produces validated changes/acknowledgements without unnecessary reflashing; failures preserve last profile. Firmware changes get explicitly approved backed-up trials. |
+| M7 | Agent administration and runtime S3 controls: shortcut/button/profile schema, capabilities, previews, expected revisions, device acknowledgement and rollback. | Create & Paste controls, opt-in identity-bound USB display feedback and scoped application trial/recovery implemented. Live page/status acknowledgement and user-reported layout/Library pass. General runtime profile editing remains design. | Broader physical button/workflow acceptance, wireless feedback and validated runtime profile changes. Firmware changes retain explicit approval and verified recovery gates. |
 | M8 | Reviewed code-update worker, PowerPoint, then audio/video library and target-specific insertion. | Future work. | Patches isolated/tested/reviewed/revertible; app/media matrix proves embedding/link/playback semantics, storage/codec/rights limits and uncertainty handling. |
 | M9 | Open-source/public distribution and teacher adoption. | Research/recommendations only. | Ownership/provenance resolved; approved licence map/notices; secret-free generic release/history; reproducible signed packages; quick-start, accessibility/pilot evidence and public-release approval. |
 
@@ -106,7 +114,7 @@ M1 precedes remote Hermes acceptance and deployed sync. M2/M3 can be developed a
 
 Choosing the original hardware is not permission to flash it now. Preserve its stable role and firmware. Retain CYD records/guard profile for accidental-target rejection; it is no longer the application test target.
 
-Before an approved S3 trial: identify the physical device through the guard; take a complete private recovery image and fingerprint; retain source/build/partition/configuration metadata; verify an executable restoration procedure; close conflicting listeners; record candidate/user authorisation; review a scoped role change. Keep identity/partition checks active. A scoped trial/relock workflow is a backlog item, not an available CLI flag. Restore/relock after testing as agreed. A backup file alone does not prove recovery. Follow [board safety](board-upload-safety.md).
+Before an approved S3 trial: identify the physical device through the guard; take a complete private recovery image and fingerprint; retain source/build/partition/configuration metadata; verify an executable restoration procedure; close conflicting listeners; record candidate/user authorisation; review a scoped write role. The implemented `board_trial.py` route grants one candidate-bound application write while leaving the stable registration locked. Keep identity/partition checks active and restore after testing as agreed. A backup file alone does not prove recovery. Follow [board safety](board-upload-safety.md).
 
 ## Completion dashboard
 

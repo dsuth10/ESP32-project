@@ -347,8 +347,9 @@ class ComposeApp:
         guide_frame.pack(fill="x", padx=14, pady=4)
 
         guide_txt = (
-            "ESP32 Page 6: Tap or Hold 'COMPOSE' or 'DICTATE'.\n"
-            "PC Keyboard Shortcuts: F13 or Ctrl+Alt+Shift+F9 (Compose)  •  F14 or Ctrl+Alt+Shift+F10 (Dictate)  •  F15 or Ctrl+Alt+Shift+F11 (Paste)"
+            "Device page 7/8: tap or hold Compose, Dictate or Images. Tap Library to open image review.\n"
+            "F13 Compose · F14 Dictate · F15 Paste Ready · F16 Images · F17 Library.\n"
+            "Fallback: Ctrl+Alt+Shift with F9 / F10 / F11 / F8 / F7 respectively."
         )
         tk.Label(guide_frame, text=guide_txt, font=("Segoe UI", 8), fg="#9CA3AF", bg="#111827", justify="left", wraplength=650).pack(anchor="w")
 

@@ -11,6 +11,7 @@
 | [Gemini/workflow implementation](2026-10-24-image-provider-g3-g4-implementation.md) | Offline adapter/workflow implementation record; subsequent real account and first-attempt evidence is recorded separately below. |
 | [First Gemini trial attempt](2026-10-24-gemini-first-attempt-checkpoint.md) | Historical first HTTP 400 failure and diagnostic correction, followed by the live-trial resolution below. |
 | [Gemini live trial](2026-10-24-gemini-live-trial.md) | Delivery-mode rejection resolved; ten saved images from twelve attempts, actual timings, retained allocations, private audit and recovery evidence. |
+| [Create & Paste device trial](2026-10-24-create-paste-device-trial.md) | Approved page 7/8 layout flashed to the original S3 through scoped recovery-backed application writes; USB feedback and user-reported layout/Library pass, remaining physical gates separate. |
 | [Permanent Hermes/Tailscale connection](hermes-tailscale-home-work.md) | Required same-agent home/work route, safe migration, protected setup, persistence and off-LAN acceptance. Configuration remains pending. |
 | [Home/work architecture](home-work-architecture.md) | Current S3/Windows/Groq/Hermes/library ownership and target topology. |
 | [Hermes integration checkpoint](2026-10-21-hermes-integration-checkpoint.md) | Current runtime/UI, recovery, packaging and bounded test evidence; deployment/user gates remain open. |
