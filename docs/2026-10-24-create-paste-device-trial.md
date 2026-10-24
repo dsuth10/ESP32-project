@@ -81,6 +81,11 @@ acknowledgement. Full end-to-end Compose, Dictate, Images and Paste Ready checks
 on this candidate remain open; prior home acceptance is not automatically
 transferred to a new firmware build.
 
+For a controlled follow-up, the desktop was placed on Compose & Dictate before
+the user pressed the physical Library button. The user then confirmed:
+**“Yes, it switches to Image library”**. The physical tab-switch check therefore
+passes independently of the library having already been visible.
+
 An image had been explicitly queued before the trial. Its durable undispatched
 queue was preserved and restored with the same version and insertion job. The
 restart displayed its preview without inserting it, generating another image or
