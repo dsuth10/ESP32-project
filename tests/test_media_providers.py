@@ -107,6 +107,16 @@ def test_openai_provider_accepts_valid_image_and_bounds_response():
     assert result["source"]["provider"] == "openai"
     assert session.post.call_count == 1
     assert session.post.call_args.kwargs["allow_redirects"] is False
+    assert session.post.call_args.kwargs['json'] == {
+        'model': 'gpt-image-2.5-sunburst', 'prompt': 'synthetic request',
+        'size': '1024x1024', 'quality': 'high', 'n': 1}
+
+
+def test_openai_rejects_unsupported_options_before_post():
+    session = FakeSession()
+    with pytest.raises(ValueError):
+        OpenAIImageProvider(SECRET, session=session).generate('Synthetic brief', options={'aspect_ratio': '3:4'})
+    session.post.assert_not_called()
 
 
 @pytest.mark.parametrize("encoded", ["%%%not-base64%%%", base64.b64encode(b"not an image").decode("ascii")])

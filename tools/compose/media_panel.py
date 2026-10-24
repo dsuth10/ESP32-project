@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, simpledialog, messagebox, scrolledtext
 from pathlib import Path
 from PIL import Image, ImageTk
+from image_provider_config import PROVIDER_LABELS, CAPABILITIES, selected_provider
 
 
 class MediaPanel(ttk.Frame):
@@ -50,26 +51,29 @@ class MediaPanel(ttk.Frame):
         self.details=ttk.Label(right,wraplength=550,justify='left')
         self.details.pack(side='bottom',fill='x',pady=5,before=self.preview)
         actions=ttk.Frame(self);actions.grid(row=3,column=0,sticky='ew',pady=4)
-        for label,callback in [('Keep named version',self.approve),('Queue for Paste Ready',self.queue_selected),
-                                ('Copy image',self.copy_selected),('Export image',self.export_selected)]:
-            ttk.Button(actions,text=label,command=callback).pack(side='left',padx=2)
+        for index,(label,callback) in enumerate([('Keep named version',self.approve),('Queue for Paste Ready',self.queue_selected),
+                                ('Copy image',self.copy_selected),('Export image',self.export_selected)]):
+            ttk.Button(actions,text=label,command=callback).grid(row=index//3,column=index%3,sticky='w',padx=2,pady=2)
         tools=ttk.Menubutton(actions,text='Library tools')
         menu=tk.Menu(tools,tearoff=False)
         menu.add_command(label='Back up media library',command=self.backup)
         menu.add_command(label='Restore backup into a new folder',command=self.restore)
         menu.add_command(label='Review selected job',command=self.review_job)
-        tools.configure(menu=menu);tools.pack(side='left',padx=2)
+        tools.configure(menu=menu);tools.grid(row=1,column=1,sticky='w',padx=2)
         ttk.Label(self,text='Describe a media request, or refine the selected image (Ctrl+Enter to send)').grid(row=4,column=0,sticky='w')
         self.prompt=scrolledtext.ScrolledText(self,height=3,wrap='word',font=('Segoe UI',11))
         self.prompt.grid(row=5,column=0,sticky='ew')
         self.prompt.bind('<Control-Return>',lambda event:(self.ask(),'break')[1])
         commands=ttk.Frame(self);commands.grid(row=6,column=0,sticky='ew',pady=5)
-        for label,callback in [('Ask media assistant',self.ask),('Speak / finish',self.on_record),
+        for index,(label,callback) in enumerate([('Ask media assistant',self.ask),('Speak / finish',self.on_record),
                                ('Prepare new image',self.prepare),('Refine selected',lambda:self.prepare(True)),
-                               ('Search web images',self.web_search)]:
-            ttk.Button(commands,text=label,command=callback).pack(side='left',padx=2)
-        self.generate_button=ttk.Button(self,text='Generate prepared image',command=self.generate,state='disabled')
-        self.generate_button.grid(row=7,column=0,sticky='w')
+                               ('Search web images',self.web_search)]):
+            ttk.Button(commands,text=label,command=callback).grid(row=index//3,column=index%3,sticky='w',padx=2,pady=2)
+        prepared=ttk.Frame(self);prepared.grid(row=7,column=0,sticky='ew');prepared.columnconfigure(0,weight=1)
+        self.generate_button=ttk.Button(prepared,text='Generate prepared image',command=self.generate,state='disabled')
+        self.generate_button.grid(row=0,column=0,sticky='w')
+        self.prepared_choice=ttk.Label(prepared,text='',wraplength=600,justify='left')
+        self.prepared_choice.grid(row=1,column=0,sticky='ew')
         self.notice=ttk.Label(self,wraplength=850,justify='left',text='Library first. Web search and paid generation are explicit actions.')
         self.notice.grid(row=8,column=0,sticky='ew',pady=5)
         self.bind('<Configure>',lambda event:self.notice.configure(wraplength=max(280,event.width-20)) if event.widget is self else None,add='+')
@@ -248,12 +252,30 @@ class MediaPanel(ttk.Frame):
         if self._busy:return self.tell('Finish the current media operation first.')
         if refine and not self.selected:return self.tell('Select an image to refine first.')
         try:
+            cross_provider = False
+            if refine:
+                destination = selected_provider(self.service.config)
+                source = (self.selected.get('source') or {}).get('provider')
+                if source in PROVIDER_LABELS and source != destination:
+                    cross_provider = messagebox.askyesno('Send reference image',
+                        f'Refinement will send this selected image to {PROVIDER_LABELS[destination]}. Continue?', parent=self)
+                    if not cross_provider:return
             job=self.service.prepare_generation(prompt or self.text(),title,
-                self.selected['version_id'] if refine else None)
+                self.selected['version_id'] if refine else None, allow_cross_provider=cross_provider)
             self.prepared_job=job['job_id']
-            estimate=int(self.service.config.get('IMAGE_ESTIMATE_AUD_CENTS') or 0)
-            self.generate_button.configure(state='normal',text=f'Generate prepared image — A${estimate/100:.2f} design allocation')
-            self.tell('Prepared image request. Generate dispatches one paid attempt using the configured provider and shared budget. Result will preview before insertion.')
+            snapshot=job['image_provider']
+            estimate=snapshot['allocation_cents']
+            self.prepared_choice.configure(text=f"Frozen choice: {PROVIDER_LABELS[snapshot['provider']]} · {snapshot['model']}\n"
+                f"{snapshot['options']['size']} · {snapshot['options']['aspect_ratio']} · A${estimate/100:.2f} allocation")
+            available=CAPABILITIES[snapshot['provider']].adapter_available
+            self.generate_button.configure(state='normal' if available else 'disabled',
+                text=f'Generate prepared image — A${estimate/100:.2f} design allocation' if available else 'Google rendering pending implementation')
+            message=(f"Prepared: {PROVIDER_LABELS[snapshot['provider']]} · {snapshot['model']} · "
+                f"{snapshot['options']['size']} · {snapshot['options']['aspect_ratio']}. "
+                'Generate dispatches one paid attempt with this frozen choice and allocation. '
+                + ('The selected reference image will be sent to this producer. ' if refine else '')
+                + 'Settings changes require re-preparation. Result previews before insertion.')
+            self.tell(message if available else 'Google image rendering is pending implementation. This preparation is local; no request was sent.')
             self.refresh_jobs()
         except Exception as exc:self.tell(str(exc))
 
@@ -262,6 +284,7 @@ class MediaPanel(ttk.Frame):
         if not self.prepared_job:return
         job_id=self.prepared_job
         self.prepared_job=None
+        self.prepared_choice.configure(text='')
         self.generate_button.configure(state='disabled')
         self.tell('Generating one image attempt. Do not repeat the request if the connection fails.')
         self.run(lambda:self.service.generate(job_id),self._asset_result)
@@ -303,6 +326,7 @@ class MediaPanel(ttk.Frame):
         elif intent=='cancel':
             if self.prepared_job:
                 self.service.store.update_job(self.prepared_job,'cancelled');self.prepared_job=None
+                self.prepared_choice.configure(text='')
                 self.generate_button.configure(state='disabled');self.refresh_jobs()
             self.tell('Undispatched preparation cancelled. Dispatched jobs require result/accounting reconciliation.')
         else:self.tell('Use the library, previews and recent jobs to review media state. Sync status appears in Settings.')

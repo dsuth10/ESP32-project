@@ -6,7 +6,8 @@ import threading
 from pathlib import Path
 
 from assistant_service import AssistantService
-from media_providers import OpenAIImageProvider, CommonsRetriever, ProviderFailure
+from media_providers import CommonsRetriever, ProviderFailure
+from image_provider_config import image_snapshot, create_image_provider, CAPABILITIES
 
 
 def truthy(value):
@@ -22,15 +23,22 @@ class MediaService:
     def find(self, query=''):
         return self.store.list_assets(query=query)
 
-    def prepare_generation(self, prompt, title='', parent_version_id=None):
+    def prepare_generation(self, prompt, title='', parent_version_id=None, *, options=None, allow_cross_provider=False):
         if not isinstance(prompt, str) or not prompt.strip() or len(prompt) > 8000:
             raise ValueError('Describe the image in 1–8000 characters.')
         if parent_version_id and not self.store.get_version(parent_version_id):
             raise ValueError('Select a saved image version to refine.')
+        snapshot = image_snapshot(self.config, options)
+        if parent_version_id:
+            if not CAPABILITIES[snapshot['provider']].reference_image:
+                raise ValueError('This producer does not support reference images.')
+            source = self.store.get_version(parent_version_id).get('source') or {}
+            if source.get('provider') in CAPABILITIES and source['provider'] != snapshot['provider'] and not allow_cross_provider:
+                raise ValueError('Confirm sending the selected image to the chosen image producer before preparing this refinement.')
         job = self.store.create_job('refine' if parent_version_id else 'generate', prompt)
         job_id = job['job_id'] if isinstance(job, dict) else job
         self.store.update_job(job_id, 'awaiting_user', title=(title or 'Generated image').strip()[:200],
-                              parent_version_id=parent_version_id)
+                              parent_version_id=parent_version_id, image_provider=snapshot)
         return self.store.get_job(job_id)
 
     def generate(self, job_id):
@@ -47,15 +55,22 @@ class MediaService:
                 raise ValueError('Cloud image generation is unavailable in local-only mode.')
             if not truthy(self.config.get('IMAGE_GENERATION_ENABLED')):
                 raise ValueError('Enable image generation and configure its spending policy in Settings first.')
-            estimate = int(self.config.get('IMAGE_ESTIMATE_AUD_CENTS') or 0)
+            snapshot = job.get('image_provider')
+            if not snapshot or snapshot.get('schema') != 1:
+                raise ValueError('This legacy image preparation has no frozen producer choice. Prepare it again before generation.')
+            if snapshot != image_snapshot(self.config, snapshot.get('options')):
+                raise ValueError('Image producer, model or allocation changed. Prepare the image again before generation.')
+            estimate = snapshot['allocation_cents']
             if estimate <= 0 or not self.sync:
                 raise ValueError('Configure a conservative AUD allocation and the shared budget server first.')
+            parent_id = job.get('parent_version_id')
+            parent = self.store.get_version(parent_id) if parent_id else None
+            if parent_id and (not parent or not self.store.blob_path(parent['sha256']).is_file()):
+                raise ValueError('The prepared reference image is unavailable locally. Restore it and prepare again.')
             # Construct/validate the provider before reserving a budget allocation.
-            provider = self.provider or OpenAIImageProvider(self.config.get('OPENAI_API_KEY', ''),
-                                        self.config.get('IMAGE_MODEL') or 'gpt-image-2.5-sunburst')
+            provider = self.provider or create_image_provider(snapshot, self.config)
             if self.provider is None:
                 owned_provider = provider
-            parent = self.store.get_version(job.get('parent_version_id')) if job.get('parent_version_id') else None
             self.store.update_job(job_id, 'reserving', allocation_cents=estimate, provider_dispatched=False)
             reservation_attempted = True
             self.sync.reserve_budget(job_id, estimate)
@@ -67,7 +82,8 @@ class MediaService:
             # Persist dispatch intent before network I/O. Restart never blindly resubmits.
             submitted = True
             self.store.update_job(job_id, 'acquiring', provider_dispatched=True)
-            result = provider.generate(job['request'], parent=self.store.blob_path(parent['sha256']) if parent else None)
+            result = provider.generate(job['request'], parent=self.store.blob_path(parent['sha256']) if parent else None,
+                                       options=dict(snapshot['options']))
             version = self.store.import_bytes(result['data'], title=job.get('title') or 'Generated image',
                 asset_id=parent['asset_id'] if parent else None, parent_version_id=parent['version_id'] if parent else None,
                 prompt=job['request'], source=result['source'], origin='generated', operation_id=job_id)

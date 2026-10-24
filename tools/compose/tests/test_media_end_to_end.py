@@ -22,7 +22,7 @@ def test_image_workflow_two_desktops_and_offline_cache_without_history_sync(tmp_
     cb=SyncClient(b,url,'synthetic-integration-token',allow_private_sync=True)
     output=io.BytesIO();Image.new('RGB',(32,24),'blue').save(output,'PNG')
     class SyntheticImageProvider:
-        def generate(self,prompt,parent=None):
+        def generate(self,prompt,parent=None,options=None):
             # The reservation is frozen before the possibly billable dispatch.
             assert ca.budget_status()['spent_or_uncertain_cents']==100
             return {'data':output.getvalue(),'source':{'provider':'synthetic','model':'fixture'}}

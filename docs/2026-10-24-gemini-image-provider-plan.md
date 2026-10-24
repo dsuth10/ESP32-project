@@ -2,8 +2,10 @@
 
 24 October 2026. Implementation plan for `codex/companion-media-agent`, under
 the [consolidated programme](2026-10-21-companion-media-agent-master-plan.md),
-primarily M4 and the generated-image part of M5. Status: planned; no Gemini
-adapter, credential setup or paid trial has been completed by this document.
+primarily M4 and the generated-image part of M5. Status: G1–G2 implemented and
+verified offline, including frozen preparation metadata; see the
+[implementation record](2026-10-24-image-provider-g1-g2-implementation.md).
+No Gemini rendering adapter, real credential setup or paid trial is complete.
 
 ## Intended result
 

@@ -3,6 +3,8 @@ import tkinter as tk
 from tkinter import ttk
 
 from companion_settings import save_settings
+from image_provider_config import (PROVIDER_LABELS, OPENAI_MODEL, GOOGLE_MODEL,
+                                   selected_provider, selected_model, image_readiness)
 
 
 class SettingsPanel(ttk.Frame):
@@ -26,27 +28,43 @@ class SettingsPanel(ttk.Frame):
         canvas.bind('<Configure>', lambda event: canvas.itemconfigure(window_id, width=event.width))
         ttk.Label(content, text='Credentials and network settings stay on this computer.',
                   wraplength=800).grid(row=0, column=0, columnspan=2, sticky='w', pady=8)
+        initial_provider = config.get('IMAGE_PROVIDER') or 'openai'
+        self.values['IMAGE_PROVIDER'] = tk.StringVar(value=initial_provider)
         entries = [('GROQ_API_KEY', 'Groq key (primary embedded assistant)', True, ''),
                    ('HERMES_URL', 'Private Hermes service URL', False, ''),
                    ('HERMES_TOKEN', 'Hermes bearer token (separate from media server)', True, ''),
                    ('MEDIA_SERVER_URL', 'Private media server URL', False, ''),
                    ('MEDIA_SERVER_TOKEN', 'Media server bearer token (separate from Hermes)', True, ''),
                    ('OPENAI_API_KEY', 'OpenAI image provider key', True, ''),
-                   ('IMAGE_MODEL', 'Image model', False, 'gpt-image-2.5-sunburst'),
+                   ('GOOGLE_IMAGE_API_KEY', 'Google image API key', True, ''),
+                   ('IMAGE_MODEL', 'OpenAI model (exact identifier)', False, OPENAI_MODEL),
+                   ('GOOGLE_IMAGE_MODEL', 'Google model (exact identifier)', False, GOOGLE_MODEL),
                    ('IMAGE_ESTIMATE_AUD_CENTS', 'Conservative allocation per image attempt (AUD cents)', False, '')]
         row = 1
+        ttk.Label(content, text='Image producer').grid(row=row, column=0, sticky='w', padx=4)
+        self.producer_label = tk.StringVar(value=PROVIDER_LABELS.get(initial_provider, 'Choose image producer'))
+        producer = ttk.Combobox(content, textvariable=self.producer_label, state='readonly',
+                                values=list(PROVIDER_LABELS.values()))
+        producer.grid(row=row, column=1, sticky='ew')
+        producer.bind('<<ComboboxSelected>>', self._producer_changed)
+        row += 1
         for key, label, secret, default in entries:
-            ttk.Label(content, text=label).grid(row=row, column=0, sticky='w', padx=4, pady=5)
+            ttk.Label(content, text=label, wraplength=230).grid(row=row, column=0, sticky='w', padx=4, pady=5)
             var = tk.StringVar(value=config.get(key, default))
             self.values[key] = var
-            ttk.Entry(content, textvariable=var, show='•' if secret else '').grid(
-                row=row, column=1, sticky='ew', pady=5)
+            if key in {'IMAGE_MODEL', 'GOOGLE_IMAGE_MODEL'}:
+                field = ttk.Combobox(content, textvariable=var,
+                    values=[GOOGLE_MODEL if key == 'GOOGLE_IMAGE_MODEL' else OPENAI_MODEL],
+                    state='readonly' if key == 'GOOGLE_IMAGE_MODEL' else 'normal')
+            else:
+                field = ttk.Entry(content, textvariable=var, show='•' if secret else '')
+            field.grid(row=row, column=1, sticky='ew', pady=5)
             row += 1
         flags = [('HERMES_ENABLED', 'Enable the separate Hermes task panel', '0'),
                  ('MEDIA_SYNC_ENABLED', 'Synchronise media automatically with my private server', '0'),
-                 ('IMAGE_GENERATION_ENABLED', 'Enable paid image requests when I press Generate (shared budget required)', '0'),
+                 ('IMAGE_GENERATION_ENABLED', 'Enable paid image requests when I press Generate\n(shared budget required)', '0'),
                  ('LOCAL_ONLY', 'Local-only providers; disables Groq, Hermes, media sync, web and image providers', '0'),
-                 ('ESP32_ENABLE_HOTKEYS', 'Enable handheld/keyboard hotkeys in this feature app (restart required)', '0'),
+                 ('ESP32_ENABLE_HOTKEYS', 'Enable handheld/keyboard hotkeys in this feature app\n(restart required)', '0'),
                  ('ESP32_START_RECEIVER', 'Start a voice receiver from this feature app (restart required)', '0')]
         for key, label, default in flags:
             var = tk.BooleanVar(value=str(config.get(key, default)).lower() in ('1', 'true', 'yes'))
@@ -54,6 +72,12 @@ class SettingsPanel(ttk.Frame):
             ttk.Checkbutton(content, text=label, variable=var).grid(
                 row=row, column=0, columnspan=2, sticky='w', pady=4)
             row += 1
+        self.image_status = ttk.Label(content, text='', wraplength=600, justify='left')
+        self.image_status.grid(row=row, column=0, columnspan=2, sticky='ew', pady=8)
+        row += 1
+        for variable in self.values.values():
+            variable.trace_add('write', lambda *_: self._image_status())
+        self._image_status()
         ttk.Label(content, text='A$30/month is the pilot design allowance on the shared server. Allocations are estimates, not provider invoice amounts.\n'
                   'A failed or ambiguous dispatched attempt retains its allocation until reconciled. No paid request runs during setup.',
                   wraplength=800).grid(row=row, column=0, columnspan=2, sticky='w', pady=8)
@@ -63,12 +87,25 @@ class SettingsPanel(ttk.Frame):
         self.status = ttk.Label(content, text='Hermes and media sync are not configured.', wraplength=800, justify='left')
         self.status.grid(row=row, column=0, columnspan=2, sticky='ew', pady=8)
 
+    def _producer_changed(self, _event=None):
+        self.values['IMAGE_PROVIDER'].set(next(key for key, label in PROVIDER_LABELS.items()
+                                               if label == self.producer_label.get()))
+
+    def _image_status(self):
+        try:
+            text = image_readiness({key: var.get() for key, var in self.values.items()})
+        except ValueError as error:
+            text = str(error)
+        self.image_status.configure(text=text)
+
     def save(self):
         if self._saving:
             return
         values = {key: ('1' if var.get() else '0') if isinstance(var, tk.BooleanVar)
                   else var.get().strip() for key, var in self.values.items()}
         try:
+            provider = selected_provider(values)
+            selected_model(values, provider)
             amount = values['IMAGE_ESTIMATE_AUD_CENTS']
             if amount and (not amount.isdecimal() or not 1 <= int(amount) <= 3000):
                 raise ValueError('Set a per-attempt allocation from 1 to 3000 AUD cents, or leave it empty while generation is disabled.')

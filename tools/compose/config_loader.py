@@ -32,6 +32,7 @@ ENV_KEYS = (
     "GROQ_ASSISTANT_MODEL", "HISTORY_ENABLED",
     "MEDIA_SERVER_URL", "MEDIA_SERVER_TOKEN", "MEDIA_SYNC_ENABLED",
     "IMAGE_MODEL", "OPENAI_API_KEY", "IMAGE_GENERATION_ENABLED", "IMAGE_ESTIMATE_AUD_CENTS",
+    "IMAGE_PROVIDER", "GOOGLE_IMAGE_MODEL",
     "ESP32_START_RECEIVER", "ESP32_ENABLE_HOTKEYS", "HERMES_ENABLED", "HERMES_URL",
 )
 
@@ -90,7 +91,7 @@ def load_env_config(
             })
     _merge_nonempty(env_vars, {
         key: value for key, value in _parse_env_file(paths[-1]).items()
-        if key != "HERMES_TOKEN"
+        if key not in {"HERMES_TOKEN", "GOOGLE_IMAGE_API_KEY"}
     })
     if settings_loader is not None:
         try:

@@ -24,11 +24,13 @@ class OpenAIImageProvider:
         self.session = session or requests.Session()
         self.session.trust_env = False
 
-    def generate(self, prompt: str, *, parent: Path | None = None) -> dict:
+    def generate(self, prompt: str, *, parent: Path | None = None, options: dict | None = None) -> dict:
+        from image_provider_config import validate_options
+        output = validate_options('openai', options)
         if not isinstance(prompt, str) or not prompt.strip() or len(prompt) > 8000:
             raise ValueError("Image instructions must contain 1–8000 characters.")
         headers = {"Authorization": "Bearer " + self.key}
-        options = {"model": self.model, "prompt": prompt, "size": "1024x1024", "quality": "high", "n": 1}
+        options = {"model": self.model, "prompt": prompt, "size": output['size'], "quality": output['quality'], "n": 1}
         try:
             if parent is None:
                 response = self.session.post("https://api.openai.com/v1/images/generations", headers=headers,
