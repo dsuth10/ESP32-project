@@ -173,6 +173,14 @@ class ComposeApp:
         self.root.after(200, self._remember_external_focus)
 
     def _build_ui(self):
+        status = tk.Frame(self.root, bg="#111827")
+        status.pack(fill="x", padx=8, pady=(8, 0))
+        self.global_status_dot = tk.Label(status, text="●", bg="#111827", fg="#10B981", padx=8)
+        self.global_status_dot.pack(side="left", anchor="n", pady=6)
+        self.global_status_lbl = tk.Label(status, text="READY: Waiting for an action", bg="#111827",
+                                          fg="#F8FAFC", justify="left", anchor="w", wraplength=650, pady=6)
+        self.global_status_lbl.pack(side="left", fill="x", expand=True)
+        self.root.bind("<Configure>", self._resize_global_status, add="+")
         self.tabs = ttk.Notebook(self.root)
         self.tabs.pack(fill="both", expand=True, padx=8, pady=8)
         self.writing_tab = tk.Frame(self.tabs, bg="#0B0F19")
@@ -441,10 +449,10 @@ class ComposeApp:
         try:
             target = capture_target()
             if expected_target and any(target.get(key) != expected_target.get(key) for key in ('hwnd','pid','executable','document','start','end')):
-                self.set_status("Target changed. Image retained in READY; select the destination and press PASTE READY.", "#F59E0B")
+                self._report_image_status("Target changed. Image retained in READY; select the destination and press PASTE READY.", "#F59E0B")
                 return
         except Exception as error:
-            self.set_status(str(error) if isinstance(error, ValueError) else "Image target unavailable. Image retained in READY.", "#F59E0B")
+            self._report_image_status(str(error) if isinstance(error, ValueError) else "Image target unavailable. Image retained in READY.", "#F59E0B")
             return
         # All checks before dispatch can safely retain the queue. From this point,
         # an exception may follow an insertion and must not cause duplicate retries.
@@ -453,12 +461,15 @@ class ComposeApp:
         try:
             receipt = insert_image(self.media_store.blob_path(version["sha256"]), target)
             self.media_store.update_job(job_id, "completed", receipt=receipt)
-            self.set_status(receipt["message"])
-            self._post_ui(self.media_panel.tell, receipt["message"])
+            self._report_image_status(receipt["message"])
         except Exception:
             self.media_store.update_job(job_id, "needs_recovery", error="Check the target document before retrying; insertion outcome may be uncertain.")
-            self.set_status("Check the target document before retrying; image attempt needs recovery.", "#F59E0B")
+            self._report_image_status("Check the target document before retrying; image attempt needs recovery.", "#F59E0B")
         self._post_ui(self.media_panel.refresh_jobs)
+
+    def _report_image_status(self, message, colour="#10B981"):
+        self.set_status(message, colour)
+        self._post_ui(self.media_panel.tell, message)
 
     def _settings_saving(self):
         return bool(getattr(getattr(self, "settings_panel", None), "_saving", False))
@@ -641,6 +652,12 @@ class ComposeApp:
     def _update_status(self, text: str, dot_color: str):
         self.status_lbl.config(text=text)
         self.status_dot.config(fg=dot_color)
+        self.global_status_lbl.configure(text=text)
+        self.global_status_dot.configure(fg=dot_color)
+
+    def _resize_global_status(self, event):
+        if event.widget is self.root:
+            self.global_status_lbl.configure(wraplength=max(280, event.width - 60))
 
     # ── UI Button Actions ───────────────────────────────────────────────
 

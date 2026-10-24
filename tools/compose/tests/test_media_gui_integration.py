@@ -70,3 +70,39 @@ def test_media_microphone_routes_transcript_to_media_not_text_paste(tmp_path):
     app.media_panel.ask.assert_called_once_with('Find our image',target=app._media_request_target)
     app.llm_pipeline.generate.assert_not_called()
     assert app.pending_ready_payload is None
+
+
+def test_blocked_onenote_image_shows_feedback_on_visible_media_panel(tmp_path):
+    app,version=fixture_app(tmp_path)
+    app._queue_media(version)
+    message='OneNote selection could not be verified. Use Copy image and paste manually.'
+    with patch('media_targets.capture_target',side_effect=ValueError(message)),patch('media_targets.insert_image') as insert:
+        app.inject_paste_ui()
+    while not app._ui_events.empty():
+        callback,args=app._ui_events.get();callback(*args)
+    insert.assert_not_called()
+    assert app.pending_media['version_id']==version['version_id']
+    assert app.media_store.get_job(app.pending_media_job)['phase']=='insert_queued'
+    app.media_panel.tell.assert_called_with(message)
+
+
+def test_uncertain_image_attempt_reports_recovery_on_media_panel(tmp_path):
+    app,version=fixture_app(tmp_path)
+    app._queue_media(version)
+    target={'hwnd':3,'pid':4,'executable':'ONENOTE.EXE','selection_checked':True}
+    with patch('media_targets.capture_target',return_value=target),patch('media_targets.insert_image',side_effect=RuntimeError('fixture uncertain')):
+        app.inject_paste_ui()
+    while not app._ui_events.empty():
+        callback,args=app._ui_events.get();callback(*args)
+    app.media_panel.tell.assert_called_with('Check the target document before retrying; image attempt needs recovery.')
+    assert app.pending_media is None
+    assert app.media_store.list_jobs()[0]['phase']=='needs_recovery'
+
+
+def test_shared_status_updates_independently_of_selected_tab():
+    app=ComposeApp.__new__(ComposeApp)
+    app.status_lbl=Mock();app.status_dot=Mock()
+    app.global_status_lbl=Mock();app.global_status_dot=Mock()
+    app._update_status('OneNote selection could not be verified.', '#F59E0B')
+    app.global_status_lbl.configure.assert_called_once_with(text='OneNote selection could not be verified.')
+    app.global_status_dot.configure.assert_called_once_with(fg='#F59E0B')

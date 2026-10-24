@@ -10,6 +10,7 @@
 | [Permanent Hermes/Tailscale connection](hermes-tailscale-home-work.md) | Required same-agent home/work route, safe migration, protected setup, persistence and off-LAN acceptance. Configuration remains pending. |
 | [Home/work architecture](home-work-architecture.md) | Current S3/Windows/Groq/Hermes/library ownership and target topology. |
 | [Hermes integration checkpoint](2026-10-21-hermes-integration-checkpoint.md) | Current runtime/UI, recovery, packaging and bounded test evidence; deployment/user gates remain open. |
+| [Home desktop acceptance](2026-10-24-home-acceptance.md) | User-confirmed Word/History/image/restart checks, OneNote image limitation and visible-feedback fix; remaining gates distinguished. |
 | [Linux deployment kit](companion-deployment.md) | Safe endpoint migration, staged systemd service and verified media backup/restore. |
 | [Source-preview installation](companion-installation.md) | Per-user install/update/rollback/removal with user-data preservation. |
 | [Image candidate testing](feature-media-testing.md) | Isolated launch, image workflow, Office/microphone/sync acceptance and recovery. |
