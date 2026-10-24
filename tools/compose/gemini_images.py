@@ -105,7 +105,10 @@ class GeminiImageProvider:
         payload = {'model': self.model, 'input': content, 'store': False,
                    'stream': False, 'background': False,
                    'generation_config': {'thinking_level': output['thinking'], 'thinking_summaries': 'none'},
-                   'response_format': {'type': 'image', 'mime_type': 'image/jpeg', 'delivery': 'inline',
+                   # The live API rejects explicit delivery='inline' although
+                   # its OpenAPI schema lists it. Use the documented default;
+                   # parsing still requires inline bytes and never fetches URIs.
+                   'response_format': {'type': 'image', 'mime_type': 'image/jpeg',
                                        'image_size': output['size'], 'aspect_ratio': output['aspect_ratio']}}
         receipt = {'provider': 'gemini', 'requested_model': self.model, 'outcome': 'uncertain'}
         started = time.perf_counter()

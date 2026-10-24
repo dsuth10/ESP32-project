@@ -5,14 +5,18 @@ the [consolidated programme](2026-10-21-companion-media-agent-master-plan.md),
 primarily M4 and the generated-image part of M5. Status: G1–G4 implemented and
 verified offline; see the [G1–G2 record](2026-10-24-image-provider-g1-g2-implementation.md)
 and [Gemini/workflow record](2026-10-24-image-provider-g3-g4-implementation.md).
-Successful paid rendering and physical generated-image acceptance remain open.
-Real credential/model and home-ledger readiness are recorded in the checkpoint below.
+G5 account/model and real home-ledger readiness passed. The authorised G6 trial
+now has ten saved images, including four refinements, from twelve attempts.
+See the [live trial](2026-10-24-gemini-live-trial.md). Physical generated-image
+acceptance and provider invoice reconciliation remain open.
 
 Subsequent [first-attempt checkpoint](2026-10-24-gemini-first-attempt-checkpoint.md):
 private model access and the approved real home-PC ledger were verified. The user
 authorised a bounded paid trial; its first request returned HTTP 400 without an
-image. Generation is disabled and the trial is paused. Rejection diagnostics
-were corrected offline; the live rejection's cause remains unconfirmed.
+image. That checkpoint records the earlier pause. After explicit continuation
+authorisation, a diagnostic attempt identified an unsupported delivery setting;
+removing it resolved the rejection. The trial completed within its original cap,
+and the corrected home app runs with generation enabled.
 
 ## Intended result
 
@@ -199,7 +203,8 @@ usable. Disabling Gemini returns to the previous workflow without deleting its
 saved images. No paid call, service deployment or remote push is authorised by
 this planning document alone.
 
-G1–G4 are locally implemented and verified offline. The next delivery gate is G5:
-private account/model access and actual budget readiness, followed by a separately
-authorised G6 trial. Do not enter a key into chat or infer spending authority from
-the existence of the adapter or source preview.
+G1–G5 are implemented and locally verified. The authorised G6 provider trial
+completed with ten saved images and two preserved failed attempts; generated-image
+physical Office and teacher acceptance remain open. G7 deployment/two-host work
+retains its own gates. Do not enter a key into chat or infer spending authority
+from the existence of the adapter or source preview.

@@ -2,7 +2,10 @@
 
 24 October 2026. Follow-up to [G3–G4](2026-10-24-image-provider-g3-g4-implementation.md)
 and the [provider plan](2026-10-24-gemini-image-provider-plan.md). This is a failed
-live acceptance result, not a successful generated-image release.
+live acceptance result, not a successful generated-image release. Subsequent
+authorised diagnosis resolved the rejection and completed the bounded trial;
+see the [live-trial follow-up](2026-10-24-gemini-live-trial.md). The paused and
+disabled states below describe this earlier checkpoint.
 
 ## Real setup and attempt
 

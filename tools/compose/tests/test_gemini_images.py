@@ -63,7 +63,7 @@ def test_single_stateless_dispatch_header_key_and_actual_provenance():
     assert request['json'] == {'model': GOOGLE_MODEL, 'input': [{'type': 'text', 'text': 'Synthetic image brief'}],
         'store': False, 'stream': False, 'background': False,
         'generation_config': {'thinking_level': 'medium', 'thinking_summaries': 'none'},
-        'response_format': {'type': 'image', 'mime_type': 'image/jpeg', 'delivery': 'inline',
+        'response_format': {'type': 'image', 'mime_type': 'image/jpeg',
                             'image_size': '1K', 'aspect_ratio': '1:1'}}
     assert request['allow_redirects'] is False and request['timeout'] == (10, 240) and request['stream'] is True
     assert transport.trust_env is False
@@ -82,6 +82,26 @@ def test_reference_is_one_deliberate_image_without_conversation_chaining(tmp_pat
     assert str(parent) not in json.dumps(payload)
     assert payload['response_format']['image_size'] == '2K'
     assert parent.read_bytes() == base64.b64decode(PNG_BASE64)
+
+
+def test_actual_delivery_mode_rejection_is_avoided_for_generation_and_refinement(tmp_path):
+    """The live endpoint rejects explicit delivery despite its OpenAPI enum."""
+    transport = session()
+    def endpoint(*args, **kwargs):
+        if 'delivery' in kwargs['json']['response_format']:
+            return Response({'error': {'message': 'Image delivery mode is not supported.'}}, status=400)
+        return Response()
+    transport.post.side_effect = endpoint
+    app = make_service(tmp_path, transport)
+    first = app.prepare_generation('Synthetic wildlife photograph')
+    parent = app.generate(first['job_id'])
+    edit = app.prepare_generation('Change the background only', parent_version_id=parent['version_id'])
+    child = app.generate(edit['job_id'])
+    assert child['parent_version_id'] == parent['version_id']
+    assert transport.post.call_count == 2
+    assert all('delivery' not in call.kwargs['json']['response_format'] for call in transport.post.call_args_list)
+    assert app.store.get_job(first['job_id'])['phase'] == 'preview_ready'
+    assert app.store.get_job(edit['job_id'])['phase'] == 'preview_ready'
 
 
 @pytest.mark.parametrize('change', ['thought_only', 'last_text', 'two_images', 'mime', 'base64', 'not_image',
