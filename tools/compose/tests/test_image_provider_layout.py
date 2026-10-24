@@ -2,6 +2,9 @@
 import sys
 from pathlib import Path
 from unittest.mock import Mock
+import queue
+import threading
+import time
 
 import pytest
 import tkinter as tk
@@ -40,7 +43,7 @@ def test_image_settings_masks_key_and_keeps_save_reachable(width, height):
                      and str(w.cget('textvariable')) == key_var)
         assert entry.cget('show') == '•'
         assert entry.winfo_rootx() + entry.winfo_width() <= root.winfo_rootx() + width
-        assert 'rendering unavailable' in panel.image_status.cget('text')
+        assert 'Adapter: ready' in panel.image_status.cget('text')
         for widget in descendants(panel):
             if isinstance(widget, ttk.Label) and widget.cget('text') == 'Hermes bearer token (separate from media server)':
                 assert widget.winfo_reqheight() > 20  # The long label wraps instead of clipping.
@@ -52,6 +55,66 @@ def test_image_settings_masks_key_and_keeps_save_reachable(width, height):
         assert root.winfo_rooty() <= save.winfo_rooty()
         assert save.winfo_rooty() + save.winfo_height() <= root.winfo_rooty() + height
     finally:
+        root.destroy()
+
+
+@pytest.mark.parametrize('width,height', [(920, 740), (720, 640)])
+def test_gemini_wait_keeps_ui_responsive_and_records_display_timing(tmp_path, width, height):
+    from gemini_images import GeminiImageProvider
+    from test_gemini_images import session, Response, CONFIG
+    entered, release = threading.Event(), threading.Event()
+    transport = session()
+    def post(*_args, **_kwargs):
+        entered.set()
+        if not release.wait(4):raise TimeoutError('Synthetic test wait expired')
+        return Response()
+    transport.post.side_effect = post
+    events = queue.Queue()
+    try:
+        root = tk.Tk()
+    except tk.TclError:
+        pytest.skip('Native Tk display unavailable')
+    panel = None
+    try:
+        root.attributes('-alpha', 0)
+        root.geometry(f'{width}x{height}')
+        service = MediaService(MediaStore(tmp_path), CONFIG, Mock(),
+                               provider=GeminiImageProvider('synthetic-key', session=transport))
+        panel = MediaPanel(root, service, lambda callback,*args:events.put((callback,args)), Mock(), Mock())
+        panel.pack(fill='both', expand=True)
+        panel.prepare(prompt='Synthetic diagram')
+        prepared = panel.prepared_job
+        panel.generate()
+        heartbeat = []
+        root.after(20, lambda:heartbeat.append(True))
+        def pump_until(predicate, seconds):
+            deadline = time.monotonic() + seconds
+            while not predicate() and time.monotonic() < deadline:
+                while not events.empty():
+                    callback,args = events.get();callback(*args)
+                root.update()
+                time.sleep(.01)
+            assert predicate()
+        pump_until(lambda:entered.is_set() and bool(heartbeat), 2)
+        pump_until(lambda:'Requesting image' in panel.notice.cget('text') and 'elapsed' in panel.notice.cget('text'), 2)
+        assert 'does not cancel' in panel.notice.cget('text')
+        assert panel._busy
+        assert service.store.get_job(prepared)['phase'] == 'acquiring'
+        release.set()
+        pump_until(lambda:not panel._busy, 3)
+        root.update()
+        job = service.store.get_job(prepared)
+        assert job['phase'] == 'preview_ready'
+        assert job['button_to_preview_seconds'] >= job['provider_receipt']['round_trip_seconds']
+        assert 'Google Gemini' in panel.details.cget('text')
+        assert 'button to preview' in panel.details.cget('text')
+        assert bool(panel.preview.cget('image'))
+        assert panel.preview.winfo_height() >= 24
+        panel.on_queue.assert_not_called()
+        assert transport.post.call_count == 1
+    finally:
+        release.set()
+        if panel is not None:panel.close()
         root.destroy()
 
 
@@ -86,7 +149,7 @@ def test_frozen_choice_and_image_actions_fit_nested_media_page(tmp_path, width, 
         assert panel.preview.winfo_height() >= 60
         service.config['IMAGE_PROVIDER'] = 'gemini'
         panel.prepare(prompt='Another synthetic diagram')
-        assert str(panel.generate_button.cget('state')) == 'disabled'
-        assert 'pending implementation' in panel.generate_button.cget('text')
+        assert str(panel.generate_button.cget('state')) == 'normal'
+        assert 'Google Gemini' in panel.prepared_choice.cget('text')
     finally:
         root.destroy()

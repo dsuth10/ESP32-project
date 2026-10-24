@@ -4,7 +4,7 @@ from tkinter import ttk
 
 from companion_settings import save_settings
 from image_provider_config import (PROVIDER_LABELS, OPENAI_MODEL, GOOGLE_MODEL,
-                                   selected_provider, selected_model, image_readiness)
+                                   selected_provider, selected_model, image_readiness, image_snapshot)
 
 
 class SettingsPanel(ttk.Frame):
@@ -15,6 +15,8 @@ class SettingsPanel(ttk.Frame):
         self.post_ui = post_ui
         self._saving = False
         self._closed = False
+        self._checking = False
+        self._image_revision = 0
         self.values = {}
         canvas = tk.Canvas(self, highlightthickness=0)
         scrollbar = ttk.Scrollbar(self, orient='vertical', command=canvas.yview)
@@ -39,7 +41,7 @@ class SettingsPanel(ttk.Frame):
                    ('GOOGLE_IMAGE_API_KEY', 'Google image API key', True, ''),
                    ('IMAGE_MODEL', 'OpenAI model (exact identifier)', False, OPENAI_MODEL),
                    ('GOOGLE_IMAGE_MODEL', 'Google model (exact identifier)', False, GOOGLE_MODEL),
-                   ('IMAGE_ESTIMATE_AUD_CENTS', 'Conservative allocation per image attempt (AUD cents)', False, '')]
+                   ('IMAGE_ESTIMATE_AUD_CENTS', 'OpenAI allocation for this model (AUD cents)', False, '')]
         row = 1
         ttk.Label(content, text='Image producer').grid(row=row, column=0, sticky='w', padx=4)
         self.producer_label = tk.StringVar(value=PROVIDER_LABELS.get(initial_provider, 'Choose image producer'))
@@ -60,6 +62,27 @@ class SettingsPanel(ttk.Frame):
                 field = ttk.Entry(content, textvariable=var, show='•' if secret else '')
             field.grid(row=row, column=1, sticky='ew', pady=5)
             row += 1
+        choices = [('GOOGLE_IMAGE_ASPECT_RATIO', 'Google aspect ratio', ('1:1', '3:4', '4:3'), '1:1')]
+        for key, label, options, default in choices:
+            ttk.Label(content, text=label).grid(row=row, column=0, sticky='w', padx=4)
+            self.values[key] = tk.StringVar(value=config.get(key) or default)
+            ttk.Combobox(content, textvariable=self.values[key], values=options, state='readonly').grid(row=row, column=1, sticky='ew')
+            row += 1
+        advanced = ttk.LabelFrame(content, text='Advanced Google image options', padding=8)
+        advanced.grid(row=row, column=0, columnspan=2, sticky='ew', pady=8)
+        advanced.columnconfigure(1, weight=1)
+        for index,(key, label, options, default) in enumerate([
+                ('GOOGLE_IMAGE_SIZE', 'Resolution', ('1K', '2K', '4K'), '1K'),
+                ('GOOGLE_IMAGE_THINKING', 'Thinking level', ('minimal', 'medium', 'high'), 'medium')]):
+            ttk.Label(advanced, text=label).grid(row=index, column=0, sticky='w', padx=4)
+            self.values[key] = tk.StringVar(value=config.get(key) or default)
+            ttk.Combobox(advanced, textvariable=self.values[key], values=options, state='readonly').grid(row=index, column=1, sticky='ew', pady=3)
+        for index, size in enumerate(('1K', '2K', '4K'), start=2):
+            key = f'GOOGLE_IMAGE_ESTIMATE_{size}_AUD_CENTS'
+            self.values[key] = tk.StringVar(value=config.get(key, ''))
+            ttk.Label(advanced, text=f'{size} allocation (AUD cents)').grid(row=index, column=0, sticky='w', padx=4)
+            ttk.Entry(advanced, textvariable=self.values[key]).grid(row=index, column=1, sticky='ew', pady=3)
+        row += 1
         flags = [('HERMES_ENABLED', 'Enable the separate Hermes task panel', '0'),
                  ('MEDIA_SYNC_ENABLED', 'Synchronise media automatically with my private server', '0'),
                  ('IMAGE_GENERATION_ENABLED', 'Enable paid image requests when I press Generate\n(shared budget required)', '0'),
@@ -74,6 +97,12 @@ class SettingsPanel(ttk.Frame):
             row += 1
         self.image_status = ttk.Label(content, text='', wraplength=600, justify='left')
         self.image_status.grid(row=row, column=0, columnspan=2, sticky='ew', pady=8)
+        row += 1
+        self.check_button = ttk.Button(content, text='Check Google connection (no image)', command=self.check_connection)
+        self.check_button.grid(row=row, column=0, columnspan=2, sticky='w', pady=4)
+        row += 1
+        self.connection_status = ttk.Label(content, text='Model access has not been checked.', wraplength=600)
+        self.connection_status.grid(row=row, column=0, columnspan=2, sticky='ew')
         row += 1
         for variable in self.values.values():
             variable.trace_add('write', lambda *_: self._image_status())
@@ -92,13 +121,46 @@ class SettingsPanel(ttk.Frame):
                                                if label == self.producer_label.get()))
 
     def _image_status(self):
+        self._image_revision += 1
+        self.connection_status.configure(text='Model access has not been checked for these settings.')
         try:
             text = image_readiness({key: var.get() for key, var in self.values.items()})
         except ValueError as error:
             text = str(error)
         self.image_status.configure(text=text)
 
+    def check_connection(self):
+        if self._checking or self._saving or self._closed:return
+        config = {key: var.get() for key, var in self.values.items()}
+        revision = self._image_revision
+        self._checking = True
+        self.check_button.configure(state='disabled')
+        self.connection_status.configure(text='Checking Google model metadata; no image request…')
+        def worker():
+            from gemini_images import check_google_model
+            try:
+                message = check_google_model(config)
+            except ValueError as error:
+                message = str(error)
+            except Exception:
+                message = 'Google model access could not be checked. No image was requested.'
+            if not self._closed:self.post_ui(self._connection_finished, revision, message)
+        import threading
+        threading.Thread(target=worker, daemon=True).start()
+
+    def _connection_finished(self, revision, message):
+        if self._closed:return
+        self._checking = False
+        self.check_button.configure(state='normal')
+        self.connection_status.configure(text=message if revision == self._image_revision else 'Settings changed during checking. Check again when ready.')
+        if revision == self._image_revision and self.values['IMAGE_PROVIDER'].get() == 'gemini':
+            state = 'model metadata accessible; rendering unverified' if message.startswith('Google model metadata is accessible.') else 'model access not confirmed'
+            self.image_status.configure(text=self.image_status.cget('text').replace('model access unchecked', state))
+
     def save(self):
+        if self._checking:
+            self.status.configure(text='Wait for the Google connection check to finish before saving settings.')
+            return
         if self._saving:
             return
         values = {key: ('1' if var.get() else '0') if isinstance(var, tk.BooleanVar)
@@ -106,10 +168,12 @@ class SettingsPanel(ttk.Frame):
         try:
             provider = selected_provider(values)
             selected_model(values, provider)
-            amount = values['IMAGE_ESTIMATE_AUD_CENTS']
-            if amount and (not amount.isdecimal() or not 1 <= int(amount) <= 3000):
-                raise ValueError('Set a per-attempt allocation from 1 to 3000 AUD cents, or leave it empty while generation is disabled.')
-            if values['IMAGE_GENERATION_ENABLED'] == '1' and not amount:
+            for key in ('IMAGE_ESTIMATE_AUD_CENTS', 'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS',
+                        'GOOGLE_IMAGE_ESTIMATE_2K_AUD_CENTS', 'GOOGLE_IMAGE_ESTIMATE_4K_AUD_CENTS'):
+                amount = values[key]
+                if amount and (not amount.isdecimal() or not 1 <= int(amount) <= 3000):
+                    raise ValueError('Set allocations from 1 to 3000 AUD cents, or leave unused allocations empty.')
+            if values['IMAGE_GENERATION_ENABLED'] == '1' and not image_snapshot(values)['allocation_cents']:
                 raise ValueError('Configure the per-attempt allocation before enabling paid images.')
             self._saving = True
             self.status.configure(text='Checking active work and protecting settings…')

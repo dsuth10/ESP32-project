@@ -32,13 +32,13 @@ def test_factory_routes_openai_without_changing_payload():
     session.post.assert_not_called()
 
 
-def test_google_is_explicit_and_never_falls_back_or_reserves(tmp_path):
+def test_google_is_explicit_and_never_borrows_openai_allocation_or_falls_back(tmp_path):
     app = MediaService(MediaStore(tmp_path), {'IMAGE_PROVIDER': 'gemini', 'IMAGE_GENERATION_ENABLED': '1',
         'GOOGLE_IMAGE_API_KEY': 'offline-secret', 'IMAGE_ESTIMATE_AUD_CENTS': '100'}, Mock())
     job = app.prepare_generation('Offline synthetic brief')
     assert job['image_provider']['model'] == GOOGLE_MODEL
     with patch('media_providers.OpenAIImageProvider') as openai:
-        with pytest.raises(ValueError, match='pending implementation'):
+        with pytest.raises(ValueError, match='allocation'):
             app.generate(job['job_id'])
     openai.assert_not_called()
     app.sync.reserve_budget.assert_not_called()
@@ -125,13 +125,17 @@ def test_google_key_uses_protected_storage_and_does_not_replace_openai(tmp_path)
     with patch.object(settings, '_crypt', side_effect=crypt):
         settings.save_settings({'OPENAI_API_KEY': 'old-secret', 'IMAGE_MODEL': 'existing-model'}, tmp_path)
         settings.save_settings({'IMAGE_PROVIDER': 'gemini', 'GOOGLE_IMAGE_MODEL': GOOGLE_MODEL,
-                                'GOOGLE_IMAGE_API_KEY': 'google-secret'}, tmp_path)
+                                'GOOGLE_IMAGE_API_KEY': 'google-secret', 'GOOGLE_IMAGE_SIZE': '2K',
+                                'GOOGLE_IMAGE_ASPECT_RATIO': '3:4', 'GOOGLE_IMAGE_THINKING': 'minimal',
+                                'GOOGLE_IMAGE_ESTIMATE_2K_AUD_CENTS': '200'}, tmp_path)
         loaded = settings.load_settings(tmp_path)
         settings.save_settings({'IMAGE_PROVIDER': 'openai'}, tmp_path)
         assert settings.load_settings(tmp_path)['GOOGLE_IMAGE_API_KEY'] == 'google-secret'
     assert loaded['OPENAI_API_KEY'] == 'old-secret'
     assert loaded['IMAGE_MODEL'] == 'existing-model'
     assert loaded['GOOGLE_IMAGE_API_KEY'] == 'google-secret'
+    assert image_snapshot(loaded)['options'] == {'size': '2K', 'aspect_ratio': '3:4', 'thinking': 'minimal'}
+    assert image_snapshot(loaded)['allocation_cents'] == 200
     assert 'secret' not in (tmp_path / 'settings.json').read_text()
 
 
@@ -159,7 +163,16 @@ def test_snapshot_and_sync_payload_never_contain_keys(tmp_path):
 def test_readiness_separates_configuration_adapter_policy_and_budget():
     state = image_readiness({'IMAGE_PROVIDER': 'gemini', 'GOOGLE_IMAGE_API_KEY': 'private-key', 'LOCAL_ONLY': '1'})
     assert 'model access unchecked' in state
-    assert 'rendering unavailable' in state
+    assert 'Adapter: ready' in state
     assert 'blocked by local-only mode' in state
     assert 'Budget: not checked' in state
     assert 'private-key' not in state
+
+
+def test_g1_openai_preparation_keeps_its_snapshot_compatibility(tmp_path):
+    app = service(tmp_path)
+    job = app.store.create_job('generate', 'Synthetic legacy OpenAI brief')
+    app.store.update_job(job['job_id'], 'awaiting_user', image_provider=image_snapshot(app.config))
+    app.generate(job['job_id'])
+    assert app.store.get_job(job['job_id'])['phase'] == 'preview_ready'
+    app.provider.generate.assert_called_once()

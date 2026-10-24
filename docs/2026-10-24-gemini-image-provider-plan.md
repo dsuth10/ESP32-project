@@ -2,10 +2,11 @@
 
 24 October 2026. Implementation plan for `codex/companion-media-agent`, under
 the [consolidated programme](2026-10-21-companion-media-agent-master-plan.md),
-primarily M4 and the generated-image part of M5. Status: G1–G2 implemented and
-verified offline, including frozen preparation metadata; see the
-[implementation record](2026-10-24-image-provider-g1-g2-implementation.md).
-No Gemini rendering adapter, real credential setup or paid trial is complete.
+primarily M4 and the generated-image part of M5. Status: G1–G4 implemented and
+verified offline; see the [G1–G2 record](2026-10-24-image-provider-g1-g2-implementation.md)
+and [Gemini/workflow record](2026-10-24-image-provider-g3-g4-implementation.md).
+Real credential/model access, paid rendering and physical generated-image
+acceptance remain open.
 
 ## Intended result
 
@@ -43,10 +44,11 @@ insertion, undo/redo and save/reopen passed in Word and OneNote on the home setu
 These tests used synthetic imported images; real generated-image acceptance is
 still open. See [home acceptance](2026-10-24-home-acceptance.md).
 
-`media_service.py` currently constructs the OpenAI adapter directly. Settings
-provides one image model and one OpenAI key. Prepared jobs do not freeze a
-provider/model/options choice. Those are the main changes required; the library,
-version lineage and Office insertion paths can be reused.
+Before G1–G2, `media_service.py` constructed OpenAI directly, Settings had one
+image model/key and preparations lacked a provider snapshot. The current factory,
+protected Google settings, frozen jobs and Gemini adapter reuse the library,
+version lineage and Office insertion paths. Their offline evidence does not
+close real provider or Office acceptance.
 
 ## Ordered delivery
 
@@ -191,5 +193,7 @@ usable. Disabling Gemini returns to the previous workflow without deleting its
 saved images. No paid call, service deployment or remote push is authorised by
 this planning document alone.
 
-The first implementation slice is G1–G2: provider routing, compatible settings,
-protected Google key entry and frozen job metadata, all verified offline.
+G1–G4 are locally implemented and verified offline. The next delivery gate is G5:
+private account/model access and actual budget readiness, followed by a separately
+authorised G6 trial. Do not enter a key into chat or infer spending authority from
+the existence of the adapter or source preview.

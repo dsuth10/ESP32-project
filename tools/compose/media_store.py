@@ -509,11 +509,34 @@ class MediaStore:
             row = db.execute("SELECT * FROM media_job WHERE job_id=?", (job_id,)).fetchone()
             return self._job(row) if row else None
 
+    def claim_job(self, job_id: str, expected_phase: str, phase: str, **fields: Any) -> bool:
+        """Claim a durable attempt across processes without replacing another owner."""
+        with self._connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            row = db.execute('SELECT phase,fields_json FROM media_job WHERE job_id=?', (job_id,)).fetchone()
+            if row is None or row['phase'] != expected_phase:
+                db.execute('ROLLBACK')
+                return False
+            current = json.loads(row['fields_json'])
+            current.update(fields)
+            db.execute('UPDATE media_job SET phase=?,fields_json=?,updated_at=? WHERE job_id=?',
+                       (phase, _json(current), _now(), job_id))
+            db.execute('COMMIT')
+            return True
+
     def list_jobs(self, limit: int = 100) -> list[dict[str, Any]]:
         limit = min(_MAX_LIST_LIMIT, max(0, int(limit)))
         with self._connect() as db:
             rows = db.execute("SELECT * FROM media_job ORDER BY created_at DESC LIMIT ?", (limit,)).fetchall()
             return [self._job(row) for row in rows]
+
+    def generation_job_for_version(self, version_id: str) -> dict[str, Any] | None:
+        """Local receipt lookup through the existing operation identity, never synced."""
+        with self._connect() as db:
+            row = db.execute('SELECT media_job.* FROM media_job JOIN operation '
+                             'ON operation.operation_id=media_job.job_id WHERE operation.version_id=?',
+                             (version_id,)).fetchone()
+            return self._job(row) if row else None
 
     def recover_interrupted_jobs(self) -> int:
         """Mark jobs interrupted mid-operation so restart recovery stays explicit."""

@@ -21,13 +21,12 @@ class ImageCapabilities:
 
 CAPABILITIES = {
     'openai': ImageCapabilities(True, True, ('1024x1024',), ('1:1',)),
-    # Provider capabilities, not a claim that the local adapter is implemented.
-    'gemini': ImageCapabilities(True, True, ('1K', '2K', '4K'), ('1:1', '3:4', '4:3'), False),
+    'gemini': ImageCapabilities(True, True, ('1K', '2K', '4K'), ('1:1', '3:4', '4:3')),
 }
 
 
 class ImageProvider(Protocol):
-    def generate(self, prompt: str, *, parent: Path | None = None, options: dict | None = None) -> dict: ...
+    def generate(self, prompt: str, *, parent: Path | None = None, options: dict | None = None, on_stage=None) -> dict: ...
     def close(self): ...
 
 
@@ -68,14 +67,25 @@ def validate_options(provider, options=None):
 
 def image_snapshot(config, options=None):
     provider = selected_provider(config)
+    if options is not None and not isinstance(options, dict):
+        raise ValueError('Unsupported image output option.')
+    if provider == 'gemini':
+        configured = {'size': config.get('GOOGLE_IMAGE_SIZE') or '1K',
+                      'aspect_ratio': config.get('GOOGLE_IMAGE_ASPECT_RATIO') or '1:1',
+                      'thinking': config.get('GOOGLE_IMAGE_THINKING') or 'medium'}
+        options = {**configured, **(options or {})}
+    output = validate_options(provider, options)
+    # Google has one supported exact model; each resolution needs its own
+    # deliberate allocation. Never borrow an OpenAI allocation for Google.
+    allocation_key = f"GOOGLE_IMAGE_ESTIMATE_{output['size']}_AUD_CENTS" if provider == 'gemini' else 'IMAGE_ESTIMATE_AUD_CENTS'
     try:
-        allocation = int(config.get('IMAGE_ESTIMATE_AUD_CENTS') or 0)
+        allocation = int(config.get(allocation_key) or 0)
     except (TypeError, ValueError):
         raise ValueError('Configure a conservative AUD allocation in Settings.') from None
     if not 0 <= allocation <= 3000:
         raise ValueError('Set an allocation from 1 to 3000 AUD cents before generation.')
     return {'schema': 1, 'provider': provider, 'model': selected_model(config, provider),
-            'options': validate_options(provider, options), 'allocation_cents': allocation}
+            'options': output, 'allocation_cents': allocation}
 
 
 def image_readiness(config):
@@ -98,5 +108,8 @@ def create_image_provider(snapshot, config, *, session=None) -> ImageProvider:
     validate_options(provider, snapshot['options'])
     if not CAPABILITIES[provider].adapter_available:
         raise ValueError('Google image rendering is pending implementation. No request was sent.')
+    if provider == 'gemini':
+        from gemini_images import GeminiImageProvider
+        return GeminiImageProvider(config.get('GOOGLE_IMAGE_API_KEY', ''), snapshot['model'], session=session)
     from media_providers import OpenAIImageProvider
     return OpenAIImageProvider(config.get('OPENAI_API_KEY', ''), snapshot['model'], session=session)

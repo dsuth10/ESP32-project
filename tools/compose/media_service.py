@@ -3,10 +3,11 @@ from __future__ import annotations
 
 import json
 import threading
+import time
 from pathlib import Path
 
 from assistant_service import AssistantService
-from media_providers import CommonsRetriever, ProviderFailure
+from media_providers import CommonsRetriever, ProviderFailure, safe_identifier, safe_usage
 from image_provider_config import image_snapshot, create_image_provider, CAPABILITIES
 
 
@@ -38,19 +39,21 @@ class MediaService:
         job = self.store.create_job('refine' if parent_version_id else 'generate', prompt)
         job_id = job['job_id'] if isinstance(job, dict) else job
         self.store.update_job(job_id, 'awaiting_user', title=(title or 'Generated image').strip()[:200],
-                              parent_version_id=parent_version_id, image_provider=snapshot)
+                              parent_version_id=parent_version_id, image_provider=snapshot,
+                              image_settings=image_snapshot(self.config))
         return self.store.get_job(job_id)
 
-    def generate(self, job_id):
+    def generate(self, job_id, *, on_stage=None):
         # Only an explicit Generate button invokes this method. An LLM cannot call it.
         if not self._generation_lock.acquire(blocking=False):
             raise ValueError('An image request is already running.')
-        submitted, reserved, reservation_attempted, claimed, owned_provider = False, False, False, False, None
+        submitted, reservation_attempted, claimed, eligible, owned_provider = False, False, False, False, None
+        started = time.perf_counter()
         try:
             job = self.store.get_job(job_id)
             if not job or job['phase'] != 'awaiting_user' or job['kind'] not in {'generate', 'refine'}:
                 raise ValueError('This job cannot be dispatched. Review its current state.')
-            claimed = True
+            eligible = True
             if truthy(self.config.get('LOCAL_ONLY')):
                 raise ValueError('Cloud image generation is unavailable in local-only mode.')
             if not truthy(self.config.get('IMAGE_GENERATION_ENABLED')):
@@ -58,8 +61,12 @@ class MediaService:
             snapshot = job.get('image_provider')
             if not snapshot or snapshot.get('schema') != 1:
                 raise ValueError('This legacy image preparation has no frozen producer choice. Prepare it again before generation.')
+            if snapshot['provider'] == 'gemini' and 'image_settings' not in job:
+                raise ValueError('This Google preparation predates resolution-specific allocations. Prepare it again.')
             if snapshot != image_snapshot(self.config, snapshot.get('options')):
                 raise ValueError('Image producer, model or allocation changed. Prepare the image again before generation.')
+            if job.get('image_settings', snapshot) != image_snapshot(self.config):
+                raise ValueError('Image output settings changed. Prepare the image again before generation.')
             estimate = snapshot['allocation_cents']
             if estimate <= 0 or not self.sync:
                 raise ValueError('Configure a conservative AUD allocation and the shared budget server first.')
@@ -71,10 +78,13 @@ class MediaService:
             provider = self.provider or create_image_provider(snapshot, self.config)
             if self.provider is None:
                 owned_provider = provider
-            self.store.update_job(job_id, 'reserving', allocation_cents=estimate, provider_dispatched=False)
+            claimed = self.store.claim_job(job_id, 'awaiting_user', 'reserving',
+                                          allocation_cents=estimate, provider_dispatched=False)
+            if not claimed:
+                raise ValueError('This image attempt is already claimed. Review its current state; do not repeat it.')
+            if on_stage:on_stage('Reserving image allocation')
             reservation_attempted = True
             self.sync.reserve_budget(job_id, estimate)
-            reserved = True
             self.store.update_job(job_id, 'acquiring', allocation_cents=estimate)
             # Freeze this allocation before provider dispatch; a crash cannot
             # leave an apparently releasable reservation for a possibly paid job.
@@ -82,12 +92,22 @@ class MediaService:
             # Persist dispatch intent before network I/O. Restart never blindly resubmits.
             submitted = True
             self.store.update_job(job_id, 'acquiring', provider_dispatched=True)
-            result = provider.generate(job['request'], parent=self.store.blob_path(parent['sha256']) if parent else None,
-                                       options=dict(snapshot['options']))
+            parent_path = self.store.blob_path(parent['sha256']) if parent else None
+            dispatch_started = time.perf_counter()
+            result = provider.generate(job['request'], parent=parent_path,
+                                       options=dict(snapshot['options']), on_stage=on_stage)
+            receipt = result.get('receipt') or {'provider': snapshot['provider'],
+                'requested_model': snapshot['model'], 'returned_model': safe_identifier(result['source'].get('model', '')),
+                'request_id': safe_identifier(result.get('request_id', '')), 'usage': safe_usage(result.get('usage')),
+                'round_trip_seconds': round(time.perf_counter() - dispatch_started, 3), 'outcome': 'image_received'}
+            # Persist the provider receipt before local import/accounting can fail.
+            self.store.update_job(job_id, 'acquiring', provider_receipt=receipt)
+            if on_stage:on_stage('Preparing preview')
             version = self.store.import_bytes(result['data'], title=job.get('title') or 'Generated image',
                 asset_id=parent['asset_id'] if parent else None, parent_version_id=parent['version_id'] if parent else None,
                 prompt=job['request'], source=result['source'], origin='generated', operation_id=job_id)
-            self.store.update_job(job_id, 'preview_ready', version_id=version['version_id'], asset_id=version['asset_id'])
+            self.store.update_job(job_id, 'preview_ready', version_id=version['version_id'], asset_id=version['asset_id'],
+                                  workflow_seconds=round(time.perf_counter() - started, 3))
             try:
                 self.sync.commit_budget(job_id, estimate)
             except Exception:
@@ -96,7 +116,9 @@ class MediaService:
             return version
         except Exception as error:
             if submitted:
-                self.store.update_job(job_id, 'needs_recovery', error='Image dispatch may have completed. No automatic retry; allocation remains held.')
+                fields = {'provider_receipt': error.receipt} if isinstance(error, ProviderFailure) and error.receipt else {}
+                self.store.update_job(job_id, 'needs_recovery', error='Image dispatch may have completed. No automatic retry; allocation remains held.',
+                                      workflow_seconds=round(time.perf_counter() - started, 3), **fields)
                 raise ProviderFailure('Image attempt needs recovery. Check the library and provider account before starting another attempt.') from None
             allocation_released = not reservation_attempted
             if reservation_attempted:
@@ -108,6 +130,9 @@ class MediaService:
             if claimed and self.store.get_job(job_id):
                 self.store.update_job(job_id, 'failed' if allocation_released else 'needs_recovery',
                     error='Image provider was not dispatched. Check provider/budget settings; reconcile any held allocation.', provider_dispatched=False)
+            elif eligible:
+                self.store.claim_job(job_id, 'awaiting_user', 'failed',
+                    error='Image provider was not dispatched. Review the preparation and settings.', provider_dispatched=False)
             if isinstance(error, ValueError):
                 raise
             raise ValueError('Image request did not dispatch. Check the shared budget connection.') from None
@@ -122,6 +147,22 @@ class MediaService:
         if not self.retriever:
             self.retriever = CommonsRetriever()
         return self.retriever.search(query)
+
+    def reconcile_saved_allocation(self, job_id):
+        """Explicit accounting-only retry for a saved image with a lost ledger ACK."""
+        job = self.store.get_job(job_id)
+        if not job or job['phase'] != 'preview_ready' or job['kind'] not in {'generate', 'refine'}:
+            raise ValueError('Select a saved image attempt with pending accounting.')
+        if job.get('accounting') == 'allocation_retained_after_reconciliation':
+            return job
+        if (job.get('accounting') != 'reservation_held_pending_reconciliation'
+                or not job.get('version_id') or not self.store.get_version(job['version_id'])):
+            raise ValueError('This attempt has no saved image allocation awaiting reconciliation.')
+        if truthy(self.config.get('LOCAL_ONLY')) or not self.sync:
+            raise ValueError('Reconnect the shared budget server outside local-only mode before reconciliation.')
+        self.sync.commit_budget(job_id, job['allocation_cents'])
+        return self.store.update_job(job_id, 'preview_ready', accounting='allocation_retained_after_reconciliation',
+                                     reconciled_by_user=True)
 
     def import_web(self, candidate, rights_acknowledged=False):
         if truthy(self.config.get('LOCAL_ONLY')):

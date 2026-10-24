@@ -3,6 +3,7 @@ from __future__ import annotations
 import shutil
 import json
 import threading
+import time
 import uuid
 import tkinter as tk
 from tkinter import ttk, filedialog, simpledialog, messagebox, scrolledtext
@@ -19,6 +20,8 @@ class MediaPanel(ttk.Frame):
         self._closed = self._busy = False
         self.selected = None
         self.prepared_job = None
+        self._generation_job_id = None
+        self._progress_after = None
         self.previewed = set()
         self.rows, self.versions = {}, []
         self.columnconfigure(0, weight=1)
@@ -49,35 +52,38 @@ class MediaPanel(ttk.Frame):
         self.preview=ttk.Label(right,text='Select an image to preview.',anchor='center')
         self.preview.pack(fill='both',expand=True)
         self.details=ttk.Label(right,wraplength=550,justify='left')
+        right.bind('<Configure>',lambda event:self.details.configure(wraplength=max(160,event.width-12)))
         self.details.pack(side='bottom',fill='x',pady=5,before=self.preview)
         actions=ttk.Frame(self);actions.grid(row=3,column=0,sticky='ew',pady=4)
         for index,(label,callback) in enumerate([('Keep named version',self.approve),('Queue for Paste Ready',self.queue_selected),
                                 ('Copy image',self.copy_selected),('Export image',self.export_selected)]):
-            ttk.Button(actions,text=label,command=callback).grid(row=index//3,column=index%3,sticky='w',padx=2,pady=2)
+            ttk.Button(actions,text=label,command=callback).grid(row=0,column=index,sticky='w',padx=2,pady=2)
         tools=ttk.Menubutton(actions,text='Library tools')
         menu=tk.Menu(tools,tearoff=False)
         menu.add_command(label='Back up media library',command=self.backup)
         menu.add_command(label='Restore backup into a new folder',command=self.restore)
         menu.add_command(label='Review selected job',command=self.review_job)
-        tools.configure(menu=menu);tools.grid(row=1,column=1,sticky='w',padx=2)
+        tools.configure(menu=menu);tools.grid(row=0,column=4,sticky='w',padx=2)
         ttk.Label(self,text='Describe a media request, or refine the selected image (Ctrl+Enter to send)').grid(row=4,column=0,sticky='w')
-        self.prompt=scrolledtext.ScrolledText(self,height=3,wrap='word',font=('Segoe UI',11))
+        self.prompt=scrolledtext.ScrolledText(self,height=2,wrap='word',font=('Segoe UI',11))
         self.prompt.grid(row=5,column=0,sticky='ew')
         self.prompt.bind('<Control-Return>',lambda event:(self.ask(),'break')[1])
         commands=ttk.Frame(self);commands.grid(row=6,column=0,sticky='ew',pady=5)
         for index,(label,callback) in enumerate([('Ask media assistant',self.ask),('Speak / finish',self.on_record),
                                ('Prepare new image',self.prepare),('Refine selected',lambda:self.prepare(True)),
                                ('Search web images',self.web_search)]):
-            ttk.Button(commands,text=label,command=callback).grid(row=index//3,column=index%3,sticky='w',padx=2,pady=2)
+            ttk.Button(commands,text=label,command=callback).grid(row=0,column=index,sticky='w',padx=2,pady=2)
         prepared=ttk.Frame(self);prepared.grid(row=7,column=0,sticky='ew');prepared.columnconfigure(0,weight=1)
+        self._prepared_frame=prepared
         self.generate_button=ttk.Button(prepared,text='Generate prepared image',command=self.generate,state='disabled')
         self.generate_button.grid(row=0,column=0,sticky='w')
         self.prepared_choice=ttk.Label(prepared,text='',wraplength=600,justify='left')
         self.prepared_choice.grid(row=1,column=0,sticky='ew')
+        prepared.grid_remove()
         self.notice=ttk.Label(self,wraplength=850,justify='left',text='Library first. Web search and paid generation are explicit actions.')
         self.notice.grid(row=8,column=0,sticky='ew',pady=5)
         self.bind('<Configure>',lambda event:self.notice.configure(wraplength=max(280,event.width-20)) if event.widget is self else None,add='+')
-        self.jobs=ttk.Treeview(self,columns=('kind','phase'),show='headings',height=3)
+        self.jobs=ttk.Treeview(self,columns=('kind','phase'),show='headings',height=2)
         self.jobs.heading('kind',text='Recent image jobs');self.jobs.heading('phase',text='State')
         self.jobs.grid(row=9,column=0,sticky='ew')
         self.jobs.bind('<Double-1>',lambda event:self.review_job())
@@ -103,6 +109,9 @@ class MediaPanel(ttk.Frame):
 
     def _finish(self,done,result,error):
         self._busy=False
+        self._generation_job_id=None
+        if self._progress_after:
+            self.after_cancel(self._progress_after);self._progress_after=None
         if self._closed:return
         self.refresh_jobs()
         if error:self.tell(error)
@@ -145,14 +154,23 @@ class MediaPanel(ttk.Frame):
         try:
             with Image.open(self.service.store.blob_path(row['sha256'])) as image:
                 image.thumbnail((max(100,min(570,self.preview.winfo_width())),max(60,min(260,self.preview.winfo_height()))))
-                self._photo=ImageTk.PhotoImage(image.copy())
+                self._photo=ImageTk.PhotoImage(image.copy(),master=self)
             self.preview.configure(image=self._photo,text='')
             self.previewed.add(row['version_id'])
         except Exception:
             self.preview.configure(image='',text='Image unavailable locally. Check sync status.');return
         source=row.get('source') or {}
+        job=self.service.store.generation_job_for_version(row['version_id'])
+        receipt=(job or {}).get('provider_receipt') or {}
+        timing=''
+        if receipt:
+            timing=f"\nProvider round trip: {receipt.get('round_trip_seconds', 'unknown')} s"
+            if job.get('button_to_preview_seconds') is not None:
+                timing+=f" · button to preview: {job['button_to_preview_seconds']} s"
+        producer=f"\n{PROVIDER_LABELS.get(source.get('provider'), source.get('provider', ''))} · {source.get('model', '')}" if source.get('provider') else ''
         self.details.configure(text=f"{row.get('canonical_title') or row['title']} · {row['width']} × {row['height']} px\n"
-            f"{row.get('origin','import')} · Version {row['version_id'][:8]} · {source.get('licence','No reuse licence recorded')}\n{source.get('url','')}")
+            f"{row.get('origin','import')} · Version {row['version_id'][:8]} · {source.get('licence','No reuse licence recorded')}"
+            f"{producer}{timing}" + (f"\n{source['url']}" if source.get('url') else ''))
 
     def import_image(self):
         path=filedialog.askopenfilename(title='Import image',filetypes=[('Images','*.png *.jpg *.jpeg *.webp')])
@@ -163,7 +181,7 @@ class MediaPanel(ttk.Frame):
 
     def _asset_result(self,row):
         self.refresh();self.show_version(row)
-        self.tell('Image stored locally. Review its preview; keeping a named version and inserting are separate actions.')
+        self.tell('Image saved. Review its preview; Keep named version and Paste Ready are separate actions.')
 
     def approve(self,title=None):
         if not self.selected:return self.tell('Select a version first.')
@@ -232,6 +250,24 @@ class MediaPanel(ttk.Frame):
         window=tk.Toplevel(self);window.title('Review media attempt')
         ttk.Label(window,text=f"{job['kind']} · {job['phase']}\n{job.get('error') or job.get('accounting') or 'No error recorded.'}",
                   wraplength=550,padding=12).pack(fill='x')
+        if job.get('image_provider'):
+            snapshot=job['image_provider']
+            ttk.Label(window,text=f"{PROVIDER_LABELS[snapshot['provider']]} · {snapshot['model']}\n"
+                f"{snapshot['options']} · A${snapshot['allocation_cents']/100:.2f} allocation (estimate, not invoice)",
+                wraplength=550,padding=12).pack(fill='x')
+        if job.get('provider_receipt'):
+            receipt=scrolledtext.ScrolledText(window,height=9,width=65,wrap='word')
+            receipt.pack(fill='both',expand=True,padx=12,pady=6)
+            receipt.insert('1.0',json.dumps(job['provider_receipt'],indent=2));receipt.configure(state='disabled')
+        if job['phase']=='preview_ready' and job.get('accounting')=='reservation_held_pending_reconciliation':
+            ttk.Label(window,text='The image is saved; its accounting acknowledgement was lost.\n'
+                'Reconcile the existing design allocation without requesting another image. This is not an invoice-cost check.',
+                wraplength=550,padding=12).pack(fill='x')
+            def reconcile_saved():
+                window.destroy()
+                self.run(lambda:self.service.reconcile_saved_allocation(job['job_id']),
+                    lambda result:self.tell('Saved image accounting reconciled using its retained design allocation. No image request was sent.'))
+            ttk.Button(window,text='Reconcile saved image allocation',command=reconcile_saved).pack(padx=12,pady=12)
         if job['phase']=='needs_recovery':
             ttk.Label(window,text='Check the provider account or target document before making another attempt.\n'
                 'Closing this attempt retains its full design allocation and does not claim that an image was generated or inserted.',
@@ -263,16 +299,17 @@ class MediaPanel(ttk.Frame):
             job=self.service.prepare_generation(prompt or self.text(),title,
                 self.selected['version_id'] if refine else None, allow_cross_provider=cross_provider)
             self.prepared_job=job['job_id']
+            self._prepared_frame.grid()
             snapshot=job['image_provider']
             estimate=snapshot['allocation_cents']
             self.prepared_choice.configure(text=f"Frozen choice: {PROVIDER_LABELS[snapshot['provider']]} · {snapshot['model']}\n"
-                f"{snapshot['options']['size']} · {snapshot['options']['aspect_ratio']} · A${estimate/100:.2f} allocation")
+                f"{snapshot['options']['size']} · {snapshot['options']['aspect_ratio']}"
+                + (f" · {snapshot['options']['thinking']} thinking" if 'thinking' in snapshot['options'] else '')
+                + f" · A${estimate/100:.2f} allocation")
             available=CAPABILITIES[snapshot['provider']].adapter_available
             self.generate_button.configure(state='normal' if available else 'disabled',
                 text=f'Generate prepared image — A${estimate/100:.2f} design allocation' if available else 'Google rendering pending implementation')
-            message=(f"Prepared: {PROVIDER_LABELS[snapshot['provider']]} · {snapshot['model']} · "
-                f"{snapshot['options']['size']} · {snapshot['options']['aspect_ratio']}. "
-                'Generate dispatches one paid attempt with this frozen choice and allocation. '
+            message=('Generate sends one paid attempt for the frozen choice above. '
                 + ('The selected reference image will be sent to this producer. ' if refine else '')
                 + 'Settings changes require re-preparation. Result previews before insertion.')
             self.tell(message if available else 'Google image rendering is pending implementation. This preparation is local; no request was sent.')
@@ -281,13 +318,37 @@ class MediaPanel(ttk.Frame):
 
     def generate(self):
         if self._busy:return self.tell('Finish the current media operation first.')
+        if getattr(self,'settings_saving',lambda:False)():return self.tell('Wait until settings have finished saving.')
         if not self.prepared_job:return
         job_id=self.prepared_job
         self.prepared_job=None
-        self.prepared_choice.configure(text='')
+        self._generation_job_id=job_id
+        self._generation_started=time.perf_counter()
+        self._generation_stage='Preparing request'
         self.generate_button.configure(state='disabled')
         self.tell('Generating one image attempt. Do not repeat the request if the connection fails.')
-        self.run(lambda:self.service.generate(job_id),self._asset_result)
+        self.run(lambda:self.service.generate(job_id,on_stage=lambda stage:self.post_ui(self._set_generation_stage,job_id,stage)),
+                 lambda row:self._generated_result(job_id,self._generation_started,row))
+        self._generation_tick()
+
+    def _set_generation_stage(self,job_id,stage):
+        if not self._closed and self._generation_job_id==job_id:self._generation_stage=stage
+
+    def _generation_tick(self):
+        if self._closed or not self._busy or not self._generation_job_id:return
+        elapsed=time.perf_counter()-self._generation_started
+        self.tell(f'{self._generation_stage} · {elapsed:.1f} s elapsed.\n'
+                  'Closing the app does not cancel the remote request or release its allocation; it may still finish and be charged.')
+        self._progress_after=self.after(500,self._generation_tick)
+
+    def _generated_result(self,job_id,started,row):
+        self._prepared_frame.grid_remove()
+        self.update_idletasks()
+        self._asset_result(row)
+        self.update_idletasks()
+        job=self.service.store.get_job(job_id)
+        self.service.store.update_job(job_id,job['phase'],button_to_preview_seconds=round(time.perf_counter()-started,3))
+        self.show_version(row)
 
     def ask(self,request=None,inbound_job_id=None,target=None):
         request=request or self.text()
@@ -327,6 +388,7 @@ class MediaPanel(ttk.Frame):
             if self.prepared_job:
                 self.service.store.update_job(self.prepared_job,'cancelled');self.prepared_job=None
                 self.prepared_choice.configure(text='')
+                self._prepared_frame.grid_remove()
                 self.generate_button.configure(state='disabled');self.refresh_jobs()
             self.tell('Undispatched preparation cancelled. Dispatched jobs require result/accounting reconciliation.')
         else:self.tell('Use the library, previews and recent jobs to review media state. Sync status appears in Settings.')
@@ -358,4 +420,6 @@ class MediaPanel(ttk.Frame):
 
     def close(self):
         self._closed=True
+        if self._progress_after:
+            self.after_cancel(self._progress_after);self._progress_after=None
         self.service.close()
