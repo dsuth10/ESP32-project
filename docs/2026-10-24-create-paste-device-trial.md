@@ -77,7 +77,7 @@ bounded reconnect succeeded. This repeated no generation, insertion or flash.
 
 The user confirmed **“Layout visible and Library works”**. This is user-reported
 physical evidence, distinct from automated tests and the serial page/status
-acknowledgement. Full end-to-end Compose, Dictate and Images checks
+acknowledgement. Full end-to-end Compose and Images checks
 on this candidate remain open; prior home acceptance is not automatically
 transferred to a new firmware build.
 
@@ -99,6 +99,13 @@ desktop feedback now treats a selected image as available edit context, with
 recording enabled and Paste Ready inactive. An actual prepared brief still
 requires review. The focused feedback/writing/media-service selection passed
 68 tests. This correction changes desktop feedback only; no firmware reflash.
+
+The user then tested Dictate and confirmed **“The text was inserted correctly.
+Everything worked well.”** The host recorded one start/stop gesture, PC
+microphone capture, successful transcription and a paste request to the original
+document. USB feedback progressed through recording, processing and idle. This
+accepts basic physical Dictate through the PC microphone on the new candidate;
+it does not establish handheld-microphone audio or every target-application case.
 
 An image had been explicitly queued before the trial. Its durable undispatched
 queue was preserved and restored with the same version and insertion job. The

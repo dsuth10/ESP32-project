@@ -18,7 +18,9 @@ The user then approved normal OneNote Ctrl+V semantics for an explicit Paste Rea
 actions layout and flashing a recoverable original-S3 trial. The application-only
 write and independent read-back passed; USB identity/status acknowledgements
 passed, and the user confirmed the new layout, Library action and generated
-kangaroo insertion through physical Paste Ready in Word. The original
+kangaroo insertion through physical Paste Ready in Word. Physical Dictate through
+the PC microphone also passed with correct text insertion and live status
+transitions. The original
 16 MiB recovery image matched two complete device reads. The stable registry and
 `main` remain unchanged. See [Create & Paste device trial](2026-10-24-create-paste-device-trial.md).
 Other new-firmware button/workflow, microphone and classroom gates remain open.
