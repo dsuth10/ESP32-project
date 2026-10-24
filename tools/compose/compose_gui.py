@@ -441,13 +441,13 @@ class ComposeApp:
             self.media_store.update_job(self.pending_media_job, "cancelled")
         self.pending_media = self.pending_media_job = None
         self.media_panel.refresh_jobs()
-        self.media_panel.tell("Undispatched image queue cleared.")
+        self._report_image_status("Undispatched image queue cleared.")
 
-    def _insert_ready_image(self, expected_target=None):
+    def _insert_ready_image(self, expected_target=None, *, explicit_paste=False):
         from media_targets import capture_target, insert_image
         job_id, version = self.pending_media_job, self.pending_media
         try:
-            target = capture_target()
+            target = capture_target(allow_onenote_keyboard_paste=True) if explicit_paste else capture_target()
             if expected_target and any(target.get(key) != expected_target.get(key) for key in ('hwnd','pid','executable','document','start','end')):
                 self._report_image_status("Target changed. Image retained in READY; select the destination and press PASTE READY.", "#F59E0B")
                 return
@@ -679,7 +679,7 @@ class ComposeApp:
             self.log("Finish the current operation before pasting.")
             return
         if getattr(self, "pending_media", None):
-            self._insert_ready_image()
+            self._insert_ready_image(explicit_paste=True)
             return
         payload = self.pending_ready_payload
         if not payload:

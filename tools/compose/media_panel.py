@@ -72,6 +72,7 @@ class MediaPanel(ttk.Frame):
         self.generate_button.grid(row=7,column=0,sticky='w')
         self.notice=ttk.Label(self,wraplength=850,justify='left',text='Library first. Web search and paid generation are explicit actions.')
         self.notice.grid(row=8,column=0,sticky='ew',pady=5)
+        self.bind('<Configure>',lambda event:self.notice.configure(wraplength=max(280,event.width-20)) if event.widget is self else None,add='+')
         self.jobs=ttk.Treeview(self,columns=('kind','phase'),show='headings',height=3)
         self.jobs.heading('kind',text='Recent image jobs');self.jobs.heading('phase',text='State')
         self.jobs.grid(row=9,column=0,sticky='ew')
@@ -187,7 +188,7 @@ class MediaPanel(ttk.Frame):
                 self.on_queue(dict(self.selected))
         except ValueError as error:
             return self.tell(str(error))
-        self.tell('Image queued. Focus Word or OneNote with a collapsed caret, then press Paste Ready. Copy image is available for manual insertion.')
+        self.tell('Image queued. Focus Word or OneNote, then press Paste Ready. In OneNote, this uses Ctrl+V at your current cursor/selection.')
 
     def copy_selected(self):
         if not self.selected:return self.tell('Select an image first.')

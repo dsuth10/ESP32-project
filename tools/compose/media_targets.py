@@ -45,7 +45,7 @@ def _word():
     return win32com.client.GetActiveObject("Word.Application")
 
 
-def capture_target() -> dict:
+def capture_target(*, allow_onenote_keyboard_paste: bool = False) -> dict:
     target = foreground_target()
     if target["executable"] == "WINWORD.EXE":
         app = _word()
@@ -56,17 +56,24 @@ def capture_target() -> dict:
             raise ValueError("Collapse the Word selection to a caret before inserting an image.")
         target.update(document=str(app.ActiveDocument.FullName), start=int(selection.Start), end=int(selection.End))
     elif target["executable"] == "ONENOTE.EXE":
-        # Exact OneNote caret identity is not exposed by this adapter. A fresh
-        # Paste Ready gesture authorises the current caret, then UIA guards selections.
-        target["selection_checked"] = _onenote_selection_collapsed()
-        if not target["selection_checked"]:
+        selection = _onenote_selection_collapsed()
+        target["selection_checked"] = selection is True
+        if selection is False:
+            raise ValueError("Collapse the OneNote selection to a caret before inserting an image.")
+        if selection is None and allow_onenote_keyboard_paste:
+            # The user explicitly permits normal Ctrl+V semantics at the current
+            # canvas when this edition cannot expose its selection through UIA.
+            target["keyboard_context"] = _onenote_keyboard_context(target["hwnd"])
+            target["explicit_keyboard_paste"] = True
+        elif selection is not True:
             raise ValueError("OneNote selection could not be verified. Use Copy image and paste manually.")
     else:
         raise ValueError("Image insertion currently supports Word and OneNote desktop only.")
     return target
 
 
-def _onenote_selection_collapsed() -> bool:
+def _onenote_selection_collapsed() -> bool | None:
+    """True = caret, False = selected content, None = inspection unavailable."""
     try:
         import uiautomation as auto
         with auto.UIAutomationInitializerInThread():
@@ -77,11 +84,33 @@ def _onenote_selection_collapsed() -> bool:
                 pattern = control.GetPattern(auto.PatternId.TextPattern)
                 if pattern:
                     ranges = pattern.GetSelection()
-                    return bool(ranges and all(r.CompareEndpoints(0, r, 1) == 0 for r in ranges))
+                    return all(r.CompareEndpoints(0, r, 1) == 0 for r in ranges) if ranges else None
                 control = control.GetParentControl()
     except Exception:
-        return False
-    return False
+        return None
+    return None
+
+
+def _onenote_keyboard_context(hwnd: int) -> dict:
+    """Bind explicit keyboard delivery to the focused OneNote document canvas."""
+    import win32gui, win32process
+    from focus_tracker import GUITHREADINFO
+
+    if win32gui.GetForegroundWindow() != hwnd:
+        raise ValueError("OneNote target changed. Image retained in READY.")
+    thread_id, _ = win32process.GetWindowThreadProcessId(hwnd)
+    info = GUITHREADINFO()
+    info.cbSize = ctypes.sizeof(GUITHREADINFO)
+    if not ctypes.windll.user32.GetGUIThreadInfo(thread_id, ctypes.byref(info)):
+        raise ValueError("Focus a OneNote page before pressing Paste Ready.")
+    focused = info.hwndFocus
+    if (not focused or win32gui.GetClassName(focused) != "OneNote::DocumentCanvas"
+            or win32gui.GetAncestor(focused, 2) != hwnd):
+        raise ValueError("Focus the OneNote page body before pressing Paste Ready.")
+    title = win32gui.GetWindowText(hwnd)
+    if not title:
+        raise ValueError("OneNote page identity is unavailable. Image retained in READY.")
+    return {"focus_hwnd": int(focused), "window_title": title}
 
 
 def copy_image(path: Path) -> None:
@@ -121,12 +150,27 @@ def insert_image(path: Path, target: dict) -> dict:
                                                             SaveWithDocument=True, Range=selected.Duplicate)
         return {"transport": "word_com", "verification": "office_object_returned", "position": int(picture.Range.Start),
                 "message": "Word returned an embedded picture. Check placement and save the document."}
-    if target["executable"] == "ONENOTE.EXE" and _onenote_selection_collapsed():
+    if target["executable"] == "ONENOTE.EXE":
+        selection = _onenote_selection_collapsed()
+        explicit = target.get("explicit_keyboard_paste") is True
+        if selection is False:
+            raise ValueError("Collapse the OneNote selection to a caret before inserting an image.")
+        if selection is not True and not explicit:
+            raise ValueError("Target selection could not be verified. Use Copy image and paste manually.")
+        if explicit and target.get("keyboard_context") != _onenote_keyboard_context(target["hwnd"]):
+            raise ValueError("OneNote page or focus changed. Image was not pasted.")
         copy_image(path)
         if not target_matches(target, foreground_target()):
             raise ValueError("Target changed. Image was copied but no paste was sent.")
+        if explicit:
+            if target.get("keyboard_context") != _onenote_keyboard_context(target["hwnd"]):
+                raise ValueError("OneNote page or focus changed. Image was copied but no paste was sent.")
+        elif _onenote_selection_collapsed() is not True:
+            raise ValueError("OneNote selection changed. Image was copied but no paste was sent.")
         from clipboard_manager import send_paste_shortcut
         send_paste_shortcut()
         return {"transport": "onenote_clipboard", "verification": "paste_requested",
-                "message": "OneNote paste requested. Check placement and save/reopen; insertion is not independently verified."}
+                "explicit_keyboard_paste": explicit,
+                "selection_verification": "collapsed" if selection is True else "unavailable",
+                "message": "OneNote paste shortcut sent. Check placement and save/reopen; insertion is not independently verified."}
     raise ValueError("Target selection could not be verified. Use Copy image and paste manually.")

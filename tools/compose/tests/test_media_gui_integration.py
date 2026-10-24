@@ -106,3 +106,24 @@ def test_shared_status_updates_independently_of_selected_tab():
     app._update_status('OneNote selection could not be verified.', '#F59E0B')
     app.global_status_lbl.configure.assert_called_once_with(text='OneNote selection could not be verified.')
     app.global_status_dot.configure.assert_called_once_with(fg='#F59E0B')
+
+
+def test_keyboard_permission_is_only_granted_for_explicit_paste_ready(tmp_path):
+    app,version=fixture_app(tmp_path)
+    app._queue_media(version)
+    target={'hwnd':3,'pid':4,'executable':'ONENOTE.EXE','explicit_keyboard_paste':True}
+    receipt={'verification':'paste_requested','message':'Synthetic paste requested'}
+    with patch('media_targets.capture_target',return_value=target) as capture,patch('media_targets.insert_image',return_value=receipt) as insert:
+        app.inject_paste_ui()
+        app.inject_paste_ui()
+    capture.assert_called_once_with(allow_onenote_keyboard_paste=True)
+    insert.assert_called_once()
+    assert app.pending_media is None
+
+
+def test_automatic_word_target_does_not_grant_onenote_keyboard_permission(tmp_path):
+    app,version=fixture_app(tmp_path)
+    target={'hwnd':3,'pid':4,'executable':'WINWORD.EXE','document':'Synthetic.docx','start':2,'end':2}
+    with patch('media_targets.capture_target',return_value=target) as capture,patch('media_targets.insert_image',return_value={'message':'Fixture inserted'}):
+        app._queue_media(version,target=target)
+    capture.assert_called_once_with()
