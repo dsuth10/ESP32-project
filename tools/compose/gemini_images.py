@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import base64
 import json
+import re
 import time
 from pathlib import Path
 
@@ -15,6 +16,68 @@ from media_store import MediaStore
 ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/interactions'
 MAX_RESPONSE_BYTES = 30 * 1024 * 1024
 MAX_IMAGE_BYTES = 20 * 1024 * 1024
+_RPC_STATUSES = {'CANCELLED', 'UNKNOWN', 'INVALID_ARGUMENT', 'DEADLINE_EXCEEDED', 'NOT_FOUND',
+                 'ALREADY_EXISTS', 'PERMISSION_DENIED', 'UNAUTHENTICATED', 'RESOURCE_EXHAUSTED',
+                 'FAILED_PRECONDITION', 'ABORTED', 'OUT_OF_RANGE', 'UNIMPLEMENTED', 'INTERNAL',
+                 'UNAVAILABLE', 'DATA_LOSS'}
+_REQUEST_FIELDS = {'body', 'request', 'model', 'input', 'type', 'text', 'mime_type', 'data',
+                   'store', 'stream', 'background', 'generation_config', 'thinking_level',
+                   'thinking_summaries', 'response_format', 'delivery', 'image_size', 'aspect_ratio'}
+
+
+def error_diagnostics(response, *, excluded=()):
+    """Read bounded error metadata and a redacted summary, never raw response bodies."""
+    try:
+        body = bytearray()
+        for chunk in response.iter_content(4096):
+            if len(body) + len(chunk) > 64 * 1024:
+                return {}
+            body.extend(chunk)
+        value = json.loads(body)
+        error = value.get('error') if isinstance(value, dict) else None
+        if not isinstance(error, dict):return {}
+        result = {}
+        if error.get('status') in _RPC_STATUSES:
+            result['provider_error_status'] = error['status']
+        code = error.get('code')
+        if type(code) is int and 400 <= code <= 599:
+            result['provider_error_code'] = code
+        fields = set()
+        def add_field(field):
+            if not isinstance(field, str) or len(field) > 160 or field in excluded:return
+            parts = re.sub(r'\[\d+\]', '', field).split('.')
+            if parts and all(part in _REQUEST_FIELDS for part in parts):fields.add(field)
+        details = error.get('details')
+        for detail in details[:32] if isinstance(details, list) else []:
+            if not isinstance(detail, dict):continue
+            if detail.get('@type') == 'type.googleapis.com/google.rpc.BadRequest':
+                violations = detail.get('fieldViolations')
+                for violation in violations[:32] if isinstance(violations, list) else []:
+                    if isinstance(violation, dict):add_field(violation.get('field'))
+            elif detail.get('@type') == 'type.googleapis.com/google.rpc.ErrorInfo':
+                reason = detail.get('reason')
+                if (isinstance(reason, str) and reason not in excluded
+                        and re.fullmatch(r'[A-Z][A-Z_0-9]{0,79}', reason)):
+                    result['provider_error_reason'] = reason
+        message = error.get('message')
+        if isinstance(message, str):
+            # Some Google validation errors identify the rejected name only in
+            # prose. Retain known request-field names, never that prose itself.
+            for field in re.findall(r'Unknown name ["\']([A-Za-z_][A-Za-z_0-9]*)["\']', message[:8192]):
+                add_field(field)
+            summary = message
+            for secret in sorted((value for value in excluded if value), key=len, reverse=True):
+                summary = summary.replace(secret, '<REDACTED>')
+            summary = re.sub(r'https?://[^\s<>"\']+', '<REDACTED>', summary)
+            summary = re.sub(r'\b[A-Za-z]:[\\/][^\s<>"\']+', '<REDACTED>', summary)
+            summary = re.sub(r'(?<!\w)/(?:[\w.-]+/)+[\w.-]*', '<REDACTED>', summary)
+            summary = re.sub(r'AIza[A-Za-z_0-9-]{20,}|[A-Za-z_0-9+/=-]{80,}', '<REDACTED>', summary)
+            summary = re.sub(r'(?i)\bbearer\s+\S+', 'Bearer <REDACTED>', summary)
+            result['provider_error_summary'] = ' '.join(summary.split())[:500]
+        if fields:result['provider_error_fields'] = sorted(fields)
+        return result
+    except Exception:
+        return {}
 
 
 class GeminiImageProvider:
@@ -53,10 +116,11 @@ class GeminiImageProvider:
                     'Content-Type': 'application/json'}, json=payload,
                     timeout=(10, 240), allow_redirects=False, stream=True) as response:
                 receipt['http_status'] = response.status_code
-                receipt['request_id'] = safe_identifier(response.headers.get('x-request-id', ''))
+                receipt['request_id'] = safe_identifier(response.headers.get('x-request-id') or response.headers.get('x-goog-request-id', ''))
                 if not 200 <= response.status_code < 300:
                     receipt['outcome'] = {401: 'authentication', 403: 'access_denied', 429: 'quota'}.get(
                         response.status_code, 'http_error')
+                    receipt.update(error_diagnostics(response, excluded=(self.key, prompt)))
                     raise ValueError('No confirmed image')
                 if on_stage:
                     on_stage('Receiving image')

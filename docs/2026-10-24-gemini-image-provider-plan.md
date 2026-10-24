@@ -5,8 +5,14 @@ the [consolidated programme](2026-10-21-companion-media-agent-master-plan.md),
 primarily M4 and the generated-image part of M5. Status: G1–G4 implemented and
 verified offline; see the [G1–G2 record](2026-10-24-image-provider-g1-g2-implementation.md)
 and [Gemini/workflow record](2026-10-24-image-provider-g3-g4-implementation.md).
-Real credential/model access, paid rendering and physical generated-image
-acceptance remain open.
+Successful paid rendering and physical generated-image acceptance remain open.
+Real credential/model and home-ledger readiness are recorded in the checkpoint below.
+
+Subsequent [first-attempt checkpoint](2026-10-24-gemini-first-attempt-checkpoint.md):
+private model access and the approved real home-PC ledger were verified. The user
+authorised a bounded paid trial; its first request returned HTTP 400 without an
+image. Generation is disabled and the trial is paused. Rejection diagnostics
+were corrected offline; the live rejection's cause remains unconfirmed.
 
 ## Intended result
 

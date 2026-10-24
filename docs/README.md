@@ -8,7 +8,8 @@
 | --- | --- |
 | [Consolidated branch programme](2026-10-21-companion-media-agent-master-plan.md) | Fixed decisions, implemented versus unaccepted work, M0–M9 roadmap, dependencies and completion dashboard. |
 | [Gemini-first image provider plan](2026-10-24-gemini-image-provider-plan.md) | Selectable image producers and Nano Banana 2.1 workflow implemented offline through G4; account, paid-pilot and physical acceptance remain open. |
-| [Gemini/workflow implementation](2026-10-24-image-provider-g3-g4-implementation.md) | Current adapter, receipts, timings, provider allocations and local verification; no real account or paid call. |
+| [Gemini/workflow implementation](2026-10-24-image-provider-g3-g4-implementation.md) | Offline adapter/workflow implementation record; subsequent real account and first-attempt evidence is recorded separately below. |
+| [First Gemini trial attempt](2026-10-24-gemini-first-attempt-checkpoint.md) | Account/model and home-ledger readiness; first request rejected HTTP 400, trial paused, safe rejection diagnostics corrected offline. |
 | [Permanent Hermes/Tailscale connection](hermes-tailscale-home-work.md) | Required same-agent home/work route, safe migration, protected setup, persistence and off-LAN acceptance. Configuration remains pending. |
 | [Home/work architecture](home-work-architecture.md) | Current S3/Windows/Groq/Hermes/library ownership and target topology. |
 | [Hermes integration checkpoint](2026-10-21-hermes-integration-checkpoint.md) | Current runtime/UI, recovery, packaging and bounded test evidence; deployment/user gates remain open. |

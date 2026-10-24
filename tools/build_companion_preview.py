@@ -16,6 +16,7 @@ DOCUMENTS = [
     "docs/2026-10-24-gemini-image-provider-plan.md",
     "docs/2026-10-24-image-provider-g1-g2-implementation.md",
     "docs/2026-10-24-image-provider-g3-g4-implementation.md",
+    "docs/2026-10-24-gemini-first-attempt-checkpoint.md",
     "docs/2026-10-21-companion-media-agent-master-plan.md",
     "docs/hermes-tailscale-home-work.md",
 ]
