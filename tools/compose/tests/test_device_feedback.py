@@ -28,11 +28,18 @@ def test_ready_images_use_explicit_queued_version_and_never_selected_draft():
                         media_panel=SimpleNamespace(selected={'title':'Unreviewed draft'},prepared_job=None))
     assert snapshot(app)['detail']=='Reviewed cycle'
     app.pending_media=None
-    assert snapshot(app)['state']=='review'
+    # A selection is edit context, not a pending operation. After Paste Ready
+    # clears the queue, the handheld must allow another recording immediately.
+    assert snapshot(app)['state']=='idle'
 
 def test_busy_generation_is_not_advertised_as_ready():
     app=SimpleNamespace(media_panel=SimpleNamespace(_busy=True,_generation_job_id='synthetic',_generation_started=0),pending_ready_payload=None)
     assert snapshot(app)['state']=='working'
+
+def test_prepared_image_brief_still_requires_review_before_another_recording():
+    app=SimpleNamespace(pending_media=None,pending_ready_payload=None,
+                        media_panel=SimpleNamespace(_busy=False,prepared_job='prepared',selected={'title':'Selected image'}))
+    assert snapshot(app)['state']=='review'
 
 def test_recording_uses_explicit_image_mode_without_transcript():
     assert snapshot(SimpleNamespace(is_recording=True,recording_mode='media'))['state']=='record_media'

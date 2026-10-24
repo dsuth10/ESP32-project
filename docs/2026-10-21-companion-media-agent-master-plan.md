@@ -17,7 +17,8 @@ The user then approved normal OneNote Ctrl+V semantics for an explicit Paste Rea
 24 October 2026 device follow-up: the user explicitly approved the Dedicated
 actions layout and flashing a recoverable original-S3 trial. The application-only
 write and independent read-back passed; USB identity/status acknowledgements
-passed, and the user confirmed the new layout and Library action. The original
+passed, and the user confirmed the new layout, Library action and generated
+kangaroo insertion through physical Paste Ready in Word. The original
 16 MiB recovery image matched two complete device reads. The stable registry and
 `main` remain unchanged. See [Create & Paste device trial](2026-10-24-create-paste-device-trial.md).
 Other new-firmware button/workflow, microphone and classroom gates remain open.

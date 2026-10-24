@@ -77,7 +77,7 @@ bounded reconnect succeeded. This repeated no generation, insertion or flash.
 
 The user confirmed **“Layout visible and Library works”**. This is user-reported
 physical evidence, distinct from automated tests and the serial page/status
-acknowledgement. Full end-to-end Compose, Dictate, Images and Paste Ready checks
+acknowledgement. Full end-to-end Compose, Dictate and Images checks
 on this candidate remain open; prior home acceptance is not automatically
 transferred to a new firmware build.
 
@@ -85,6 +85,20 @@ For a controlled follow-up, the desktop was placed on Compose & Dictate before
 the user pressed the physical Library button. The user then confirmed:
 **“Yes, it switches to Image library”**. The physical tab-switch check therefore
 passes independently of the library having already been visible.
+
+The next physical Paste Ready press completed the preserved image insertion
+job in Word. The host logged one press/release pair, Word returned an embedded
+picture object, and the user confirmed **“The kangaroo image appeared.”** This
+accepts the basic generated-image insertion on the new candidate. Placement,
+undo/redo and save/reopen remain separate checks.
+
+That live test exposed a follow-up state defect: after insertion cleared the
+queue, the still-selected image was labelled as an unfinished review and blocked
+the next handheld recording. A regression reproduced it before correction. The
+desktop feedback now treats a selected image as available edit context, with
+recording enabled and Paste Ready inactive. An actual prepared brief still
+requires review. The focused feedback/writing/media-service selection passed
+68 tests. This correction changes desktop feedback only; no firmware reflash.
 
 An image had been explicitly queued before the trial. Its durable undispatched
 queue was preserved and restored with the same version and insertion job. The

@@ -47,7 +47,9 @@ def snapshot(app):
     if panel is not None and getattr(panel,'prepared_job',None):
         return {'state':'review','title':'Review image brief','detail':'Generate from the PC'}
     if panel is not None and getattr(panel,'selected',None):
-        return {'state':'review','title':'Image selected on PC','detail':'Review then queue for paste'}
+        # Selection is context for an edit, not an unfinished operation. Keep
+        # recording available after paste while leaving Paste Ready inactive.
+        return {'state':'idle','title':'Ready for a request','detail':'Image selected - speak to edit'}
     return {'state':'idle','title':'Ready for a request','detail':'PC mic - tap or hold to speak'}
 
 class DeviceFeedback:
