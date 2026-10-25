@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "tests/test_preview_package.py": {
-    "mtime": 1792917244.6302283,
-    "seen": 1792917253.917262,
-    "ast_hash": "4c035abeccf693b766dc95a9a1f71042",
+    "mtime": 1792924494.4829264,
+    "seen": 1792925070.9224424,
+    "ast_hash": "2af2f73970b22bcdec7ac3075c0ad462",
     "semantic_hash": ""
   },
   "tools/board_diagnostics/cyd_identifier/src/main.cpp": {
@@ -864,9 +864,9 @@
     "semantic_hash": ""
   },
   "tools/build_companion_preview.py": {
-    "mtime": 1792917244.6342294,
-    "seen": 1792917253.917265,
-    "ast_hash": "7b7c3f098a4f36ef0e85334963919cf2",
+    "mtime": 1792924751.2363422,
+    "seen": 1792925070.922446,
+    "ast_hash": "e058739528f6eda8475e3ccfc49c9413",
     "semantic_hash": ""
   },
   "tools/companion_package.py": {
@@ -942,9 +942,9 @@
     "semantic_hash": ""
   },
   "tools/compose/media_providers.py": {
-    "mtime": 1792917244.6567402,
-    "seen": 1792917253.9172895,
-    "ast_hash": "cb43bfee4480bb3459b4fbdc08b1747e",
+    "mtime": 1792920169.0573375,
+    "seen": 1792925070.9224777,
+    "ast_hash": "9a73ec36cf3aea19ab774b95c64009f7",
     "semantic_hash": ""
   },
   "tools/compose/media_service.py": {
@@ -1140,9 +1140,9 @@
     "semantic_hash": ""
   },
   "docs/2026-10-21-companion-media-agent-master-plan.md": {
-    "mtime": 1792917244.5094075,
-    "seen": 1792917253.9173346,
-    "ast_hash": "863abfc6ee79a976699962583e417a4f",
+    "mtime": 1792922043.861727,
+    "seen": 1792925070.9225323,
+    "ast_hash": "c45558686da134681e211b8a33895b43",
     "semantic_hash": ""
   },
   "docs/2026-10-21-embedded-companion-assistant-design.md": {
@@ -1482,21 +1482,21 @@
     "semantic_hash": ""
   },
   "docs/2026-10-25-development-workboard.md": {
-    "mtime": 1792917244.521407,
-    "seen": 1792917253.9173434,
-    "ast_hash": "1b7524c890d607f2404932a81a2e7939",
+    "mtime": 1792924824.6054077,
+    "seen": 1792925070.9225433,
+    "ast_hash": "96dd474a5232a7fb5f16760d3d372d72",
     "semantic_hash": ""
   },
   "docs/2026-10-25-hermes-readiness.md": {
-    "mtime": 1792917244.521407,
-    "seen": 1792917253.9173443,
-    "ast_hash": "6ad861c17e29ccdb17a63e63787d4168",
+    "mtime": 1792924824.6044035,
+    "seen": 1792925070.9225438,
+    "ast_hash": "9e50d3292553a27b9105ef80a6ea964c",
     "semantic_hash": ""
   },
   "docs/2026-10-25-teaching-board-design.md": {
-    "mtime": 1792917244.523406,
-    "seen": 1792917253.9173453,
-    "ast_hash": "34ef0f980b96aaeff70fedb9adf885af",
+    "mtime": 1792921997.0958512,
+    "seen": 1792925070.9225466,
+    "ast_hash": "ffa3fe5d291a2cb6de35306e9a96bc10",
     "semantic_hash": ""
   },
   "docs/2026-10-25-teaching-board-renderer-trial.md": {
@@ -1554,9 +1554,9 @@
     "semantic_hash": ""
   },
   "tools/compose/board_candidate.py": {
-    "mtime": 1792917244.6382277,
-    "seen": 1792917253.9172711,
-    "ast_hash": "7e1182c3b4e30586a7a6deb492f1bee2",
+    "mtime": 1792924173.3234985,
+    "seen": 1792925070.9224546,
+    "ast_hash": "0111095d4bb5a82f4da192d38e53f5d9",
     "semantic_hash": ""
   },
   "tools/compose/board_hermes.py": {
@@ -1566,21 +1566,21 @@
     "semantic_hash": ""
   },
   "tools/compose/board_session.py": {
-    "mtime": 1792917244.6432323,
-    "seen": 1792917253.9172757,
-    "ast_hash": "ffdcae863d5703c2fd8d751fe17c73b5",
+    "mtime": 1792920549.5337522,
+    "seen": 1792925070.922463,
+    "ast_hash": "dce5f8aaaee234f4b3c64a5dbffcda8a",
     "semantic_hash": ""
   },
   "tools/compose/run_teaching_board_candidate.ps1": {
-    "mtime": 1792917244.6667457,
-    "seen": 1792917253.9172964,
-    "ast_hash": "abb08c5c556cd4258eba5025dd18f5fa",
+    "mtime": 1792924325.261702,
+    "seen": 1792925070.9224856,
+    "ast_hash": "7e18dd900bf47116140261d208a4f8fc",
     "semantic_hash": ""
   },
   "tools/compose/tests/test_board_candidate.py": {
-    "mtime": 1792917244.670745,
-    "seen": 1792917253.9173002,
-    "ast_hash": "4d68a136b09db9ffce2ff2e4bfaeef35",
+    "mtime": 1792924175.5048194,
+    "seen": 1792925070.9224913,
+    "ast_hash": "9ff7027feed97faef7761baee6a195a3",
     "semantic_hash": ""
   },
   "tools/compose/tests/test_board_hermes.py": {
@@ -1683,6 +1683,144 @@
     "mtime": 1792917244.526407,
     "seen": 1792917253.9173477,
     "ast_hash": "fe7f88b6b208e9d9574c05c825d0c5f6",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_agent.py": {
+    "mtime": 1792921547.4886806,
+    "seen": 1792925070.9224524,
+    "ast_hash": "7ed6ef509d87786726f29c0aa99bb39b",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_agent_ui.py": {
+    "mtime": 1792921663.3641248,
+    "seen": 1792925070.9224534,
+    "ast_hash": "952f9799a0c9f0e68efd04f2e9b40ad3",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_export.py": {
+    "mtime": 1792921766.5484984,
+    "seen": 1792925070.922455,
+    "ast_hash": "2292126f5fc3e735d728217591816866",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_library.py": {
+    "mtime": 1792921630.7383502,
+    "seen": 1792925070.922459,
+    "ast_hash": "040a5a00f58b7e06712bdbf9e44eab6d",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_resource_policy.py": {
+    "mtime": 1792921231.6670563,
+    "seen": 1792925070.9224613,
+    "ast_hash": "848339297343a97815b63fde86be2634",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_resources.py": {
+    "mtime": 1792920353.338718,
+    "seen": 1792925070.9224617,
+    "ast_hash": "6585ac6c10076ac0d632fc6beb812fbd",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_runtime.py": {
+    "mtime": 1792921690.7947161,
+    "seen": 1792925070.9224625,
+    "ast_hash": "f65e0e76f499238ffcdf22cda698426c",
+    "semantic_hash": ""
+  },
+  "tools/compose/setup_teaching_board_candidate.ps1": {
+    "mtime": 1792924271.961486,
+    "seen": 1792925070.9224868,
+    "ast_hash": "3e560a4570327dccb6990c4a092d4806",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_agent.py": {
+    "mtime": 1792921508.6095762,
+    "seen": 1792925070.9224901,
+    "ast_hash": "8335a0cfacccc2fddca6dc5954a81954",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_agent_ui.py": {
+    "mtime": 1792921823.9077723,
+    "seen": 1792925070.9224908,
+    "ast_hash": "07effdf53b91d8fa4f417e9ff85914fe",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_export.py": {
+    "mtime": 1792921784.684662,
+    "seen": 1792925070.9224927,
+    "ast_hash": "3f3772c7ffa3e25f20f5805ffcb42903",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_resource_policy.py": {
+    "mtime": 1792921239.2848084,
+    "seen": 1792925070.9224985,
+    "ast_hash": "100be60cd5bab98e25d5e13d7c0f7926",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_resources.py": {
+    "mtime": 1792920479.0295067,
+    "seen": 1792925070.9224994,
+    "ast_hash": "47912fad3743f81240a6813665f618da",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_runtime.py": {
+    "mtime": 1792921695.8807657,
+    "seen": 1792925070.9225,
+    "ast_hash": "bf84ee519062e12217bfce9f2c20506c",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_setup_script.py": {
+    "mtime": 1792924361.7993865,
+    "seen": 1792925070.922501,
+    "ast_hash": "caa2cdcfbd4b43e148306f4ca85e3c3d",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-board-agent-default-policies.md": {
+    "mtime": 1792922043.8627336,
+    "seen": 1792925070.9225426,
+    "ast_hash": "0ec4b5f77e0b4d36a3fed5cf16449d51",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-school-readiness-plan.md": {
+    "mtime": 1792924943.951617,
+    "seen": 1792925070.9225445,
+    "ast_hash": "9134ab61a337b722a269c9f3e1fb94bd",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-teaching-board-agent-build-plan.md": {
+    "mtime": 1792924824.6064079,
+    "seen": 1792925070.922545,
+    "ast_hash": "1b2b3c06be21d17b5fdba67b1657953d",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-teaching-board-agent-candidate.md": {
+    "mtime": 1792924494.4839272,
+    "seen": 1792925070.9225454,
+    "ast_hash": "7cde5e1e70d27b2c1403a75f990e7724",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-26-linux-hermes-school-handoff.md": {
+    "mtime": 1792924432.3675382,
+    "seen": 1792925070.9225502,
+    "ast_hash": "b23ddf1f7fafea020cd5fe4f6e789c8d",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-26-school-arrival-guide.md": {
+    "mtime": 1792924943.9501123,
+    "seen": 1792925070.9225507,
+    "ast_hash": "1a531bdea971514f2f4c0deccbbd63f0",
+    "semantic_hash": ""
+  },
+  "docs/research/2026-10-25-teaching-board-library-memory-research.md": {
+    "mtime": 1792922043.8637335,
+    "seen": 1792925070.9225698,
+    "ast_hash": "b0939224f6642e9d8744b1e86b7e614b",
+    "semantic_hash": ""
+  },
+  "tools/compose/requirements-board.txt": {
+    "mtime": 1792921198.9337642,
+    "seen": 1792925070.922578,
+    "ast_hash": "e6640db9e7e2cdcac45524d87ba241d2",
     "semantic_hash": ""
   }
 }
