@@ -1140,9 +1140,9 @@
     "semantic_hash": ""
   },
   "docs/2026-10-21-companion-media-agent-master-plan.md": {
-    "mtime": 1792898489.1814654,
-    "seen": 1792898526.0621572,
-    "ast_hash": "a4e35cbf3f8062384d41602e9ca47006",
+    "mtime": 1792899541.1778207,
+    "seen": 1792899572.5318713,
+    "ast_hash": "8d81bb34f061e776064305b5f23ed2d5",
     "semantic_hash": ""
   },
   "docs/2026-10-21-embedded-companion-assistant-design.md": {
@@ -1482,9 +1482,9 @@
     "semantic_hash": ""
   },
   "docs/2026-10-25-development-workboard.md": {
-    "mtime": 1792898489.1794648,
-    "seen": 1792898526.0621746,
-    "ast_hash": "96b8dfd1dfbe37b6f8bea8afa89c9062",
+    "mtime": 1792899541.17582,
+    "seen": 1792899572.5318823,
+    "ast_hash": "2754b8ea0773cb7df3b00611c662f694",
     "semantic_hash": ""
   },
   "docs/2026-10-25-hermes-readiness.md": {
@@ -1494,9 +1494,9 @@
     "semantic_hash": ""
   },
   "docs/2026-10-25-teaching-board-design.md": {
-    "mtime": 1792898489.180465,
-    "seen": 1792898526.062176,
-    "ast_hash": "55a702292914a05d0963d6e8cd955b8f",
+    "mtime": 1792899541.17682,
+    "seen": 1792899572.5318842,
+    "ast_hash": "51fcc4bbeb3b71d3fdd01c2857f5568f",
     "semantic_hash": ""
   },
   "docs/2026-10-25-teaching-board-renderer-trial.md": {
@@ -1551,6 +1551,54 @@
     "mtime": 1792849314.24672,
     "seen": 1792898526.0622663,
     "ast_hash": "d7216789c6b4eb0eca1a04e294b26ed8",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_candidate.py": {
+    "mtime": 1792899340.4856853,
+    "seen": 1792899572.531808,
+    "ast_hash": "e894653b04f799dfa1045cfa970f6568",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_hermes.py": {
+    "mtime": 1792899461.1747916,
+    "seen": 1792899572.5318093,
+    "ast_hash": "10c917f93247a46db9794f928cd682f5",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_session.py": {
+    "mtime": 1792898864.2261236,
+    "seen": 1792899572.5318105,
+    "ast_hash": "a24fadba7aef001aedc284bc097c638a",
+    "semantic_hash": ""
+  },
+  "tools/compose/run_teaching_board_candidate.ps1": {
+    "mtime": 1792899108.277966,
+    "seen": 1792899572.5318336,
+    "ast_hash": "e6efa2e2fdb54ac4b845aa34c0c6d435",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_candidate.py": {
+    "mtime": 1792899340.486686,
+    "seen": 1792899572.5318377,
+    "ast_hash": "1341243d5ae03e61afa9aca5c637a5bc",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_hermes.py": {
+    "mtime": 1792899461.1747916,
+    "seen": 1792899572.5318382,
+    "ast_hash": "b48033f8d63cd96ed35210746272ba20",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_session.py": {
+    "mtime": 1792898924.7941983,
+    "seen": 1792899572.5318394,
+    "ast_hash": "1945c49347447c460c44bd56331f3b59",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-teaching-board-candidate.md": {
+    "mtime": 1792899443.170573,
+    "seen": 1792899572.5318835,
+    "ast_hash": "bb05e29205675c06df0eea8193e376a8",
     "semantic_hash": ""
   }
 }
