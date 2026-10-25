@@ -9,7 +9,7 @@ confirmed the complete Board design and requested development to begin on
 engineering, deployment and physical acceptance separately. It is not release,
 paid-generation, remote-task or firmware-write authority.
 
-## Starting state and delivery discrepancy
+## Starting state and verified delivery
 
 - Branch: `codex/companion-media-agent`; `main` remains the reference.
 - Initial working tree was clean. Local HEAD was `1d35c77`, the saved enclosure
@@ -22,23 +22,23 @@ paid-generation, remote-task or firmware-write authority.
   failed before contacting GitHub (`getaddrinfo() thread failed to start`), but
   the authenticated GitHub connector then compared `c88afff` with the live
   companion branch and returned `identical`, zero commits ahead/behind. Remote
-  branch HEAD therefore remains `c88afff`; all 17 later commits are local.
+  branch HEAD was then `c88afff`; all 17 later commits were local.
   No push or commit occurred in this audit.
-- Today's source and documentation changes are uncommitted working changes,
-  additional to those 17 existing unpushed commits.
+- At the B0/B1 review, today's source/documentation changes were uncommitted,
+  additional to those 17 earlier unpushed commits.
 
 The user subsequently explicitly authorised a Luna sub-agent to commit this
 branch and bring GitHub current at a logical development checkpoint. The
-coordinator will dispatch that bounded delivery after B1 and B0 evidence/review
-are ready. That delivery must audit today's pending files plus the 17 older
-outgoing commits, commit only the reviewed scope and use a normal push to this
-feature branch. No `main` merge or force push is implied. Delivery is authorised
-but has not yet happened in this record.
+coordinator dispatched that bounded delivery after B1 and B0 review. Luna audited
+the pending files and 17 older outgoing commits, then committed the reviewed
+source/docs as `1b6f10d` and the Graphify refresh as `0d1dab3`. The normal feature-
+branch push completed; live remote, local HEAD and tracking ref were verified
+equal at `0d1dab3`. The checkpoint was clean at delivery; no `main` merge occurred.
 
-Delivery action: review the outgoing set against the verified remote
-ref and reconcile the outstanding delivery request. Keep private
-identities, settings, images, receipts and recovery files excluded. Record actual
-delivery evidence before calling yesterday's backup complete.
+The prior delivery discrepancy is resolved. B2 development now follows that
+verified commit and creates new local working changes; the earlier clean result
+does not describe those later changes. Private identities, settings, images,
+receipts, environments and recovery files remain excluded.
 
 ## Workstreams and dependencies
 
@@ -51,7 +51,7 @@ delivery evidence before calling yesterday's backup complete.
 | 2 | M5: current-candidate acceptance | All five page 7 controls have basic physical passes. Compose/Dictate work in Word/OneNote using PC audio; Images searches saved images; generated kangaroo Paste Ready passed in Word. Earlier disposable-image Word/OneNote undo/save-reopen passed. | Use existing saved assets for a short disposable-document matrix: current-candidate placement/proportions, selection/focus changes, one insert per press, undo/redo/save-reopen, restart. Test handheld audio separately. | Complete generated/refined-image matrix in both apps, handheld microphone audio, Windows reboot, S3 regressions and classroom acceptance. |
 | 3 | Enclosure | Saved Blender exports and a separate editable SolidCraft base/lid pilot, STEP/STL exports and measured geometry checks exist. Today's [dimension/feature reconciliation](dimensions/solidcraft/2026-10-25-dimension-feature-reconciliation.md) records source conflicts. | Establish an explicit Z stack and physical board/battery/connector/fastener dimensions before detailed modelling; inspect the native MCP connection without replaying fixed save/build sequences. | Chosen design/workflow, confirmed dimensions and detailed geometry, then actual printed fit. Current pilot is not print-ready. |
 | 3 | M6/M9: install, adoption and release planning | Source-preview install/update/rollback/removal and licensing/adoption research exist. | Prepare accessible pilot checklist, dependency/licence map and reproducible package requirements alongside M1–M5. | Signed packaging, approved licence/ownership map, school/network permission and installed teacher pilot; explicit stable/public release decision. |
-| Parallel approved development | Desktop Teaching Board B0–B5 | All fifteen decisions and the overall [design/development plan](2026-10-25-teaching-board-design.md) are confirmed. B1 passed 32 focused tests/review; B0's two native smoke runs and evidence review passed. | Deliver the reviewed B0/B1 checkpoint, then integrate a candidate teacher/pupil editor against the validated foundations. | Final renderer selection, editor/AI/export integration and real input/display/lesson acceptance remain separate. |
+| Parallel approved development | Desktop Teaching Board B0–B5 | B0/B1 delivered at `0d1dab3`. B2 controller/candidate and B3 local fixture groundwork implemented, tested and independently reviewed locally. | Deliver the reviewed new working set at the next logical checkpoint, then continue with a bounded candidate/integration slice. | Final renderer selection, image picker/complete editor/remote AI/voice/export and real input/display/lesson acceptance remain separate. |
 
 Teaching-board discovery found a Python/Tkinter desktop and Pillow preview,
 with no initial editable board model. Immutable media IDs/blobs are reusable;
@@ -188,8 +188,9 @@ stays dated evidence. Initial sandbox network/status failures were superseded by
 the successful exact read-only checks outside the sandbox. No remote run, SSH,
 endpoint/network/service change or deployment occurred. Private HTTPS/Tailscale
 same-host/off-LAN acceptance, persistent media deployment, two-host sync, server
-restore and reboot remain open. Today's authenticated GitHub comparison verified
-that the 17 later local commits have not reached the branch.
+restore and reboot remain open. Git delivery is separate: the 17 earlier local
+commits and reviewed B0/B1 checkpoint have now reached the feature branch at
+verified `0d1dab3`; new B2 working changes are not covered by that delivery.
 
 **Teaching Board B1, local foundations:** `board_model.py` and `board_store.py`
 implement typed page/object snapshots, pinned media references, atomic
@@ -205,10 +206,11 @@ Independent read-only QA found no remaining actionable defect after aggregate
 payload/type validation and captured-save-revision hardening. Tests include
 failed-batch/history invariance, concurrent/stale edits, interrupted replacement,
 corrupt/missing/oversized-current recovery, orphan non-promotion and conflicting
-writers. These are explicit model/store APIs: no companion editor, runtime
-autosave scheduler, image resolver, Board microphone or Hermes composition is
-integrated yet. An in-memory edit remains unsaved until a successful captured
-checkpoint; saving must not claim a newer concurrent edit was persisted.
+writers. B1 itself provides explicit model/store APIs; B2 below adds the isolated
+candidate editor/autosave/local image seam. Board microphone and live Hermes
+composition remain unintegrated. An in-memory edit remains unsaved until a
+successful captured checkpoint; saving must not claim a newer concurrent edit
+was persisted.
 
 **Teaching Board B0, local feasibility:** the [renderer trial](2026-10-25-teaching-board-renderer-trial.md)
 and [runnable probes](../tools/compose/prototypes/teaching_board_renderer/README.md)
@@ -226,9 +228,78 @@ the provisional next integration candidate, not the selected final stack. No
 physical mouse/pen/touch/eraser delivery, projector placement or mixed-DPI recovery
 was accepted, and no production editor/store integration was performed.
 
-The reviewed B0 probes/evidence and B1 foundations form the logical delivery
-checkpoint authorised above. Workers pause engineering/writes for the separate
-Luna commit/push step; no main merge, deployment or physical acceptance is implied.
+The reviewed B0 probes/evidence and B1 foundations formed the delivered checkpoint.
+B2 now integrates those real foundations, rather than promoting the temporary
+probe adapter. A separate session/controller owns audience snapshots, pupil
+authority and save/dirty/recovery state; a separate provisional Qt candidate
+provides the editor/views. Remote Board AI, voice and export remain B3/B4. B2
+source and evidence require independent review before the next checkpoint.
+
+**B2 session/controller:** `board_session.py` uses an owned copy of the actual B1
+model and its store. It pins the complete pupil view during Freeze, constrains
+pupil operations to live navigation/unlocked ink, rejects stale revision/session
+tokens and exposes dirty state, captured durable revision, safe save failures and
+previous-checkpoint recovery. Its bounded local image resolver checks immutable
+references and byte hashes without retrieval/generation. Independent read-only
+review found no actionable defect; **14 tests passed in 0.19 s**:
+
+```powershell
+python -m pytest tools/compose/tests/test_board_session.py -q -rs --basetemp .local/pytest-board-b2-session
+```
+
+**B2 provisional Qt candidate:** [candidate guide/evidence](2026-10-25-teaching-board-candidate.md)
+records actual B1 model/store/session integration, a separate teacher/pupil
+editor, token-bound gestures/forms, autosave/reopen/history, read-only Freeze and
+strict isolated-root/pinned-media handling. Independent source/evidence review
+found no remaining checkpoint-blocking defect after bounds, stale-form, save-only
+gesture-refresh and session-lifetime fixes. The focused native suite passed
+**13 tests, no skips, in 0.63 s** outside the sandbox for a real junction check:
+
+```powershell
+& .local/teaching-board-renderer-env/Scripts/python.exe -m pytest tools/compose/tests/test_board_candidate.py -q -rs --basetemp .local/teaching-board-candidate/pytest-candidate-final
+```
+
+The separate one-command native smoke opened two real windows, passed seven
+synthetic session/store checks and exited successfully. Teacher/pupil captures
+were visually reviewed. Applied commands autosave after 300 ms; property/name
+drafts require their explicit Apply/Rename actions. Image support currently
+resolves the pinned synthetic demo asset; a general library/import picker is not
+yet present. Remote Board AI, microphone actions and export remain later. These
+results do not establish physical pen/touch/eraser, projector/DPI, accessibility,
+packaged installation, final renderer choice or classroom acceptance.
+
+**B3 local fixture groundwork:** `board_hermes.py` prepares explicitly scoped
+active-page text/layout and selected image metadata, then validates completed
+saved-result proposals against the request UUID, context digest, lesson,
+revision and session token. It applies one atomic undoable session batch.
+Page removal, clearing/replacing all original objects (including reused IDs)
+requires an external controller confirmation bound to the exact reviewed
+proposal digest. Model-supplied confirmation fields are rejected; unsupported
+whole-lesson replacement/deletion never executes.
+
+Independent read-only review found no remaining actionable defect after
+same-ID replacement and result-cap hardening. **36 focused tests passed in
+0.98 s**, using actual local `HermesService.prepare/preview` fixtures and real
+result extraction, with no HTTP request:
+
+```powershell
+python -m pytest tools/compose/tests/test_board_hermes.py -q -rs --basetemp .local/pytest-board-b3-review-final
+```
+
+The 48 KiB context limit fits `HermesService`'s 200,000-byte context boundary;
+the 20,000 UTF-8-byte proposal limit fits its 20,000-character result extraction.
+Oversized input requires narrower scope, not silent truncation or broader
+authority. The generic Hermes panel's 12,000-character input limit is a separate
+UI constraint; Board requests are not wired through it. No numeric live-backend
+size limit or real Board-response acceptance was established. The trusted future
+controller must obtain the immutable selection from `HermesService.preview`;
+raw model output cannot supply context/status or confirmation authority. Prompt
+instructions do not enforce remote tool restrictions. Live dispatch, Board UI,
+PC-microphone commands and their physical/deployment acceptance remain open.
+
+The B2 candidate and B3 local groundwork form the next reviewed working-set
+checkpoint after delivered `0d1dab3`. Source/docs writes pause for root's freeze
+and the separately authorised Luna delivery; no new push is claimed here.
 
 **Physical:** basic page 7 controls and PC-microphone writing passed as described
 above. Handheld audio, broader generated/refined-image Office checks, wireless
@@ -241,6 +312,7 @@ Evidence: [device trial](2026-10-24-create-paste-device-trial.md),
 [permanent-route runbook](hermes-tailscale-home-work.md),
 [today's Hermes preflight](2026-10-25-hermes-readiness.md),
 [renderer trial](2026-10-25-teaching-board-renderer-trial.md),
+[B2 candidate](2026-10-25-teaching-board-candidate.md),
 [deployment kit](companion-deployment.md),
 [SolidCraft pilot](dimensions/solidcraft/README.md),
 [source-preview lifecycle](companion-installation.md),
@@ -252,9 +324,9 @@ Evidence: [device trial](2026-10-24-create-paste-device-trial.md),
 | Owner | Current bounded assignment |
 | --- | --- |
 | Coordinator | Priorities, user discussion and progress, evidence review and integration decisions against the agreed design. |
-| `hermes_image_workflow` | B1 model/store foundations and 32 focused tests complete; independent review complete. Saved-image handoff and M1 preflight complete locally. Editor/runtime and permanent-route/physical acceptance remain open. |
-| `programme_reconciliation` | Current workboard/design/master reconciled; independent B1 and B0 checkpoint QA complete. All writes paused for delivery; no source or historical-trial edits. |
-| `teaching_board_discovery` | Isolated B0 probes and trial record complete, reviewed and paused. Renderer/enclosure research complete; physical measurements and input/display acceptance remain open. |
+| `hermes_image_workflow` | B2 session and B3 local fixture adapter complete/tested/reviewed; all source writes paused for checkpoint. No remote/UI/microphone route. B0/B1 and earlier work delivered. |
+| `programme_reconciliation` | Current docs reconciled; independent B2/B3 source/evidence QA complete. All writes paused for checkpoint; no source edits or commit/push. |
+| `teaching_board_discovery` | B2 provisional Qt candidate/launcher/evidence complete: 13 focused passes, seven native smoke checks and read-only review; source writes paused. Physical input/display/final selection remain open. |
 
 Review source changes before integration; record local, remote and physical
 results separately. Recompute the next frontier after each result or user

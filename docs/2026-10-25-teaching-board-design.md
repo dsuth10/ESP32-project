@@ -130,8 +130,8 @@ healthy Hermes endpoint does not establish classroom acceptance.
 | --- | --- | --- |
 | B0 | Qt/local-web isolated probes completed with native launches and synthetic fixture checks. | [Trial/evidence](2026-10-25-teaching-board-renderer-trial.md) reviewed. Qt is a provisional integration candidate; physical input/display, text metrics and packaging/licence gates remain before final selection. |
 | B1 | Renderer-independent local page/object commands, revisions, save/reopen and undo foundations implemented. | 32 focused model/store tests passed; independent read-only review complete. Manual editor/runtime autosave integration remains separate. |
-| B2 | Small candidate editor and pupil view with text/images/shapes/ink and accepted Freeze rules. | Actual mouse/keyboard/pen/touch/eraser, display and DPI trial; renderer choice recorded. |
-| B3 | Bounded Hermes composition and dedicated typed/PC-microphone Board actions. | Minimal context, explicit dispatch, stale-result rejection, atomic application and undo; local fixtures first, deployment checks separate. |
+| B2 | Actual B1/session controller and separate provisional Qt teacher/pupil candidate implemented/reviewed locally. | 14 session tests, 13 native candidate tests and seven smoke checks passed separately. [Candidate limits](2026-10-25-teaching-board-candidate.md), physical input/display/DPI/package acceptance and final renderer choice remain open. |
+| B3 | Local fixture adapter implemented/reviewed: 36 focused tests passed; live Hermes composition/UI and dedicated typed/PC-microphone actions remain later. | Selected context, exact identity/revision/token binding, atomic undoable edits, exact external destructive confirmation and actual adapter byte/extraction boundaries verified locally. No live Board task or voice acceptance claimed. |
 | B4 | Explicit imports and portable/PDF export using saved media. | Editable package reopen, media/provenance and PDF visual checks; offline restart. |
 | B5 | Complete accepted water-cycle lesson with the teacher. | User-observed teaching workflow, saved/exported results, failures/recovery and remaining classroom gates recorded. |
 
