@@ -9,6 +9,9 @@ ROOT = Path(__file__).resolve().parents[1]
 # Teacher documentation is deliberate. Development consultation reports can
 # contain historical private endpoints and are never distributed by wildcard.
 DOCUMENTS = [
+    "docs/2026-10-25-teaching-board-agent-candidate.md",
+    "docs/2026-10-25-teaching-board-agent-build-plan.md",
+    "docs/2026-10-25-school-readiness-plan.md",
     "docs/feature-media-testing.md", "docs/media-sync-server.md",
     "docs/companion-installation.md", "docs/companion-deployment.md",
     "docs/2026-10-21-hermes-integration-checkpoint.md",
@@ -22,6 +25,12 @@ DOCUMENTS = [
     "docs/2026-10-21-companion-media-agent-master-plan.md",
     "docs/hermes-tailscale-home-work.md",
 ]
+OPTIONAL_DOCUMENTS = [
+    # These concise school handover guides are separate, exact allowlist entries
+    # so a missing guide does not block local package/test work in progress.
+    "docs/2026-10-26-school-arrival-guide.md",
+    "docs/2026-10-26-linux-hermes-school-handoff.md",
+]
 
 
 def source_files(root=ROOT):
@@ -32,11 +41,19 @@ def source_files(root=ROOT):
         "server/hermes_voice_receiver.py", "server/requirements-media.txt",
         "server/tests/test_media_server_portable.py",
         "tools/build_companion_preview.py", "tools/companion_package.py",
+        "tools/compose/run_teaching_board_candidate.ps1",
+        "tools/compose/setup_teaching_board_candidate.ps1",
+        "tools/compose/requirements-board.txt",
+        "tools/compose/examples/teaching-board-illustrative-rainfall.json",
     ] + DOCUMENTS]
+    paths.extend(root / path for path in OPTIONAL_DOCUMENTS if (root / path).is_file())
     for path in (root/"tools/compose").rglob("*"):
         if (path.is_file() and "__pycache__" not in path.parts and
                 not any(p.startswith(".") for p in path.relative_to(root).parts)):
-            if path.suffix in {".py", ".bat"} or path.name in {"requirements.txt", "compose.env.example"}:
+            if (path.suffix in {".py", ".bat"}
+                    or (path.suffix == ".ps1" and path.name in {
+                        "run_teaching_board_candidate.ps1", "setup_teaching_board_candidate.ps1"})
+                    or path.name in {"requirements.txt", "requirements-board.txt", "compose.env.example"}):
                 paths.append(path)
     # Deployment templates and helpers have their own explicit source subtree.
     for path in (root/"server/deployment").rglob("*"):

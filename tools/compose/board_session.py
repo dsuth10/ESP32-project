@@ -121,6 +121,12 @@ class BoardSession:
                     'can_edit_layout': False, 'can_annotate': not self._frozen,
                     'can_navigate': not self._frozen}
 
+    def export_state(self):
+        """Capture the editable lesson/history without transient display state."""
+        with self._lock:
+            self._ensure_open()
+            return self._model.export_state()
+
     def teacher_apply(self, commands, *, expected_revision, expected_token, edit_group=None):
         with self._lock:
             self._expect(expected_token)

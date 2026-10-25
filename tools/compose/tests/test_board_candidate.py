@@ -9,11 +9,28 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from PySide6.QtCore import QPointF, QRectF
 from PySide6.QtWidgets import QApplication, QGraphicsPixmapItem, QGraphicsItem
 from board_candidate import (BoardCandidate, CANDIDATE_ROOT, candidate_directory,
-                             validate_candidate_storage, demo_model, image_resolver, page_from)
+                             validate_candidate_storage, demo_model, image_resolver, page_from, load_board_settings)
 from board_model import BoardModel
 from board_session import BoardSession, BoardSessionError
 from board_store import BoardStore
 from media_store import MediaStore
+
+
+def test_explicit_settings_root_requires_a_saved_school_profile(tmp_path):
+    with pytest.raises(ValueError, match='Configure Settings on this computer'):
+        load_board_settings(tmp_path / 'missing-profile')
+    assert not (tmp_path / 'missing-profile').exists()
+
+
+def test_explicit_profile_decryption_failure_cannot_silently_select_another_config(tmp_path, monkeypatch):
+    import companion_settings
+    profile = tmp_path / 'school-profile'; profile.mkdir()
+    (profile / 'settings.json').write_text('{}', encoding='utf-8')
+    def unavailable(_root):
+        raise RuntimeError('Protected settings are unavailable for this Windows account.')
+    monkeypatch.setattr(companion_settings, 'load_settings', unavailable)
+    with pytest.raises(RuntimeError, match='this Windows account'):
+        load_board_settings(profile)
 
 
 @pytest.fixture(scope='module')

@@ -1,5 +1,12 @@
 # Classroom companion: consolidated branch programme
 
+25 October agent/library follow-up: the
+[integrated build plan](2026-10-25-teaching-board-agent-build-plan.md) records the
+first narrow local Teaching Board agent and reusable-library implementation and
+its verification. The [candidate guide](2026-10-25-teaching-board-agent-candidate.md)
+provides launch/use instructions. Live model/provider/Hermes, deployment, physical
+and classroom acceptance remain separate from the local engineering checkpoint.
+
 21 October 2026 - authoritative current plan for `codex/companion-media-agent`.
 
 The repository has two branches: `main` preserves the stable reference, and `codex/companion-media-agent` contains all current companion, Hermes, SQLite/media-library and deployment development. Continue this work on the companion branch. Temporary implementation and preservation branches have been consolidated; their former histories remain recoverable from the local archive. The original S3 firmware is preserved in a verified private recovery image. Its registration remains write-locked; the explicitly approved local page 7 trial is recorded below.
@@ -41,7 +48,7 @@ Build an accessible, openly distributable presentation companion: a teacher asks
 | Media hosting | Separate application-owned library API on Linux; separate token, storage and lifecycle from Hermes. Neither Hermes memory nor its conversation database is the library. |
 | First destinations | Word and OneNote desktop first; PowerPoint after their acceptance gates. |
 | Teaching workflow | Prepared library is default; live generation available. PC microphone first, then physical handheld microphone into the same workflow. |
-| Retrieval/insertion | Library first; web only when requested. Insert retrieved items on explicit request into an unchanged target; generated images require preview. Changed/uncertain destinations remain queued. |
+| Retrieval/insertion | Library first. Standalone Images web lookup remains explicit; Board composition uses the later [bounded automatic source policy](2026-10-25-board-agent-default-policies.md). Insert retrieved items on explicit request into an unchanged target; generated images require preview. Changed/uncertain destinations remain queued. |
 | Versions | Explicitly name/approve a canonical version. Refinement creates immutable child versions; prior approved images remain available and revertible. |
 | Private sync | Automatic home/work media-and-metadata sync is required in the first complete image release. History, full prompts, conversations, credentials, jobs and network settings remain local. |
 | Images/spend | Selectable image producers, starting with Google Nano Banana 2.1 while retaining quality review and the existing OpenAI adapter. A$30 monthly pilot design allowance. Shared reservations are estimates, not invoices or a guaranteed billing cap. Authorised twelve-attempt home trial completed: ten saved images, two retained failed attempts; A$2.40 allocated, actual invoice unverified. |

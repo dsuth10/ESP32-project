@@ -1,5 +1,59 @@
 # Companion development workboard — 25 October 2026
 
+## School-readiness follow-up
+
+The user will use a different Windows PC through a phone mobile-data hotspot
+on 26 October. The [readiness plan](2026-10-25-school-readiness-plan.md),
+[arrival guide](2026-10-26-school-arrival-guide.md) and
+[copy-ready Linux handoff](2026-10-26-linux-hermes-school-handoff.md) coordinate
+that move. Portable Board setup now creates its own verified environment on a
+fresh PC; the launcher accepts explicit school Settings/library roots and
+fails clearly on missing/undecryptable explicit settings. Preview packaging
+includes the Board scripts, dependencies, example and school guides.
+
+The final integrated selection passed **485 tests, one optional pdfplumber skip,
+and four subtests in 32.40 seconds**. This includes the earlier Board suite and
+new setup/package/profile checks plus Hermes service/client/migration regressions;
+do not add the overlapping counts below. Feature delivery is a separate normal
+commit/push checkpoint, whose verified SHA is supplied in the coordinator's
+handoff. Main and the protected board remain unchanged.
+
+Fresh LAN checks and one useful read-only own-host Hermes task passed. That
+inspection reports Linux Tailscale absent, interactive administrator
+authentication required, gateway API 8642 and separate dashboard 9119 active,
+and lid-close suspension. The local Linux owner must assist installation/login
+and verify private HTTPS/persistence before leaving home; school-PC hotspot
+acceptance remains open. No Linux setup or network change was made here. A
+working home Windows loopback budget is not a remotely deployed shared service;
+school paid generation stays disabled until that separate gate passes.
+
+## Latest agent/library build checkpoint
+
+The user subsequently requested a consolidated implementation plan and supervised
+sub-agents for the agent-driven Teaching Board and reusable resource library.
+The [agent build plan](2026-10-25-teaching-board-agent-build-plan.md) now reconciles
+the agreed design, library research and delegated operating policies. Its first
+narrow local build is implemented and integrated: saved profile, typed local
+FTS5 catalogue/backfill, exact resource reuse, bounded async composition and
+acquisition, complete-page preview/Undo/Freeze, reusable editable pages, truthful
+charts, and portable/PDF export/import. See the
+[candidate guide](2026-10-25-teaching-board-agent-candidate.md).
+
+Final integrated local check: **445 passed, one optional pdfplumber skip in
+23.38 seconds**; this includes existing Board and media/provider regressions and
+is not added to earlier overlapping counts below. Bundled PDF extraction and
+three-page Poppler visual inspection supplemented the optional skip. A native
+two-window smoke separately passed seven synthetic checks. Independent review
+fixed export dependency leakage and chart source omission, concurrent paid-job
+claims, native resource/layout validation and licence-source handling.
+
+At that first local build checkpoint, no live model/provider/Hermes task, real
+microphone capture, deployment/sync, firmware write, stable merge or push occurred.
+The later read-only Linux inspection and feature delivery have their own scope
+above. M1–M6, physical/classroom acceptance and final renderer
+selection retain their separate gates. Semantic retrieval/enrichment, catalogue
+sync and broader video/audio/document presentation remain planned increments.
+
 Continuation of the [24 October checkpoint](2026-10-24-end-of-day-checkpoint.md)
 under the [consolidated programme](2026-10-21-companion-media-agent-master-plan.md).
 The user requested supervised sub-agent development, continuing yesterday's work
@@ -87,6 +141,9 @@ Enclosure fit and classroom application acceptance have independent evidence.
 - Saved-library retrieval is the default. No match does not silently trigger
   web search or paid generation. New provider requests retain explicit spending
   decisions; yesterday's twelve-attempt trial is exhausted.
+  The later Board composition slice uses its separate delegated automatic-source
+  policy and per-request/shared-ledger guards; the standalone Images workflow
+  retains these earlier explicit-action rules.
 - Media/allowlisted metadata sync excludes History, full prompts, conversations,
   jobs, credentials and network settings. Service and provider secrets remain
   separate and private.

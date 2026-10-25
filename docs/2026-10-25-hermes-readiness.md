@@ -1,5 +1,32 @@
 # Hermes readiness — 25 October 2026
 
+## Later school-readiness inspection on 25 October
+
+The [school readiness plan](2026-10-25-school-readiness-plan.md) and
+[Linux handoff](2026-10-26-linux-hermes-school-handoff.md) contain the current
+next steps. Fresh authenticated health/capability checks again passed through
+the configured HTTP home-LAN origin. A bounded own-host read-only Hermes run
+completed, establishing useful Linux tool execution on that LAN route. Its raw
+receipts remain private; no duplicate run was created after an events timeout.
+
+The agent reported Tailscale's executable/package absent, no installed daemon
+service, and no active Serve/Funnel found; saved route state remains unknown.
+The API gateway is at port 8642 (also confirmed by the authenticated development
+client's configured port), while dashboard 9119 is a separate listener. Both
+listeners use all interfaces; no bind or route was changed. Existing gateway
+and dashboard services are active/enabled with restart and user lingering.
+Non-interactive administrator authentication is unavailable. The owner must
+assist the local Linux agent with administrator authentication and tailnet login.
+AC is connected, but closing the lid suspends the machine; keep AC/lid open for
+remote use unless the owner deliberately reviews power settings.
+
+The home Windows Tailscale client remains running/online with zero warnings.
+The full home application profile inspected for the launch had Hermes disabled.
+Neither that profile nor the development client has accepted the permanent
+private HTTPS school route. No Linux install, enrolment, Serve/firewall/ACL
+change, Windows endpoint migration or hotspot acceptance occurred in this
+inspection. The earlier observations below retain their dated scope.
+
 Read-only M1 preflight on `codex/companion-media-agent`, following the
 [permanent-route runbook](hermes-tailscale-home-work.md) and
 [Hermes collaboration skill](../.agents/skills/hermes-collaboration/SKILL.md).

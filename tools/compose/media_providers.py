@@ -124,7 +124,15 @@ class CommonsRetriever:
             # Metadata values may contain HTML; display as plain text, never execute markup.
             import re, html
             plain = lambda name: html.unescape(re.sub(r"<[^>]*>", "", str(meta.get(name, {}).get("value", ""))))[:2000]
+            # Keep a bounded rights record for the Board's stricter automatic
+            # reuse policy. The ordinary image workflow still asks the teacher
+            # to review terms; presence of these fields grants no permission.
+            rights_fields = ('LicenseShortName', 'LicenseUrl', 'UsageTerms', 'Copyrighted',
+                             'AttributionRequired', 'Restrictions', 'Artist', 'Attribution',
+                             'ObjectName', 'Credit', 'Permission', 'Copyright')
+            rights = {name: {'value': plain(name)} for name in rights_fields if name in meta}
             candidates.append({"title": str(page.get("title", ""))[:200], "download_url": info.get("url", ""),
+                "rights_metadata": rights,
                 "source": {"url": info.get("descriptionurl", ""), "creator": plain("Artist"),
                            "licence": plain("LicenseShortName"), "attribution": plain("Attribution")}})
         return candidates

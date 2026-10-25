@@ -1,5 +1,13 @@
 # Teaching Board: agreed design and development plan
 
+Later implementation checkpoint: the
+[agent/library build plan](2026-10-25-teaching-board-agent-build-plan.md)
+consolidates the subsequent one-page/resource/profile/policy direction and records
+the integrated local candidate. The [candidate guide](2026-10-25-teaching-board-agent-candidate.md)
+covers its typed/PC-microphone controls, reusable pages/data/charts and portable/PDF
+workflow. The earlier B0–B5 evidence below remains dated history; live services,
+physical/classroom acceptance and final renderer choice remain open.
+
 25 October 2026. **The user confirmed the overall design and requested development
 to begin.** Q1–Q15 and the bounded B0–B5 development plan below are agreed.
 Initial work proceeds in isolated desktop slices: B0 renderer evidence and B1

@@ -1,4 +1,4 @@
-"""Experimental, isolated Qt Teaching Board candidate; no remote integrations.
+"""Experimental, isolated Qt Teaching Board candidate with opt-in agent services.
 
 Requires an explicit directory inside the repository's reserved candidate root.
 All document changes use BoardSession/BoardModel; user pilot data is never found.
@@ -34,10 +34,26 @@ from board_lessons import (copy_saved_lesson, refresh_saved_lesson_access,
                            new_saved_lesson_directory, is_catalogue_lesson)
 from board_resize import handle_positions, resize_frame
 from board_images import import_prepared, safe_path
+from board_images import SavedImageLibrary
 from board_image_picker import ImagePicker
 
 REPOSITORY = Path(__file__).resolve().parents[2]
 CANDIDATE_ROOT = REPOSITORY / '.local' / 'teaching-board-candidate'
+
+
+def load_board_settings(root):
+    """An explicitly selected profile must be readable on this Windows account.
+
+    Do not let the generic environment loader silently swallow a DPAPI failure
+    and launch a different effective configuration on a new school computer.
+    """
+    from companion_settings import load_settings
+    from config_loader import load_env_config
+    root = safe_path(root)
+    if not (root / 'settings.json').is_file():
+        raise ValueError('The selected companion profile has no saved Settings. Configure Settings on this computer first.')
+    protected = load_settings(root)
+    return load_env_config(settings_loader=lambda: protected)
 
 
 def candidate_directory(value):
@@ -109,7 +125,7 @@ def demo_model(media):
             new_object('text', x=80, y=55, width=1400, height=100, text=title, font_size=62),
             new_object('image', x=100, y=250, width=680, height=397, image_ref=reference),
             new_object('shape', x=950, y=280, width=490, height=280, fill='#FFF1B8', stroke='#665000', stroke_width=3),
-            new_object('text', x=990, y=335, width=410, height=160, text='Edit this explanation for your lesson.', font_size=38),
+            new_object('text', x=990, y=335, width=410, height=200, text='Edit this explanation for your lesson.', font_size=38),
             new_object('arrow', x=760, y=420, width=200, height=80, start=[0, 0], end=[200, 80], colour='#E05243', stroke_width=7),
         ]
         lesson['pages'].append(page)
@@ -481,7 +497,8 @@ class PupilWindow(QWidget):
 
 
 class BoardCandidate(QWidget):
-    def __init__(self, session, *, store=None, resolver=None, library_root=None):
+    def __init__(self, session, *, store=None, resolver=None, library_root=None,
+                 agent_config=None, resource_root=None, composer=None):
         super().__init__()
         self.session, self.store, self.resolver = session, store, resolver
         self.library_root = Path(library_root) if library_root else None
@@ -542,8 +559,11 @@ class BoardCandidate(QWidget):
         self.zoom.valueChanged.connect(self.set_zoom); toolbar.addWidget(self.zoom)
         splitter = QSplitter(); layout.addWidget(splitter, 1)
         self.teacher_canvas = BoardCanvas(self); splitter.addWidget(self.teacher_canvas)
-        side = QWidget(); side_layout = QVBoxLayout(side); splitter.addWidget(side)
-        side.setMaximumWidth(320)
+        from PySide6.QtWidgets import QScrollArea
+        self.side_scroll = QScrollArea(); self.side_scroll.setWidgetResizable(True)
+        self.side_scroll.setMaximumWidth(390); splitter.addWidget(self.side_scroll)
+        side = QWidget(); side_layout = QVBoxLayout(side); self.side_scroll.setWidget(side)
+        side.setMaximumWidth(370)
         self.add_image_button = QPushButton('Add image…')
         self.add_image_button.clicked.connect(self.add_image); side_layout.addWidget(self.add_image_button)
         for label, kind in [('Add text', 'text'), ('Rectangle', 'rectangle'), ('Ellipse', 'ellipse'), ('Arrow', 'arrow')]:
@@ -589,6 +609,22 @@ class BoardCandidate(QWidget):
         self.pupil_page = QLabel(); pupil_controls.addWidget(self.pupil_page)
         self.show_pupil.toggled.connect(self.pupil.setVisible)
         self.pupil_mode.currentTextChanged.connect(lambda: self.tool_changed(True))
+        self.agent_panel = None
+        if store is not None:
+            from board_agent_ui import AgentPanel
+            shared_root = (CANDIDATE_ROOT / 'reusable-resources' if is_catalogue_lesson(store.root)
+                           else store.root / 'resource-library')
+            try:
+                self.agent_panel = AgentPanel(self, config=agent_config, resource_root=resource_root or shared_root,
+                                               composer=composer)
+                side_layout.insertWidget(0, self.agent_panel)
+            except Exception:
+                self.catalogue_error = 'Board assistant unavailable. Manual editing and lesson saving remain available.'
+                notice = QLabel(self.catalogue_error); notice.setWordWrap(True); side_layout.insertWidget(0, notice)
+        exports = QHBoxLayout(); layout.addLayout(exports)
+        for label, command in [('Export editable lesson…', self.export_package), ('Export PDF…', self.export_pdf),
+                               ('Import editable lesson…', self.import_package)]:
+            button = QPushButton(label); button.clicked.connect(command); exports.addWidget(button)
         self.resize(1240, 820); self.pupil.resize(1000, 650)
         self.refresh()
         if not self.session.teacher_view()['dirty']:
@@ -743,6 +779,12 @@ class BoardCandidate(QWidget):
                 safe_path(media_root / name)
             media = MediaStore(safe_path(media_root))
             record = import_prepared(media, prepared)
+            if self.agent_panel:
+                try:
+                    self.agent_panel.retain_image(record, media.root)
+                except Exception:
+                    # An indexing error cannot prevent a valid local insertion.
+                    self.catalogue_error = 'Image retained in the lesson; reusable catalogue indexing needs attention.'
             page = page_from(captured)
             scale = min(page['width'] * .6 / prepared.width, page['height'] * .6 / prepared.height, 1)
             width, height = prepared.width * scale, prepared.height * scale
@@ -1076,6 +1118,8 @@ class BoardCandidate(QWidget):
         previous = self.session
         self.session, self.store, self.resolver = replacement, store, resolver
         previous.close()
+        if self.agent_panel:
+            self.agent_panel.session_changed()
         self.aspect_locks.clear(); self.selected = None; self.selection_view = None
         self.name.setModified(False); self.name_capture = None
         self.recovery_notice = False; self.error = ''
@@ -1098,6 +1142,8 @@ class BoardCandidate(QWidget):
         previous = self.session
         self.session = replacement
         previous.close()
+        if self.agent_panel:
+            self.agent_panel.session_changed()
         self.aspect_locks.clear()
         self.recovery_notice = replacement.teacher_view().get('recovery_status') == 'recovered_previous'
         self.name.setText(replacement.teacher_view()['document']['title']); self.name.setModified(False)
@@ -1106,6 +1152,64 @@ class BoardCandidate(QWidget):
 
     def set_zoom(self, value):
         self.teacher_canvas.zoom = value; self.teacher_canvas.fit()
+
+    def export_package(self):
+        if not self.save_now():
+            return
+        from PySide6.QtWidgets import QFileDialog
+        path, _ = QFileDialog.getSaveFileName(self, 'Export editable lesson', '', 'Teaching Board (*.tboard)')
+        if not path:
+            return
+        try:
+            from board_export import export_lesson
+            export_lesson(self.session.export_state(), Path(path), media_store=MediaStore(self.store.root / 'media'),
+                          catalogue=self.agent_panel.library.catalogue if self.agent_panel else None)
+            self.error = ''; self.refresh()
+        except Exception as error:
+            self.error = 'Lesson export failed: ' + str(error)[:400]; self.refresh()
+
+    def export_pdf(self):
+        if not self.save_now():
+            return
+        from PySide6.QtWidgets import QFileDialog
+        path, _ = QFileDialog.getSaveFileName(self, 'Export presentation PDF', '', 'PDF (*.pdf)')
+        if not path:
+            return
+        try:
+            from board_export import export_pdf
+            export_pdf(self.session.export_state(), Path(path), image_resolver=self.resolver,
+                       media_store=MediaStore(self.store.root / 'media'),
+                       catalogue=self.agent_panel.library.catalogue if self.agent_panel else None)
+            self.error = ''; self.refresh()
+        except Exception as error:
+            self.error = 'PDF export failed: ' + str(error)[:400]; self.refresh()
+
+    def import_package(self):
+        if self.session.teacher_view()['frozen']:
+            self.error = 'Resume the pupil display before opening a separate imported lesson.'; self.refresh(); return
+        if not self.save_now():
+            return
+        from PySide6.QtWidgets import QFileDialog
+        path, _ = QFileDialog.getOpenFileName(self, 'Import editable lesson', '', 'Teaching Board (*.tboard)')
+        if not path:
+            return
+        try:
+            from board_export import import_lesson
+            destination = new_saved_lesson_directory('Imported lesson')
+            store = import_lesson(Path(path), destination)
+            resolver = image_resolver(MediaStore(store.root / 'media'))
+            replacement = BoardSession.open(store, image_resolver=resolver)
+            previous = self.session
+            self.session, self.store, self.resolver = replacement, store, resolver
+            previous.close()
+            self.aspect_locks.clear(); self.selected = None; self.selection_view = None
+            self.name.setModified(False); self.name_capture = None; self.error = ''
+            if self.agent_panel:
+                self.agent_panel.session_changed()
+                self.agent_panel.pending_sources.append(store.root / 'media'); self.agent_panel.index_timer.start(0)
+            self.refresh(); self.select(None); self.sync_saved_lessons()
+        except Exception as error:
+            self.error = 'Lesson import failed: ' + str(error)[:400]; self.refresh()
 
     def move_pupil(self):
         screen = QGuiApplication.screens()[self.screens.currentIndex()]
@@ -1123,6 +1227,8 @@ class BoardCandidate(QWidget):
             if choice != QMessageBox.StandardButton.Discard:
                 event.ignore(); return
         self.save_timer.stop(); self.property_timer.stop(); self.group_timer.stop()
+        if self.agent_panel:
+            self.agent_panel.close_runtime()
         self.session.close(); self.pupil.hide(); event.accept()
 
 
@@ -1171,6 +1277,8 @@ def main():
     parser.add_argument('--data-root', type=candidate_directory, required=True)
     parser.add_argument('--demo', action='store_true', help='Create a synthetic three-page lesson in a fresh candidate folder.')
     parser.add_argument('--smoke', action='store_true', help='Run synthetic native checks in a fresh candidate folder and exit.')
+    parser.add_argument('--settings-root', type=Path, help='Explicit protected companion settings folder for requested agent/media work.')
+    parser.add_argument('--library-root', type=Path, help='Existing saved image library to index locally without changing its files.')
     args = parser.parse_args()
     validate_candidate_storage(args.data_root)
     existing = any((args.data_root/name).exists() for name in ('lesson.json', 'lesson.previous.json'))
@@ -1184,7 +1292,15 @@ def main():
         else:
             model = demo_model(media) if args.demo or args.smoke else BoardModel()
             session = BoardSession(model, store=store, image_resolver=resolver)
-        candidate = BoardCandidate(session, store=store, resolver=resolver)
+        config = None
+        if args.settings_root:
+            config = load_board_settings(args.settings_root)
+        source_library = SavedImageLibrary(args.library_root).root if args.library_root else None
+        candidate = BoardCandidate(session, store=store, resolver=resolver, agent_config=config,
+                                   library_root=source_library)
+        if source_library and candidate.agent_panel:
+            candidate.agent_panel.pending_sources.append(source_library)
+            candidate.agent_panel.index_timer.start(0)
         candidate.show(); candidate.pupil.show()
         if args.smoke:
             QTimer.singleShot(600, lambda: smoke(candidate, args.data_root))

@@ -20,6 +20,15 @@ def test_preview_source_package_excludes_private_configuration_and_data(tmp_path
     with zipfile.ZipFile(output) as archive:
         names=archive.namelist()
         assert 'start_companion_feature.bat' in names
+        assert 'tools/compose/run_teaching_board_candidate.ps1' in names
+        assert 'tools/compose/setup_teaching_board_candidate.ps1' in names
+        assert 'tools/compose/requirements-board.txt' in names
+        assert 'tools/compose/examples/teaching-board-illustrative-rainfall.json' in names
+        assert 'docs/2026-10-25-teaching-board-agent-candidate.md' in names
+        for guide in ('docs/2026-10-26-school-arrival-guide.md',
+                      'docs/2026-10-26-linux-hermes-school-handoff.md'):
+            if (ROOT/guide).is_file():
+                assert guide in names
         assert 'preview-manifest.json' in names
         assert all(private_marker.encode() not in archive.read(name) for name in names)
         assert not any(name.endswith(('.env','.log','.sqlite3')) or '/.venv/' in name or name.startswith('.local/') for name in names)

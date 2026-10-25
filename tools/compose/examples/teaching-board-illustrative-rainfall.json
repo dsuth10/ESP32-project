@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "title": "Invented monthly rainfall for graph practice",
+  "x": {"label": "Month", "unit": "calendar month"},
+  "y": {"label": "Rainfall", "unit": "mm"},
+  "points": [
+    {"label": "January", "value": 40},
+    {"label": "February", "value": 75},
+    {"label": "March", "value": null},
+    {"label": "April", "value": 55}
+  ],
+  "provenance": {
+    "kind": "teacher_supplied",
+    "publisher": "Invented example data for graph practice",
+    "date": "2026-10-25",
+    "coverage": "Illustrative values only; no measured place or period"
+  },
+  "illustrative": true
+}
