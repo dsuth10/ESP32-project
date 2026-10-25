@@ -1,16 +1,16 @@
 # Graph Report - ESP32 project  (2026-10-25)
 
 ## Corpus Check
-- 214 files · ~1,294,917 words
+- 228 files · ~1,310,272 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2068 nodes · 4173 edges · 115 communities (90 shown, 16 thin omitted)
-- Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 361 edges (avg confidence: 0.88)
+- 2320 nodes · 4903 edges · 135 communities (105 shown, 20 thin omitted)
+- Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 436 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `81b8eac2`
+- Built from commit: `bcf6037d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -23,7 +23,6 @@
 - main.cpp
 - es8311_bsp.c
 - es8311.cpp
-- README.md
 - create_enclosure
 - bench_llm_paths.py
 - flash.py
@@ -74,23 +73,23 @@
 - MediaService
 - test_compose.py
 - TrialTests
-- .generate
+- error_diagnostics
 - companion_settings.py
 - test_image_provider_routing.py
-- MediaStore
+- ._connect
 - First real Gemini attempt: rejected request and diagnostic correction
 - test_device_feedback.py
 - test_gemini_images.py
-- Response
+- test_image_workflow_two_desktops_and_offline_cache_without_history_sync
 - Path
 - Gemini home trial: generation and refinement working
-- docs/README.md
+- 2026-10-25-development-workboard.md
 - Image providers: Gemini first
 - Classroom companion: consolidated branch programme
 - parametrize
 - Gemini rendering and workflow: offline implementation
 - HermesPanel
-- BoardCandidate
+- board_candidate.py
 - Project documentation index
 - ComposeApp
 - FocusTracker
@@ -102,7 +101,7 @@
 - build_companion_preview.py
 - DashboardStatus
 - EnvironmentMode
-- SettingsPanel
+- BoardCandidate
 - Teaching Board B0 renderer trial
 - load_env_config
 - Create & Paste: approved page 7 device trial
@@ -113,26 +112,46 @@
 - Enclosure dimension and feature reconciliation
 - BoardSession
 - test_board_hermes.py
-- .log
+- Bridge
 - AudioCapture
 - test_image_provider_layout.py
 - HotkeyState
-- compose_gui.py
-- clipboard_manager.py
+- .__init__
+- BoardStore
 - Image producers: first offline implementation slice
 - Teaching Board: isolated B2 desktop candidate
+- copy_saved_lesson
+- MediaStore
+- SettingsPanel
+- test_board_editor_ux.py
+- LazyStartTests
+- ValueError
+- clipboard_manager.py
+- SolidCraft enclosure workspace
+- .import_bytes
+- test_board_image_insertion.py
+- ImagePicker
+- .log
+- test_board_image_acceptance.py
+- Teaching Board manual feedback — 25 October 2026
+- test_real_worker_handshake_feedback_ack_and_private_audit
+- Portrait UI — Flash & Revert Guide
+- ImageProvider
+- Teaching Board image insertion — 25 October 2026
+- Teaching Board saved-lesson discovery — 25 October 2026
+- Windows Compose and Dictate repair — 17 October 2026
 
 ## God Nodes (most connected - your core abstractions)
 1. `MacroPadGUI` - 76 edges
-2. `ComposeApp` - 59 edges
-3. `MediaStore` - 54 edges
-4. `BoardSession` - 48 edges
-5. `BoardModel` - 48 edges
-6. `BoardValidationError` - 39 edges
-7. `MediaPanel` - 38 edges
-8. `HermesPanel` - 35 edges
-9. `AudioRecorder` - 32 edges
-10. `BoardStore` - 31 edges
+2. `MediaStore` - 71 edges
+3. `BoardSession` - 68 edges
+4. `BoardModel` - 65 edges
+5. `ComposeApp` - 59 edges
+6. `BoardValidationError` - 50 edges
+7. `BoardCandidate` - 50 edges
+8. `BoardStore` - 45 edges
+9. `MediaPanel` - 38 edges
+10. `copy_saved_lesson()` - 36 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `test_commons_download_rejects_oversized_stream()` --uses--> `CommonsRetriever`  [INFERRED]
@@ -143,13 +162,13 @@
   tests/test_media_providers.py → tools/compose/media_providers.py
 - `test_commons_rejects_non_https_or_non_wikimedia_download_hosts()` --uses--> `CommonsRetriever`  [INFERRED]
   tests/test_media_providers.py → tools/compose/media_providers.py
-- `test_reopen_preserves_state_history_and_invalidates_previous_session()` --uses--> `BoardSessionError`  [INFERRED]
-  tools/compose/tests/test_board_candidate.py → tools/compose/board_session.py
+- `test_openai_provider_accepts_valid_image_and_bounds_response()` --uses--> `OpenAIImageProvider`  [INFERRED]
+  tests/test_media_providers.py → tools/compose/media_providers.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (115 total, 16 thin omitted)
+## Communities (135 total, 20 thin omitted)
 
 ### Community 0 - "MacroPadGUI"
 Cohesion: 0.07
@@ -182,10 +201,6 @@ Nodes (25): es8311_clock_config_t, es8311_handle_t, es8311_mic_gain_t, es8311_re
 ### Community 7 - "es8311.cpp"
 Cohesion: 0.25
 Nodes (26): es8311_clock_config_t, es8311_handle_t, es8311_mic_gain_t, es8311_resolution_t, esp_err_t, i2c_port_t, es8311_clock_config(), es8311_codec_dump_registers() (+18 more)
-
-### Community 8 - "README.md"
-Cohesion: 0.13
-Nodes (9): Everyday use, Repairs, Verification, Windows Compose and Dictate repair — 17 October 2026, 1. Flash legacy landscape env, 2. Emergency: flash archived golden binaries (no rebuild), Flash portrait (default), Portrait UI — Flash & Revert Guide (+1 more)
 
 ### Community 10 - "bench_llm_paths.py"
 Cohesion: 0.06
@@ -265,7 +280,7 @@ Nodes (14): 1. Download and open the project, 2. Connect the ESP32 over USB, 3. 
 
 ### Community 43 - "ComposeCompanion"
 Cohesion: 0.10
-Nodes (12): Image, ComposeCompanion, paste_ready_action(), toggle_local_only(), create_tray_icon_image(), F13 Pressed: Begin Compose recording., F13 Released: Stop recording and dispatch Compose pipeline., F14 Pressed: Begin Dictate recording. (+4 more)
+Nodes (12): Image, ComposeCompanion, paste_ready_action(), toggle_local_only(), create_tray_icon_image(), F13 Pressed: Begin Compose recording., F13 Released: Stop recording and dispatch Compose pipeline., F14 Released: Stop recording and dispatch Dictate pipeline. (+4 more)
 
 ### Community 44 - ".do_POST"
 Cohesion: 0.23
@@ -284,7 +299,7 @@ Cohesion: 0.22
 Nodes (14): answer_agent_lane(), answer_fast_lane(), ask_fast_llm(), groq_should_try(), hermes_reachable(), history_messages(), query_ollama_fallback(), Skip Groq when it has no key, the model is wrong, or the network just failed. (+6 more)
 
 ### Community 48 - "Pinout Reference"
-Cohesion: 0.22
+Cohesion: 0.25
 Nodes (8): Additional Peripherals, Audio System (ES8311 Codec: 0x18 & FM8002 Amplifier), Capacitive Touch (FT6336G — I2C: 0x38), Display (2.8-inch 240×320 IPS SPI), ES3C28P hardware reference, Hardware Overview & Board Identification, Mechanical files, Pinout Reference
 
 ### Community 49 - "warmup_fast_llm"
@@ -292,8 +307,8 @@ Cohesion: 0.20
 Nodes (11): _groq_headers(), _groq_network_failure(), _groq_request(), mark_groq_unreachable(), Exception, School networks often block Groq. Don't pay the connect timeout on every…, One request over a persistent TLS connection (reconnects once if Groq dropped…, Validates the Groq key and opens the TLS connection before the first voice turn. (+3 more)
 
 ### Community 50 - "test_media_providers.py"
-Cohesion: 0.14
-Nodes (18): FakeResponse, FakeSession, openai_response(), png_bytes(), parametrize, test_commons_download_rejects_oversized_stream(), test_commons_download_requires_explicit_rights_acknowledgement_without_network(), test_commons_download_uses_https_wikimedia_and_bounded_no_redirect_request() (+10 more)
+Cohesion: 0.16
+Nodes (15): FakeResponse, FakeSession, openai_response(), png_bytes(), parametrize, test_commons_download_rejects_oversized_stream(), test_commons_download_requires_explicit_rights_acknowledgement_without_network(), test_commons_download_uses_https_wikimedia_and_bounded_no_redirect_request() (+7 more)
 
 ### Community 51 - "get_composite_status"
 Cohesion: 0.29
@@ -324,8 +339,8 @@ Cohesion: 0.18
 Nodes (7): Response, load_env_config(), Loads configuration from compose.env and system environment., LlmPipeline, Calls Groq chat completions endpoint. Returns (content, finish_reason)., Calls local Ollama chat completions endpoint. Returns (content, finish_reason)., test_ollama_uses_installed_model_when_configured_model_is_missing()
 
 ### Community 58 - "BoardModel"
-Cohesion: 0.08
-Nodes (52): demo_model(), BoardConflictError, BoardModel, BoardValidationError, canonical_json(), _colour(), _id(), _keys() (+44 more)
+Cohesion: 0.10
+Nodes (40): demo_model(), BoardModel, BoardValidationError, _colour(), _id(), _keys(), new_lesson(), new_object() (+32 more)
 
 ### Community 59 - "SpeechPipeline"
 Cohesion: 0.19
@@ -336,12 +351,12 @@ Cohesion: 0.12
 Nodes (18): ESP32 & Windows Voice Compose & Dictate Companion Service Resides in the…, LLM generation pipeline with Groq high-speed cloud generation, local Ollama…, Executes LLM generation with automatic multi-round continuation if length…, build_compose_messages(), build_dictate_messages(), Prompt engine for Australian English text generation, grammar cleaning, and…, Builds the message list for the Compose pipeline., Builds the message list for the Dictate grammar cleaning pipeline. (+10 more)
 
 ### Community 61 - "ClipboardManager"
-Cohesion: 0.15
-Nodes (13): ClipboardManager, Injects text at the current cursor position: 1. Snapshots prior clipboard. 2.…, Attempts to open the Windows clipboard with retries in case another process…, Safely retrieves current text in clipboard if available., Safely empties the Windows clipboard., Safely sets Unicode text on the Windows clipboard., GUITHREADINFO, _key_event() (+5 more)
+Cohesion: 0.23
+Nodes (8): ClipboardManager, Injects text at the current cursor position: 1. Snapshots prior clipboard. 2.…, Attempts to open the Windows clipboard with retries in case another process…, Safely retrieves current text in clipboard if available., Safely empties the Windows clipboard., Safely sets Unicode text on the Windows clipboard., Sends WM_COPY directly to window handle without simulating keyboard events., test_paste_failure_restores_previous_clipboard()
 
 ### Community 63 - "MediaService"
 Cohesion: 0.11
-Nodes (8): CommonsRetriever, Explicit Commons search; a result's visibility does not grant reuse rights., MediaService, Application-owned image workflow. Models propose; explicit UI actions dispatch…, Explicit accounting-only retry for a saved image with a lost ledger ACK., truthy(), test_google_is_explicit_and_never_borrows_openai_allocation_or_falls_back(), test_restart_keeps_frozen_choice_allocation_and_single_dispatch()
+Nodes (7): CommonsRetriever, Explicit Commons search; a result's visibility does not grant reuse rights., MediaService, Explicit accounting-only retry for a saved image with a lost ledger ACK., truthy(), test_google_is_explicit_and_never_borrows_openai_allocation_or_falls_back(), test_restart_keeps_frozen_choice_allocation_and_single_dispatch()
 
 ### Community 64 - "test_compose.py"
 Cohesion: 0.19
@@ -351,33 +366,33 @@ Nodes (14): make_app(), Regression checks without recording, network requests or
 Cohesion: 0.09
 Nodes (15): EspConnection, backup(), candidate_data(), checked_device(), execute(), main(), prepare(), Single-candidate S3 application trial and recovery; stable registration never… (+7 more)
 
-### Community 66 - ".generate"
-Cohesion: 0.27
-Nodes (5): error_diagnostics(), Read bounded error metadata and a redacted summary, never raw response bodies., Path, safe_identifier(), safe_usage()
-
 ### Community 67 - "companion_settings.py"
 Cohesion: 0.33
 Nodes (15): _atomic_write(), _Blob, _crypt(), data_directory(), _decode_journal(), _journal_bytes(), load_settings(), _load_settings_unlocked() (+7 more)
 
 ### Community 68 - "test_image_provider_routing.py"
-Cohesion: 0.10
-Nodes (24): Protocol, create_image_provider(), image_readiness(), image_snapshot(), ImageCapabilities, ImageProvider, Path, Image producer contract and local request snapshots; never contains credentials. (+16 more)
+Cohesion: 0.09
+Nodes (28): create_image_provider(), image_readiness(), image_snapshot(), ImageCapabilities, Image producer contract and local request snapshots; never contains credentials., selected_model(), selected_provider(), validate_options() (+20 more)
 
-### Community 70 - "MediaStore"
-Cohesion: 0.08
-Nodes (23): Any, Connection, Row, RuntimeError, _json(), MediaStore, _now(), Path (+15 more)
+### Community 70 - "._connect"
+Cohesion: 0.11
+Nodes (14): Any, Connection, Row, _json(), _now(), Local, versioned image library for the classroom companion. Media has its own…, Claim a durable attempt across processes without replacing another owner., Local receipt lookup through the existing operation identity, never synced. (+6 more)
 
 ### Community 71 - "First real Gemini attempt: rejected request and diagnostic correction"
 Cohesion: 0.40
 Nodes (5): Established diagnostic defect, First real Gemini attempt: rejected request and diagnostic correction, Offline request-contract check, Real setup and attempt, Verification and delivery
 
 ### Community 72 - "test_device_feedback.py"
-Cohesion: 0.09
-Nodes (21): DeviceFeedback, display_text(), frame(), Opt-in, identity-bound USB display feedback. No recording/insertion/provider…, Call only from Tk. Never send a transcript, document text or credential., snapshot(), Safe feedback, explicit hotkeys and preservation of pending work., test_busy_generation_is_not_advertised_as_ready() (+13 more)
+Cohesion: 0.12
+Nodes (19): DeviceFeedback, display_text(), frame(), Opt-in, identity-bound USB display feedback. No recording/insertion/provider…, Call only from Tk. Never send a transcript, document text or credential., snapshot(), Safe feedback, explicit hotkeys and preservation of pending work., test_busy_generation_is_not_advertised_as_ready() (+11 more)
 
 ### Community 73 - "test_gemini_images.py"
 Cohesion: 0.10
-Nodes (37): parametrize, check_google_model(), GeminiImageProvider, Stateless Gemini Interactions image requests. No retries, fallback or URL…, Explicit metadata GET only. Never invoke this during startup/save/setup., Explicit image generation/edit and external retrieval adapters. No provider…, fixture(), Synthetic Interactions REST fixtures, checked against Google's 24 Oct 2026… (+29 more)
+Nodes (37): parametrize, check_google_model(), GeminiImageProvider, Stateless Gemini Interactions image requests. No retries, fallback or URL…, Explicit metadata GET only. Never invoke this during startup/save/setup., fixture(), Synthetic Interactions REST fixtures, checked against Google's 24 Oct 2026…, HTTP rejection diagnostics must be useful without copying private response text. (+29 more)
+
+### Community 74 - "test_image_workflow_two_desktops_and_offline_cache_without_history_sync"
+Cohesion: 0.18
+Nodes (4): Response, parametrize, One synthetic image through jobs, shared budget, private API and two caches., test_image_workflow_two_desktops_and_offline_cache_without_history_sync()
 
 ### Community 76 - "Gemini home trial: generation and refinement working"
 Cohesion: 0.33
@@ -396,24 +411,24 @@ Cohesion: 0.33
 Nodes (6): Configuration check, Delivery and remaining gates, Gemini rendering and workflow: offline implementation, Local verification, Provider and request boundary, Workflow and spending
 
 ### Community 82 - "HermesPanel"
-Cohesion: 0.08
-Nodes (26): fixture, review(), _catalogue_item(), is_catalogue_context(), prepare_catalogue(), Bounded, opt-in library metadata for Hermes; recommendations confer no…, Resolve an untrusted result against its immutable submitted catalogue and local…, resolve_recommendation() (+18 more)
+Cohesion: 0.07
+Nodes (28): fixture, review(), ESP32 & Windows Voice Compose & Dictate Companion - Interactive Desktop App…, _catalogue_item(), is_catalogue_context(), prepare_catalogue(), Bounded, opt-in library metadata for Hermes; recommendations confer no…, Resolve an untrusted result against its immutable submitted catalogue and local… (+20 more)
 
-### Community 83 - "BoardCandidate"
-Cohesion: 0.05
-Nodes (25): QWidget, BoardCandidate, BoardCanvas, candidate_directory(), decode_image(), image_resolver(), main(), page_from() (+17 more)
+### Community 83 - "board_candidate.py"
+Cohesion: 0.09
+Nodes (19): candidate_directory(), image_resolver(), resolve(), main(), Experimental, isolated Qt Teaching Board candidate; no remote integrations.…, Actual session/store and synthetic commands; no physical-input acceptance., Read exact managed versions only; the session additionally verifies SHA-256., smoke() (+11 more)
 
 ### Community 84 - "Project documentation index"
 Cohesion: 0.50
 Nodes (4): Completion language, Current plans and operating guides, Implementation and historical evidence, Project documentation index
 
 ### Community 85 - "ComposeApp"
-Cohesion: 0.11
-Nodes (4): ComposeApp, sync_worker(), rollback(), ValueError
+Cohesion: 0.09
+Nodes (6): ComposeApp, prepared(), rollback(), A blocked school network should not add a cloud timeout to every later button…, accept_choice(), test_restart_restores_only_one_explicit_undispatched_image_queue()
 
 ### Community 86 - "FocusTracker"
-Cohesion: 0.20
-Nodes (11): FocusTracker, Finds the specific child control with keyboard focus (e.g. Scintilla inside…, Multi-tier document selection extraction: 1. UI Automation TextPattern (Word,…, test_capture_selected_text_extracts_via_text_pattern(), test_capture_selected_text_falls_back_to_chord_ctrl_c(), test_capture_selected_text_falls_back_to_parent(), test_capture_selected_text_falls_back_to_wm_copy_for_scintilla(), test_capture_selected_text_ignores_this_process() (+3 more)
+Cohesion: 0.15
+Nodes (16): FocusTracker, GUITHREADINFO, _key_event(), _key_is_down(), Focus tracking, UI Automation target lock, and multi-tier selection capture for…, Finds the specific child control with keyboard focus (e.g. Scintilla inside…, Synthesizes Ctrl+C while the ESP32 chord is holding Alt/Shift. Keys this method…, Multi-tier document selection extraction: 1. UI Automation TextPattern (Word,… (+8 more)
 
 ### Community 87 - "ProbeState"
 Cohesion: 0.06
@@ -439,6 +454,10 @@ Nodes (4): companionCanPaste, drawButton, getButtonRect, getTouchTarget
 Cohesion: 0.67
 Nodes (3): build(), Build an allowlisted source preview without credentials or private reports., source_files()
 
+### Community 95 - "BoardCandidate"
+Cohesion: 0.06
+Nodes (33): QWidget, BoardCandidate, BoardCanvas, decode_image(), page_from(), PupilWindow, Discovery failures are separate from successful durable lesson saves., One pinned add command, with bytes durable before document publication. (+25 more)
+
 ### Community 96 - "Teaching Board B0 renderer trial"
 Cohesion: 0.50
 Nodes (4): Environment and scope, Executed local checks, Teaching Board B0 renderer trial, What the comparison establishes
@@ -456,8 +475,8 @@ Cohesion: 0.25
 Nodes (8): Durable lessons and transactional undo, Integration, packaging and licence audit, Next decision and later prototype evidence, Pen, touch and ink, Settled needs and unresolved choices, Teacher and pupil windows, Teaching-board renderer options, Three practical routes
 
 ### Community 100 - "Companion development workboard — 25 October 2026"
-Cohesion: 0.29
-Nodes (7): Companion development workboard — 25 October 2026, Decisions already settled, Evidence and acceptance ledger, Open decisions and facts to establish, Starting state and verified delivery, Working method for today's continuation, Workstreams and dependencies
+Cohesion: 0.20
+Nodes (10): Companion development workboard — 25 October 2026, Decisions already settled, Evidence and acceptance ledger, Later participant Teaching Board feedback, Open decisions and facts to establish, Saved-lesson discovery follow-up, Starting state and verified delivery, Teaching Board image insertion follow-up (+2 more)
 
 ### Community 101 - "Teaching Board: agreed design and development plan"
 Cohesion: 0.29
@@ -473,35 +492,35 @@ Nodes (5): Dimension and feature matrix, Enclosure dimension and feature reconci
 
 ### Community 104 - "BoardSession"
 Cohesion: 0.11
-Nodes (25): BoardAuthorityError, BoardMediaError, BoardSession, BoardSessionError, BoardSessionSaveError, Local teacher/pupil authority, atomic presentation and explicit autosave…, Synchronous autosave boundary; token-bound UI timers must reschedule stale…, Return pinned local bytes only; the trusted resolver owns store lookup. The… (+17 more)
+Nodes (26): BoardAuthorityError, BoardMediaError, BoardSession, BoardSessionError, BoardSessionSaveError, Local teacher/pupil authority, atomic presentation and explicit autosave…, Synchronous autosave boundary; token-bound UI timers must reschedule stale…, Return pinned local bytes only; the trusted resolver owns store lookup. The… (+18 more)
 
 ### Community 105 - "test_board_hermes.py"
-Cohesion: 0.14
-Nodes (44): BoardValidationError, apply_result(), BoardConfirmationRequired, BoardProposalError, _manifest(), _nonfinite(), _pairs(), _parse() (+36 more)
+Cohesion: 0.15
+Nodes (43): BoardValidationError, apply_result(), BoardConfirmationRequired, BoardProposalError, _manifest(), _nonfinite(), _pairs(), _parse() (+35 more)
 
-### Community 106 - ".log"
-Cohesion: 0.19
-Nodes (3): A blocked school network should not add a cloud timeout to every later button…, Snapshots the active foreground window HWND and focused UI Automation control., Verifies if the current foreground window and control still match the snapshot.
+### Community 106 - "Bridge"
+Cohesion: 0.23
+Nodes (8): Bridge, forward(), discover(), listening(), main(), open_window(), Discover MCP tools quietly; open the visible CAD app on the first real request., Use a short-lived CLI, never the GUI, to obtain this installation's schemas.
 
 ### Community 107 - "AudioCapture"
 Cohesion: 0.14
 Nodes (7): ndarray, AudioCapture, find_default_wasapi_input_device(), Audio capture module using sounddevice and WASAPI for high-fidelity PC…, Starts recording audio from the PC microphone via WASAPI., Stops recording and returns: (wav_bytes_16khz, duration_seconds, rms_level), Finds the default Windows WASAPI recording device and its native sample rate.
 
 ### Community 108 - "test_image_provider_layout.py"
-Cohesion: 0.24
-Nodes (8): Accessible library-first image UI; background I/O never manipulates Tk., descendants(), parametrize, Native layout and masking at both supported companion window sizes., test_frozen_choice_and_image_actions_fit_nested_media_page(), test_full_companion_device_feedback_and_media_actions_fit(), test_gemini_wait_keeps_ui_responsive_and_records_display_timing(), test_image_settings_masks_key_and_keeps_save_reachable()
+Cohesion: 0.31
+Nodes (7): descendants(), parametrize, Native layout and masking at both supported companion window sizes., test_frozen_choice_and_image_actions_fit_nested_media_page(), test_full_companion_device_feedback_and_media_actions_fit(), test_gemini_wait_keeps_ui_responsive_and_records_display_timing(), test_image_settings_masks_key_and_keeps_save_reachable()
 
 ### Community 109 - "HotkeyState"
 Cohesion: 0.18
 Nodes (6): HotkeyState, One edge dispatcher for the firmware's held keys, used by both companions., test_cached_descriptor_standard_chord_survives_modifier_release(), test_firmware_dual_keys_produce_one_press_and_one_release(), test_unmodified_function_keys_do_not_record(), test_new_keys_coalesce_extended_and_fallback_chords()
 
-### Community 110 - "compose_gui.py"
-Cohesion: 0.29
-Nodes (4): Tk, load_env_config(), ESP32 & Windows Voice Compose & Dictate Companion - Interactive Desktop App…, truthy()
+### Community 110 - ".__init__"
+Cohesion: 0.31
+Nodes (4): Tk, sync_worker(), load_env_config(), truthy()
 
-### Community 111 - "clipboard_manager.py"
-Cohesion: 0.33
-Nodes (6): _Input, _InputUnion, _KeyboardInput, Clipboard manager for Windows with atomic snapshot, paste injection, prior…, Send a checked native Ctrl+V, independently of the pointer position., send_paste_shortcut()
+### Community 111 - "BoardStore"
+Cohesion: 0.16
+Nodes (19): BoardConflictError, BoardStore, BoardStoreError, _nonfinite(), Isolated local Teaching Board autosave with validated previous-checkpoint…, _unique_pairs(), test_copy_rejects_dirty_and_changed_saved_source(), parametrize (+11 more)
 
 ### Community 112 - "Image producers: first offline implementation slice"
 Cohesion: 0.50
@@ -511,25 +530,85 @@ Nodes (4): Changes, Delivery and remaining gates, Image producers: first offline
 Cohesion: 0.50
 Nodes (4): Available teaching actions, Local verification and remaining acceptance, Run and reopen, Teaching Board: isolated B2 desktop candidate
 
+### Community 115 - "copy_saved_lesson"
+Cohesion: 0.08
+Nodes (42): skipif, _atomic_catalogue_write(), _catalogue_key(), _catalogue_script(), copy_saved_lesson(), _directory(), _documents(), _entry_bytes() (+34 more)
+
+### Community 116 - "MediaStore"
+Cohesion: 0.26
+Nodes (15): import_prepared(), Store bytes durably before publishing the document reference. Library…, MediaStore, Store imported images, immutable versions, jobs, and sync metadata locally., test_picker_defaults_canonical_and_allows_exact_older_version(), image_bytes(), Offline import durability/privacy using synthetic images and stores., test_canonical_remains_available_outside_recent_version_limit() (+7 more)
+
+### Community 118 - "test_board_editor_ux.py"
+Cohesion: 0.14
+Nodes (21): app(), editor(), fixture, Live editor and lesson controls using native Qt and synthetic input only., selected_object(), test_catalogue_failure_reports_saved_data_separately(), test_close_flushes_live_text_to_saved_lesson(), test_copy_failure_keeps_source_active() (+13 more)
+
+### Community 120 - "ValueError"
+Cohesion: 0.26
+Nodes (8): PreparedImage, Explicit, offline image imports into a lesson-owned immutable media store.…, Recheck the displayed immutable record before reading its bounded blob., read_image(), safe_path(), SavedImageLibrary, test_missing_library_is_not_created(), ValueError
+
+### Community 121 - "clipboard_manager.py"
+Cohesion: 0.33
+Nodes (6): _Input, _InputUnion, _KeyboardInput, Clipboard manager for Windows with atomic snapshot, paste injection, prior…, Send a checked native Ctrl+V, independently of the pointer position., send_paste_shortcut()
+
+### Community 122 - "SolidCraft enclosure workspace"
+Cohesion: 0.33
+Nodes (5): Make a small edit, MCP connection, SolidCraft enclosure workspace, Still unverified, Verified locally
+
+### Community 123 - ".import_bytes"
+Cohesion: 0.20
+Nodes (4): RuntimeError, Path, Create a verified, self-contained local backup without overwriting a prior one., Restore a verified backup into a new data directory, preserving any existing…
+
+### Community 124 - "test_board_image_insertion.py"
+Cohesion: 0.17
+Nodes (15): Teacher-only offline image chooser with an explicit preview before insertion., prepare_file(), app(), editor(), prepared_file(), fixture, Native Qt image picker/editor tests, with synthetic local input only., test_add_image_button_accepts_one_prepared_choice() (+7 more)
+
+### Community 128 - "test_board_image_acceptance.py"
+Cohesion: 0.36
+Nodes (8): app(), editor(), image_object(), png(), fixture, Independent synthetic lesson lifecycle checks for the requested image workflow., test_fresh_local_image_mouse_numeric_resize_and_process_restart(), test_library_version_survives_source_loss_undo_reopen_and_independent_copy()
+
+### Community 129 - "Teaching Board manual feedback — 25 October 2026"
+Cohesion: 0.29
+Nodes (7): Confirmed design decisions, Current saving semantics and open gates, Implemented candidate and next participant retest, Independent copy backend — local engineering evidence, Requested changes, Results reported by the user, Teaching Board manual feedback — 25 October 2026
+
+### Community 132 - "Portrait UI — Flash & Revert Guide"
+Cohesion: 0.40
+Nodes (5): 1. Flash legacy landscape env, 2. Emergency: flash archived golden binaries (no rebuild), Flash portrait (default), Portrait UI — Flash & Revert Guide, Revert to landscape (cheapest first)
+
+### Community 133 - "ImageProvider"
+Cohesion: 0.40
+Nodes (3): Protocol, ImageProvider, Path
+
+### Community 134 - "Teaching Board image insertion — 25 October 2026"
+Cohesion: 0.50
+Nodes (4): Persistence and editing boundaries, Teacher workflow, Teaching Board image insertion — 25 October 2026, Verification and remaining acceptance
+
+### Community 135 - "Teaching Board saved-lesson discovery — 25 October 2026"
+Cohesion: 0.50
+Nodes (4): Reproduction and cause, Resulting behaviour, Teaching Board saved-lesson discovery — 25 October 2026, Verification and remaining acceptance
+
+### Community 136 - "Windows Compose and Dictate repair — 17 October 2026"
+Cohesion: 0.50
+Nodes (4): Everyday use, Repairs, Verification, Windows Compose and Dictate repair — 17 October 2026
+
 ## Knowledge Gaps
-- **394 isolated node(s):** `Outcome and fixed decisions`, `Current implementation and verification limits`, `Architecture and ownership`, `Teacher workflow`, `Ordered delivery backlog` (+389 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 783 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **16 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **413 isolated node(s):** `Make a small edit`, `MCP connection`, `Verified locally`, `Still unverified`, `_InputUnion` (+408 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 851 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `MediaStore` connect `MediaStore` to `.generate`, `test_image_provider_routing.py`, `test_device_feedback.py`, `test_gemini_images.py`, `test_image_provider_layout.py`, `compose_gui.py`, `test_media_providers.py`, `BoardCandidate`, `HermesPanel`, `MediaService`?**
-  _High betweenness centrality (0.083) - this node is a cross-community bridge._
-- **Why does `ComposeApp` connect `ComposeApp` to `test_compose.py`, `MediaPanel`, `.log`, `AudioCapture`, `test_image_provider_layout.py`, `HotkeyState`, `compose_gui.py`, `HermesPanel`?**
-  _High betweenness centrality (0.052) - this node is a cross-community bridge._
-- **Why does `BoardSession` connect `BoardSession` to `test_board_hermes.py`, `BoardCandidate`?**
-  _High betweenness centrality (0.036) - this node is a cross-community bridge._
+- **Why does `MediaStore` connect `MediaStore` to `test_board_image_acceptance.py`, `test_image_provider_routing.py`, `._connect`, `test_gemini_images.py`, `test_image_workflow_two_desktops_and_offline_cache_without_history_sync`, `test_image_provider_layout.py`, `.__init__`, `HermesPanel`, `copy_saved_lesson`, `board_candidate.py`, `ComposeApp`, `test_board_editor_ux.py`, `BoardModel`, `.import_bytes`, `test_board_image_insertion.py`, `MediaService`, `BoardCandidate`?**
+  _High betweenness centrality (0.077) - this node is a cross-community bridge._
+- **Why does `ComposeApp` connect `ComposeApp` to `test_compose.py`, `MediaPanel`, `AudioCapture`, `test_image_provider_layout.py`, `HotkeyState`, `.__init__`, `HermesPanel`, `.log`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+- **Why does `BoardSession` connect `BoardSession` to `test_board_image_acceptance.py`, `test_board_hermes.py`, `BoardStore`, `copy_saved_lesson`, `board_candidate.py`, `test_board_editor_ux.py`, `BoardModel`, `test_board_image_insertion.py`, `BoardCandidate`?**
+  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+- **Are the 29 inferred relationships involving `MediaStore` (e.g. with `.insert_prepared_image()` and `main()`) actually correct?**
+  _`MediaStore` has 29 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 16 inferred relationships involving `BoardSession` (e.g. with `BoardCandidate` and `copy_saved_lesson()`) actually correct?**
+  _`BoardSession` has 16 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 9 inferred relationships involving `BoardModel` (e.g. with `_review()` and `copy_saved_lesson()`) actually correct?**
+  _`BoardModel` has 9 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 6 inferred relationships involving `ComposeApp` (e.g. with `HermesPanel` and `MediaPanel`) actually correct?**
   _`ComposeApp` has 6 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 12 inferred relationships involving `MediaStore` (e.g. with `main()` and `.__init__()`) actually correct?**
-  _`MediaStore` has 12 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 4 inferred relationships involving `BoardSession` (e.g. with `BoardCandidate` and `candidate()`) actually correct?**
-  _`BoardSession` has 4 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 8 inferred relationships involving `BoardModel` (e.g. with `demo_model()` and `main()`) actually correct?**
-  _`BoardModel` has 8 INFERRED edges - model-reasoned connections that need verification._

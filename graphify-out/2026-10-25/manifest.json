@@ -1140,9 +1140,9 @@
     "semantic_hash": ""
   },
   "docs/2026-10-21-companion-media-agent-master-plan.md": {
-    "mtime": 1792898489.1814654,
-    "seen": 1792898526.0621572,
-    "ast_hash": "a4e35cbf3f8062384d41602e9ca47006",
+    "mtime": 1792916048.4994414,
+    "seen": 1792917223.066704,
+    "ast_hash": "863abfc6ee79a976699962583e417a4f",
     "semantic_hash": ""
   },
   "docs/2026-10-21-embedded-companion-assistant-design.md": {
@@ -1194,9 +1194,9 @@
     "semantic_hash": ""
   },
   "docs/README.md": {
-    "mtime": 1792844841.7909586,
-    "seen": 1792844974.1173346,
-    "ast_hash": "b06d83a4f35ac13bf35bc9989143e82a",
+    "mtime": 1792915809.7299724,
+    "seen": 1792917223.066724,
+    "ast_hash": "f38b66b69c76e837a9b7bc0a2e4e229a",
     "semantic_hash": ""
   },
   "docs/board-upload-safety.md": {
@@ -1410,15 +1410,15 @@
     "semantic_hash": ""
   },
   "tools/cad/solidcraft_mcp_launcher.py": {
-    "mtime": 1792849163.3101442,
-    "seen": 1792898526.0620406,
-    "ast_hash": "8bf0198163a7366335cdd7d3a5e5810a",
+    "mtime": 1792903556.4945538,
+    "seen": 1792917223.0666275,
+    "ast_hash": "7a269e7027fb73d2542bc80d8876febe",
     "semantic_hash": ""
   },
   "tools/compose/board_model.py": {
-    "mtime": 1792898134.4961672,
-    "seen": 1792898526.0620475,
-    "ast_hash": "a74325cd0bdfd7481e165a32afe9bef0",
+    "mtime": 1792905907.2091498,
+    "seen": 1792917223.0666373,
+    "ast_hash": "cec01db8eedab24926319dab6363adb5",
     "semantic_hash": ""
   },
   "tools/compose/board_store.py": {
@@ -1482,9 +1482,9 @@
     "semantic_hash": ""
   },
   "docs/2026-10-25-development-workboard.md": {
-    "mtime": 1792898489.1794648,
-    "seen": 1792898526.0621746,
-    "ast_hash": "96b8dfd1dfbe37b6f8bea8afa89c9062",
+    "mtime": 1792916048.497442,
+    "seen": 1792917223.0667145,
+    "ast_hash": "e0cffa269f337bf210f4b78667497411",
     "semantic_hash": ""
   },
   "docs/2026-10-25-hermes-readiness.md": {
@@ -1494,9 +1494,9 @@
     "semantic_hash": ""
   },
   "docs/2026-10-25-teaching-board-design.md": {
-    "mtime": 1792898489.180465,
-    "seen": 1792898526.062176,
-    "ast_hash": "55a702292914a05d0963d6e8cd955b8f",
+    "mtime": 1792915784.4409115,
+    "seen": 1792917223.0667167,
+    "ast_hash": "9bace54986d987e08e796d13a49aa4d9",
     "semantic_hash": ""
   },
   "docs/2026-10-25-teaching-board-renderer-trial.md": {
@@ -1512,9 +1512,9 @@
     "semantic_hash": ""
   },
   "docs/dimensions/solidcraft/README.md": {
-    "mtime": 1792849406.3045964,
-    "seen": 1792898526.0621924,
-    "ast_hash": "92fac4765071ddcb143b94d8a41e66ef",
+    "mtime": 1792903558.722169,
+    "seen": 1792917223.0667284,
+    "ast_hash": "426f7c669ad17abe6b2e8629416a4674",
     "semantic_hash": ""
   },
   "docs/research/2026-10-25-teaching-board-renderer-options.md": {
@@ -1551,6 +1551,138 @@
     "mtime": 1792849314.24672,
     "seen": 1792898526.0622663,
     "ast_hash": "d7216789c6b4eb0eca1a04e294b26ed8",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_candidate.py": {
+    "mtime": 1792915843.039157,
+    "seen": 1792917223.0666337,
+    "ast_hash": "c2b53a5fa21904a623951c6ac8cbe2a5",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_hermes.py": {
+    "mtime": 1792899461.1747916,
+    "seen": 1792899572.5318093,
+    "ast_hash": "10c917f93247a46db9794f928cd682f5",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_session.py": {
+    "mtime": 1792905907.210149,
+    "seen": 1792917223.0666387,
+    "ast_hash": "d8208a4948d50404c99438a6860761f8",
+    "semantic_hash": ""
+  },
+  "tools/compose/run_teaching_board_candidate.ps1": {
+    "mtime": 1792899108.277966,
+    "seen": 1792899572.5318336,
+    "ast_hash": "e6efa2e2fdb54ac4b845aa34c0c6d435",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_candidate.py": {
+    "mtime": 1792906125.5838,
+    "seen": 1792917223.0666666,
+    "ast_hash": "5f8d4b838f405e3773a3fa7544316f6f",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_hermes.py": {
+    "mtime": 1792899461.1747916,
+    "seen": 1792899572.5318382,
+    "ast_hash": "b48033f8d63cd96ed35210746272ba20",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_session.py": {
+    "mtime": 1792898924.7941983,
+    "seen": 1792899572.5318394,
+    "ast_hash": "1945c49347447c460c44bd56331f3b59",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-teaching-board-candidate.md": {
+    "mtime": 1792916048.4984424,
+    "seen": 1792917223.0667162,
+    "ast_hash": "d7eecff32ec39ab77108375057136526",
+    "semantic_hash": ""
+  },
+  "tools/cad/test_solidcraft_mcp_launcher.py": {
+    "mtime": 1792903556.495559,
+    "seen": 1792917223.0666294,
+    "ast_hash": "5f7245cd627f2246e0a70a55ff953a1a",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_image_picker.py": {
+    "mtime": 1792915958.7968917,
+    "seen": 1792917223.0666354,
+    "ast_hash": "34fb190d3336633fbb6adbd5cf3c3a3c",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_images.py": {
+    "mtime": 1792915958.7968917,
+    "seen": 1792917223.0666358,
+    "ast_hash": "bd8ef6a62835ed6083d5bdae1d118c9e",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_lessons.py": {
+    "mtime": 1792910170.0171597,
+    "seen": 1792917223.0666366,
+    "ast_hash": "9565a18bde8bc96bd5a7ca8cc3705294",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_resize.py": {
+    "mtime": 1792905834.1250293,
+    "seen": 1792917223.0666378,
+    "ast_hash": "44f3c1548729aea6ca1d11fe93018713",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_editor_ux.py": {
+    "mtime": 1792910242.48865,
+    "seen": 1792917223.0666673,
+    "ast_hash": "5d6f8604b072f37947b471583d94279f",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_image_acceptance.py": {
+    "mtime": 1792915797.0449917,
+    "seen": 1792917223.0666685,
+    "ast_hash": "202d826d74be3c68b56f6eb44d6a87a3",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_image_insertion.py": {
+    "mtime": 1792915843.0431547,
+    "seen": 1792917223.0666692,
+    "ast_hash": "f1ac3177010ab420ad3c9784f50f5d33",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_images.py": {
+    "mtime": 1792915958.7978911,
+    "seen": 1792917223.06667,
+    "ast_hash": "ed5f89c9775252daab2076e1e66a3b48",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_lessons.py": {
+    "mtime": 1792910367.492034,
+    "seen": 1792917223.0666704,
+    "ast_hash": "54f8946c42f3c8a832eeef92d507a531",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_resize.py": {
+    "mtime": 1792906077.4787133,
+    "seen": 1792917223.0666716,
+    "ast_hash": "40baedc55b58f31ea8266cb2f43d4510",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-teaching-board-image-insertion.md": {
+    "mtime": 1792916030.3584175,
+    "seen": 1792917223.0667171,
+    "ast_hash": "7c5a8af7e33428d4f3fe6b828ab5ee83",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-teaching-board-manual-feedback.md": {
+    "mtime": 1792910455.6833093,
+    "seen": 1792917223.0667176,
+    "ast_hash": "067f30012960894ea59d8925063a45a2",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-teaching-board-saved-lessons-fix.md": {
+    "mtime": 1792910543.0508966,
+    "seen": 1792917223.066719,
+    "ast_hash": "ccef82a25663b2097a64290feecd4e9e",
     "semantic_hash": ""
   }
 }

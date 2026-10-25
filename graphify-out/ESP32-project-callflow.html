@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>ESP32 project — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 2068 nodes, 4173 edges, 115 communities. Commit: 81b8eac</p>
+<p class="subtitle">Generated from graphify knowledge graph: 2320 nodes, 4903 edges, 135 communities. Commit: bcf6037</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -70,11 +70,11 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#cli-skills">CLI &amp; Skill Installers</a>
     <a href="#ingest-cache-update">Ingestion &amp; Updates</a>
     <a href="#serve-api">Serving API</a>
-    <a href="#security-global">Security &amp; Global Graph</a>
     <a href="#tests-fixtures">Tests &amp; Fixtures</a>
     <a href="#network-manager-cpp">network_manager.cpp</a>
     <a href="#environmentmanager">EnvironmentManager</a>
     <a href="#mediapanel">MediaPanel</a>
+    <a href="#connect">._connect</a>
     <a href="#macropadgui">MacroPadGUI</a>
     <a href="#esp32-windows-compose-dictate-companion-architec">ESP32 &amp; Windows Compose / Dictate Companion: Architecture &amp; Implementation Plan</a>
     <a href="#gui-cpp">gui.cpp</a>
@@ -88,21 +88,19 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>183 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>182 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>1 nodes</small>")
+    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>15 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
     OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>49 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
-    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>166 nodes</small>")
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>162 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>132 nodes</small>")
+    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>102 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
-    SERVE_API_35EC8E86("Serving API<br/><small>117 nodes</small>")
+    SERVE_API_35EC8E86("Serving API<br/><small>148 nodes</small>")
     class SERVE_API_35EC8E86 module;
-    SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>10 nodes</small>")
-    class SECURITY_GLOBAL_5B9C6A04 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>874 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>1055 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     NETWORK_MANAGER_CPP_3D6026FC("network_manager.cpp<br/><small>55 nodes</small>")
     class NETWORK_MANAGER_CPP_3D6026FC module;
@@ -110,26 +108,28 @@ flowchart LR
     class ENVIRONMENTMANAGER_5897C7D1 module;
     MEDIAPANEL_139E612D("MediaPanel<br/><small>40 nodes</small>")
     class MEDIAPANEL_139E612D module;
+    CONNECT_F11A107F("._connect<br/><small>40 nodes</small>")
+    class CONNECT_F11A107F module;
     MACROPADGUI_41F3827F("MacroPadGUI<br/><small>28 nodes</small>")
     class MACROPADGUI_41F3827F module;
     ESP32_WINDOWS_COMPOSE_DICTATE_COMPANION_ARCHITEC_16DAF23C("ESP32 &amp; Windows Compose / Dictate Companion: Architecture &amp; Implementation Plan<br/><small>28 nodes</small>")
     class ESP32_WINDOWS_COMPOSE_DICTATE_COMPANION_ARCHITEC_16DAF23C module;
     GUI_CPP_EB7BCAF2("gui.cpp<br/><small>24 nodes</small>")
     class GUI_CPP_EB7BCAF2 module;
-    OTHER_D0941E68("Other<br/><small>318 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>349 nodes</small>")
     class OTHER_D0941E68 module;
-    INGEST_CACHE_UPDATE_FF457338 -->|method x42| OTHER_D0941E68
-    OTHER_D0941E68 -->|calls x32| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|method x41| CONNECT_F11A107F
+    TESTS_FIXTURES_B84B1DCC -->|calls x33| OTHER_D0941E68
+    TESTS_FIXTURES_B84B1DCC -->|method x31| SERVE_API_35EC8E86
     MACROPADGUI_41F3827F -->|defines x28| OTHER_D0941E68
     GUI_CPP_EB7BCAF2 -->|contains x24| OTHER_D0941E68
+    SERVE_API_35EC8E86 -->|calls x22| TESTS_FIXTURES_B84B1DCC
     MACROPADGUI_41F3827F -->|defines x20| GUI_CPP_EB7BCAF2
-    CLI_SKILLS_9964CBB8 -->|contains x19| OTHER_D0941E68
-    TESTS_FIXTURES_B84B1DCC -->|imports x17| OTHER_D0941E68
-    SERVE_API_35EC8E86 -->|calls x15| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|calls x15| INGEST_CACHE_UPDATE_FF457338
-    OTHER_D0941E68 -->|calls x12| INGEST_CACHE_UPDATE_FF457338
-    INGEST_CACHE_UPDATE_FF457338 -->|contains x11| SERVE_API_35EC8E86
-    TESTS_FIXTURES_B84B1DCC -->|method x10| SECURITY_GLOBAL_5B9C6A04
+    INGEST_CACHE_UPDATE_FF457338 -->|contains x18| OTHER_D0941E68
+    CLI_SKILLS_9964CBB8 -->|contains x16| OTHER_D0941E68
+    OTHER_D0941E68 -->|calls x15| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|method x14| ANALYSIS_CLUSTERING_C79796DA
+    ANALYSIS_CLUSTERING_C79796DA -->|calls x14| CONNECT_F11A107F
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,36 +146,36 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Graph Build</td><td>183</td><td><code>10, 31, 34, 41, 8, 42, 92, 24, 25, 26, 27</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>1</td><td><code>75</code></td></tr><tr><td>Outputs &amp; Docs</td><td>49</td><td><code>32, 54, 84</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>166</td><td><code>5, 38, 77, 47, 79, 30, 23</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>132</td><td><code>3, 85, 1, 107, 17, 89</code></td></tr><tr><td>Serving API</td><td>117</td><td><code>6, 7, 43, 57, 49, 88, 71</code></td></tr><tr><td>Security &amp; Global Graph</td><td>10</td><td><code>66</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>874</td><td><code>58, 83, 70, 82, 87, 104, 22, 73, 105, 65, 15, 72, 68, 50, 60, 63, 61, 64, 86, 59, 108, 109, 97, 74, 28</code></td></tr><tr><td>network_manager.cpp</td><td>55</td><td><code>4</code></td></tr><tr><td>EnvironmentManager</td><td>43</td><td><code>2</code></td></tr><tr><td>MediaPanel</td><td>40</td><td><code>40</code></td></tr><tr><td>MacroPadGUI</td><td>28</td><td><code>0</code></td></tr><tr><td>ESP32 &amp; Windows Compose / Dictate Companion: Architecture &amp; Implementation Plan</td><td>28</td><td><code>39</code></td></tr><tr><td>gui.cpp</td><td>24</td><td><code>35</code></td></tr><tr><td>Other</td><td>318</td><td><code>106, 53, 56, 67, 36, 90, 16, 37, 44, 45, 78, 95, 110, 48, 9, 99, 100, 101, 111, 51, 102, 103, 33, 46, 52, 76, 81, 98, 112, 113, 55, 91, 96, 11, 12, 13, 20, 21, 114, 14, 18, 19, 29, 62, 69, 80, 93, 94</code></td></tr>
+      <tr><td>Graph Build</td><td>182</td><td><code>10, 31, 34, 41, 42, 8, 92, 24, 25, 26, 27</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>15</td><td><code>123, 75</code></td></tr><tr><td>Outputs &amp; Docs</td><td>49</td><td><code>32, 54, 84</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>162</td><td><code>5, 38, 47, 77, 79, 30, 23</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>102</td><td><code>3, 1, 107, 17, 89</code></td></tr><tr><td>Serving API</td><td>148</td><td><code>6, 7, 43, 106, 127, 57, 49, 88, 71</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>1055</td><td><code>95, 82, 58, 87, 104, 22, 115, 73, 105, 68, 65, 15, 85, 111, 83, 72, 118, 50, 60, 86, 63, 124, 116, 64, 120, 61, 59, 74, 109, 108, 119, 128, 97, 131, 28</code></td></tr><tr><td>network_manager.cpp</td><td>55</td><td><code>4</code></td></tr><tr><td>EnvironmentManager</td><td>43</td><td><code>2</code></td></tr><tr><td>MediaPanel</td><td>40</td><td><code>40</code></td></tr><tr><td>._connect</td><td>40</td><td><code>70</code></td></tr><tr><td>MacroPadGUI</td><td>28</td><td><code>0</code></td></tr><tr><td>ESP32 &amp; Windows Compose / Dictate Companion: Architecture &amp; Implementation Plan</td><td>28</td><td><code>39</code></td></tr><tr><td>gui.cpp</td><td>24</td><td><code>35</code></td></tr><tr><td>Other</td><td>349</td><td><code>53, 56, 67, 36, 90, 16, 37, 44, 117, 126, 45, 78, 100, 110, 48, 9, 99, 101, 121, 129, 51, 102, 103, 122, 33, 46, 52, 76, 81, 132, 133, 98, 112, 113, 134, 135, 136, 55, 91, 96, 11, 66, 12, 13, 20, 21, 114, 14, 18, 19, 29, 62, 69, 80, 93, 94</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Analysis &amp; Clustering -&gt; Graph Build -&gt; CLI &amp; Skill Installers -&gt; Other -&gt; Tests &amp; Fixtures -&gt; Ingestion &amp; Updates -&gt; Serving API</div>
+    <div class="arrow-chain">network_manager.cpp -&gt; EnvironmentManager -&gt; Graph Build -&gt; Other -&gt; Tests &amp; Fixtures -&gt; ._connect -&gt; Analysis &amp; Clustering</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>2068 nodes · 4173 edges · 115 communities (90 shown, 16 thin omitted)</li>
-      <li>Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 361 edges (avg confidence: 0.88)</li>
+      <li>2320 nodes · 4903 edges · 135 communities (105 shown, 20 thin omitted)</li>
+      <li>Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 436 edges (avg confidence: 0.88)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `MacroPadGUI` - 76 edges</li>
-      <li>2. `ComposeApp` - 59 edges</li>
-      <li>3. `MediaStore` - 54 edges</li>
+      <li>2. `MediaStore` - 71 edges</li>
+      <li>3. `BoardSession` - 68 edges</li>
     </ul>
   </div>
 </div>
 <hr>
 <!-- ====== 2. Graph Build ====== -->
 <h2 id="build-graph">2. Graph Build</h2>
-<p>Graph Build groups implementation around llm, bench, pathspy, case, mostly in server/bench_llm_paths.py, generate_case_battery.py, generate_case_battery_only.py. This section covers 183 nodes and 345 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around llm, bench, pathspy, case, mostly in server/bench_llm_paths.py, generate_case_battery.py, generate_case_battery_only.py. This section covers 182 nodes and 356 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (183 nodes, 345 edges)
+    %% Section: Graph Build (182 nodes, 356 edges)
     subgraph build_graph_server_bench_llm_paths_py_e9283dad["server/bench_llm_paths.py"]
         server_bench_llm_paths_main_c81d6f76("main()<br/><small>server/bench_llm_paths.py</small>")
         server_bench_llm_paths_build_adapters_822f5e4f("build_adapters()<br/><small>server/bench_llm_paths.py</small>")
@@ -215,7 +215,7 @@ flowchart LR
     server_bench_llm_paths_main_c81d6f76 -->|calls| server_bench_llm_paths_build_adapters_822f5e4f
     generate_case_battery_create_enclosure_3f70d94a -->|calls| generate_case_battery_build_case_bottom_b81ddba7
     generate_case_battery_only_create_enclosure_b76819c7 -->|calls| generate_case_battery_only_build_case_bottom_358556af
-    %% Omitted for readability: 165 nodes, 0 edges
+    %% Omitted for readability: 164 nodes, 0 edges
     class server_bench_llm_paths_main_c81d6f76 function;
     class server_bench_llm_paths_build_adapters_822f5e4f function;
     class server_bench_llm_paths_adapter_9c13db57 klass;
@@ -507,27 +507,72 @@ flowchart LR
 <tr><td><code>generate_case_battery_only.py</code></td><td>27 nodes</td></tr>
 <tr><td><code>docs/build-guide.md</code></td><td>20 nodes</td></tr>
 <tr><td><code>README.md</code></td><td>15 nodes</td></tr>
-<tr><td><code>docs/PORTRAIT_UI.md</code></td><td>6 nodes</td></tr>
-<tr><td><code>docs/Compose_Dictate_Repair_2026-10-17.md</code></td><td>5 nodes</td></tr>
 <tr><td><code>tools/build_companion_preview.py</code></td><td>4 nodes</td></tr>
+<tr><td><code>.agents/workflows/graph-query.md</code></td><td>3 nodes</td></tr>
+<tr><td><code>.agents/workflows/graph-update.md</code></td><td>3 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x158, contains x137, method x25, references x16. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x158, contains x128, references x36, method x25. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 3. Analysis & Clustering ====== -->
 <h2 id="analysis-clustering">3. Analysis &amp; Clustering</h2>
-<p>Analysis &amp; Clustering groups implementation around path, mostly in unmapped files. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Analysis &amp; Clustering groups implementation around tools, compose, media, storepy, mostly in tools/compose/media_store.py. This section covers 15 nodes and 18 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Analysis &amp; Clustering (1 nodes, 0 edges)
-    tools_compose_gemini_images_py_path_97ccdb7b("Path")
+    %% Section: Analysis &amp; Clustering (15 nodes, 18 edges)
+    subgraph analysis_clustering_tools_compose_media_store_py_7b0846f7["tools/compose/media_store.py"]
+        tools_compose_media_store_mediastore_export_back_69c09cd1("export_backup()<br/><small>tools/compose/media_store.py</small>")
+        tools_compose_media_store_mediastore_import_imag_aa6331bb("import_image()<br/><small>tools/compose/media_store.py</small>")
+        tools_compose_media_store_mediastore_init_4961d479("__init__()<br/><small>tools/compose/media_store.py</small>")
+        tools_compose_media_store_mediastore_restore_bac_c9ebe05d("restore_backup()<br/><small>tools/compose/media_store.py</small>")
+        tools_compose_media_store_mediastore_import_byte_5555ab9c("import_bytes()<br/><small>tools/compose/media_store.py</small>")
+        tools_compose_media_store_mediastore_add_generat_85b6da1b("add_generated()<br/><small>tools/compose/media_store.py</small>")
+        tools_compose_media_store_mediastore_verify_back_7ec2bd79("_verify_backup()<br/><small>tools/compose/media_store.py</small>")
+        tools_compose_media_store_mediastore_blob_path_c6dc2076("blob_path()<br/><small>tools/compose/media_store.py</small>")
+        tools_compose_media_store_mediastore_initialise_0e37216c("_initialise()<br/><small>tools/compose/media_store.py</small>")
+        tools_compose_media_store_mediastore_initialise_bc23e66b("add_columns()<br/><small>tools/compose/media_store.py</small>")
+        tools_compose_media_store_rationale_779_69c90683("Create a verified, self-contained local...<br/><small>tools/compose/media_store.py</small>")
+        tools_compose_media_store_rationale_803_c4aa4e63("Restore a verified backup into a new da...<br/><small>tools/compose/media_store.py</small>")
+    end
+    subgraph analysis_clustering_External_generated_9ee0240b["External / generated"]
+        tools_compose_media_store_py_path_15b35580("Path")
+        runtimeerror_3405df88("RuntimeError")
+        tools_compose_gemini_images_py_path_97ccdb7b("Path")
+    end
+    tools_compose_media_store_mediastore_add_generat_85b6da1b -->|calls| tools_compose_media_store_mediastore_import_byte_5555ab9c
+    tools_compose_media_store_mediastore_export_back_69c09cd1 -->|calls| tools_compose_media_store_py_path_15b35580
+    tools_compose_media_store_mediastore_export_back_69c09cd1 -->|calls| tools_compose_media_store_mediastore_verify_back_7ec2bd79
+    tools_compose_media_store_mediastore_import_byte_5555ab9c -->|calls| tools_compose_media_store_mediastore_blob_path_c6dc2076
+    tools_compose_media_store_mediastore_import_byte_5555ab9c -->|calls| tools_compose_media_store_py_path_15b35580
+    tools_compose_media_store_mediastore_import_imag_aa6331bb -->|calls| tools_compose_media_store_py_path_15b35580
+    tools_compose_media_store_mediastore_import_imag_aa6331bb -->|calls| tools_compose_media_store_mediastore_import_byte_5555ab9c
+    tools_compose_media_store_mediastore_init_4961d479 -->|calls| tools_compose_media_store_py_path_15b35580
+    tools_compose_media_store_mediastore_init_4961d479 -->|calls| tools_compose_media_store_mediastore_initialise_0e37216c
+    tools_compose_media_store_mediastore_restore_bac_c9ebe05d -->|calls| tools_compose_media_store_py_path_15b35580
+    tools_compose_media_store_mediastore_restore_bac_c9ebe05d -->|calls| tools_compose_media_store_mediastore_verify_back_7ec2bd79
+    tools_compose_media_store_mediastore_import_byte_5555ab9c -->|calls| runtimeerror_3405df88
+    tools_compose_media_store_mediastore_initialise_0e37216c -->|calls| runtimeerror_3405df88
+    class tools_compose_media_store_mediastore_export_back_69c09cd1 function;
+    class tools_compose_media_store_mediastore_import_imag_aa6331bb function;
+    class tools_compose_media_store_mediastore_init_4961d479 function;
+    class tools_compose_media_store_mediastore_restore_bac_c9ebe05d ui;
+    class tools_compose_media_store_mediastore_import_byte_5555ab9c function;
+    class tools_compose_media_store_mediastore_add_generat_85b6da1b function;
+    class tools_compose_media_store_mediastore_verify_back_7ec2bd79 function;
+    class tools_compose_media_store_mediastore_blob_path_c6dc2076 function;
+    class tools_compose_media_store_mediastore_initialise_0e37216c function;
+    class tools_compose_media_store_mediastore_initialise_bc23e66b function;
+    class tools_compose_media_store_rationale_779_69c90683 concept;
+    class tools_compose_media_store_rationale_803_c4aa4e63 concept;
+    class tools_compose_media_store_py_path_15b35580 klass;
+    class runtimeerror_3405df88 klass;
     class tools_compose_gemini_images_py_path_97ccdb7b klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -552,6 +597,118 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
+  <td><code>.add_generated()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>import_bytes()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.add_generated() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>.blob_path()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>import_bytes()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.blob_path() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>.export_backup()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_verify_backup()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>Path</code></td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>.import_bytes()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>add_generated()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>import_image()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_inspect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_json()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+10 more</td>
+  <td>.import_bytes() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>.import_image()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>import_bytes()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>Path</code></td>
+  <td>.import_image() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>.__init__()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_initialise()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>Path</code></td>
+  <td>.__init__() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>._initialise()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>RuntimeError</code></td>
+  <td>._initialise() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>add_columns()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>add_columns() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>.restore_backup()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>without history sync()</code><br><small style="color:var(--muted)">compose/tests/test_media_end_to_end.py</small></td>
+  <td><code>_verify_backup()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>Path</code></td>
+  <td>.restore_backup() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>._verify_backup()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>export_backup()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>restore_backup()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>._verify_backup() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>RuntimeError</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>_initialise()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_queue_library_text()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>copy_saved_lesson()</code><br><small style="color:var(--muted)">tools/compose/board_lessons.py</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>RuntimeError node in project.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Path</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>export_backup()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>import_bytes()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>Path node in project.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Create a verified, self-contained local backup without overwriting a prior one.</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Create a verified, self-contained local backup without overwriting a prior one..</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Restore a verified backup into a new data directory, preserving any existing…</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Restore a verified backup into a new data directory, preserving any existing….</td>
+</tr>
+<tr>
+  <td>15</td>
   <td><code>Path</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -565,12 +722,12 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td colspan="2">No source file mapping</td></tr>
+      <tr><td><code>tools/compose/media_store.py</code></td><td>12 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: No high-confidence call edges detected. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x13, references x2, explains x2, contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -921,12 +1078,12 @@ flowchart LR
 
 <!-- ====== 5. CLI & Skill Installers ====== -->
 <h2 id="cli-skills">5. CLI &amp; Skill Installers</h2>
-<p>CLI &amp; Skill Installers groups implementation around docs, companion, planmd, classroom, mostly in docs/ESP32_Classroom_Companion_OneNote_Automation_Plan.md, src/compose_gesture.h, src/sd_card.h. This section covers 166 nodes and 235 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>CLI &amp; Skill Installers groups implementation around docs, companion, planmd, classroom, mostly in docs/ESP32_Classroom_Companion_OneNote_Automation_Plan.md, src/compose_gesture.h, src/sd_card.h. This section covers 162 nodes and 223 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: CLI &amp; Skill Installers (166 nodes, 235 edges)
+    %% Section: CLI &amp; Skill Installers (162 nodes, 223 edges)
     subgraph cli_skills_server_hermes_voice_receiver_py_b7c07841["server/hermes_voice_receiver.py"]
         server_hermes_voice_receiver_answer_agent_lane_b73b6c2f("answer_agent_lane()<br/><small>server/hermes_voice_receiver.py</small>")
         server_hermes_voice_receiver_answer_fast_lane_9870dbfe("answer_fast_lane()<br/><small>server/hermes_voice_receiver.py</small>")
@@ -974,7 +1131,7 @@ flowchart LR
     src_main_loop_b54b6114 -->|calls| src_main_setledcolor_32443aca
     src_main_setup_d8061760 -->|calls| src_main_setledcolor_32443aca
     src_main_loop_b54b6114 -->|calls| src_sd_card_sdcardformat_daae5edc
-    %% Omitted for readability: 148 nodes, 0 edges
+    %% Omitted for readability: 144 nodes, 0 edges
     class server_hermes_voice_receiver_answer_agent_lane_b73b6c2f function;
     class server_hermes_voice_receiver_answer_fast_lane_9870dbfe function;
     class server_hermes_voice_receiver_hermes_reachable_e7cfcf88 function;
@@ -1273,19 +1430,19 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x98, references x62, calls x44, defines x19. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x98, references x50, calls x44, defines x19. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 6. Ingestion & Updates ====== -->
 <h2 id="ingest-cache-update">6. Ingestion &amp; Updates</h2>
-<p>Ingestion &amp; Updates groups implementation around compose, audio, recorderh, tools, mostly in src/audio_recorder.h, tools/compose/compose_gui.py, server/hermes_voice_receiver.py. This section covers 132 nodes and 173 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Ingestion &amp; Updates groups implementation around audio, recorderh, hermes, voice, mostly in src/audio_recorder.h, server/hermes_voice_receiver.py, GEMINI.md. This section covers 102 nodes and 123 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Ingestion &amp; Updates (132 nodes, 173 edges)
+    %% Section: Ingestion &amp; Updates (102 nodes, 123 edges)
     subgraph ingest_cache_update_src_audio_recorder_h_ad2e6707["src/audio_recorder.h"]
         src_audio_recorder_audiorecorder_b4022ebd("AudioRecorder<br/><small>src/audio_recorder.h</small>")
         src_audio_recorder_channelstats_b437c15e("ChannelStats<br/><small>src/audio_recorder.h</small>")
@@ -1305,11 +1462,11 @@ flowchart LR
         tools_compose_audio_capture_audiocapture_is_reco_65fe86e3("is_recording()<br/><small>tools/compose/audio_capture.py</small>")
         tools_compose_audio_capture_audiocapture_audio_c_765ed1f8("_audio_callback()<br/><small>tools/compose/audio_capture.py</small>")
     end
-    subgraph ingest_cache_update_tools_compose_compose_gui_py_e58d02b5["tools/compose/compose_gui.py"]
-        tools_compose_compose_gui_composeapp_ad4910da("ComposeApp<br/><small>tools/compose/compose_gui.py</small>")
-        tools_compose_compose_gui_composeapp_validate_se_5cfc1ba2("_validate_settings_before_save()<br/><small>tools/compose/compose_gui.py</small>")
+    subgraph ingest_cache_update_server_hermes_voice_receiver_b76445d4["server/hermes_voice_receiver.py"]
+        server_hermes_voice_receiver_ask_hermes_gateway_25949aca("ask_hermes_gateway()<br/><small>server/hermes_voice_receiver.py</small>")
+        server_hermes_voice_receiver_main_a2dbaf08("main()<br/><small>server/hermes_voice_receiver.py</small>")
     end
-    server_hermes_voice_receiver_ask_hermes_gateway_25949aca("ask_hermes_gateway()<br/><small>server/hermes_voice_receiver.py</small>")
+    src_audio_recorder_cpp_src_audio_recorder_9215fedd("audio_recorder.cpp")
     tools_compose_audio_capture_audiocapture_f17688ff -->|method| tools_compose_audio_capture_audiocapture_start_r_99dbbb57
     tools_compose_audio_capture_audiocapture_f17688ff -->|method| tools_compose_audio_capture_audiocapture_stop_re_283b3e4b
     tools_compose_audio_capture_audiocapture_f17688ff -->|method| tools_compose_audio_capture_audiocapture_init_1b4ceb02
@@ -1322,8 +1479,7 @@ flowchart LR
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getwavsize_939a5b41
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getmaxleft_56736be4
     src_audio_recorder_audiorecorder_b4022ebd -->|method| src_audio_recorder_audiorecorder_getmaxright_141c9675
-    tools_compose_compose_gui_composeapp_ad4910da -->|method| tools_compose_compose_gui_composeapp_validate_se_5cfc1ba2
-    %% Omitted for readability: 114 nodes, 0 edges
+    %% Omitted for readability: 84 nodes, 0 edges
     class src_audio_recorder_audiorecorder_b4022ebd klass;
     class src_audio_recorder_channelstats_b437c15e klass;
     class src_audio_recorder_audiorecorder_isrecording_3baca3b6 function;
@@ -1339,9 +1495,9 @@ flowchart LR
     class tools_compose_audio_capture_audiocapture_device_5ca5c03b function;
     class tools_compose_audio_capture_audiocapture_is_reco_65fe86e3 function;
     class tools_compose_audio_capture_audiocapture_audio_c_765ed1f8 function;
-    class tools_compose_compose_gui_composeapp_ad4910da klass;
-    class tools_compose_compose_gui_composeapp_validate_se_5cfc1ba2 function;
     class server_hermes_voice_receiver_ask_hermes_gateway_25949aca function;
+    class server_hermes_voice_receiver_main_a2dbaf08 function;
+    class src_audio_recorder_cpp_src_audio_recorder_9215fedd function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1611,29 +1767,29 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>src/audio_recorder.h</code></td><td>45 nodes</td></tr>
-<tr><td><code>tools/compose/compose_gui.py</code></td><td>30 nodes</td></tr>
 <tr><td><code>server/hermes_voice_receiver.py</code></td><td>23 nodes</td></tr>
 <tr><td><code>GEMINI.md</code></td><td>14 nodes</td></tr>
 <tr><td><code>tools/compose/audio_capture.py</code></td><td>13 nodes</td></tr>
 <tr><td><code>src/audio_recorder.cpp</code></td><td>2 nodes</td></tr>
 <tr><td><code>src/es8311.h</code></td><td>1 nodes</td></tr>
+<tr><td><code>tools/compose/compose_gui.py</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: method x44, contains x41, calls x34, defines x31. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x41, defines x31, method x17, explains x13. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 7. Serving API ====== -->
 <h2 id="serve-api">7. Serving API</h2>
-<p>Serving API groups implementation around es8311, compose, tools, companionpy, mostly in tools/compose/compose_companion.py, src/es8311.cpp, es8311_bsp.c. This section covers 117 nodes and 238 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Serving API groups implementation around compose, tools, es8311, companionpy, mostly in tools/compose/compose_companion.py, src/es8311.cpp, es8311_bsp.c. This section covers 148 nodes and 295 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Serving API (117 nodes, 238 edges)
+    %% Section: Serving API (148 nodes, 295 edges)
     subgraph serve_api_tools_compose_compose_companion_py_9ee8819e["tools/compose/compose_companion.py"]
         tools_compose_compose_companion_composecompanion_c68eb781("ComposeCompanion<br/><small>tools/compose/compose_companion.py</small>")
         tools_compose_compose_companion_composecompanion_74d91191("__init__()<br/><small>tools/compose/compose_companion.py</small>")
@@ -1643,21 +1799,25 @@ flowchart LR
         tools_compose_compose_companion_composecompanion_028b60ce("handle_f14_down()<br/><small>tools/compose/compose_companion.py</small>")
         tools_compose_compose_companion_composecompanion_6af1b9d2("handle_f14_up()<br/><small>tools/compose/compose_companion.py</small>")
         tools_compose_compose_companion_composecompanion_df60e334("handle_f15_tap()<br/><small>tools/compose/compose_companion.py</small>")
-        tools_compose_compose_companion_composecompanion_276940af("_stay_local_if_cloud_blocked()<br/><small>tools/compose/compose_companion.py</small>")
-        tools_compose_compose_companion_composecompanion_68efdd1f("_process_compose_worker()<br/><small>tools/compose/compose_companion.py</small>")
-        tools_compose_compose_companion_composecompanion_77ad7990("_process_dictate_worker()<br/><small>tools/compose/compose_companion.py</small>")
-        tools_compose_compose_companion_composecompanion_86e11043("run()<br/><small>tools/compose/compose_companion.py</small>")
     end
-    subgraph serve_api_es8311_bsp_c_266c748d["es8311_bsp.c"]
-        es8311_bsp_es8311_init_6335de17("es8311_init()<br/><small>es8311_bsp.c</small>")
-        es8311_bsp_es8311_clock_config_c11bbb7e("es8311_clock_config()<br/><small>es8311_bsp.c</small>")
-    end
-    subgraph serve_api_tools_compose_llm_pipeline_py_547b3247["tools/compose/llm_pipeline.py"]
-        tools_compose_llm_pipeline_llmpipeline_dc067dd3("LlmPipeline<br/><small>tools/compose/llm_pipeline.py</small>")
-        tools_compose_llm_pipeline_llmpipeline_init_9836ee09("__init__()<br/><small>tools/compose/llm_pipeline.py</small>")
+    subgraph serve_api_tools_cad_solidcraft_mcp_launcher_py_84d0feba["tools/cad/solidcraft_mcp_launcher.py"]
+        tools_cad_solidcraft_mcp_launcher_bridge_024967c0("Bridge<br/><small>tools/cad/solidcraft_mcp_launcher.py</small>")
+        tools_cad_solidcraft_mcp_launcher_bridge_handle_4c05c061("handle()<br/><small>tools/cad/solidcraft_mcp_launcher.py</small>")
+        tools_cad_solidcraft_mcp_launcher_bridge_write_05f032f2("write()<br/><small>tools/cad/solidcraft_mcp_launcher.py</small>")
+        tools_cad_solidcraft_mcp_launcher_bridge_close_408638df("close()<br/><small>tools/cad/solidcraft_mcp_launcher.py</small>")
+        tools_cad_solidcraft_mcp_launcher_bridge_init_b4d6b32e("__init__()<br/><small>tools/cad/solidcraft_mcp_launcher.py</small>")
+        tools_cad_solidcraft_mcp_launcher_bridge_send_698cebac("send()<br/><small>tools/cad/solidcraft_mcp_launcher.py</small>")
+        tools_cad_solidcraft_mcp_launcher_bridge_activat_54843e03("activate()<br/><small>tools/cad/solidcraft_mcp_launcher.py</small>")
     end
     server_hermes_voice_receiver_warmup_fast_llm_ae36cb1f("warmup_fast_llm()<br/><small>server/hermes_voice_receiver.py</small>")
     src_es8311_es8311_codec_init_9f622b33("es8311_codec_init()<br/><small>src/es8311.cpp</small>")
+    tools_compose_compose_gui_composeapp_handle_hard_ff920bbf("_handle_hardware_event()<br/><small>tools/compose/compose_gui.py</small>")
+    tools_cad_solidcraft_mcp_launcher_bridge_024967c0 -->|method| tools_cad_solidcraft_mcp_launcher_bridge_write_05f032f2
+    tools_cad_solidcraft_mcp_launcher_bridge_024967c0 -->|method| tools_cad_solidcraft_mcp_launcher_bridge_handle_4c05c061
+    tools_cad_solidcraft_mcp_launcher_bridge_024967c0 -->|method| tools_cad_solidcraft_mcp_launcher_bridge_close_408638df
+    tools_cad_solidcraft_mcp_launcher_bridge_024967c0 -->|method| tools_cad_solidcraft_mcp_launcher_bridge_init_b4d6b32e
+    tools_cad_solidcraft_mcp_launcher_bridge_024967c0 -->|method| tools_cad_solidcraft_mcp_launcher_bridge_send_698cebac
+    tools_cad_solidcraft_mcp_launcher_bridge_024967c0 -->|method| tools_cad_solidcraft_mcp_launcher_bridge_activat_54843e03
     tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_74d91191
     tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_b74d045a
     tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_51f37e50
@@ -1665,17 +1825,13 @@ flowchart LR
     tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_028b60ce
     tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_6af1b9d2
     tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_df60e334
-    tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_276940af
-    tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_68efdd1f
-    tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_77ad7990
-    tools_compose_compose_companion_composecompanion_c68eb781 -->|method| tools_compose_compose_companion_composecompanion_86e11043
-    tools_compose_llm_pipeline_llmpipeline_dc067dd3 -->|method| tools_compose_llm_pipeline_llmpipeline_init_9836ee09
-    tools_compose_compose_companion_composecompanion_68efdd1f -->|calls| tools_compose_compose_companion_composecompanion_276940af
-    tools_compose_compose_companion_composecompanion_77ad7990 -->|calls| tools_compose_compose_companion_composecompanion_276940af
-    tools_compose_compose_companion_composecompanion_74d91191 -->|calls| tools_compose_llm_pipeline_llmpipeline_dc067dd3
-    es8311_bsp_es8311_init_6335de17 -->|calls| es8311_bsp_es8311_clock_config_c11bbb7e
-    tools_compose_compose_companion_composecompanion_c68eb781 -->|uses| tools_compose_llm_pipeline_llmpipeline_dc067dd3
-    %% Omitted for readability: 99 nodes, 0 edges
+    tools_cad_solidcraft_mcp_launcher_bridge_activat_54843e03 -->|calls| tools_cad_solidcraft_mcp_launcher_bridge_write_05f032f2
+    tools_cad_solidcraft_mcp_launcher_bridge_activat_54843e03 -->|calls| tools_cad_solidcraft_mcp_launcher_bridge_send_698cebac
+    tools_cad_solidcraft_mcp_launcher_bridge_handle_4c05c061 -->|calls| tools_cad_solidcraft_mcp_launcher_bridge_close_408638df
+    tools_cad_solidcraft_mcp_launcher_bridge_handle_4c05c061 -->|calls| tools_cad_solidcraft_mcp_launcher_bridge_write_05f032f2
+    tools_cad_solidcraft_mcp_launcher_bridge_handle_4c05c061 -->|calls| tools_cad_solidcraft_mcp_launcher_bridge_send_698cebac
+    tools_cad_solidcraft_mcp_launcher_bridge_handle_4c05c061 -->|calls| tools_cad_solidcraft_mcp_launcher_bridge_activat_54843e03
+    %% Omitted for readability: 130 nodes, 0 edges
     class tools_compose_compose_companion_composecompanion_c68eb781 klass;
     class tools_compose_compose_companion_composecompanion_74d91191 function;
     class tools_compose_compose_companion_composecompanion_b74d045a function;
@@ -1684,16 +1840,16 @@ flowchart LR
     class tools_compose_compose_companion_composecompanion_028b60ce function;
     class tools_compose_compose_companion_composecompanion_6af1b9d2 function;
     class tools_compose_compose_companion_composecompanion_df60e334 function;
-    class tools_compose_compose_companion_composecompanion_276940af function;
-    class tools_compose_compose_companion_composecompanion_68efdd1f function;
-    class tools_compose_compose_companion_composecompanion_77ad7990 function;
-    class tools_compose_compose_companion_composecompanion_86e11043 function;
-    class es8311_bsp_es8311_init_6335de17 function;
-    class es8311_bsp_es8311_clock_config_c11bbb7e function;
-    class tools_compose_llm_pipeline_llmpipeline_dc067dd3 klass;
-    class tools_compose_llm_pipeline_llmpipeline_init_9836ee09 function;
+    class tools_cad_solidcraft_mcp_launcher_bridge_024967c0 klass;
+    class tools_cad_solidcraft_mcp_launcher_bridge_handle_4c05c061 function;
+    class tools_cad_solidcraft_mcp_launcher_bridge_write_05f032f2 function;
+    class tools_cad_solidcraft_mcp_launcher_bridge_close_408638df function;
+    class tools_cad_solidcraft_mcp_launcher_bridge_init_b4d6b32e function;
+    class tools_cad_solidcraft_mcp_launcher_bridge_send_698cebac function;
+    class tools_cad_solidcraft_mcp_launcher_bridge_activat_54843e03 function;
     class server_hermes_voice_receiver_warmup_fast_llm_ae36cb1f function;
     class src_es8311_es8311_codec_init_9f622b33 function;
+    class tools_compose_compose_gui_composeapp_handle_hard_ff920bbf function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1965,190 +2121,28 @@ flowchart LR
       <tr><td><code>tools/compose/compose_companion.py</code></td><td>27 nodes</td></tr>
 <tr><td><code>src/es8311.cpp</code></td><td>21 nodes</td></tr>
 <tr><td><code>es8311_bsp.c</code></td><td>19 nodes</td></tr>
+<tr><td><code>tools/cad/solidcraft_mcp_launcher.py</code></td><td>16 nodes</td></tr>
+<tr><td><code>tools/compose/compose_gui.py</code></td><td>11 nodes</td></tr>
 <tr><td><code>server/hermes_voice_receiver.py</code></td><td>10 nodes</td></tr>
 <tr><td><code>tools/compose/llm_pipeline.py</code></td><td>9 nodes</td></tr>
 <tr><td><code>docs/board-upload-safety.md</code></td><td>8 nodes</td></tr>
-<tr><td><code>docs/2026-10-24-gemini-first-attempt-checkpoint.md</code></td><td>5 nodes</td></tr>
-<tr><td><code>src/es8311_reg.h</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x79, calls x71, contains x49, method x17. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x111, references x79, contains x54, method x23. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 8. Security & Global Graph ====== -->
-<h2 id="security-global">8. Security &amp; Global Graph</h2>
-<p>Security &amp; Global Graph groups implementation around tools, compose, media, gemini, mostly in tools/compose/gemini_images.py, tools/compose/media_providers.py, tools/compose/media_service.py. This section covers 10 nodes and 12 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 8. Tests & Fixtures ====== -->
+<h2 id="tests-fixtures">8. Tests &amp; Fixtures</h2>
+<p>Tests &amp; Fixtures groups implementation around compose, tools, test, board, mostly in tools/compose/board_candidate.py, tools/compose/compose_gui.py, tools/compose/board_model.py. This section covers 1055 nodes and 2622 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Security &amp; Global Graph (10 nodes, 12 edges)
-    subgraph security_global_tools_compose_gemini_images_py_55c20923["tools/compose/gemini_images.py"]
-        tools_compose_gemini_images_geminiimageprovider_2516cf83("generate()<br/><small>tools/compose/gemini_images.py</small>")
-        tools_compose_gemini_images_error_diagnostics_da56ccdc("error_diagnostics()<br/><small>tools/compose/gemini_images.py</small>")
-        tools_compose_gemini_images_error_diagnostics_ad_87ade889("add_field()<br/><small>tools/compose/gemini_images.py</small>")
-        tools_compose_gemini_images_rationale_29_bda97084("Read bounded error metadata and a redac...<br/><small>tools/compose/gemini_images.py</small>")
-    end
-    subgraph security_global_tools_compose_media_providers_py_4c94a6d7["tools/compose/media_providers.py"]
-        tools_compose_media_providers_openaiimageprovide_0192464d("generate()<br/><small>tools/compose/media_providers.py</small>")
-        tools_compose_media_providers_safe_identifier_2899b7e2("safe_identifier()<br/><small>tools/compose/media_providers.py</small>")
-        tools_compose_media_providers_safe_usage_d6306ae4("safe_usage()<br/><small>tools/compose/media_providers.py</small>")
-    end
-    tools_compose_media_providers_py_path_5d67249c("Path")
-    tools_compose_media_service_mediaservice_generat_b8c4cbcd("generate()<br/><small>tools/compose/media_service.py</small>")
-    tools_compose_media_store_mediastore_inspect_7a619a4b("_inspect()<br/><small>tools/compose/media_store.py</small>")
-    tools_compose_gemini_images_geminiimageprovider_2516cf83 -->|calls| tools_compose_media_store_mediastore_inspect_7a619a4b
-    tools_compose_gemini_images_geminiimageprovider_2516cf83 -->|calls| tools_compose_gemini_images_error_diagnostics_da56ccdc
-    tools_compose_media_providers_openaiimageprovide_0192464d -->|calls| tools_compose_media_providers_safe_identifier_2899b7e2
-    tools_compose_media_providers_openaiimageprovide_0192464d -->|calls| tools_compose_media_providers_safe_usage_d6306ae4
-    tools_compose_media_providers_openaiimageprovide_0192464d -->|calls| tools_compose_media_store_mediastore_inspect_7a619a4b
-    tools_compose_media_service_mediaservice_generat_b8c4cbcd -->|calls| tools_compose_media_providers_safe_identifier_2899b7e2
-    tools_compose_media_service_mediaservice_generat_b8c4cbcd -->|calls| tools_compose_media_providers_safe_usage_d6306ae4
-    tools_compose_gemini_images_geminiimageprovider_2516cf83 -->|calls| tools_compose_media_providers_safe_identifier_2899b7e2
-    tools_compose_gemini_images_geminiimageprovider_2516cf83 -->|calls| tools_compose_media_providers_safe_usage_d6306ae4
-    class tools_compose_gemini_images_geminiimageprovider_2516cf83 function;
-    class tools_compose_gemini_images_error_diagnostics_da56ccdc function;
-    class tools_compose_gemini_images_error_diagnostics_ad_87ade889 function;
-    class tools_compose_gemini_images_rationale_29_bda97084 concept;
-    class tools_compose_media_providers_openaiimageprovide_0192464d function;
-    class tools_compose_media_providers_safe_identifier_2899b7e2 function;
-    class tools_compose_media_providers_safe_usage_d6306ae4 function;
-    class tools_compose_media_providers_py_path_5d67249c klass;
-    class tools_compose_media_service_mediaservice_generat_b8c4cbcd function;
-    class tools_compose_media_store_mediastore_inspect_7a619a4b function;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>error_diagnostics()</code><br><small style="color:var(--muted)">tools/compose/gemini_images.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>generate()</code><br><small style="color:var(--muted)">tools/compose/gemini_images.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>error_diagnostics() node in tools/compose/gemini_images.py.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>add_field()</code><br><small style="color:var(--muted)">tools/compose/gemini_images.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>add_field() node in tools/compose/gemini_images.py.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>.generate()</code><br><small style="color:var(--muted)">tools/compose/gemini_images.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>GeminiImageProvider</code><br><small style="color:var(--muted)">tools/compose/gemini_images.py</small></td>
-  <td><code>_inspect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>error_diagnostics()</code><br><small style="color:var(--muted)">tools/compose/gemini_images.py</small><br><code>Path</code><br>+4 more</td>
-  <td>.generate() node in tools/compose/gemini_images.py.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>.generate()</code><br><small style="color:var(--muted)">tools/compose/media_providers.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>OpenAIImageProvider</code><br><small style="color:var(--muted)">tools/compose/media_providers.py</small></td>
-  <td><code>_inspect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>ProviderFailure</code><br><small style="color:var(--muted)">tools/compose/media_providers.py</small><br><code>safe_identifier()</code><br><small style="color:var(--muted)">tools/compose/media_providers.py</small><br>+2 more</td>
-  <td>.generate() node in tools/compose/media_providers.py.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>safe_identifier()</code><br><small style="color:var(--muted)">tools/compose/media_providers.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>generate()</code><br><small style="color:var(--muted)">tools/compose/media_service.py</small><br><code>generate()</code><br><small style="color:var(--muted)">tools/compose/media_providers.py</small><br><code>generate()</code><br><small style="color:var(--muted)">tools/compose/gemini_images.py</small><br>+1 more</td>
-  <td>No direct outbound edge</td>
-  <td>safe_identifier() node in tools/compose/media_providers.py.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>safe_usage()</code><br><small style="color:var(--muted)">tools/compose/media_providers.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>generate()</code><br><small style="color:var(--muted)">tools/compose/media_service.py</small><br><code>generate()</code><br><small style="color:var(--muted)">tools/compose/media_providers.py</small><br><code>generate()</code><br><small style="color:var(--muted)">tools/compose/gemini_images.py</small><br>+1 more</td>
-  <td>No direct outbound edge</td>
-  <td>safe_usage() node in tools/compose/media_providers.py.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>.generate()</code><br><small style="color:var(--muted)">tools/compose/media_service.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>MediaService</code><br><small style="color:var(--muted)">tools/compose/media_service.py</small></td>
-  <td><code>create_image_provider()</code><br><small style="color:var(--muted)">tools/compose/image_provider_config.py</small><br><code>image_snapshot()</code><br><small style="color:var(--muted)">tools/compose/image_provider_config.py</small><br><code>ProviderFailure</code><br><small style="color:var(--muted)">tools/compose/media_providers.py</small><br>+3 more</td>
-  <td>.generate() node in tools/compose/media_service.py.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>._inspect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>generate()</code><br><small style="color:var(--muted)">tools/compose/media_providers.py</small><br><code>generate()</code><br><small style="color:var(--muted)">tools/compose/gemini_images.py</small><br><code>import_bytes()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+1 more</td>
-  <td>No direct outbound edge</td>
-  <td>._inspect() node in tools/compose/media_store.py.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>Path</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Path node in project.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>Read bounded error metadata and a redacted summary, never raw response bodies.</code><br><small style="color:var(--muted)">tools/compose/gemini_images.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Read bounded error metadata and a redacted summary, never raw response bodies..</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>tools/compose/gemini_images.py</code></td><td>4 nodes</td></tr>
-<tr><td><code>tools/compose/media_providers.py</code></td><td>3 nodes</td></tr>
-<tr><td><code>tools/compose/media_service.py</code></td><td>1 nodes</td></tr>
-<tr><td><code>tools/compose/media_store.py</code></td><td>1 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x9, contains x1, references x1, explains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 9. Tests & Fixtures ====== -->
-<h2 id="tests-fixtures">9. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around tools, compose, test, board, mostly in tools/compose/board_candidate.py, tools/compose/media_store.py, docs/Dashboard-plan.md. This section covers 874 nodes and 2045 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Tests &amp; Fixtures (874 nodes, 2045 edges)
+    %% Section: Tests &amp; Fixtures (1055 nodes, 2622 edges)
     subgraph tests_fixtures_tools_compose_board_session_py_fbdb768c["tools/compose/board_session.py"]
         tools_compose_board_session_boardsession_0c613675("BoardSession<br/><small>tools/compose/board_session.py</small>")
         tools_compose_board_session_boardsession_teacher_7d9cca78("teacher_view()<br/><small>tools/compose/board_session.py</small>")
@@ -2166,10 +2160,10 @@ flowchart LR
     subgraph tests_fixtures_tools_compose_board_candidate_py_df96e526["tools/compose/board_candidate.py"]
         tools_compose_board_candidate_boardcandidate_24ae5061("BoardCandidate<br/><small>tools/compose/board_candidate.py</small>")
         tools_compose_board_candidate_boardcanvas_e2323e3c("BoardCanvas<br/><small>tools/compose/board_candidate.py</small>")
+        tools_compose_board_candidate_15c4e9f0("board_candidate.py")
     end
-    tools_compose_compose_companion_7a32170b("compose_companion.py")
+    tools_compose_compose_gui_composeapp_ad4910da("ComposeApp<br/><small>tools/compose/compose_gui.py</small>")
     tools_compose_hermes_panel_hermespanel_8df9dbd5("HermesPanel<br/><small>tools/compose/hermes_panel.py</small>")
-    tools_compose_media_store_mediastore_b73aa64a("MediaStore<br/><small>tools/compose/media_store.py</small>")
     tools_tests_test_board_trial_trialtests_d889896f("TrialTests<br/><small>tools/tests/test_board_trial.py</small>")
     tools_compose_board_session_boardsession_0c613675 -->|method| tools_compose_board_session_boardsession_teacher_7d9cca78
     tools_compose_board_session_boardsession_0c613675 -->|method| tools_compose_board_session_boardsession_pupil_v_41337855
@@ -2192,8 +2186,10 @@ flowchart LR
     tools_compose_board_session_boardsession_teacher_dabffc13 -->|calls| tools_compose_board_session_boardsession_teacher_7d9cca78
     tools_compose_board_session_boardsession_teacher_70000a74 -->|calls| tools_compose_board_session_boardsession_teacher_7d9cca78
     tools_compose_board_session_boardsession_teacher_7eca5a64 -->|calls| tools_compose_board_session_boardsession_teacher_7d9cca78
+    tools_compose_board_candidate_15c4e9f0 -->|imports| tools_compose_board_session_boardsession_0c613675
+    tools_compose_compose_gui_composeapp_ad4910da -->|uses| tools_compose_hermes_panel_hermespanel_8df9dbd5
     tools_compose_board_candidate_boardcandidate_24ae5061 -->|uses| tools_compose_board_session_boardsession_0c613675
-    %% Omitted for readability: 856 nodes, 0 edges
+    %% Omitted for readability: 1037 nodes, 0 edges
     class tools_compose_board_session_boardsession_0c613675 klass;
     class tools_compose_board_session_boardsession_teacher_7d9cca78 function;
     class tools_compose_board_session_boardsession_pupil_v_41337855 function;
@@ -2208,9 +2204,9 @@ flowchart LR
     class tools_compose_board_session_boardsession_pupil_a_975a132e function;
     class tools_compose_board_candidate_boardcandidate_24ae5061 klass;
     class tools_compose_board_candidate_boardcanvas_e2323e3c klass;
-    class tools_compose_compose_companion_7a32170b module;
+    class tools_compose_board_candidate_15c4e9f0 module;
+    class tools_compose_compose_gui_composeapp_ad4910da klass;
     class tools_compose_hermes_panel_hermespanel_8df9dbd5 klass;
-    class tools_compose_media_store_mediastore_b73aa64a ui;
     class tools_tests_test_board_trial_trialtests_d889896f test;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -2235,243 +2231,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>BoardConflictError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>_expect()</code><br><small style="color:var(--muted)">tools/compose/board_session.py</small><br><code>_expect()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_review()</code><br><small style="color:var(--muted)">tools/compose/board_hermes.py</small><br>+11 more</td>
-  <td>No direct outbound edge</td>
-  <td>BoardConflictError node in tools/compose/board_model.py.</td>
+  <td><code>candidate()</code><br><small style="color:var(--muted)">compose/tests/test_board_candidate.py</small><br><code>candidate()</code><br><small style="color:var(--muted)">compose/tests/test_board_resize.py</small><br><code>main()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+2 more</td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>_reopen()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>_save_copy()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+40 more</td>
+  <td>BoardCandidate node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>BoardCanvas</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_session.py</small><br><code>_review()</code><br><small style="color:var(--muted)">tools/compose/board_hermes.py</small><br><code>and future revisions()</code><br><small style="color:var(--muted)">compose/tests/test_board_model.py</small><br>+27 more</td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_command()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_expect()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br>+13 more</td>
-  <td>BoardModel node in tools/compose/board_model.py.</td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>add_item()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>begin_ink()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+21 more</td>
+  <td>BoardCanvas node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>PupilWindow</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>_colour()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_command()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_decode()</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small><br>+33 more</td>
-  <td>No direct outbound edge</td>
-  <td>BoardValidationError node in tools/compose/board_model.py.</td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>closeEvent()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>PupilWindow node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>BoardStore</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td><code>_reopen()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>back model revision()</code><br><small style="color:var(--muted)">compose/tests/test_board_store.py</small><br><code>candidate()</code><br><small style="color:var(--muted)">compose/tests/test_board_candidate.py</small><br>+14 more</td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small><br><code>_atomic_write()</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small><br><code>_decode()</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small><br>+10 more</td>
-  <td>BoardStore node in tools/compose/board_store.py.</td>
+  <td><code>.add_image()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>decode_image()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>end_property_group()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+4 more</td>
+  <td>.add_image() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>BoardStoreError</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small><br><code>_decode()</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small><br><code>_encode()</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small><br>+7 more</td>
-  <td>No direct outbound edge</td>
-  <td>BoardStoreError node in tools/compose/board_store.py.</td>
+  <td><code>.add_object()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>apply()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>end_property_group()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+3 more</td>
+  <td>.add_object() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>demo_model()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>.add_page()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>candidate()</code><br><small style="color:var(--muted)">compose/tests/test_board_candidate.py</small><br><code>main()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>test_board_candidate.py</code><br><small style="color:var(--muted)">compose/tests/test_board_candidate.py</small></td>
-  <td><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>new_lesson()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>new_object()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br>+1 more</td>
-  <td>demo_model() node in tools/compose/board_candidate.py.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>apply()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>end_property_group()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+2 more</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>.apply()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.apply()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>_command()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_expect()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_trim_history()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br>+4 more</td>
-  <td>.apply() node in tools/compose/board_model.py.</td>
+  <td><code>add_object()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>add_page()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+3 more</td>
+  <td><code>run()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>select()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.apply() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>._command()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><span class="tag tag-cmd">Entry</span></td>
-  <td><code>apply()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>_index()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_object()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_page()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br>+4 more</td>
-  <td>._command() node in tools/compose/board_model.py.</td>
+  <td><code>.apply_properties()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.apply_properties() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>._expect()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.autosave()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_travel()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>apply()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>_revision()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardConflictError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>._expect() node in tools/compose/board_model.py.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>save_now()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>run()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>sync_saved_lessons()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.autosave() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>.export_state()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.capture_name_edit()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>_state_unlocked()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>Exports documentation data to a target format.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.capture_name_edit() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>.from_state()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.closeEvent()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_session.py</small><br><code>_decode()</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small><br><code>_encode()</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small><br>+2 more</td>
-  <td><code>_keys()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>canonical_json()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br>+1 more</td>
-  <td>.from_state() node in tools/compose/board_model.py.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>save_now()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.closeEvent() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>._index()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.end_property_group()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_command()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>._index() node in tools/compose/board_model.py.</td>
+  <td><code>add_image()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>add_object()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>add_page()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+12 more</td>
+  <td><code>flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.end_property_group() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>.__init__()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.erase()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>new_lesson()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>validate_document()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>.__init__() node in tools/compose/board_model.py.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>apply()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>run()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.erase() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>._object()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_command()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>_id()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>._object() node in tools/compose/board_model.py.</td>
+  <td><code>add_image()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>add_object()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>add_page()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+16 more</td>
+  <td><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>page_from()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>refresh()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+1 more</td>
+  <td>.flush_pending_edits() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>._page()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.freeze()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_command()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>_id()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>end_property_group()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>run()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.freeze() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>.redo()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.image_library_root()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>_travel()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>.redo() node in tools/compose/board_model.py.</td>
+  <td><code>add_image()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>safe_path()</code><br><small style="color:var(--muted)">tools/compose/board_images.py</small></td>
+  <td>.image_library_root() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>.revision()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>.revision() node in tools/compose/board_model.py.</td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+1 more</td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>add_object()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>BoardCanvas</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+9 more</td>
+  <td>.__init__() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>.snapshot()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.ink()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_device_feedback_tick()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_travel()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>apply()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br>+1 more</td>
-  <td>No direct outbound edge</td>
-  <td>.snapshot() node in tools/compose/board_model.py.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>apply()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>new_object()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>run()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.ink() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>._state_unlocked()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.insert_prepared_image()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_trim_history()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>export_state()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>._state_unlocked() node in tools/compose/board_model.py.</td>
+  <td><code>add_image()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>decode_image()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>end_property_group()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+9 more</td>
+  <td>.insert_prepared_image() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>._travel()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.is_aspect_locked()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>redo()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>undo()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>_expect()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_trim_history()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br>+2 more</td>
-  <td>._travel() node in tools/compose/board_model.py.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>queue_property_edit()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>select()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+1 more</td>
+  <td><code>page_from()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.is_aspect_locked() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>._trim_history()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.move_pupil()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_travel()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>apply()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>_state_unlocked()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>canonical_json()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>._trim_history() node in tools/compose/board_model.py.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.move_pupil() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>.undo()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.navigate()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>BoardModel</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>_travel()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>.undo() node in tools/compose/board_model.py.</td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>end_property_group()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>run()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+1 more</td>
+  <td>.navigate() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>canonical_json()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.open_lesson_folder()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_decode()</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small><br><code>_encode()</code><br><small style="color:var(--muted)">tools/compose/board_store.py</small><br><code>_manifest()</code><br><small style="color:var(--muted)">tools/compose/board_hermes.py</small><br>+10 more</td>
-  <td><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>canonical_json() node in tools/compose/board_model.py.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>refresh()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>save_now()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>saved lesson access()</code><br><small style="color:var(--muted)">tools/compose/board_lessons.py</small><br>+1 more</td>
+  <td>.open_lesson_folder() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>_colour()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.queue_property_edit()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>validate_object()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>_colour() node in tools/compose/board_model.py.</td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>is_aspect_locked()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>page_from()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.queue_property_edit() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>_id()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.redo()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_object()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_page()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_validate_page()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br>+2 more</td>
-  <td><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>_id() node in tools/compose/board_model.py.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>end_property_group()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>run()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+1 more</td>
+  <td>.redo() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>_keys()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.refresh()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_validate_page()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>from_state()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>validate_document()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br>+1 more</td>
-  <td><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>_keys() node in tools/compose/board_model.py.</td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>_save_copy()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>add_image()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+11 more</td>
+  <td><code>is_catalogue_lesson()</code><br><small style="color:var(--muted)">tools/compose/board_lessons.py</small><br><code>page_from()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>select()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.refresh() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>new_lesson()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.reload_selected_fields()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>cannot change model()</code><br><small style="color:var(--muted)">compose/tests/test_board_model.py</small><br><code>demo_model()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+3 more</td>
-  <td><code>new_page()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>new_lesson() node in tools/compose/board_model.py.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>refresh()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>select()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.reload_selected_fields() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>new_object()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.remember_image_library()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_manifest()</code><br><small style="color:var(--muted)">tools/compose/board_hermes.py</small><br><code>active page ink()</code><br><small style="color:var(--muted)">compose/tests/test_board_session.py</small><br><code>add()</code><br><small style="color:var(--muted)">compose/tests/test_board_model.py</small><br>+25 more</td>
-  <td><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>validate_object()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>new_object() node in tools/compose/board_model.py.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>safe_path()</code><br><small style="color:var(--muted)">tools/compose/board_images.py</small></td>
+  <td>.remember_image_library() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>new_page()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.rename()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>add_page()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>board()</code><br><small style="color:var(--muted)">compose/tests/test_board_hermes.py</small><br><code>demo_model()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+8 more</td>
-  <td><code>_validate_page()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>save_now()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>apply()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>end_property_group()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>flush_pending_edits()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br>+1 more</td>
+  <td>.rename() node in tools/compose/board_candidate.py.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>_number()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
+  <td><code>.reopen()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_point()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>_validate_page()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small><br><code>validate_object()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td><code>BoardValidationError</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>_number() node in tools/compose/board_model.py.</td>
+  <td><code>BoardCandidate</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td><code>refresh()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>run()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small><br><code>save_now()</code><br><small style="color:var(--muted)">tools/compose/board_candidate.py</small></td>
+  <td>.reopen() node in tools/compose/board_candidate.py.</td>
 </tr>
 </table>
 
@@ -2480,10 +2476,10 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>tools/compose/board_candidate.py</code></td><td>60 nodes</td></tr>
-<tr><td><code>tools/compose/media_store.py</code></td><td>51 nodes</td></tr>
+      <tr><td><code>tools/compose/board_candidate.py</code></td><td>88 nodes</td></tr>
+<tr><td><code>tools/compose/compose_gui.py</code></td><td>40 nodes</td></tr>
+<tr><td><code>tools/compose/board_model.py</code></td><td>38 nodes</td></tr>
 <tr><td><code>docs/Dashboard-plan.md</code></td><td>37 nodes</td></tr>
-<tr><td><code>tools/compose/board_model.py</code></td><td>36 nodes</td></tr>
 <tr><td><code>compose/tests/test_compose.py</code></td><td>35 nodes</td></tr>
 <tr><td><code>compose/tests/test_gemini_images.py</code></td><td>35 nodes</td></tr>
 <tr><td><code>tools/compose/board_session.py</code></td><td>33 nodes</td></tr>
@@ -2492,13 +2488,13 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x903, contains x395, method x286, imports x99. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x1198, contains x500, method x323, imports x169. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 10. network_manager.cpp ====== -->
-<h2 id="network-manager-cpp">10. network_manager.cpp</h2>
+<!-- ====== 9. network_manager.cpp ====== -->
+<h2 id="network-manager-cpp">9. network_manager.cpp</h2>
 <p>network_manager.cpp groups implementation around network, managerh, host, discoveryh, mostly in src/network_manager.h, src/host_discovery.h, src/network_manager.cpp. This section covers 55 nodes and 118 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2849,8 +2845,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 11. EnvironmentManager ====== -->
-<h2 id="environmentmanager">11. EnvironmentManager</h2>
+<!-- ====== 10. EnvironmentManager ====== -->
+<h2 id="environmentmanager">10. EnvironmentManager</h2>
 <p>EnvironmentManager groups implementation around environment, managerh, managercpp, environmentchangecallback, mostly in src/environment_manager.h, src/environment_manager.cpp. This section covers 43 nodes and 69 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3186,8 +3182,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 12. MediaPanel ====== -->
-<h2 id="mediapanel">12. MediaPanel</h2>
+<!-- ====== 11. MediaPanel ====== -->
+<h2 id="mediapanel">11. MediaPanel</h2>
 <p>MediaPanel groups implementation around tools, compose, media, panelpy, mostly in tools/compose/media_panel.py. This section covers 40 nodes and 97 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3529,6 +3525,353 @@ flowchart LR
   <div class="card">
     <h4>Design Notes</h4>
     <p>This section comes from graphify community clustering. Relationship summary: calls x58, method x30, indirect call x8, explains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 12. ._connect ====== -->
+<h2 id="connect">12. ._connect</h2>
+<p>._connect groups implementation around media, storepy, tools, compose, mostly in tools/compose/media_store.py. This section covers 40 nodes and 85 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: ._connect (40 nodes, 85 edges)
+    tools_compose_media_store_mediastore_apply_remot_329fbef9("apply_remote_event()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_create_job_0b5c302a("create_job()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_resolve_con_c6ec2993("resolve_conflict()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_set_canonic_025cc42f("set_canonical()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_update_job_addae3cb("update_job()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_claim_job_fb1a70c7("claim_job()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_uuid_46835106("_uuid()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_connect_e62c322d("_connect()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_json_46ddd366("_json()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_source_2a0a44ec("_source()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_tags_ce128729("_tags()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_now_1beb3148("_now()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_job_79e41d2b("_job()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_get_job_eb894507("get_job()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_generation_9be7c9af("generation_job_for_version()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_get_asset_e20b6414("get_asset()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_get_sync_cu_f317903c("get_sync_cursor()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_get_version_009894f3("get_version()<br/><small>tools/compose/media_store.py</small>")
+    tools_compose_media_store_mediastore_apply_remot_329fbef9 -->|calls| tools_compose_media_store_uuid_46835106
+    tools_compose_media_store_mediastore_apply_remot_329fbef9 -->|calls| tools_compose_media_store_mediastore_connect_e62c322d
+    tools_compose_media_store_mediastore_apply_remot_329fbef9 -->|calls| tools_compose_media_store_json_46ddd366
+    tools_compose_media_store_mediastore_apply_remot_329fbef9 -->|calls| tools_compose_media_store_source_2a0a44ec
+    tools_compose_media_store_mediastore_apply_remot_329fbef9 -->|calls| tools_compose_media_store_mediastore_tags_ce128729
+    tools_compose_media_store_mediastore_apply_remot_329fbef9 -->|calls| tools_compose_media_store_now_1beb3148
+    tools_compose_media_store_mediastore_claim_job_fb1a70c7 -->|calls| tools_compose_media_store_mediastore_connect_e62c322d
+    tools_compose_media_store_mediastore_claim_job_fb1a70c7 -->|calls| tools_compose_media_store_json_46ddd366
+    tools_compose_media_store_mediastore_claim_job_fb1a70c7 -->|calls| tools_compose_media_store_now_1beb3148
+    tools_compose_media_store_mediastore_create_job_0b5c302a -->|calls| tools_compose_media_store_uuid_46835106
+    tools_compose_media_store_mediastore_create_job_0b5c302a -->|calls| tools_compose_media_store_now_1beb3148
+    tools_compose_media_store_mediastore_create_job_0b5c302a -->|calls| tools_compose_media_store_json_46ddd366
+    tools_compose_media_store_mediastore_create_job_0b5c302a -->|calls| tools_compose_media_store_mediastore_connect_e62c322d
+    tools_compose_media_store_mediastore_create_job_0b5c302a -->|calls| tools_compose_media_store_mediastore_job_79e41d2b
+    tools_compose_media_store_mediastore_create_job_0b5c302a -->|calls| tools_compose_media_store_mediastore_get_job_eb894507
+    tools_compose_media_store_mediastore_generation_9be7c9af -->|calls| tools_compose_media_store_mediastore_connect_e62c322d
+    tools_compose_media_store_mediastore_generation_9be7c9af -->|calls| tools_compose_media_store_mediastore_job_79e41d2b
+    tools_compose_media_store_mediastore_get_asset_e20b6414 -->|calls| tools_compose_media_store_mediastore_connect_e62c322d
+    tools_compose_media_store_mediastore_get_job_eb894507 -->|calls| tools_compose_media_store_mediastore_connect_e62c322d
+    tools_compose_media_store_mediastore_get_job_eb894507 -->|calls| tools_compose_media_store_mediastore_job_79e41d2b
+    tools_compose_media_store_mediastore_get_sync_cu_f317903c -->|calls| tools_compose_media_store_mediastore_connect_e62c322d
+    tools_compose_media_store_mediastore_get_version_009894f3 -->|calls| tools_compose_media_store_mediastore_connect_e62c322d
+    tools_compose_media_store_mediastore_resolve_con_c6ec2993 -->|calls| tools_compose_media_store_mediastore_connect_e62c322d
+    tools_compose_media_store_mediastore_resolve_con_c6ec2993 -->|calls| tools_compose_media_store_now_1beb3148
+    %% Omitted for readability: 22 nodes, 8 edges
+    class tools_compose_media_store_mediastore_apply_remot_329fbef9 function;
+    class tools_compose_media_store_mediastore_create_job_0b5c302a function;
+    class tools_compose_media_store_mediastore_resolve_con_c6ec2993 function;
+    class tools_compose_media_store_mediastore_set_canonic_025cc42f function;
+    class tools_compose_media_store_mediastore_update_job_addae3cb function;
+    class tools_compose_media_store_mediastore_claim_job_fb1a70c7 function;
+    class tools_compose_media_store_uuid_46835106 function;
+    class tools_compose_media_store_mediastore_connect_e62c322d function;
+    class tools_compose_media_store_json_46ddd366 function;
+    class tools_compose_media_store_source_2a0a44ec function;
+    class tools_compose_media_store_mediastore_tags_ce128729 function;
+    class tools_compose_media_store_now_1beb3148 function;
+    class tools_compose_media_store_mediastore_job_79e41d2b function;
+    class tools_compose_media_store_mediastore_get_job_eb894507 function;
+    class tools_compose_media_store_mediastore_generation_9be7c9af function;
+    class tools_compose_media_store_mediastore_get_asset_e20b6414 async;
+    class tools_compose_media_store_mediastore_get_sync_cu_f317903c function;
+    class tools_compose_media_store_mediastore_get_version_009894f3 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>_json()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>apply_remote_event()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>claim_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>create_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+5 more</td>
+  <td>No direct outbound edge</td>
+  <td>_json() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>.apply_remote_event()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_json()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_now()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+3 more</td>
+  <td>.apply_remote_event() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>.claim_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_json()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_now()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.claim_job() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>._connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_initialise()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>apply_remote_event()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>claim_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+21 more</td>
+  <td>No direct outbound edge</td>
+  <td>._connect() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>.create_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_json()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+3 more</td>
+  <td>.create_job() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>.generation_job_for_version()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.generation_job_for_version() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>.get_asset()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.get_asset() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>.get_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>create_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>update_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.get_job() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>.get_sync_cursor()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.get_sync_cursor() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>.get_version()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>import_bytes()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_version_record()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.get_version() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>._job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>create_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>generation_job_for_version()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>get_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>._job() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>.list_assets()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.list_assets() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>.list_conflicts()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>record_sync_conflict()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.list_conflicts() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>.list_jobs()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.list_jobs() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>.list_versions()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_version_record()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.list_versions() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>.mark_event_synced()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.mark_event_synced() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>.pending_events()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.pending_events() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>.record_sync_conflict()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_now()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>list_conflicts()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.record_sync_conflict() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>.recover_interrupted_jobs()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_json()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_now()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.recover_interrupted_jobs() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>.resolve_conflict()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_json()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_now()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+1 more</td>
+  <td>.resolve_conflict() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>.set_canonical()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_json()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_now()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+1 more</td>
+  <td>.set_canonical() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>.set_sync_cursor()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>.set_sync_cursor() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>._tags()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>apply_remote_event()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>import_bytes()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>._tags() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>.update_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><code>_connect()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_json()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>_now()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+1 more</td>
+  <td>.update_job() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>._version_payload()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>import_bytes()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>MediaStore</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>._version_payload() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>._version_record()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>get_version()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>import_bytes()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>list_versions()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+3 more</td>
+  <td>No direct outbound edge</td>
+  <td>._version_record() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>_now()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>apply_remote_event()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>claim_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>create_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br>+6 more</td>
+  <td>No direct outbound edge</td>
+  <td>_now() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>_source()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>apply_remote_event()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>import_bytes()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_source() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>_uuid()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>apply_remote_event()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>create_job()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small><br><code>import_bytes()</code><br><small style="color:var(--muted)">tools/compose/media_store.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_uuid() node in tools/compose/media_store.py.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Any</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Any node in project.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>tools/compose/media_store.py</code></td><td>37 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x50, references x24, explains x7, contains x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4460,74 +4803,70 @@ flowchart LR
 
 <!-- ====== 16. Other ====== -->
 <h2 id="other">16. Other</h2>
-<p>Other groups implementation around compose, docs, tools, 2026, mostly in server/hermes_voice_receiver.py, src/gui.h, tools/compose/compose_gui.py. This section covers 318 nodes and 370 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Other groups implementation around docs, 2026, compose, tools, mostly in server/hermes_voice_receiver.py, src/gui.h, tools/compose/status_overlay.py. This section covers 349 nodes and 383 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (318 nodes, 370 edges)
-    subgraph other_tools_compose_status_overlay_py_9c9faf22["tools/compose/status_overlay.py"]
-        tools_compose_status_overlay_statusoverlay_c5dc3547("StatusOverlay<br/><small>tools/compose/status_overlay.py</small>")
-        tools_compose_status_overlay_statusoverlay_show_d60d9498("show()<br/><small>tools/compose/status_overlay.py</small>")
-        tools_compose_status_overlay_statusoverlay_hide_9be1e4d3("hide()<br/><small>tools/compose/status_overlay.py</small>")
-        tools_compose_status_overlay_statusoverlay_show_1753fd16("show_listening_compose()<br/><small>tools/compose/status_overlay.py</small>")
-        tools_compose_status_overlay_statusoverlay_show_5a7e75cb("show_listening_dictate()<br/><small>tools/compose/status_overlay.py</small>")
-        tools_compose_status_overlay_statusoverlay_show_8b44d69f("show_processing()<br/><small>tools/compose/status_overlay.py</small>")
-        tools_compose_status_overlay_statusoverlay_show_e5eaa2f8("show_ready_to_paste()<br/><small>tools/compose/status_overlay.py</small>")
+    %% Section: Other (349 nodes, 383 edges)
+    subgraph other_tools_compose_settings_panel_py_53d6ab03["tools/compose/settings_panel.py"]
+        tools_compose_settings_panel_settingspanel_7b0b5741("SettingsPanel<br/><small>tools/compose/settings_panel.py</small>")
+        tools_compose_settings_panel_settingspanel_init_9d5228c4("__init__()<br/><small>tools/compose/settings_panel.py</small>")
+        tools_compose_settings_panel_settingspanel_produ_2a79a491("_producer_changed()<br/><small>tools/compose/settings_panel.py</small>")
+        tools_compose_settings_panel_settingspanel_image_358677a3("_image_status()<br/><small>tools/compose/settings_panel.py</small>")
+        tools_compose_settings_panel_settingspanel_check_6e700160("check_connection()<br/><small>tools/compose/settings_panel.py</small>")
+        tools_compose_settings_panel_settingspanel_conne_9e206267("_connection_finished()<br/><small>tools/compose/settings_panel.py</small>")
+        tools_compose_settings_panel_settingspanel_save_4d519bd6("_save_worker()<br/><small>tools/compose/settings_panel.py</small>")
+        tools_compose_settings_panel_settingspanel_save_4edc60f5("_save_finished()<br/><small>tools/compose/settings_panel.py</small>")
+        tools_compose_settings_panel_settingspanel_set_s_16553741("set_status()<br/><small>tools/compose/settings_panel.py</small>")
+        tools_compose_settings_panel_settingspanel_close_48033b9b("close()<br/><small>tools/compose/settings_panel.py</small>")
     end
-    subgraph other_server_hermes_voice_receiver_py_4ba6c9b7["server/hermes_voice_receiver.py"]
-        server_hermes_voice_receiver_voicerequesthandler_ea10de55("do_POST()<br/><small>server/hermes_voice_receiver.py</small>")
-        server_hermes_voice_receiver_voicerequesthandler_67d41eb1("VoiceRequestHandler<br/><small>server/hermes_voice_receiver.py</small>")
-        server_hermes_voice_receiver_voicerequesthandler_be845a79("check_auth()<br/><small>server/hermes_voice_receiver.py</small>")
-        server_hermes_voice_receiver_voicerequesthandler_d68db465("send_unauthorized()<br/><small>server/hermes_voice_receiver.py</small>")
-        server_hermes_voice_receiver_voicerequesthandler_b76eb503("do_GET()<br/><small>server/hermes_voice_receiver.py</small>")
+    subgraph other_tools_compose_board_image_picker_py_f8891479["tools/compose/board_image_picker.py"]
+        tools_compose_board_image_picker_imagepicker_3d4c502d("ImagePicker<br/><small>tools/compose/board_image_picker.py</small>")
+        tools_compose_board_image_picker_imagepicker_ref_715858ba("refresh_assets()<br/><small>tools/compose/board_image_picker.py</small>")
+        tools_compose_board_image_picker_imagepicker_ini_45bc62be("__init__()<br/><small>tools/compose/board_image_picker.py</small>")
+        tools_compose_board_image_picker_imagepicker_sel_120267f3("select_asset()<br/><small>tools/compose/board_image_picker.py</small>")
     end
-    subgraph other_src_power_manager_h_4fc03d44["src/power_manager.h"]
-        src_power_manager_powermanager_5812a542("PowerManager<br/><small>src/power_manager.h</small>")
-        src_power_manager_powermanager_issoftwake_a97fe755("isSoftWake()<br/><small>src/power_manager.h</small>")
-    end
+    server_hermes_voice_receiver_voicerequesthandler_ea10de55("do_POST()<br/><small>server/hermes_voice_receiver.py</small>")
     src_gui_macropadgui_drawall_e8dc4428("drawAll<br/><small>src/gui.h</small>")
     tools_compose_companion_settings_save_settings_6d535f74("save_settings()<br/><small>tools/compose/companion_settings.py</small>")
-    tools_compose_compose_gui_composeapp_init_43a937e6("__init__()<br/><small>tools/compose/compose_gui.py</small>")
-    tools_compose_settings_panel_settingspanel_7b0b5741("SettingsPanel<br/><small>tools/compose/settings_panel.py</small>")
-    server_hermes_voice_receiver_voicerequesthandler_67d41eb1 -->|method| server_hermes_voice_receiver_voicerequesthandler_be845a79
-    server_hermes_voice_receiver_voicerequesthandler_67d41eb1 -->|method| server_hermes_voice_receiver_voicerequesthandler_d68db465
-    server_hermes_voice_receiver_voicerequesthandler_67d41eb1 -->|method| server_hermes_voice_receiver_voicerequesthandler_b76eb503
-    server_hermes_voice_receiver_voicerequesthandler_67d41eb1 -->|method| server_hermes_voice_receiver_voicerequesthandler_ea10de55
-    src_power_manager_powermanager_5812a542 -->|method| src_power_manager_powermanager_issoftwake_a97fe755
-    tools_compose_status_overlay_statusoverlay_c5dc3547 -->|method| tools_compose_status_overlay_statusoverlay_show_d60d9498
-    tools_compose_status_overlay_statusoverlay_c5dc3547 -->|method| tools_compose_status_overlay_statusoverlay_hide_9be1e4d3
-    tools_compose_status_overlay_statusoverlay_c5dc3547 -->|method| tools_compose_status_overlay_statusoverlay_show_1753fd16
-    tools_compose_status_overlay_statusoverlay_c5dc3547 -->|method| tools_compose_status_overlay_statusoverlay_show_5a7e75cb
-    tools_compose_status_overlay_statusoverlay_c5dc3547 -->|method| tools_compose_status_overlay_statusoverlay_show_8b44d69f
-    tools_compose_status_overlay_statusoverlay_c5dc3547 -->|method| tools_compose_status_overlay_statusoverlay_show_e5eaa2f8
-    server_hermes_voice_receiver_voicerequesthandler_b76eb503 -->|calls| server_hermes_voice_receiver_voicerequesthandler_be845a79
-    server_hermes_voice_receiver_voicerequesthandler_b76eb503 -->|calls| server_hermes_voice_receiver_voicerequesthandler_d68db465
-    server_hermes_voice_receiver_voicerequesthandler_ea10de55 -->|calls| server_hermes_voice_receiver_voicerequesthandler_be845a79
-    server_hermes_voice_receiver_voicerequesthandler_ea10de55 -->|calls| server_hermes_voice_receiver_voicerequesthandler_d68db465
-    tools_compose_status_overlay_statusoverlay_show_1753fd16 -->|calls| tools_compose_status_overlay_statusoverlay_show_d60d9498
-    tools_compose_status_overlay_statusoverlay_show_5a7e75cb -->|calls| tools_compose_status_overlay_statusoverlay_show_d60d9498
-    tools_compose_status_overlay_statusoverlay_show_8b44d69f -->|calls| tools_compose_status_overlay_statusoverlay_show_d60d9498
-    tools_compose_status_overlay_statusoverlay_show_e5eaa2f8 -->|calls| tools_compose_status_overlay_statusoverlay_show_d60d9498
-    %% Omitted for readability: 300 nodes, 0 edges
-    class tools_compose_status_overlay_statusoverlay_c5dc3547 klass;
-    class tools_compose_status_overlay_statusoverlay_show_d60d9498 function;
-    class tools_compose_status_overlay_statusoverlay_hide_9be1e4d3 function;
-    class tools_compose_status_overlay_statusoverlay_show_1753fd16 function;
-    class tools_compose_status_overlay_statusoverlay_show_5a7e75cb function;
-    class tools_compose_status_overlay_statusoverlay_show_8b44d69f function;
-    class tools_compose_status_overlay_statusoverlay_show_e5eaa2f8 function;
+    tools_compose_status_overlay_statusoverlay_c5dc3547("StatusOverlay<br/><small>tools/compose/status_overlay.py</small>")
+    tools_compose_settings_panel_settingspanel_7b0b5741 -->|method| tools_compose_settings_panel_settingspanel_init_9d5228c4
+    tools_compose_settings_panel_settingspanel_7b0b5741 -->|method| tools_compose_settings_panel_settingspanel_produ_2a79a491
+    tools_compose_settings_panel_settingspanel_7b0b5741 -->|method| tools_compose_settings_panel_settingspanel_image_358677a3
+    tools_compose_settings_panel_settingspanel_7b0b5741 -->|method| tools_compose_settings_panel_settingspanel_check_6e700160
+    tools_compose_settings_panel_settingspanel_7b0b5741 -->|method| tools_compose_settings_panel_settingspanel_conne_9e206267
+    tools_compose_settings_panel_settingspanel_7b0b5741 -->|method| tools_compose_settings_panel_settingspanel_save_4d519bd6
+    tools_compose_settings_panel_settingspanel_7b0b5741 -->|method| tools_compose_settings_panel_settingspanel_save_4edc60f5
+    tools_compose_settings_panel_settingspanel_7b0b5741 -->|method| tools_compose_settings_panel_settingspanel_set_s_16553741
+    tools_compose_settings_panel_settingspanel_7b0b5741 -->|method| tools_compose_settings_panel_settingspanel_close_48033b9b
+    tools_compose_board_image_picker_imagepicker_3d4c502d -->|method| tools_compose_board_image_picker_imagepicker_ref_715858ba
+    tools_compose_board_image_picker_imagepicker_3d4c502d -->|method| tools_compose_board_image_picker_imagepicker_ini_45bc62be
+    tools_compose_board_image_picker_imagepicker_3d4c502d -->|method| tools_compose_board_image_picker_imagepicker_sel_120267f3
+    tools_compose_settings_panel_settingspanel_init_9d5228c4 -->|calls| tools_compose_settings_panel_settingspanel_image_358677a3
+    tools_compose_settings_panel_settingspanel_init_9d5228c4 -->|calls| tools_compose_settings_panel_settingspanel_init_9d5228c4
+    tools_compose_settings_panel_settingspanel_save_4d519bd6 -->|calls| tools_compose_companion_settings_save_settings_6d535f74
+    tools_compose_board_image_picker_imagepicker_ini_45bc62be -->|calls| tools_compose_board_image_picker_imagepicker_ini_45bc62be
+    tools_compose_board_image_picker_imagepicker_ref_715858ba -->|calls| tools_compose_board_image_picker_imagepicker_sel_120267f3
+    %% Omitted for readability: 331 nodes, 0 edges
+    class tools_compose_settings_panel_settingspanel_7b0b5741 klass;
+    class tools_compose_settings_panel_settingspanel_init_9d5228c4 function;
+    class tools_compose_settings_panel_settingspanel_produ_2a79a491 function;
+    class tools_compose_settings_panel_settingspanel_image_358677a3 function;
+    class tools_compose_settings_panel_settingspanel_check_6e700160 function;
+    class tools_compose_settings_panel_settingspanel_conne_9e206267 function;
+    class tools_compose_settings_panel_settingspanel_save_4d519bd6 function;
+    class tools_compose_settings_panel_settingspanel_save_4edc60f5 function;
+    class tools_compose_settings_panel_settingspanel_set_s_16553741 function;
+    class tools_compose_settings_panel_settingspanel_close_48033b9b function;
+    class tools_compose_board_image_picker_imagepicker_3d4c502d klass;
+    class tools_compose_board_image_picker_imagepicker_ref_715858ba async;
+    class tools_compose_board_image_picker_imagepicker_ini_45bc62be function;
+    class tools_compose_board_image_picker_imagepicker_sel_120267f3 async;
     class server_hermes_voice_receiver_voicerequesthandler_ea10de55 function;
-    class server_hermes_voice_receiver_voicerequesthandler_67d41eb1 klass;
-    class server_hermes_voice_receiver_voicerequesthandler_be845a79 function;
-    class server_hermes_voice_receiver_voicerequesthandler_d68db465 function;
-    class server_hermes_voice_receiver_voicerequesthandler_b76eb503 function;
-    class src_power_manager_powermanager_5812a542 klass;
-    class src_power_manager_powermanager_issoftwake_a97fe755 function;
     class src_gui_macropadgui_drawall_e8dc4428 function;
     class tools_compose_companion_settings_save_settings_6d535f74 function;
-    class tools_compose_compose_gui_composeapp_init_43a937e6 function;
-    class tools_compose_settings_panel_settingspanel_7b0b5741 klass;
+    class tools_compose_status_overlay_statusoverlay_c5dc3547 klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -4551,158 +4890,6 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>._deliver_result()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>inject_paste()</code><br><small style="color:var(--muted)">tools/compose/clipboard_manager.py</small><br><code>is_focus_matched()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+1 more</td>
-  <td>._deliver_result() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>._device_feedback_tick()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>snapshot()</code><br><small style="color:var(--muted)">tools/compose/board_model.py</small></td>
-  <td>._device_feedback_tick() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>._handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>is one shot()</code><br><small style="color:var(--muted)">compose/tests/test_device_feedback.py</small></td>
-  <td><code>_settings_saving()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>inject_paste_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+2 more</td>
-  <td>._handle_hardware_event() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>.inject_paste_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>_insert_ready_image()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>get_focus_snapshot()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>inject_paste()</code><br><small style="color:var(--muted)">tools/compose/clipboard_manager.py</small><br>+3 more</td>
-  <td>.inject_paste_ui() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>.log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_deliver_result()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_device_feedback_tick()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+9 more</td>
-  <td>No direct outbound edge</td>
-  <td>.log() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>._process_pipeline_worker()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>_post_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_record_history()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_stay_local_if_cloud_blocked()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+5 more</td>
-  <td>._process_pipeline_worker() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>._record_history()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_process_pipeline_worker()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>_post_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>._record_history() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>.set_status()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_build_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_deliver_result()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_process_pipeline_worker()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+7 more</td>
-  <td>No direct outbound edge</td>
-  <td>.set_status() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>.start_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_toggle_media_recording()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>before opening microphone()</code><br><small style="color:var(--muted)">compose/tests/test_device_feedback.py</small><br>+3 more</td>
-  <td><code>_settings_saving()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>capture_selected_text()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>get_focus_snapshot()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br>+3 more</td>
-  <td>.start_recording_flow() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>._stay_local_if_cloud_blocked()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_process_pipeline_worker()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>._stay_local_if_cloud_blocked() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>.stop_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_handle_hardware_event()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_toggle_media_recording()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br>+2 more</td>
-  <td><code>log()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>set_status()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>.stop_recording_flow() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>.toggle_compose_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>start_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>stop_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>.toggle_compose_ui() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>.toggle_dictate_ui()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>start_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>stop_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>.toggle_dictate_ui() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>._toggle_media_recording()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ComposeApp</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><code>start_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>stop_recording_flow()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td>._toggle_media_recording() node in tools/compose/compose_gui.py.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>.get_focus_snapshot()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>FocusTracker</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small><br><code>handle_f13_down()</code><br><small style="color:var(--muted)">tools/compose/compose_companion.py</small><br><code>handle_f14_down()</code><br><small style="color:var(--muted)">tools/compose/compose_companion.py</small><br>+2 more</td>
-  <td>No direct outbound edge</td>
-  <td>.get_focus_snapshot() node in tools/compose/focus_tracker.py.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>.is_focus_matched()</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_deliver_result()</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small><br><code>_process_compose_worker()</code><br><small style="color:var(--muted)">tools/compose/compose_companion.py</small><br><code>_process_dictate_worker()</code><br><small style="color:var(--muted)">tools/compose/compose_companion.py</small><br>+3 more</td>
-  <td>No direct outbound edge</td>
-  <td>.is_focus_matched() node in tools/compose/focus_tracker.py.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>A blocked school network should not add a cloud timeout to every later button…</code><br><small style="color:var(--muted)">tools/compose/compose_gui.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for A blocked school network should not add a cloud timeout to every later button….</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>Snapshots the active foreground window HWND and focused UI Automation control.</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Snapshots the active foreground window HWND and focused UI Automation control..</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>Verifies if the current foreground window and control still match the snapshot.</code><br><small style="color:var(--muted)">tools/compose/focus_tracker.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Verifies if the current foreground window and control still match the snapshot..</td>
-</tr>
-<tr>
-  <td>20</td>
   <td><code>PowerManager</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -4710,7 +4897,7 @@ flowchart LR
   <td>PowerManager node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>2</td>
   <td><code>PowerManager::enterSoftOffDiag()</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -4718,7 +4905,7 @@ flowchart LR
   <td>PowerManager::enterSoftOffDiag() node in src/power_manager.cpp.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>3</td>
   <td><code>.isSoftWake()</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>PowerManager</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
@@ -4726,7 +4913,7 @@ flowchart LR
   <td>.isSoftWake() node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>4</td>
   <td><code>releaseRtcPin()</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>releasePinHolds</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
@@ -4734,7 +4921,7 @@ flowchart LR
   <td>releaseRtcPin() node in src/power_manager.cpp.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>5</td>
   <td><code>releasePinHolds</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>begin</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
@@ -4742,7 +4929,7 @@ flowchart LR
   <td>releasePinHolds node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>6</td>
   <td><code>setBacklightDuty</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>fadeBacklightOff</code><br><small style="color:var(--muted)">src/power_manager.h</small><br><code>PowerManager::enterSoftOffDiag()</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
@@ -4750,7 +4937,7 @@ flowchart LR
   <td>setBacklightDuty node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>7</td>
   <td><code>detachBacklightPwm</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>fadeBacklightOff</code><br><small style="color:var(--muted)">src/power_manager.h</small><br><code>PowerManager::enterSoftOffDiag()</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
@@ -4758,7 +4945,7 @@ flowchart LR
   <td>detachBacklightPwm node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>8</td>
   <td><code>fadeBacklightOff</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>enterSoftOff</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
@@ -4766,7 +4953,7 @@ flowchart LR
   <td>fadeBacklightOff node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>9</td>
   <td><code>logWakeCause</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>begin</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
@@ -4774,7 +4961,7 @@ flowchart LR
   <td>logWakeCause node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>10</td>
   <td><code>begin</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -4782,12 +4969,164 @@ flowchart LR
   <td>begin node in src/power_manager.h.</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>11</td>
   <td><code>restorePage</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>enterSoftOff</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>fadeBacklightOff</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td>enterSoftOff node in src/power_manager.h.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>esp_sleep_wakeup_cause_t</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>esp_sleep_wakeup_cause_t node in project.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>gpio_num_t</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>gpio_num_t node in project.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>power_manager.cpp</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>audio_recorder.h</code><br><small style="color:var(--muted)">src/audio_recorder.h</small><br><code>gui.h</code><br><small style="color:var(--muted)">src/gui.h</small><br><code>macropad_config.h</code><br><small style="color:var(--muted)">src/macropad_config.h</small><br>+1 more</td>
+  <td>power_manager.cpp node in src/power_manager.cpp.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>power_manager.h</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>power_manager.cpp</code><br><small style="color:var(--muted)">src/power_manager.cpp</small></td>
+  <td>No direct outbound edge</td>
+  <td>power_manager.h node in src/power_manager.h.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>_softWake</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_softWake node in src/power_manager.h.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>_wakeCause</code><br><small style="color:var(--muted)">src/power_manager.h</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_wakeCause node in src/power_manager.h.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>StatusOverlay</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/compose_companion.py</small></td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small><br><code>_run_ui_loop()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small><br><code>hide()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small><br>+7 more</td>
+  <td>StatusOverlay node in tools/compose/status_overlay.py.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>.hide()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>StatusOverlay</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.hide() node in tools/compose/status_overlay.py.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>.__init__()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>StatusOverlay</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.__init__() node in tools/compose/status_overlay.py.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>._run_ui_loop()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>StatusOverlay</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><code>check_queue()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td>._run_ui_loop() node in tools/compose/status_overlay.py.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>check_queue()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_run_ui_loop()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>check_queue() node in tools/compose/status_overlay.py.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>.show()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>show_error()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small><br><code>show_listening_compose()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small><br><code>show_listening_dictate()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small><br>+4 more</td>
+  <td>No direct outbound edge</td>
+  <td>.show() node in tools/compose/status_overlay.py.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>.show_error()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>StatusOverlay</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><code>show()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td>.show_error() node in tools/compose/status_overlay.py.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>.show_listening_compose()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>StatusOverlay</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><code>show()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td>.show_listening_compose() node in tools/compose/status_overlay.py.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>.show_listening_dictate()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>StatusOverlay</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><code>show()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td>.show_listening_dictate() node in tools/compose/status_overlay.py.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>.show_pasted()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>StatusOverlay</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><code>show()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td>.show_pasted() node in tools/compose/status_overlay.py.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>.show_processing()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>StatusOverlay</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><code>show()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td>.show_processing() node in tools/compose/status_overlay.py.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>.show_ready_to_paste()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>StatusOverlay</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td><code>show()</code><br><small style="color:var(--muted)">tools/compose/status_overlay.py</small></td>
+  <td>.show_ready_to_paste() node in tools/compose/status_overlay.py.</td>
 </tr>
 </table>
 
@@ -4798,17 +5137,17 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>server/hermes_voice_receiver.py</code></td><td>39 nodes</td></tr>
 <tr><td><code>src/gui.h</code></td><td>30 nodes</td></tr>
-<tr><td><code>tools/compose/compose_gui.py</code></td><td>24 nodes</td></tr>
 <tr><td><code>tools/compose/status_overlay.py</code></td><td>17 nodes</td></tr>
 <tr><td><code>tools/compose/companion_settings.py</code></td><td>15 nodes</td></tr>
 <tr><td><code>src/es8311.cpp</code></td><td>13 nodes</td></tr>
 <tr><td><code>src/power_manager.h</code></td><td>13 nodes</td></tr>
 <tr><td><code>docs/home-work-architecture.md</code></td><td>12 nodes</td></tr>
+<tr><td><code>docs/2026-10-24-gemini-image-provider-plan.md</code></td><td>11 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x131, contains x126, explains x27, defines x26. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x151, calls x109, method x35, defines x26. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4819,18 +5158,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>2068</td></tr>
-      <tr><td>Edges</td><td>4173</td></tr>
+      <tr><td>Nodes</td><td>2320</td></tr>
+      <tr><td>Edges</td><td>4903</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>115</td></tr>
+      <tr><td>Communities</td><td>135</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>3812</td></tr>
-      <tr><td>INFERRED</td><td>361</td></tr>
+      <tr><td>EXTRACTED</td><td>4467</td></tr>
+      <tr><td>INFERRED</td><td>436</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4838,7 +5177,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>ESP32 project — Architecture Documentation</p>
-  <p>Generated: 2026-10-25 03:39 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-10-25 08:33 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
