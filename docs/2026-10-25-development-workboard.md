@@ -51,7 +51,7 @@ receipts, environments and recovery files remain excluded.
 | 2 | M5: current-candidate acceptance | All five page 7 controls have basic physical passes. Compose/Dictate work in Word/OneNote using PC audio; Images searches saved images; generated kangaroo Paste Ready passed in Word. Earlier disposable-image Word/OneNote undo/save-reopen passed. | Use existing saved assets for a short disposable-document matrix: current-candidate placement/proportions, selection/focus changes, one insert per press, undo/redo/save-reopen, restart. Test handheld audio separately. | Complete generated/refined-image matrix in both apps, handheld microphone audio, Windows reboot, S3 regressions and classroom acceptance. |
 | 3 | Enclosure | Saved Blender exports and a separate editable SolidCraft base/lid pilot, STEP/STL exports and measured geometry checks exist. Today's [dimension/feature reconciliation](dimensions/solidcraft/2026-10-25-dimension-feature-reconciliation.md) records source conflicts. | Establish an explicit Z stack and physical board/battery/connector/fastener dimensions before detailed modelling; inspect the native MCP connection without replaying fixed save/build sequences. | Chosen design/workflow, confirmed dimensions and detailed geometry, then actual printed fit. Current pilot is not print-ready. |
 | 3 | M6/M9: install, adoption and release planning | Source-preview install/update/rollback/removal and licensing/adoption research exist. | Prepare accessible pilot checklist, dependency/licence map and reproducible package requirements alongside M1–M5. | Signed packaging, approved licence/ownership map, school/network permission and installed teacher pilot; explicit stable/public release decision. |
-| Parallel approved development | Desktop Teaching Board B0–B5 | B0/B1 delivered at `0d1dab3`. B2 controller/candidate and B3 local fixture groundwork implemented, tested and independently reviewed locally. | Deliver the reviewed new working set at the next logical checkpoint, then continue with a bounded candidate/integration slice. | Final renderer selection, image picker/complete editor/remote AI/voice/export and real input/display/lesson acceptance remain separate. |
+| Parallel approved development | Desktop Teaching Board B0–B5 | B0/B1 delivered at `0d1dab3`. B2 controller/candidate and B3 local fixture groundwork implemented, tested and independently reviewed locally. Subsequent file/saved-library image insertion is recorded in its [bounded follow-up](2026-10-25-teaching-board-image-insertion.md). | Verify the image-add workflow, then deliver the reviewed working set at the next logical checkpoint. | Final renderer selection, complete editor/remote AI/voice/export and real input/display/lesson acceptance remain separate. |
 
 Teaching-board discovery found a Python/Tkinter desktop and Pillow preview,
 with no initial editable board model. Immutable media IDs/blobs are reusable;
@@ -262,9 +262,10 @@ gesture-refresh and session-lifetime fixes. The focused native suite passed
 The separate one-command native smoke opened two real windows, passed seven
 synthetic session/store checks and exited successfully. Teacher/pupil captures
 were visually reviewed. Applied commands autosave after 300 ms; property/name
-drafts require their explicit Apply/Rename actions. Image support currently
-resolves the pinned synthetic demo asset; a general library/import picker is not
-yet present. Remote Board AI, microphone actions and export remain later. These
+drafts require their explicit Apply/Rename actions. At that checkpoint, image
+support resolved only the pinned synthetic demo asset; the later
+[image-insertion slice](2026-10-25-teaching-board-image-insertion.md) adds the
+file/library chooser. Remote Board AI, microphone actions and export remain later. These
 results do not establish physical pen/touch/eraser, projector/DPI, accessibility,
 packaged installation, final renderer choice or classroom acceptance.
 
@@ -318,6 +319,82 @@ Evidence: [device trial](2026-10-24-create-paste-device-trial.md),
 [source-preview lifecycle](companion-installation.md),
 [licensing research](research/2026-10-21-licensing-research.md) and
 [adoption research](research/2026-10-21-adoption-research.md).
+
+## Later participant Teaching Board feedback
+
+The [manual feedback record](2026-10-25-teaching-board-manual-feedback.md) now
+captures the user's A–R report and the exact private checklist has been updated.
+A–E, G–M and P–R were reported as passes; F is a qualified functional pass with
+image distortion requiring default aspect locking. N/O remain incomplete because
+the save/close/reopen workflow was unclear. Pen, touch and second-display passes
+are now participant evidence; stylus-eraser/palm-rejection and broader display
+coverage are not inferred. The historical confirmed Next crash remains recorded;
+the current navigation pass does not establish its root cause or a verified fix.
+
+Requested next changes are mouse resize handles, default image aspect lock with
+unlock (and the same default when video is supported), quick Ink/Erase buttons,
+live text/property edits without repeated Apply clicks, and discoverable
+save/rename/copy/reopen semantics. These entries record requirements, not completed
+implementation or retests. No classroom, deployment or release gate is closed.
+
+The user subsequently confirmed all three feedback design recommendations;
+[the feedback record](2026-10-25-teaching-board-manual-feedback.md#confirmed-design-decisions)
+captures resize/aspect policy, live-edit/grouped-Undo/quick tools and independent
+Save a copy. The new source implements these candidate controls and a staged,
+self-contained copy backend. Copy/reopen requires Resume while frozen; save is
+still allowed without publishing the teacher's private edits. Independent
+copy-flow review found no remaining actionable defect after that guard and
+visible reopen guidance were added.
+
+The integrated seven-suite native Board check passed **133 tests, no skips, in
+4.54 s** outside the sandbox; the exact command is in the
+[candidate guide](2026-10-25-teaching-board-candidate.md#local-verification-and-remaining-acceptance).
+It includes the focused nine-test copy-backend suite. Separately, the coordinator
+recorded **36 B3 fixture tests in 0.49 s** and an actual two-window smoke with
+seven synthetic checks under
+`.local/teaching-board-candidate/feedback-native-smoke-20261025-1536/`.
+Counts overlap and are not added. Participant lesson/processes were not changed
+for these checks. New controls require restart and fresh physical retests; N/O
+remain incomplete and the historical native Next crash root cause/fix remains
+unestablished. No deployment, classroom or release gate is closed.
+
+## Saved-lesson discovery follow-up
+
+The user subsequently reported missing named saves. A real native Save a copy
+and folder-opening reproduction failed because the button opened only the
+active UUID lesson folder; both independent saved checkpoints existed. The
+[discovery fix](2026-10-25-teaching-board-saved-lessons-fix.md) adds a shared
+repo-local saved-lessons folder with title-labelled reopen entries, preserves
+existing stores and uses readable folders for future copies. Four participant
+entries were populated; 21 existing checkpoint/media/launcher hashes were
+unchanged. The integrated Board suites passed 141 tests in 5.30 s, no skips;
+the generated Windows launcher passed a separate targeted check. Participant
+retesting, N/O and the historical crash gate remain open.
+
+## Teaching Board image insertion follow-up
+
+The user prioritised **Add image** from the saved library or a local file,
+followed by reliable placement, resizing, Undo and reopening. The
+[bounded implementation/evidence guide](2026-10-25-teaching-board-image-insertion.md)
+records the teacher chooser, preview, exact immutable library version selection,
+read-only source access and lesson-owned bytes/provenance. Existing aspect
+controls, Freeze, save/reopen/history and independent copies are reused.
+
+Independent native integration passed **198 tests, no skips, in 7.89 s** before
+the final library-search correction. Review found older assets were excluded
+before matching in libraries over 500 entries; the fix searches before limiting
+results and keeps an older canonical version selectable. The final focused image
+selection passed **22 tests, no skips, in 5.47 s**; counts overlap and are not
+added. The final sandbox run emitted a non-fatal native COM warning; the earlier
+native integration and separately reviewed visible picker/teacher/pupil launch
+were warning-free. No actionable review finding remains in this slice.
+
+Synthetic lifecycle evidence includes source deletion, mouse/numeric aspect
+resizing, Undo/Redo after reopen, independent copied media/history and a separate
+Python-process reopen. These checks do not close participant N/O, new-control
+physical retests, the historical crash investigation or classroom acceptance.
+Wider B4 paste/drop/text imports, portable/PDF export and B3 live AI/voice remain
+open. No participant lesson/process, firmware or deployment was changed.
 
 ## Working method for today's continuation
 

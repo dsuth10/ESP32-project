@@ -43,13 +43,17 @@ launcher reports missing prerequisites and performs no fallback installation.
 - Teacher and pupil windows; page creation/navigation; optional pupil-window
   display selection; teacher zoom/pan. White fixed widescreen pages are distinct
   from the neutral viewport. Objects and ink are clipped to the logical page.
-- Text creation/editing, selection/movement and numeric position/size controls;
-  rectangles, ellipses and arrows; ink and whole-stroke erasing; teacher undo/redo.
-  Text uses explicit logical-pixel font sizing and wrapping.
+- Text creation/editing, selection/movement, eight mouse resize handles and
+  numeric position/size controls; rectangles, ellipses and arrows; ink and
+  whole-stroke erasing; teacher undo/redo. Text-box resizing changes wrapping
+  without changing font size. Images preserve their current aspect ratio by
+  default for mouse and numeric resizing; visible unlocking permits deliberate
+  stretching. Per-image locks are session-local and default to locked on reopen.
 - Dedicated pupil ink/eraser and page-navigation controls while live. Pupil
   handlers cannot edit text/layout. Freeze pins its complete view and disables
   those controls; teacher edits/navigation stay private until Resume publishes
-  the completed document/page. The teacher sees frozen/live status.
+  the completed document/page. Teacher and pupil have visible quick Ink/Erase
+  buttons with highlighted active mode. The teacher sees frozen/live status.
 - Completed edits schedule autosave after 300 ms; pointer motion/preview strokes
   do not save. Status shows Saved, Unsaved, save failure and recovered-previous
   state. Save-only status refresh preserves a current in-progress gesture.
@@ -58,26 +62,89 @@ launcher reports missing prerequisites and performs no fallback installation.
   state. A successful reopen closes the old session; closing the teacher window
   attempts a save and requires an explicit discard if that save fails.
 
-Text/property forms use **Apply selected changes** and the name field uses
-**Rename lesson**. Save status describes applied lesson commands; unapplied form
-drafts are not lesson content. A stale property/title edit cannot overwrite a
-newer revision. Reload selected fields explicitly to discard a stale form draft.
+Text/property forms now update automatically after a short pause, with grouped
+Undo for a typing burst. Pending changes are committed before selection,
+navigation, saving or closing; no repeated Apply click is required. A stale draft
+cannot overwrite a newer revision and is retained for explicit review/reload.
+The name field retains **Rename lesson**; **Save now** also commits a valid
+pending name. Save failures retain unsaved work and close requires an explicit
+discard if persistence failed.
 
-The initial image seam is deliberately narrow: the explicit demo imports a
-generated synthetic PNG into a separate candidate MediaStore. Its model stores
-only immutable asset/version/digest references. A validated callback resolves
-those exact managed versions; the session checks the digest, and the renderer
-checks supported format, 20 MiB byte and 25-million-pixel limits before decoding.
-Logical resizing transforms the bounded source pixmap rather than allocating a
-model-sized raster. Missing/damaged media keeps an unavailable placeholder and
-does not retrieve or generate a replacement. A general image import/library
-picker is not yet part of this GUI; a blank candidate has no image-add action.
+**Save a copy** creates a separately named, self-contained lesson in a readable
+folder under `.local/teaching-board-candidate/saved-lessons/data/` and switches only after the saved copy is validated. The
+original remains available. Referenced images, including saved-history images,
+and allowlisted provenance are copied; local prompts, jobs, unrelated images,
+logs and crash evidence are excluded. Each copy has its own bounded history and
+fresh lesson identity; its chosen title is consistent through that copied history.
+The copy includes **Open Teaching Board Lesson.cmd**. **Open saved lessons** now
+opens the shared `.local/teaching-board-candidate/saved-lessons/` folder, which
+contains a title-labelled reopen entry for every saved teacher lesson. Existing
+lessons remain at their original paths and are included without moving their
+content, images or history. Renaming updates the named entry; equal titles stay
+distinct. Automated test and crash-reproduction lessons are excluded. The visible
+location distinguishes this shared folder from the current lesson's data.
+**Save and close** closes both views. Save/Rename still update the current lesson rather than creating
+another copy. Missing referenced media prevents an incomplete copy; failed final
+opening after publication identifies the preserved copy's location.
 
-Dedicated Board voice, remote AI/Hermes, general document/media import, portable
+This corrects a reproduced discovery defect: the former folder button opened
+only the active UUID directory, so independently saved copies appeared missing.
+See the [saved-lessons investigation](2026-10-25-teaching-board-saved-lessons-fix.md)
+for the failing reproduction, verification and existing-lesson preservation check.
+
+**Reopen saved** and **Save a copy** require Resume while the pupil view is frozen,
+so neither silently publishes private teacher edits. Saving itself remains
+available while frozen. An already running candidate retains its old controls
+until restarted; all new interactions need fresh participant retests. See the
+[feedback and retest record](2026-10-25-teaching-board-manual-feedback.md).
+
+**Add image…** now offers a saved-image library and local PNG/JPEG/WebP files,
+with preview and explicit **Insert on this page**. Choose an existing library
+folder containing `media.sqlite3`, search titles/tags and select the exact saved
+version, or use the Local file tab. The chooser browses library metadata
+read-only and remembers only the explicitly chosen source location. It does not
+load companion settings or start sync. See the
+[image-insertion workflow and evidence](2026-10-25-teaching-board-image-insertion.md).
+
+Chosen bytes are validated and retained in the lesson's own managed media before
+one undoable image-add command is published. Immutable asset/version/digest
+references keep the lesson independent of later canonical changes or removed
+source files. The session verifies the digest; the renderer checks supported
+format, 20 MiB and 25-million-pixel limits. Logical resizing transforms the
+bounded source pixmap rather than allocating a model-sized raster. Missing or
+damaged media keeps an unavailable placeholder without retrieval/generation.
+
+Dedicated Board voice, remote AI/Hermes, wider paste/drop and document imports, portable
 packages, PDF export and board sync are later slices. No provider, Office target,
 receiver, microphone, paid call or device operation is connected here.
 
 ## Local verification and remaining acceptance
+
+The later [image-insertion evidence](2026-10-25-teaching-board-image-insertion.md)
+records independent native integration, final focused search/lifecycle checks
+and visual review of the chooser and both Board windows. The results below
+remain earlier checkpoints; none substitutes for the pending participant
+file/library insertion and close/relaunch retest.
+
+After implementing the confirmed feedback, the integrated synthetic native suite
+passed **133 tests, no skips, in 4.54 s** outside the sandbox for real Windows
+junction checks:
+
+```powershell
+& .local/teaching-board-renderer-env/Scripts/python.exe -m pytest tools/compose/tests/test_board_editor_ux.py tools/compose/tests/test_board_candidate.py tools/compose/tests/test_board_resize.py tools/compose/tests/test_board_model.py tools/compose/tests/test_board_session.py tools/compose/tests/test_board_store.py tools/compose/tests/test_board_lessons.py -q -rs --basetemp .local/teaching-board-candidate/pytest-board-ux-integrated-final
+```
+
+An independent B3 fixture regression passed **36 tests in 0.49 s**. A separate
+actual two-window smoke completed seven synthetic checks and exited successfully;
+its private evidence is under
+`.local/teaching-board-candidate/feedback-native-smoke-20261025-1536/`. The copy
+backend's nine-test focused run overlaps the integrated suite; these counts are
+not added. Independent copy-flow review confirmed success-before-switch, retained
+source on cancellation/failure, location/reopen guidance and frozen-view guards.
+No participant lesson/process was altered by these synthetic checks. They do not
+establish a fix for the historical native Next crash or new physical acceptance.
+
+The following earlier checkpoint results remain historical evidence:
 
 Focused native Qt integration checks passed **13 tests, no skips, in 0.63 s**:
 
@@ -106,9 +173,16 @@ history. Raw JSON and visually inspected teacher/pupil captures remain ignored
 under that folder's `evidence/`. Both available displays were enumerated; their
 names/identities are not published here.
 
-No real pen, touch, stylus eraser, palm rejection, projector placement, mixed-DPI
-recovery, keyboard-only accessibility or teaching rehearsal has passed yet.
-Gesture handlers are candidates for those physical checks, not evidence they
-work on the user's hardware. Package launch on another Windows installation and
-the dependency/licence audit remain open. No deployment or classroom gate was
-closed by these local results.
+The later [participant feedback](2026-10-25-teaching-board-manual-feedback.md)
+records user-reported passes for pen, touch and second-display checks, plus the
+basic editor/navigation/Freeze workflow. Image resizing works but distorts
+proportions; aspect locking and other interaction changes are requested.
+Close/reopen and durable undo/redo checks remain incomplete because the saving
+and reopening workflow was unclear. The earlier confirmed native Next crash is
+retained; a passing navigation retest does not establish its root cause or fix.
+
+Physical stylus eraser, palm rejection, projector-specific behaviour, broader
+mixed-DPI recovery, keyboard-only accessibility and teaching rehearsal are not
+separately established. Package launch on another Windows installation and the
+dependency/licence audit remain open. No deployment or classroom gate is closed
+by the local checks or participant feedback.

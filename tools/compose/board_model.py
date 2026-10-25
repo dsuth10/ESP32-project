@@ -209,6 +209,9 @@ class BoardModel:
         validate_document(document)
         self._document = copy.deepcopy(document)
         self._undo, self._redo = [], []
+        # A live property editor may coalesce only consecutive edits to the same
+        # object. This transient identity is deliberately absent from checkpoints.
+        self._edit_group = None
         self._lock = threading.RLock()
 
     @property
@@ -318,9 +321,11 @@ class BoardModel:
             else:
                 raise BoardValidationError('Lesson state exceeds the storage limit.')
 
-    def apply(self, commands, *, expected_revision):
+    def apply(self, commands, *, expected_revision, edit_group=None):
         with self._lock:
             self._expect(expected_revision)
+            if edit_group is not None:
+                _id(edit_group)
             if not isinstance(commands, list) or not 1 <= len(commands) <= 100:
                 raise BoardValidationError('An edit batch needs 1–100 commands.')
             if len(canonical_json(commands)) > MAX_DOCUMENT_BYTES:
@@ -330,10 +335,22 @@ class BoardModel:
                 self._command(candidate, command)
             candidate['revision'] = self.revision + 1
             validate_document(candidate)
-            self._undo.append(self._document)
+            group = None
+            if edit_group is not None:
+                if len(commands) != 1 or commands[0]['op'] != 'update_object':
+                    raise BoardValidationError('Live edit groups support one object update only.')
+                group = (edit_group, commands[0]['page_id'], commands[0]['object_id'])
+            if group is None or group != self._edit_group or not self._undo:
+                self._undo.append(self._document)
             self._document, self._redo = candidate, []
+            self._edit_group = group
             self._trim_history()
             return self.snapshot()
+
+    def end_edit_group(self):
+        """Keep the saved edit history while ending a transient typing burst."""
+        with self._lock:
+            self._edit_group = None
 
     def _travel(self, source, destination, expected_revision):
         self._expect(expected_revision)
@@ -345,6 +362,7 @@ class BoardModel:
         destination.append(self._document)
         source.pop()
         self._document = candidate
+        self._edit_group = None
         self._trim_history()
         return self.snapshot()
 

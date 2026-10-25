@@ -7,6 +7,8 @@
 | Document | Use it for |
 | --- | --- |
 | [Consolidated branch programme](2026-10-21-companion-media-agent-master-plan.md) | Fixed decisions, implemented versus unaccepted work, M0–M9 roadmap, dependencies and completion dashboard. |
+| [Teaching Board candidate](2026-10-25-teaching-board-candidate.md) | Isolated teacher/pupil editor, saving/copies, native verification and pending participant acceptance. |
+| [Teaching Board image insertion](2026-10-25-teaching-board-image-insertion.md) | Saved-library/local-file chooser, preview, lesson-owned images, resize/Undo/reopen workflow and bounded evidence. |
 | [Gemini-first image provider plan](2026-10-24-gemini-image-provider-plan.md) | Selectable image producers; G5 readiness and bounded G6 rendering/refinement verified, with physical generated-image and teacher acceptance separate. |
 | [Gemini/workflow implementation](2026-10-24-image-provider-g3-g4-implementation.md) | Offline adapter/workflow implementation record; subsequent real account and first-attempt evidence is recorded separately below. |
 | [First Gemini trial attempt](2026-10-24-gemini-first-attempt-checkpoint.md) | Historical first HTTP 400 failure and diagnostic correction, followed by the live-trial resolution below. |

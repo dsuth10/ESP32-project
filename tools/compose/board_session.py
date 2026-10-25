@@ -121,10 +121,10 @@ class BoardSession:
                     'can_edit_layout': False, 'can_annotate': not self._frozen,
                     'can_navigate': not self._frozen}
 
-    def teacher_apply(self, commands, *, expected_revision, expected_token):
+    def teacher_apply(self, commands, *, expected_revision, expected_token, edit_group=None):
         with self._lock:
             self._expect(expected_token)
-            self._model.apply(commands, expected_revision=expected_revision)
+            self._model.apply(commands, expected_revision=expected_revision, edit_group=edit_group)
             self._completed_edit()
             return self.teacher_view()
 
@@ -147,6 +147,7 @@ class BoardSession:
             self._expect(expected_token)
             self._find_page(self._model.snapshot(), page_id)
             if page_id != self._teacher_page:
+                self._model.end_edit_group()
                 self._teacher_page = page_id
                 self._generation += 1
                 if not self._frozen:
@@ -157,6 +158,7 @@ class BoardSession:
         with self._lock:
             self._expect(expected_token)
             if not self._frozen:
+                self._model.end_edit_group()
                 self._frozen = True
                 self._generation += 1
                 self._published_token = self._token()
@@ -166,6 +168,7 @@ class BoardSession:
         with self._lock:
             self._expect(expected_token)
             if self._frozen:
+                self._model.end_edit_group()
                 self._frozen = False
                 self._generation += 1
                 self._publish()
@@ -182,6 +185,7 @@ class BoardSession:
             self._expect_pupil(expected_token)
             self._find_page(self._published, page_id)
             if page_id != self._pupil_page:
+                self._model.end_edit_group()
                 self._teacher_page = page_id
                 self._generation += 1
                 self._publish()

@@ -13,7 +13,7 @@ import os
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QTimer, QPointF, QEvent, QBuffer, QIODevice
+from PySide6.QtCore import Qt, QTimer, QPointF, QRectF, QEvent, QBuffer, QIODevice
 from PySide6.QtGui import (QColor, QPen, QBrush, QPixmap, QPainterPath, QFont,
                           QGuiApplication, QImage, QPainter, QPointingDevice,
                           QImageReader, QTransform)
@@ -26,6 +26,15 @@ from board_model import BoardModel, BoardValidationError, new_lesson, new_page, 
 from board_store import BoardStore
 from board_session import BoardSession
 from media_store import MediaStore
+import uuid
+from PySide6.QtCore import QSignalBlocker, QUrl
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QInputDialog
+from board_lessons import (copy_saved_lesson, refresh_saved_lesson_access,
+                           new_saved_lesson_directory, is_catalogue_lesson)
+from board_resize import handle_positions, resize_frame
+from board_images import import_prepared, safe_path
+from board_image_picker import ImagePicker
 
 REPOSITORY = Path(__file__).resolve().parents[2]
 CANDIDATE_ROOT = REPOSITORY / '.local' / 'teaching-board-candidate'
@@ -127,6 +136,7 @@ class BoardCanvas(QGraphicsView):
         self.owner, self.audience = owner, audience
         self.view = None
         self.points, self.capture, self.preview = [], None, None
+        self.resize_state = None
         self.missing_images = False
         self.page_item = None
         self.zoom = 100
@@ -140,6 +150,7 @@ class BoardCanvas(QGraphicsView):
         if not self.audience and not self.owner.refreshing:
             selected = self.scene().selectedItems()
             self.owner.select(selected[0].data(0) if selected else None)
+            self.viewport().update()
 
     def render(self, view):
         if (self.view and self.view['document'] == view['document'] and self.view['page_id'] == view['page_id']
@@ -149,7 +160,13 @@ class BoardCanvas(QGraphicsView):
         self.cancel_gesture()
         self.view = view
         self.missing_images = False
-        self.scene().clear()
+        # Destruction must not call selection handlers with partly deleted items.
+        self.page_item = None
+        self.scene().blockSignals(True)
+        try:
+            self.scene().clear()
+        finally:
+            self.scene().blockSignals(False)
         page = page_from(view)
         self.scene().setSceneRect(0, 0, page['width'], page['height'])
         self.scene().setBackgroundBrush(QColor('#DDE2E7'))
@@ -214,6 +231,99 @@ class BoardCanvas(QGraphicsView):
             self.fitInView(self.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio)
             self.scale(self.zoom/100, self.zoom/100)
 
+    def selected_frame(self):
+        if self.audience or not self.view or self.mode() != 'Select / move':
+            return None
+        value = next((o for o in page_from(self.view)['objects']
+                      if o['id'] == self.owner.selected), None)
+        if value and not value['locked'] and value['type'] in ('text', 'image', 'shape', 'arrow'):
+            return value
+        return None
+
+    def drawForeground(self, painter, rect):
+        super().drawForeground(painter, rect)
+        value = self.selected_frame()
+        if value is None:
+            return
+        if self.resize_state:
+            value = {**value, **self.resize_state['changes']}
+        positions = handle_positions(value)
+        painter.save()
+        pen = QPen(QColor('#1769B0'), 1, Qt.PenStyle.DashLine); pen.setCosmetic(True)
+        painter.setPen(pen); painter.setBrush(Qt.BrushStyle.NoBrush)
+        path = QPainterPath(QPointF(*positions['nw']))
+        for key in ('ne', 'se', 'sw', 'nw'):
+            path.lineTo(QPointF(*positions[key]))
+        painter.drawPath(path)
+        pen.setStyle(Qt.PenStyle.SolidLine); painter.setPen(pen)
+        painter.setBrush(QColor('white'))
+        half = 5/max(abs(self.transform().m11()), .0001)
+        for x, y in positions.values():
+            painter.drawRect(QRectF(x-half, y-half, half*2, half*2))
+        painter.restore()
+
+    def resize_handle_at(self, position):
+        value = self.selected_frame()
+        if value:
+            for key, point in handle_positions(value).items():
+                centre = self.mapFromScene(QPointF(*point))
+                if abs(centre.x()-position.x()) <= 8 and abs(centre.y()-position.y()) <= 8:
+                    return key
+        return None
+
+    def begin_resize(self, handle, position=None):
+        value = self.selected_frame()
+        if value is None:
+            return False
+        item = next((item for item in self.scene().items() if item.data(0) == value['id']), None)
+        if item is None:
+            return False
+        view = self.owner.session.teacher_view()
+        self.capture = (view['revision'], view['token'], 'resize')
+        pointer = self.mapToScene(position.toPoint()) if position is not None else QPointF(*handle_positions(value)[handle])
+        anchor = handle_positions(value)[handle]
+        self.resize_state = dict(value=copy.deepcopy(value), item=item, handle=handle,
+                                 pointer_offset=(pointer.x()-anchor[0], pointer.y()-anchor[1]),
+                                 keep_aspect=self.owner.is_aspect_locked(value['id']),
+                                 changes={key: value[key] for key in ('x', 'y', 'width', 'height')})
+        return True
+
+    def preview_resize(self, position):
+        state = self.resize_state
+        if state is None:
+            return
+        view = self.owner.session.teacher_view()
+        if self.capture[:2] != (view['revision'], view['token']):
+            self.cancel_gesture(); return
+        point = self.mapToScene(position.toPoint())
+        offset = state['pointer_offset']
+        changes = resize_frame(state['value'], state['handle'], (point.x()-offset[0], point.y()-offset[1]),
+                               keep_aspect=state['keep_aspect'])
+        state['changes'] = changes
+        self.preview_frame(state['item'], state['value'], changes)
+        self.viewport().update()
+
+    @staticmethod
+    def preview_frame(item, original, changes):
+        width, height = changes['width'], changes['height']
+        if original['type'] == 'text':
+            item.setTextWidth(width)
+        elif original['type'] == 'shape' or (original['type'] == 'image' and not hasattr(item, 'pixmap')):
+            item.setRect(0, 0, width, height)
+        elif original['type'] == 'image':
+            pixmap = item.pixmap()
+            item.setTransform(QTransform.fromScale(width/pixmap.width(), height/pixmap.height()))
+        elif original['type'] == 'arrow':
+            geometry = size_changes(original, width, height)
+            first, last = geometry['start'], geometry['end']
+            path = QPainterPath(QPointF(*first)); path.lineTo(QPointF(*last))
+            angle = math.atan2(last[1]-first[1], last[0]-first[0])
+            for offset in (-.5, .5):
+                path.moveTo(*last)
+                path.lineTo(last[0]-25*math.cos(angle+offset), last[1]-25*math.sin(angle+offset))
+            item.setPath(path)
+        item.setPos(changes['x'], changes['y'])
+
     def resizeEvent(self, event):
         super().resizeEvent(event); self.fit()
 
@@ -229,6 +339,10 @@ class BoardCanvas(QGraphicsView):
 
     def begin_ink(self, position, source, eraser=False):
         if not self.can_ink():
+            return
+        # A preceding live text/size edit must finish before this gesture's
+        # revision is captured; its timer must not cancel the new stroke.
+        if not self.owner.flush_pending_edits():
             return
         view = self.owner.session.pupil_view() if self.audience else self.owner.session.teacher_view()
         self.capture = (view['revision'], view['token'], source)
@@ -265,9 +379,13 @@ class BoardCanvas(QGraphicsView):
             self.owner.ink(self.audience, points, capture)
 
     def cancel_gesture(self):
+        if self.resize_state is not None:
+            state, self.resize_state = self.resize_state, None
+            self.preview_frame(state['item'], state['value'], state['value'])
         if self.preview is not None:
             self.scene().removeItem(self.preview)
         self.preview, self.points, self.capture = None, [], None
+        self.viewport().update()
 
     def tabletEvent(self, event):
         eraser = event.pointingDevice().pointerType() == QPointingDevice.PointerType.Eraser
@@ -301,6 +419,12 @@ class BoardCanvas(QGraphicsView):
         if self.mode() in ('Ink', 'Erase ink'):
             self.begin_ink(event.position(), 'mouse')
         elif not self.audience:
+            if not self.owner.flush_pending_edits():
+                event.accept(); return
+            if event.button() == Qt.MouseButton.LeftButton:
+                handle = self.resize_handle_at(event.position())
+                if handle is not None and self.begin_resize(handle, event.position()):
+                    event.accept(); return
             view = self.owner.session.teacher_view()
             self.capture = (view['revision'], view['token'], 'move')
             self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag if self.mode() == 'Pan' else QGraphicsView.DragMode.RubberBandDrag)
@@ -308,12 +432,26 @@ class BoardCanvas(QGraphicsView):
             super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        if self.points:
+        if self.resize_state is not None:
+            self.preview_resize(event.position()); event.accept()
+        elif self.points:
             self.extend_ink(event.position())
         elif not self.audience:
             super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
+        if self.resize_state is not None:
+            self.preview_resize(event.position())
+            if self.resize_state is not None:
+                state, capture = self.resize_state, self.capture
+                original, changes = state['value'], state['changes']
+                self.cancel_gesture()
+                if any(abs(changes[key]-original[key]) > .001 for key in changes):
+                    command_changes = size_changes(original, changes['width'], changes['height'])
+                    command_changes.update(x=changes['x'], y=changes['y'])
+                    self.owner.apply([dict(op='update_object', page_id=self.view['page_id'],
+                                           object_id=original['id'], changes=command_changes)], capture)
+            event.accept(); return
         if self.points:
             self.finish_ink(event.position()); return
         if self.audience:
@@ -343,13 +481,25 @@ class PupilWindow(QWidget):
 
 
 class BoardCandidate(QWidget):
-    def __init__(self, session, *, store=None, resolver=None):
+    def __init__(self, session, *, store=None, resolver=None, library_root=None):
         super().__init__()
         self.session, self.store, self.resolver = session, store, resolver
+        self.library_root = Path(library_root) if library_root else None
         self.selected, self.refreshing, self.media_unavailable = None, False, False
         self.selection_view = None
         self.name_capture = None
+        self.aspect_locks = {}
+        self._loading_fields = False
+        self._pending_fields = set()
+        self._pending_view = None
+        self._property_group = None
+        self._committing_properties = False
+        self.property_timer = QTimer(self); self.property_timer.setSingleShot(True)
+        self.property_timer.timeout.connect(self.flush_pending_edits)
+        self.group_timer = QTimer(self); self.group_timer.setSingleShot(True)
+        self.group_timer.timeout.connect(self.end_property_group)
         self.error = ''
+        self.catalogue_error = ''
         self.recovery_notice = session.teacher_view().get('recovery_status') == 'recovered_previous'
         self.save_timer = QTimer(self); self.save_timer.setSingleShot(True)
         self.save_timer.timeout.connect(self.autosave)
@@ -361,12 +511,29 @@ class BoardCandidate(QWidget):
         self.name = QLineEdit(session.teacher_view()['document']['title'])
         self.name.textEdited.connect(self.capture_name_edit)
         top.addWidget(self.name, 1)
-        for label, command in [('Rename lesson', self.rename), ('Save now', self.autosave), ('Reopen saved', self.reopen)]:
+        self.name.setToolTip('Change this lesson name. Save a copy creates a separate lesson.')
+        for label, command in [('Rename lesson', self.rename)]:
             button = QPushButton(label); button.clicked.connect(command); top.addWidget(button)
+        files = QHBoxLayout(); layout.addLayout(files)
+        self.file_buttons = {}
+        for label, command in [('Save now', self.save_now), ('Reopen saved', self.reopen),
+                               ('Save a copy', self.save_copy), ('Open saved lessons', self.open_lesson_folder),
+                               ('Save and close', self.close)]:
+            button = QPushButton(label); button.clicked.connect(command); files.addWidget(button)
+            self.file_buttons[label] = button
+        self.location = QLabel(); self.location.setWordWrap(True)
+        self.location.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        layout.addWidget(self.location)
+        tools = QHBoxLayout(); layout.addLayout(tools)
+        self.teacher_tools = {}
+        for label in ('Select / move', 'Ink', 'Erase ink', 'Pan'):
+            button = QPushButton(label); button.setCheckable(True)
+            button.clicked.connect(lambda checked=False, mode=label: self.set_tool(False, mode))
+            tools.addWidget(button); self.teacher_tools[label] = button
         toolbar = QHBoxLayout(); layout.addLayout(toolbar)
         self.mode = QComboBox(); self.mode.addItems(['Select / move', 'Ink', 'Erase ink', 'Pan'])
-        self.mode.currentTextChanged.connect(lambda: self.teacher_canvas.cancel_gesture())
-        toolbar.addWidget(self.mode)
+        self.mode.hide()
+        self.mode.currentTextChanged.connect(lambda: self.tool_changed(False))
         for label, command in [('Previous', lambda: self.navigate(-1)), ('Next', lambda: self.navigate(1)),
                                ('New page', self.add_page), ('Undo', self.undo), ('Redo', self.redo),
                                ('Freeze', self.freeze), ('Resume', self.resume)]:
@@ -377,6 +544,8 @@ class BoardCandidate(QWidget):
         self.teacher_canvas = BoardCanvas(self); splitter.addWidget(self.teacher_canvas)
         side = QWidget(); side_layout = QVBoxLayout(side); splitter.addWidget(side)
         side.setMaximumWidth(320)
+        self.add_image_button = QPushButton('Add image…')
+        self.add_image_button.clicked.connect(self.add_image); side_layout.addWidget(self.add_image_button)
         for label, kind in [('Add text', 'text'), ('Rectangle', 'rectangle'), ('Ellipse', 'ellipse'), ('Arrow', 'arrow')]:
             button = QPushButton(label); button.clicked.connect(lambda checked=False, k=kind: self.add_object(k)); side_layout.addWidget(button)
         self.text = QTextEdit(); self.text.setPlaceholderText('Select a text box to edit its text.'); self.text.setMaximumHeight(120)
@@ -387,8 +556,15 @@ class BoardCandidate(QWidget):
             spin = QDoubleSpinBox(); spin.setDecimals(1); spin.setRange(-100000 if field in ('x', 'y') else .1, 100000)
             form.addRow(label, spin); self.fields[field] = spin
         self.font_size = QSpinBox(); self.font_size.setRange(1, 1000); form.addRow('Text size', self.font_size)
-        apply_button = QPushButton('Apply selected changes'); apply_button.clicked.connect(self.apply_properties); side_layout.addWidget(apply_button)
-        reload_button = QPushButton('Reload selected fields'); reload_button.clicked.connect(lambda: self.select(self.selected)); side_layout.addWidget(reload_button)
+        self.aspect_lock = QCheckBox('Lock image aspect ratio'); self.aspect_lock.setChecked(True)
+        self.aspect_lock.toggled.connect(self.set_aspect_lock); side_layout.addWidget(self.aspect_lock)
+        live_notice = QLabel('Text and size changes update live. Freeze keeps edits private from pupils.')
+        live_notice.setWordWrap(True); side_layout.addWidget(live_notice)
+        self.text.textChanged.connect(lambda: self.queue_property_edit('text'))
+        for field, spin in self.fields.items():
+            spin.valueChanged.connect(lambda value, key=field: self.queue_property_edit(key))
+        self.font_size.valueChanged.connect(lambda: self.queue_property_edit('font_size'))
+        reload_button = QPushButton('Reload selected fields'); reload_button.clicked.connect(self.reload_selected_fields); side_layout.addWidget(reload_button)
         side_layout.addStretch()
         self.show_pupil = QCheckBox('Show pupil window'); self.show_pupil.setChecked(True)
         side_layout.addWidget(self.show_pupil)
@@ -400,26 +576,45 @@ class BoardCandidate(QWidget):
         pupil_layout = QVBoxLayout(self.pupil)
         self.pupil_canvas = BoardCanvas(self, True); pupil_layout.addWidget(self.pupil_canvas, 1)
         pupil_controls = QHBoxLayout(); pupil_layout.addLayout(pupil_controls)
-        self.pupil_mode = QComboBox(); self.pupil_mode.addItems(['Ink', 'Erase ink']); pupil_controls.addWidget(self.pupil_mode)
+        self.pupil_mode = QComboBox(); self.pupil_mode.addItems(['Ink', 'Erase ink']); self.pupil_mode.hide()
+        self.pupil_tools = {}
+        for label in ('Ink', 'Erase ink'):
+            button = QPushButton(label); button.setCheckable(True)
+            button.clicked.connect(lambda checked=False, mode=label: self.set_tool(True, mode))
+            pupil_controls.addWidget(button); self.pupil_tools[label] = button
         self.pupil_nav = []
         for label, delta in [('Previous page', -1), ('Next page', 1)]:
             button = QPushButton(label); button.clicked.connect(lambda checked=False, d=delta: self.navigate(d, True))
             pupil_controls.addWidget(button); self.pupil_nav.append(button)
         self.pupil_page = QLabel(); pupil_controls.addWidget(self.pupil_page)
         self.show_pupil.toggled.connect(self.pupil.setVisible)
-        self.pupil_mode.currentTextChanged.connect(lambda: self.pupil_canvas.cancel_gesture())
+        self.pupil_mode.currentTextChanged.connect(lambda: self.tool_changed(True))
         self.resize(1240, 820); self.pupil.resize(1000, 650)
         self.refresh()
+        if not self.session.teacher_view()['dirty']:
+            self.sync_saved_lessons()
 
     def refresh(self):
         self.refreshing = True; self.media_unavailable = False
         teacher, pupil = self.session.teacher_view(), self.session.pupil_view()
+        if self.selection_view is not None and not self._pending_fields:
+            old_value = next((o for o in page_from(self.selection_view)['objects'] if o['id'] == self.selected), None)
+            new_value = next((o for o in page_from(teacher)['objects'] if o['id'] == self.selected), None)
+            if old_value != new_value:
+                self.select(self.selected)
+            else:
+                self.selection_view = teacher
         self.teacher_canvas.render(teacher); self.pupil_canvas.render(pupil)
         self.media_unavailable = self.teacher_canvas.missing_images or self.pupil_canvas.missing_images
         self.setWindowTitle('Teaching Board — ' + teacher['document']['title'] + ' — experimental')
         if not self.name.isModified():
             self.name.setText(teacher['document']['title'])
         self.pupil_mode.setEnabled(not pupil['frozen'])
+        for label, button in self.teacher_tools.items():
+            button.setChecked(self.mode.currentText() == label)
+        for label, button in self.pupil_tools.items():
+            button.setChecked(self.pupil_mode.currentText() == label)
+            button.setEnabled(not pupil['frozen'])
         for button in self.pupil_nav:
             button.setEnabled(not pupil['frozen'])
         page_index = next(i for i, p in enumerate(pupil['document']['pages']) if p['id'] == pupil['page_id'])
@@ -434,8 +629,25 @@ class BoardCandidate(QWidget):
             parts.append('An image is unavailable; its position is preserved')
         if self.error:
             parts.append(self.error)
+        if self.catalogue_error:
+            parts.append(self.catalogue_error)
         if self.name.isModified():
             parts.append('Lesson name has unapplied changes')
+        if self._pending_fields:
+            parts.append('Text or size changes are waiting to be applied' if self.error else 'Updating text or size')
+        if self.store:
+            launcher = next((name for name in ('Open Teaching Board Lesson.cmd', 'Open Teaching Board Test.cmd')
+                             if (self.store.root / name).is_file()), None)
+            reopen_hint = ('Close the teacher window, then run ' + launcher + ' in this folder to reopen.' if launcher
+                           else 'Close the teacher window, then relaunch with this same lesson folder to reopen.')
+            if is_catalogue_lesson(self.store.root):
+                self.location.setText('Saved lessons: ' + str(CANDIDATE_ROOT / 'saved-lessons')
+                                      + '\nCurrent lesson data: ' + str(self.store.root)
+                                      + '\nUse Open saved lessons and double-click a lesson name to reopen it.')
+            else:
+                self.location.setText('Lesson data: ' + str(self.store.root) + '\n' + reopen_hint)
+        else:
+            self.location.setText('No lesson folder configured')
         self.status.setText(' · '.join(parts))
         self.refreshing = False
 
@@ -452,10 +664,13 @@ class BoardCandidate(QWidget):
         view = self.session.teacher_view()
         revision, token = capture[:2] if capture else (view['revision'], view['token'])
         self.run(lambda: self.session.teacher_apply(commands, expected_revision=revision, expected_token=token))
-        if capture and len(capture) > 2 and capture[2] == 'move' and not self.error:
+        if capture and len(capture) > 2 and capture[2] in ('move', 'resize') and not self.error:
             self.select(self.selected)
 
     def add_object(self, kind):
+        if not self.flush_pending_edits():
+            return
+        self.end_property_group()
         view = self.session.teacher_view(); page = page_from(view)
         if kind == 'text':
             value = new_object('text', x=120, y=160, width=600, height=160, text='New text', font_size=40)
@@ -467,34 +682,226 @@ class BoardCandidate(QWidget):
         self.apply([dict(op='add_object', page_id=page['id'], object=value)])
         self.select(value['id'])
 
+    def image_library_root(self):
+        if self.library_root is not None:
+            return self.library_root
+        if self.store:
+            preference = safe_path(self.store.root / 'image-library-source.json')
+            if preference.is_file() and preference.stat().st_size < 32768:
+                try:
+                    value = json.loads(preference.read_text(encoding='utf-8'))
+                    if isinstance(value, dict) and isinstance(value.get('root'), str):
+                        return Path(value['root'])
+                except (OSError, ValueError):
+                    pass
+        explicit = os.environ.get('ESP32_COMPANION_DATA_DIR')
+        return Path(explicit) if explicit else self.store.root / 'media' if self.store else CANDIDATE_ROOT / 'review/media'
+
+    def remember_image_library(self, root):
+        self.library_root = Path(root)
+        if self.store:
+            # Local chooser preference only; saved-copy/export helpers copy only
+            # referenced media and documents, never this private source location.
+            preference = safe_path(self.store.root / 'image-library-source.json')
+            preference.write_text(json.dumps({'root': str(root)}), encoding='utf-8')
+
+    def add_image(self):
+        if not self.flush_pending_edits():
+            return False
+        self.end_property_group()
+        if self.store is None:
+            self.error = 'Save this lesson in a local folder before inserting images.'
+            self.refresh(); return False
+        capture = self.session.teacher_view()
+        try:
+            picker = ImagePicker(self, library_root=self.image_library_root(), decoder=decode_image,
+                                 remember_library=self.remember_image_library)
+        except Exception:
+            self.error = 'The image chooser could not open. Check this lesson’s local image storage and try again.'
+            self.refresh(); return False
+        if picker.exec() != ImagePicker.DialogCode.Accepted or picker.prepared is None:
+            return False
+        return self.insert_prepared_image(picker.prepared, capture)
+
+    def insert_prepared_image(self, prepared, capture=None):
+        """One pinned add command, with bytes durable before document publication."""
+        if not self.flush_pending_edits():
+            return False
+        self.end_property_group()
+        captured = capture or self.session.teacher_view()
+        try:
+            current = self.session.teacher_view()
+            if (current['revision'], current['token'], current['page_id']) != (
+                    captured['revision'], captured['token'], captured['page_id']):
+                raise ValueError('The Board changed while choosing an image. Open Add image again for the current page.')
+            if self.store is None:
+                raise ValueError('A local lesson folder is required to retain the image.')
+            # Qt must also be able to decode it before it becomes a Board object.
+            decode_image(prepared.data)
+            media_root = self.store.root / 'media'
+            for name in ('media.sqlite3', 'blobs'):
+                safe_path(media_root / name)
+            media = MediaStore(safe_path(media_root))
+            record = import_prepared(media, prepared)
+            page = page_from(captured)
+            scale = min(page['width'] * .6 / prepared.width, page['height'] * .6 / prepared.height, 1)
+            width, height = prepared.width * scale, prepared.height * scale
+            reference = {key: record[key] for key in ('asset_id', 'version_id', 'sha256')}
+            value = new_object('image', x=(page['width']-width)/2, y=(page['height']-height)/2,
+                               width=width, height=height, image_ref=reference)
+            self.session.teacher_apply([dict(op='add_object', page_id=page['id'], object=value)],
+                                       expected_revision=captured['revision'], expected_token=captured['token'])
+            self.selected = value['id']
+            self.set_tool(False, 'Select / move')
+            self.error = ''; self.refresh(); self.select(value['id'])
+            self.save_timer.start(300)
+            return True
+        except Exception as error:
+            self.error = 'Image was not inserted: ' + str(error)
+            self.refresh(); return False
+
     def select(self, object_id):
+        if not self.flush_pending_edits():
+            return False
+        self.end_property_group()
         self.selected = object_id
         self.selection_view = self.session.teacher_view()
         value = next((o for o in page_from(self.selection_view)['objects'] if o['id'] == object_id), None)
-        self.text.setEnabled(bool(value and value['type'] == 'text'))
+        self._loading_fields = True
+        self.text.setEnabled(bool(value and value['type'] == 'text' and not value['locked']))
+        self.font_size.setEnabled(bool(value and value['type'] == 'text' and not value['locked']))
+        self.aspect_lock.setVisible(bool(value and value['type'] == 'image'))
+        self.aspect_lock.setChecked(self.is_aspect_locked(object_id))
+        self.aspect_lock.setEnabled(bool(value and not value['locked']))
+        for spin in self.fields.values():
+            spin.setEnabled(bool(value and not value['locked']))
         if value:
             for key, spin in self.fields.items():
                 spin.setValue(value[key])
             self.text.setPlainText(value.get('text', ''))
             self.font_size.setValue(round(value.get('font_size', 40)))
+        else:
+            self.text.clear()
+        self._loading_fields = False
+        return True
 
     def apply_properties(self):
-        view = self.selection_view
-        if view is None:
+        """Compatibility entry point; editing widgets now schedule this automatically."""
+        return self.flush_pending_edits()
+
+    def is_aspect_locked(self, object_id):
+        value = next((o for o in page_from(self.session.teacher_view())['objects'] if o['id'] == object_id), None)
+        return bool(value and value['type'] == 'image' and self.aspect_locks.get(object_id, True))
+
+    def set_aspect_lock(self, checked):
+        if self._loading_fields:
             return
-        page = page_from(view)
-        value = next((o for o in page['objects'] if o['id'] == self.selected), None)
+        if not self.flush_pending_edits():
+            with QSignalBlocker(self.aspect_lock):
+                self.aspect_lock.setChecked(self.is_aspect_locked(self.selected))
+            return
+        self.end_property_group()
+        self.aspect_locks[self.selected] = bool(checked)
+
+    def reload_selected_fields(self):
+        """Explicitly discard a stale form draft and load the current object."""
+        self.property_timer.stop(); self.group_timer.stop()
+        self._pending_fields.clear(); self._pending_view = None; self._property_group = None
+        self.error = ''
+        self.select(self.selected)
+        self.refresh()
+
+    def queue_property_edit(self, field):
+        if self._loading_fields or self.refreshing or self._committing_properties or self.selection_view is None:
+            return
+        value = next((o for o in page_from(self.selection_view)['objects'] if o['id'] == self.selected), None)
         if not value or value['locked']:
             return
-        changes = size_changes(value, self.fields['width'].value(), self.fields['height'].value())
-        changes.update(x=self.fields['x'].value(), y=self.fields['y'].value())
-        if value['type'] == 'text':
-            changes.update(text=self.text.toPlainText(), font_size=self.font_size.value())
-        self.apply([dict(op='update_object', page_id=page['id'], object_id=value['id'], changes=changes)], (view['revision'], view['token']))
-        if not self.error:
-            self.select(value['id'])
+        if self._pending_view is None:
+            self._pending_view = self.selection_view
+        self._pending_fields.add(field)
+        if field in ('width', 'height') and self.is_aspect_locked(self.selected):
+            ratio = value['width'] / value['height']
+            width = self.fields['width'].value() if field == 'width' else self.fields['height'].value() * ratio
+            height = width / ratio
+            factor = max(.1 / width, .1 / height, min(1.0, 100000 / width, 100000 / height))
+            width, height = width * factor, height * factor
+            with QSignalBlocker(self.fields['width']), QSignalBlocker(self.fields['height']):
+                self.fields['width'].setValue(width); self.fields['height'].setValue(height)
+            self._pending_fields.update(('width', 'height'))
+        if self._property_group is None:
+            self._property_group = str(uuid.uuid4())
+        self.property_timer.start(120)
+        self.group_timer.start(700)
+
+    def end_property_group(self):
+        self.group_timer.stop()
+        if self._pending_fields and not self.flush_pending_edits():
+            return False
+        self._property_group = None
+        return True
+
+    def flush_pending_edits(self):
+        """Commit the captured draft, or retain it and refuse the dependent action."""
+        if not self._pending_fields or self._committing_properties:
+            return True
+        self.property_timer.stop()
+        self._committing_properties = True
+        view = self._pending_view
+        try:
+            page = page_from(view)
+            value = next(o for o in page['objects'] if o['id'] == self.selected)
+            changes = {}
+            if self._pending_fields & {'width', 'height'}:
+                changes.update(size_changes(value, self.fields['width'].value(), self.fields['height'].value()))
+            for field in self._pending_fields & {'x', 'y'}:
+                changes[field] = self.fields[field].value()
+            if value['type'] == 'text':
+                if 'text' in self._pending_fields:
+                    changes['text'] = self.text.toPlainText()
+                if 'font_size' in self._pending_fields:
+                    changes['font_size'] = self.font_size.value()
+            changes = {key: change for key, change in changes.items() if change != value[key]}
+            current = self.session.teacher_view()
+            if current['revision'] != view['revision'] or current['token'] != view['token']:
+                raise BoardValidationError('The board changed while you edited. Your draft is retained; reload selected fields before trying again.')
+            if changes:
+                self.session.teacher_apply([dict(op='update_object', page_id=page['id'], object_id=value['id'], changes=changes)],
+                                           expected_revision=view['revision'], expected_token=view['token'],
+                                           edit_group=self._property_group)
+            self._pending_fields.clear(); self._pending_view = None
+            self.selection_view = self.session.teacher_view()
+            self.error = ''
+            self.refresh()
+            if self.session.teacher_view()['dirty']:
+                self.save_timer.start(300)
+            return True
+        except Exception as error:
+            self.error = str(error); self.refresh()
+            return False
+        finally:
+            self._committing_properties = False
+
+    def set_tool(self, audience, mode):
+        if audience and self.session.pupil_view()['frozen']:
+            return
+        if not self.flush_pending_edits():
+            self.refresh(); return
+        self.end_property_group()
+        (self.pupil_mode if audience else self.mode).setCurrentText(mode)
+        self.tool_changed(audience)
+
+    def tool_changed(self, audience):
+        canvas = self.pupil_canvas if audience else self.teacher_canvas
+        canvas.cancel_gesture()
+        combo, buttons = (self.pupil_mode, self.pupil_tools) if audience else (self.mode, self.teacher_tools)
+        for label, button in buttons.items():
+            button.setChecked(combo.currentText() == label)
 
     def add_page(self):
+        if not self.flush_pending_edits():
+            return
+        self.end_property_group()
         count = len(self.session.teacher_view()['document']['pages'])
         page = new_page(f'Page {count+1}')
         self.apply([dict(op='add_page', page=page)])
@@ -502,12 +909,16 @@ class BoardCandidate(QWidget):
         self.run(lambda: self.session.teacher_navigate(page['id'], expected_token=view['token']))
 
     def navigate(self, delta, audience=False):
+        if not self.flush_pending_edits():
+            return
+        self.end_property_group()
         view = self.session.pupil_view() if audience else self.session.teacher_view()
         pages = view['document']['pages']; index = next(i for i, p in enumerate(pages) if p['id'] == view['page_id'])
         destination = pages[(index+delta) % len(pages)]['id']
         method = self.session.pupil_navigate if audience else self.session.teacher_navigate
         self.selected = None
         self.run(lambda: method(destination, expected_token=view['token']), save=False)
+        self.select(None)
 
     def ink(self, audience, points, capture):
         if len(points) < 2:
@@ -529,30 +940,57 @@ class BoardCandidate(QWidget):
             self.apply([dict(op='remove_object', page_id=view['page_id'], object_id=object_id)], (view['revision'], view['token']))
 
     def freeze(self):
+        if not self.flush_pending_edits():
+            return
+        self.end_property_group()
         view = self.session.teacher_view()
         self.run(lambda: self.session.freeze(expected_token=view['token']), save=False)
 
     def resume(self):
+        if not self.flush_pending_edits():
+            return
+        self.end_property_group()
         view = self.session.teacher_view()
         self.run(lambda: self.session.resume(expected_token=view['token']), save=False)
 
     def undo(self):
+        if not self.flush_pending_edits():
+            return
+        self.end_property_group()
         view = self.session.teacher_view()
         self.run(lambda: self.session.teacher_undo(expected_revision=view['revision'], expected_token=view['token']))
+        if not self.error:
+            self.select(self.selected)
 
     def redo(self):
+        if not self.flush_pending_edits():
+            return
+        self.end_property_group()
         view = self.session.teacher_view()
         self.run(lambda: self.session.teacher_redo(expected_revision=view['revision'], expected_token=view['token']))
+        if not self.error:
+            self.select(self.selected)
 
     def rename(self):
+        if not self.flush_pending_edits():
+            return False
+        self.end_property_group()
         view = self.session.teacher_view()
         if self.name.text() != view['document']['title']:
             source = self.name_capture or view
+            # Object edits may advance a live session while a name is drafted.
+            # Rebase only if the same lesson/session still has the captured name;
+            # a competing rename remains a stale action requiring review.
+            if (source['document']['lesson_id'] == view['document']['lesson_id']
+                    and source['document']['title'] == view['document']['title']
+                    and source['token'].split(':')[0] == view['token'].split(':')[0]):
+                source = view
             self.apply([dict(op='rename_lesson', title=self.name.text())], (source['revision'], source['token']))
             if self.error:
                 self.name_capture = None
-                return
+                return False
         self.name.setModified(False); self.name_capture = None; self.refresh()
+        return True
 
     def capture_name_edit(self, _text):
         if self.name_capture is None:
@@ -560,13 +998,97 @@ class BoardCandidate(QWidget):
 
     def autosave(self):
         self.save_timer.stop()
+        if not self.flush_pending_edits():
+            return False
         view = self.session.teacher_view()
         if view['dirty']:
             self.run(lambda: self.session.save(expected_token=view['token']), save=False)
+        saved = not self.session.teacher_view()['dirty']
+        if saved:
+            self.sync_saved_lessons()
+        return saved
+
+    def sync_saved_lessons(self):
+        """Discovery failures are separate from successful durable lesson saves."""
+        if self.store is None or not is_catalogue_lesson(self.store.root):
+            return True
+        try:
+            result = refresh_saved_lesson_access((self.store.root,))
+            self.catalogue_error = ('Saved lessons access needs attention: ' + '; '.join(result['warnings'])
+                                    if result['warnings'] else '')
+        except Exception as error:
+            self.catalogue_error = 'Lesson saved, but Saved lessons could not be updated: ' + str(error)
+            self.refresh()
+            return False
+        self.refresh()
+        return True
+
+    def save_now(self):
+        if not self.flush_pending_edits():
+            return False
+        self.end_property_group()
+        if self.name.isModified() and not self.rename():
+            return False
+        return self.autosave()
+
+    def open_lesson_folder(self):
+        if not self.save_now():
+            return
+        try:
+            if self.store is None:
+                raise ValueError('No lesson folder is configured.')
+            result = refresh_saved_lesson_access((self.store.root,))
+            self.catalogue_error = ('Saved lessons access needs attention: ' + '; '.join(result['warnings'])
+                                    if result['warnings'] else '')
+            if not QDesktopServices.openUrl(QUrl.fromLocalFile(str(result['root']))):
+                raise ValueError('The Saved lessons folder could not be opened.')
+            self.error = ''; self.refresh()
+        except Exception as error:
+            self.error = str(error); self.refresh()
+
+    def save_copy(self):
+        if self.session.teacher_view()['frozen']:
+            self.error = 'Resume the pupil display before opening a separate lesson copy. Your frozen view is unchanged.'
+            self.refresh(); return False
+        if not self.save_now():
+            return False
+        title, accepted = QInputDialog.getText(self, 'Save a copy',
+                                              'Name the separate lesson copy. It will open after saving:',
+                                              text=self.session.teacher_view()['document']['title'] + ' — copy')
+        if not accepted:
+            return False
+        try:
+            destination = new_saved_lesson_directory(title)
+        except Exception as error:
+            self.error = str(error); self.refresh(); return False
+        return self._save_copy(destination, title)
+
+    def _save_copy(self, destination, title):
+        if self.session.teacher_view()['frozen']:
+            self.error = 'Resume the pupil display before opening a separate lesson copy. Your frozen view is unchanged.'
+            self.refresh(); return False
+        if not self.save_now():
+            return False
+        try:
+            replacement, store, resolver = copy_saved_lesson(self.session, self.store.root, destination, title)
+        except Exception as error:
+            self.error = str(error); self.refresh(); return False
+        previous = self.session
+        self.session, self.store, self.resolver = replacement, store, resolver
+        previous.close()
+        self.aspect_locks.clear(); self.selected = None; self.selection_view = None
+        self.name.setModified(False); self.name_capture = None
+        self.recovery_notice = False; self.error = ''
+        self.refresh(); self.select(None)
+        self.sync_saved_lessons()
+        return True
 
     def reopen(self):
-        if self.session.teacher_view()['dirty']:
-            self.error = 'Save your changes before reopening.'; self.refresh(); return
+        if self.session.teacher_view()['frozen']:
+            self.error = 'Resume the pupil display before reopening the lesson. Your frozen view is unchanged.'
+            self.refresh(); return
+        if not self.save_now():
+            return
         self.save_timer.stop()
         self.run(self._reopen, save=False)
 
@@ -576,8 +1098,11 @@ class BoardCandidate(QWidget):
         previous = self.session
         self.session = replacement
         previous.close()
+        self.aspect_locks.clear()
         self.recovery_notice = replacement.teacher_view().get('recovery_status') == 'recovered_previous'
-        self.name.setText(replacement.teacher_view()['document']['title']); self.name_capture = None; self.selected = None
+        self.name.setText(replacement.teacher_view()['document']['title']); self.name.setModified(False)
+        self.name_capture = None; self.selected = None; self.selection_view = None
+        self.select(None)
 
     def set_zoom(self, value):
         self.teacher_canvas.zoom = value; self.teacher_canvas.fit()
@@ -588,14 +1113,17 @@ class BoardCandidate(QWidget):
         self.pupil.windowHandle().setScreen(screen); self.pupil.move(screen.geometry().topLeft())
 
     def closeEvent(self, event):
-        self.autosave()
-        if self.session.teacher_view()['dirty']:
+        if not self.flush_pending_edits():
+            event.ignore(); return
+        self.save_now()
+        if self.session.teacher_view()['dirty'] or self.name.isModified():
             choice = QMessageBox.question(self, 'Unsaved lesson', 'The latest changes could not be saved. Close and discard those unsaved changes?',
                                           QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Cancel,
                                           QMessageBox.StandardButton.Cancel)
             if choice != QMessageBox.StandardButton.Discard:
                 event.ignore(); return
-        self.save_timer.stop(); self.session.close(); self.pupil.hide(); event.accept()
+        self.save_timer.stop(); self.property_timer.stop(); self.group_timer.stop()
+        self.session.close(); self.pupil.hide(); event.accept()
 
 
 def smoke(candidate, root):

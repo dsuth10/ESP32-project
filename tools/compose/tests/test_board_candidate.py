@@ -30,6 +30,7 @@ def candidate(app, tmp_path):
     window = BoardCandidate(session, store=store, resolver=resolver)
     yield window
     window.save_timer.stop()
+    window.property_timer.stop(); window.group_timer.stop()
     window.session.close()
     window.pupil.hide(); window.hide(); window.deleteLater()
     app.processEvents()
@@ -86,7 +87,7 @@ def test_stale_property_form_cannot_restore_old_values(candidate):
     candidate.apply_properties()
     assert page_from(candidate.session.teacher_view())['objects'][0]['x'] == 999
     assert candidate.error
-    candidate.select(obj['id'])
+    candidate.reload_selected_fields()
     candidate.fields['x'].setValue(400)
     candidate.apply_properties()
     assert page_from(candidate.session.teacher_view())['objects'][0]['x'] == 400
