@@ -27,8 +27,15 @@ clearance per side and 2 mm walls. This gives an external footprint of
 
 The Codex MCP server `solidcraft` is registered and enabled in the user's global
 configuration. It runs Python 3.13 and `tools/cad/solidcraft_mcp_launcher.py`.
-The launcher connects to `127.0.0.1:7878`; if absent, it opens a SolidCraft window
-with `--control 7878`. This is a separate window from an ordinary shortcut launch.
+As of 25 October 2026, initialisation and tool discovery use a short-lived,
+hidden headless CLI, then exit. Opening Codex does not open a CAD window or keep
+a CAD CLI running for discovery. The first actual CAD tool call (or resource
+read) connects to `127.0.0.1:7878`; if absent, it opens a SolidCraft window with
+`--control 7878`. This is a separate window from an ordinary shortcut launch.
+An existing controlled window is reused. If that window is closed, the next CAD
+request reopens it. The launcher leaves an opened window available for manual
+editing when its MCP connection ends; it does not discard unsaved work.
+Restart Codex once after updating the launcher so existing MCP sessions reload it.
 The bridge authenticates using SolidCraft's own per-launch token and explicitly
 allows this folder. SolidCraft additionally allows its recovery/scratch folders
 and the current design's folder under its documented rules. Do not open a private
