@@ -678,9 +678,9 @@
     "semantic_hash": ""
   },
   "tools/compose/compose_gui.py": {
-    "mtime": 1792844631.4477758,
-    "seen": 1792844974.1172287,
-    "ast_hash": "e79e04b7658bf1585ba8d8ccefd19f52",
+    "mtime": 1792897440.4394784,
+    "seen": 1792898526.0620553,
+    "ast_hash": "7daf4d5d59e5bb31253720ae7b18f456",
     "semantic_hash": ""
   },
   "docs/ESP32_Windows_Compose_Dictate_Implementation_Report.md": {
@@ -900,9 +900,9 @@
     "semantic_hash": ""
   },
   "tools/compose/hermes_panel.py": {
-    "mtime": 1792576607.625194,
-    "seen": 1792827535.8739657,
-    "ast_hash": "8144c7be9630530ce6767a6ce4f465e5",
+    "mtime": 1792897377.2241557,
+    "seen": 1792898526.062064,
+    "ast_hash": "41bc8580e867c3f84228d065a01c222e",
     "semantic_hash": ""
   },
   "tools/compose/hermes_service.py": {
@@ -936,9 +936,9 @@
     "semantic_hash": ""
   },
   "tools/compose/media_panel.py": {
-    "mtime": 1792829787.5313601,
-    "seen": 1792829982.2358348,
-    "ast_hash": "7bbe0a194b9d4672ae56ca667dc358a7",
+    "mtime": 1792897440.4394784,
+    "seen": 1792898526.062075,
+    "ast_hash": "38b5adc975f3e3f14d5bf5b4afaeba02",
     "semantic_hash": ""
   },
   "tools/compose/media_providers.py": {
@@ -1140,9 +1140,9 @@
     "semantic_hash": ""
   },
   "docs/2026-10-21-companion-media-agent-master-plan.md": {
-    "mtime": 1792847887.5261328,
-    "seen": 1792847894.916231,
-    "ast_hash": "5aa73d77c98553a1734da37928c3f5b8",
+    "mtime": 1792898489.1814654,
+    "seen": 1792898526.0621572,
+    "ast_hash": "a4e35cbf3f8062384d41602e9ca47006",
     "semantic_hash": ""
   },
   "docs/2026-10-21-embedded-companion-assistant-design.md": {
@@ -1377,6 +1377,180 @@
     "mtime": 1792847887.5242236,
     "seen": 1792847894.9162352,
     "ast_hash": "90428b17168319754a8d38a1667b00d0",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/solidcraft/connection-check.json": {
+    "mtime": 1792849163.3121486,
+    "seen": 1792898526.0619526,
+    "ast_hash": "53413dd8b15ac4c761050c88be621899",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/solidcraft/modelling-reference-request.json": {
+    "mtime": 1792849199.5213141,
+    "seen": 1792898526.0619552,
+    "ast_hash": "903f0147a8a2751d1d6983432bd310df",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/solidcraft/pilot-build.json": {
+    "mtime": 1792849267.0361638,
+    "seen": 1792898526.0619571,
+    "ast_hash": "5b9fee9d38fa68569198fc3a127f0d45",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/solidcraft/pilot-check-save.json": {
+    "mtime": 1792849311.1883194,
+    "seen": 1792898526.061958,
+    "ast_hash": "02b6298971c46125c2701172bc6644b2",
+    "semantic_hash": ""
+  },
+  "tools/cad/solidcraft_mcp_client.py": {
+    "mtime": 1792849282.2199905,
+    "seen": 1792898526.0620396,
+    "ast_hash": "e028c713ee26d332a73655580dd6966a",
+    "semantic_hash": ""
+  },
+  "tools/cad/solidcraft_mcp_launcher.py": {
+    "mtime": 1792849163.3101442,
+    "seen": 1792898526.0620406,
+    "ast_hash": "8bf0198163a7366335cdd7d3a5e5810a",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_model.py": {
+    "mtime": 1792898134.4961672,
+    "seen": 1792898526.0620475,
+    "ast_hash": "a74325cd0bdfd7481e165a32afe9bef0",
+    "semantic_hash": ""
+  },
+  "tools/compose/board_store.py": {
+    "mtime": 1792898195.2558153,
+    "seen": 1792898526.0620482,
+    "ast_hash": "2a5d9c99dc399ad863f2a4cda3bf2f04",
+    "semantic_hash": ""
+  },
+  "tools/compose/hermes_catalogue.py": {
+    "mtime": 1792897405.8134575,
+    "seen": 1792898526.0620625,
+    "ast_hash": "b89bc81ef0627d00c6563b30f5762fb9",
+    "semantic_hash": ""
+  },
+  "tools/compose/prototypes/teaching_board_renderer/fixture.py": {
+    "mtime": 1792898192.3232918,
+    "seen": 1792898526.0620856,
+    "ast_hash": "35c7193ea8d566049c1251ef3097f784",
+    "semantic_hash": ""
+  },
+  "tools/compose/prototypes/teaching_board_renderer/qt_probe.py": {
+    "mtime": 1792898125.6106446,
+    "seen": 1792898526.0620866,
+    "ast_hash": "e2971ea70f7b3af579f45ed7a3ed18f5",
+    "semantic_hash": ""
+  },
+  "tools/compose/prototypes/teaching_board_renderer/web_probe.py": {
+    "mtime": 1792898421.5917585,
+    "seen": 1792898526.0620883,
+    "ast_hash": "84665f3ef425eed21258ca540bf32a45",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_model.py": {
+    "mtime": 1792898261.513175,
+    "seen": 1792898526.0620973,
+    "ast_hash": "f0d7ef9c23ba7d5e359daa11a8f21b74",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_store.py": {
+    "mtime": 1792898261.513175,
+    "seen": 1792898526.0620985,
+    "ast_hash": "0d5ccf36850d70a507b6fba92db6c677",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_hermes_catalogue.py": {
+    "mtime": 1792897440.440478,
+    "seen": 1792898526.0621092,
+    "ast_hash": "72df45287f5b495baaccd6d9461dc9ab",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-24-end-of-day-checkpoint.md": {
+    "mtime": 1792849637.2094793,
+    "seen": 1792898526.0621648,
+    "ast_hash": "e909670881cc915da78df3d8e3e0864e",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-24-solidcraft-mcp-investigation.md": {
+    "mtime": 1792849406.3045964,
+    "seen": 1792898526.0621731,
+    "ast_hash": "8921f927829e649ede964f3e91832cfa",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-development-workboard.md": {
+    "mtime": 1792898489.1794648,
+    "seen": 1792898526.0621746,
+    "ast_hash": "96b8dfd1dfbe37b6f8bea8afa89c9062",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-hermes-readiness.md": {
+    "mtime": 1792897770.4603584,
+    "seen": 1792898526.0621753,
+    "ast_hash": "42d206551183d27d614240c57033db48",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-teaching-board-design.md": {
+    "mtime": 1792898489.180465,
+    "seen": 1792898526.062176,
+    "ast_hash": "55a702292914a05d0963d6e8cd955b8f",
+    "semantic_hash": ""
+  },
+  "docs/2026-10-25-teaching-board-renderer-trial.md": {
+    "mtime": 1792898421.5927572,
+    "seen": 1792898526.0621767,
+    "ast_hash": "16482170f915e6e6afd531506c8b614d",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/solidcraft/2026-10-25-dimension-feature-reconciliation.md": {
+    "mtime": 1792897417.5472066,
+    "seen": 1792898526.0621912,
+    "ast_hash": "86cde36850bcfc8eff3153e90d5589cb",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/solidcraft/README.md": {
+    "mtime": 1792849406.3045964,
+    "seen": 1792898526.0621924,
+    "ast_hash": "92fac4765071ddcb143b94d8a41e66ef",
+    "semantic_hash": ""
+  },
+  "docs/research/2026-10-25-teaching-board-renderer-options.md": {
+    "mtime": 1792897978.7021947,
+    "seen": 1792898526.0622087,
+    "ast_hash": "d7451c4f773f7fde83e6da227e792bf8",
+    "semantic_hash": ""
+  },
+  "tools/compose/prototypes/teaching_board_renderer/README.md": {
+    "mtime": 1792898421.5927572,
+    "seen": 1792898526.0622177,
+    "ast_hash": "4b66a390f9d42bc630fef9ff78d8641f",
+    "semantic_hash": ""
+  },
+  "tools/compose/prototypes/teaching_board_renderer/requirements.txt": {
+    "mtime": 1792898421.5917585,
+    "seen": 1792898526.0622184,
+    "ast_hash": "ad3db97d4107d0bd825a36e09c5fb9cb",
+    "semantic_hash": ""
+  },
+  "tools/compose/prototypes/teaching_board_renderer/web_probe.html": {
+    "mtime": 1792898355.7968233,
+    "seen": 1792898526.0622196,
+    "ast_hash": "c675e1d9bace621589688ab86864ed7d",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/solidcraft/mcp-preview-13-0.png": {
+    "mtime": 1792849314.2502253,
+    "seen": 1792898526.0622656,
+    "ast_hash": "d7216789c6b4eb0eca1a04e294b26ed8",
+    "semantic_hash": ""
+  },
+  "docs/dimensions/solidcraft/pilot-preview.png": {
+    "mtime": 1792849314.24672,
+    "seen": 1792898526.0622663,
+    "ast_hash": "d7216789c6b4eb0eca1a04e294b26ed8",
     "semantic_hash": ""
   }
 }

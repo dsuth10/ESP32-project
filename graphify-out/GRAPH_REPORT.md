@@ -1,16 +1,16 @@
-# Graph Report - ESP32 project  (2026-10-24)
+# Graph Report - ESP32 project  (2026-10-25)
 
 ## Corpus Check
-- 181 files · ~1,264,988 words
+- 206 files · ~1,286,008 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1633 nodes · 3007 edges · 96 communities (75 shown, 13 thin omitted)
-- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 228 edges (avg confidence: 0.87)
+- 1886 nodes · 3625 edges · 104 communities (82 shown, 14 thin omitted)
+- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 281 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5940fa54`
+- Built from commit: `1b6f10d7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -23,7 +23,7 @@
 - main.cpp
 - es8311_bsp.c
 - es8311.cpp
-- README.md
+- PORTRAIT_UI.md
 - create_enclosure
 - bench_llm_paths.py
 - flash.py
@@ -51,7 +51,7 @@
 - MediaPanel
 - Detailed build guide
 - Build an ESP32 classroom companion with an AI coding agent
-- .run
+- ComposeCompanion
 - .do_POST
 - synthesize_speech
 - drawStorageExplorer
@@ -66,7 +66,7 @@
 - dispatch_telegram_mirror
 - StatusOverlay
 - LlmPipeline
-- HotkeyState
+- BoardModel
 - SpeechPipeline
 - compose_companion.py
 - ClipboardManager
@@ -74,8 +74,8 @@
 - MediaService
 - test_compose.py
 - TrialTests
-- media_service.py
-- compose_gui.py
+- media_providers.py
+- companion_settings.py
 - test_image_provider_routing.py
 - MediaStore
 - First real Gemini attempt: rejected request and diagnostic correction
@@ -89,49 +89,57 @@
 - Classroom companion: consolidated branch programme
 - parametrize
 - Gemini rendering and workflow: offline implementation
-- HostDiscovery
-- Compose_Dictate_Repair_2026-10-17.md
+- HermesPanel
+- Windows Compose and Dictate repair — 17 October 2026
 - Project documentation index
 - ComposeApp
 - FocusTracker
-- State
+- ProbeState
 - Board upload safety
+- ChannelStats
+- _coeff_div
 - drawButton
 - build_companion_preview.py
 - DashboardStatus
 - EnvironmentMode
-- test_image_provider_layout.py
-- clipboard_manager.py
+- SettingsPanel
+- 2026-10-25-development-workboard.md
+- load_env_config
 - Create & Paste: approved page 7 device trial
+- Three practical routes
+- Companion development workboard — 25 October 2026
+- Teaching Board: agreed design and development plan
+- Hermes readiness — 25 October 2026
+- Enclosure dimension and feature reconciliation
 
 ## God Nodes (most connected - your core abstractions)
 1. `MacroPadGUI` - 76 edges
-2. `ComposeApp` - 52 edges
-3. `MediaStore` - 51 edges
-4. `MediaPanel` - 33 edges
-5. `AudioRecorder` - 32 edges
-6. `session()` - 29 edges
-7. `GeminiImageProvider` - 25 edges
-8. `EnvironmentManager` - 24 edges
-9. `NetworkManager` - 23 edges
-10. `MediaService` - 23 edges
+2. `ComposeApp` - 59 edges
+3. `MediaStore` - 52 edges
+4. `BoardModel` - 42 edges
+5. `BoardValidationError` - 39 edges
+6. `MediaPanel` - 38 edges
+7. `HermesPanel` - 35 edges
+8. `AudioRecorder` - 32 edges
+9. `session()` - 29 edges
+10. `GeminiImageProvider` - 25 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `test_openai_redirect_is_not_followed_and_key_is_not_in_error()` --uses--> `ProviderFailure`  [INFERRED]
-  tests/test_media_providers.py → tools/compose/media_providers.py
-- `test_openai_rejects_decoded_image_over_20_mib()` --uses--> `ProviderFailure`  [INFERRED]
-  tests/test_media_providers.py → tools/compose/media_providers.py
-- `test_openai_rejects_malformed_or_non_image_bytes()` --uses--> `ProviderFailure`  [INFERRED]
-  tests/test_media_providers.py → tools/compose/media_providers.py
-- `test_openai_timeout_is_ambiguous_and_never_retried_or_leaked()` --uses--> `ProviderFailure`  [INFERRED]
-  tests/test_media_providers.py → tools/compose/media_providers.py
 - `test_commons_download_rejects_oversized_stream()` --uses--> `CommonsRetriever`  [INFERRED]
   tests/test_media_providers.py → tools/compose/media_providers.py
+- `test_commons_download_requires_explicit_rights_acknowledgement_without_network()` --uses--> `CommonsRetriever`  [INFERRED]
+  tests/test_media_providers.py → tools/compose/media_providers.py
+- `test_commons_download_uses_https_wikimedia_and_bounded_no_redirect_request()` --uses--> `CommonsRetriever`  [INFERRED]
+  tests/test_media_providers.py → tools/compose/media_providers.py
+- `test_commons_rejects_non_https_or_non_wikimedia_download_hosts()` --uses--> `CommonsRetriever`  [INFERRED]
+  tests/test_media_providers.py → tools/compose/media_providers.py
+- `test_revealed_library_choice_updates_gallery_and_version_dropdown()` --uses--> `MediaPanel`  [INFERRED]
+  tools/compose/tests/test_hermes_catalogue.py → tools/compose/media_panel.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (96 total, 13 thin omitted)
+## Communities (104 total, 14 thin omitted)
 
 ### Community 0 - "MacroPadGUI"
 Cohesion: 0.07
@@ -146,27 +154,27 @@ Cohesion: 0.08
 Nodes (41): Preferences, SemaphoreHandle_t, EnvironmentChangeCallback, EnvironmentMode, String, EnvironmentManager, begin, _changeCallback (+33 more)
 
 ### Community 3 - "AudioRecorder"
-Cohesion: 0.05
-Nodes (35): AudioRecorder, begin, _lastRecordDurationMs, _leftStats, logDiagnostics, _maxLeftPeak, _maxRightPeak, _monoStats (+27 more)
+Cohesion: 0.07
+Nodes (27): AudioRecorder, begin, _lastRecordDurationMs, _leftStats, logDiagnostics, _maxLeftPeak, _maxRightPeak, _monoStats (+19 more)
 
 ### Community 4 - "network_manager.cpp"
-Cohesion: 0.13
-Nodes (31): DashboardStatus, EnvironmentMode, function, String, extractJsonBool(), extractJsonField(), extractJsonInt(), extractJsonObject() (+23 more)
+Cohesion: 0.08
+Nodes (48): IPAddress, String, HostDiscovery, begin, checkBeacon, discoverNow, _lastBeaconCheck, _lastDiscoveryAttempt (+40 more)
 
 ### Community 5 - "main.cpp"
-Cohesion: 0.07
-Nodes (45): MacroButton, sdcard_type_t, calculateBatteryPercentage(), companionCommand(), HealthState, String, executeMacro(), goToSoftOff() (+37 more)
+Cohesion: 0.05
+Nodes (57): Action, MacroButton, sdcard_type_t, State, active, down, latched, started (+49 more)
 
 ### Community 6 - "es8311_bsp.c"
-Cohesion: 0.23
+Cohesion: 0.25
 Nodes (25): es8311_clock_config_t, es8311_handle_t, es8311_mic_gain_t, es8311_resolution_t, esp_err_t, i2c_port_t, es8311_clock_config(), es8311_create() (+17 more)
 
 ### Community 7 - "es8311.cpp"
-Cohesion: 0.13
-Nodes (39): _coeff_div, adc_div, adc_osr, bclk_div, dac_div, dac_osr, fs_mode, lrck_h (+31 more)
+Cohesion: 0.23
+Nodes (26): es8311_clock_config_t, es8311_handle_t, es8311_mic_gain_t, es8311_resolution_t, esp_err_t, i2c_port_t, es8311_clock_config(), es8311_codec_dump_registers() (+18 more)
 
-### Community 8 - "README.md"
-Cohesion: 0.22
+### Community 8 - "PORTRAIT_UI.md"
+Cohesion: 0.33
 Nodes (5): 1. Flash legacy landscape env, 2. Emergency: flash archived golden binaries (no rebuild), Flash portrait (default), Portrait UI — Flash & Revert Guide, Revert to landscape (cheapest first)
 
 ### Community 10 - "bench_llm_paths.py"
@@ -187,7 +195,7 @@ Nodes (14): ESP32 Portable MacroPad & Hermes Satellite: Core Engineering Rules, 
 
 ### Community 22 - "test_web_grounding.py"
 Cohesion: 0.07
-Nodes (38): Session, build_compose_messages(), Builds the message list for the Compose pipeline., Unit tests for web_grounding (keyword router, Jev/Groq model router, Brave…, test_brave_search_client_parses_results(), test_build_search_query_strips_command_prefix(), test_format_search_context(), test_intent_router_jev_ambiguous_triggers_api() (+30 more)
+Nodes (35): Session, Unit tests for web_grounding (keyword router, Jev/Groq model router, Brave…, test_brave_search_client_parses_results(), test_build_search_query_strips_command_prefix(), test_format_search_context(), test_intent_router_jev_ambiguous_triggers_api(), test_intent_router_jev_failure_falls_back_to_groq(), test_intent_router_jev_success() (+27 more)
 
 ### Community 23 - "Automated Background Updating"
 Cohesion: 0.25
@@ -234,8 +242,8 @@ Cohesion: 0.07
 Nodes (27): 1. Executive Summary, 2.1 Page Allocation & Layout, 2.2 Button Configuration (`src/macropad_config.cpp`), 2.3 Main Loop Hold Logic & Rule 10 Safety Timeout, 2. Firmware Extension (ESP32-S3), 3.1 Architecture & Process Model, 3.2 Hotkey Interception (`F13`–`F15`), 3. Windows Background Companion (`tools/compose/`) (+19 more)
 
 ### Community 40 - "MediaPanel"
-Cohesion: 0.13
-Nodes (7): MediaPanel, apply(), reconcile(), reconcile_saved(), work(), worker(), acquire()
+Cohesion: 0.12
+Nodes (8): MediaPanel, apply(), reconcile(), reconcile_saved(), work(), worker(), acquire(), Reveal an externally selected saved version with consistent library controls.
 
 ### Community 41 - "Detailed build guide"
 Cohesion: 0.11
@@ -245,9 +253,9 @@ Nodes (19): 1. Install the tools, 2. Open the repository and give the agent cont
 Cohesion: 0.14
 Nodes (14): 1. Download and open the project, 2. Connect the ESP32 over USB, 3. Configure, build and upload, 4. Pair Bluetooth and try a shortcut, 5. Make a small change with your IDE agent, 6. Connect Blender MCP and refine the case, 7. Add voice once the basic device works, 8. Test, print and keep improving (+6 more)
 
-### Community 43 - ".run"
-Cohesion: 0.18
-Nodes (6): Image, paste_ready_action(), toggle_local_only(), create_tray_icon_image(), F15 Tapped: Inject pending payload if in READY status., Creates a tray icon with amber/emerald indicator dot.
+### Community 43 - "ComposeCompanion"
+Cohesion: 0.11
+Nodes (11): Image, ComposeCompanion, paste_ready_action(), toggle_local_only(), create_tray_icon_image(), F13 Pressed: Begin Compose recording., F13 Released: Stop recording and dispatch Compose pipeline., F14 Released: Stop recording and dispatch Dictate pipeline. (+3 more)
 
 ### Community 44 - ".do_POST"
 Cohesion: 0.23
@@ -274,7 +282,7 @@ Cohesion: 0.20
 Nodes (11): _groq_headers(), _groq_network_failure(), _groq_request(), mark_groq_unreachable(), Exception, School networks often block Groq. Don't pay the connect timeout on every…, One request over a persistent TLS connection (reconnects once if Groq dropped…, Validates the Groq key and opens the TLS connection before the first voice turn. (+3 more)
 
 ### Community 50 - "test_media_providers.py"
-Cohesion: 0.11
+Cohesion: 0.14
 Nodes (18): FakeResponse, FakeSession, openai_response(), png_bytes(), parametrize, test_commons_download_rejects_oversized_stream(), test_commons_download_requires_explicit_rights_acknowledgement_without_network(), test_commons_download_uses_https_wikimedia_and_bounded_no_redirect_request() (+10 more)
 
 ### Community 51 - "get_composite_status"
@@ -302,12 +310,12 @@ Cohesion: 0.16
 Nodes (5): Floating non-activating HUD status overlay pill using Tkinter & Win32 styles.…, Displays or updates the HUD overlay non-blockingly., Hides the HUD overlay., Thread-safe floating HUD status pill., StatusOverlay
 
 ### Community 57 - "LlmPipeline"
-Cohesion: 0.24
-Nodes (5): Response, LlmPipeline, Calls Groq chat completions endpoint. Returns (content, finish_reason)., Calls local Ollama chat completions endpoint. Returns (content, finish_reason)., test_ollama_uses_installed_model_when_configured_model_is_missing()
-
-### Community 58 - "HotkeyState"
 Cohesion: 0.18
-Nodes (6): HotkeyState, One edge dispatcher for the firmware's held keys, used by both companions., test_cached_descriptor_standard_chord_survives_modifier_release(), test_firmware_dual_keys_produce_one_press_and_one_release(), test_unmodified_function_keys_do_not_record(), test_new_keys_coalesce_extended_and_fallback_chords()
+Nodes (7): Response, load_env_config(), Loads configuration from compose.env and system environment., LlmPipeline, Calls Groq chat completions endpoint. Returns (content, finish_reason)., Calls local Ollama chat completions endpoint. Returns (content, finish_reason)., test_ollama_uses_installed_model_when_configured_model_is_missing()
+
+### Community 58 - "BoardModel"
+Cohesion: 0.08
+Nodes (51): BoardConflictError, BoardModel, BoardValidationError, canonical_json(), _colour(), _id(), _keys(), new_lesson() (+43 more)
 
 ### Community 59 - "SpeechPipeline"
 Cohesion: 0.19
@@ -315,39 +323,39 @@ Nodes (7): Transcribes audio bytes. Returns: (transcript, provider_used, latency
 
 ### Community 60 - "compose_companion.py"
 Cohesion: 0.12
-Nodes (11): ComposeCompanion, load_env_config(), ESP32 & Windows Voice Compose & Dictate Companion Service Resides in the…, F13 Pressed: Begin Compose recording., F13 Released: Stop recording and dispatch Compose pipeline., F14 Pressed: Begin Dictate recording., F14 Released: Stop recording and dispatch Dictate pipeline., A blocked school network should not add a cloud timeout to every later button… (+3 more)
+Nodes (18): ESP32 & Windows Voice Compose & Dictate Companion Service Resides in the…, LLM generation pipeline with Groq high-speed cloud generation, local Ollama…, Executes LLM generation with automatic multi-round continuation if length…, build_compose_messages(), build_dictate_messages(), Prompt engine for Australian English text generation, grammar cleaning, and…, Builds the message list for the Compose pipeline., Builds the message list for the Dictate grammar cleaning pipeline. (+10 more)
 
 ### Community 61 - "ClipboardManager"
-Cohesion: 0.26
-Nodes (7): ClipboardManager, Injects text at the current cursor position: 1. Snapshots prior clipboard. 2.…, Attempts to open the Windows clipboard with retries in case another process…, Safely retrieves current text in clipboard if available., Safely empties the Windows clipboard., Safely sets Unicode text on the Windows clipboard., test_paste_failure_restores_previous_clipboard()
+Cohesion: 0.12
+Nodes (18): ClipboardManager, _Input, _InputUnion, _KeyboardInput, Clipboard manager for Windows with atomic snapshot, paste injection, prior…, Injects text at the current cursor position: 1. Snapshots prior clipboard. 2.…, Send a checked native Ctrl+V, independently of the pointer position., Attempts to open the Windows clipboard with retries in case another process… (+10 more)
 
 ### Community 63 - "MediaService"
-Cohesion: 0.20
-Nodes (4): MediaService, Explicit accounting-only retry for a saved image with a lost ledger ACK., truthy(), test_restart_keeps_frozen_choice_allocation_and_single_dispatch()
+Cohesion: 0.11
+Nodes (7): CommonsRetriever, Explicit Commons search; a result's visibility does not grant reuse rights., MediaService, Explicit accounting-only retry for a saved image with a lost ledger ACK., truthy(), test_google_is_explicit_and_never_borrows_openai_allocation_or_falls_back(), test_restart_keeps_frozen_choice_allocation_and_single_dispatch()
 
 ### Community 64 - "test_compose.py"
-Cohesion: 0.16
-Nodes (17): Grammar Guard: strictly verifies transcript-to-output word overlap (>80%) and…, verify_dictate_overlap(), make_app(), Regression checks without recording, network requests or desktop keystrokes., test_busy_pipeline_rejects_new_recording(), test_changed_focus_keeps_result_ready_without_paste(), test_dictate_guard_accepts_punctuation(), test_dictation_survives_unavailable_cleanup_provider() (+9 more)
+Cohesion: 0.11
+Nodes (20): HotkeyState, One edge dispatcher for the firmware's held keys, used by both companions., make_app(), Regression checks without recording, network requests or desktop keystrokes., test_busy_pipeline_rejects_new_recording(), test_cached_descriptor_standard_chord_survives_modifier_release(), test_changed_focus_keeps_result_ready_without_paste(), test_dictation_survives_unavailable_cleanup_provider() (+12 more)
 
 ### Community 65 - "TrialTests"
 Cohesion: 0.09
 Nodes (15): EspConnection, backup(), candidate_data(), checked_device(), execute(), main(), prepare(), Single-candidate S3 application trial and recovery; stable registration never… (+7 more)
 
-### Community 66 - "media_service.py"
-Cohesion: 0.22
-Nodes (9): error_diagnostics(), Read bounded error metadata and a redacted summary, never raw response bodies., ProviderFailure, Path, Explicit image generation/edit and external retrieval adapters. No provider…, A request failed after dispatch; its billing outcome may be unknown., safe_identifier(), safe_usage() (+1 more)
+### Community 66 - "media_providers.py"
+Cohesion: 0.20
+Nodes (7): error_diagnostics(), Stateless Gemini Interactions image requests. No retries, fallback or URL…, Read bounded error metadata and a redacted summary, never raw response bodies., Path, Explicit image generation/edit and external retrieval adapters. No provider…, safe_identifier(), safe_usage()
 
-### Community 67 - "compose_gui.py"
-Cohesion: 0.07
-Nodes (37): _atomic_write(), _Blob, _crypt(), data_directory(), _decode_journal(), _journal_bytes(), load_settings(), _load_settings_unlocked() (+29 more)
+### Community 67 - "companion_settings.py"
+Cohesion: 0.30
+Nodes (16): _atomic_write(), _Blob, _crypt(), data_directory(), _decode_journal(), _journal_bytes(), load_settings(), _load_settings_unlocked() (+8 more)
 
 ### Community 68 - "test_image_provider_routing.py"
-Cohesion: 0.09
-Nodes (25): Protocol, create_image_provider(), image_readiness(), image_snapshot(), ImageCapabilities, ImageProvider, Path, Image producer contract and local request snapshots; never contains credentials. (+17 more)
+Cohesion: 0.10
+Nodes (24): Protocol, create_image_provider(), image_readiness(), image_snapshot(), ImageCapabilities, ImageProvider, Path, Image producer contract and local request snapshots; never contains credentials. (+16 more)
 
 ### Community 70 - "MediaStore"
-Cohesion: 0.10
-Nodes (20): Any, Connection, Row, RuntimeError, _json(), MediaStore, _now(), Path (+12 more)
+Cohesion: 0.08
+Nodes (27): Any, Connection, Row, RuntimeError, _json(), MediaStore, _now(), Path (+19 more)
 
 ### Community 71 - "First real Gemini attempt: rejected request and diagnostic correction"
 Cohesion: 0.40
@@ -359,18 +367,18 @@ Nodes (21): DeviceFeedback, display_text(), frame(), Opt-in, identity-bound USB 
 
 ### Community 73 - "test_gemini_images.py"
 Cohesion: 0.10
-Nodes (36): parametrize, check_google_model(), GeminiImageProvider, Stateless Gemini Interactions image requests. No retries, fallback or URL…, Explicit metadata GET only. Never invoke this during startup/save/setup., fixture(), Synthetic Interactions REST fixtures, checked against Google's 24 Oct 2026…, HTTP rejection diagnostics must be useful without copying private response text. (+28 more)
+Nodes (37): parametrize, check_google_model(), GeminiImageProvider, Explicit metadata GET only. Never invoke this during startup/save/setup., fixture(), Synthetic Interactions REST fixtures, checked against Google's 24 Oct 2026…, HTTP rejection diagnostics must be useful without copying private response text., test_error_metadata_survives_service_recovery_without_retry_or_release() (+29 more)
 
 ### Community 74 - "test_image_workflow_two_desktops_and_offline_cache_without_history_sync"
-Cohesion: 0.18
-Nodes (4): Response, parametrize, One synthetic image through jobs, shared budget, private API and two caches., test_image_workflow_two_desktops_and_offline_cache_without_history_sync()
+Cohesion: 0.20
+Nodes (3): Response, parametrize, test_image_workflow_two_desktops_and_offline_cache_without_history_sync()
 
 ### Community 76 - "Gemini home trial: generation and refinement working"
 Cohesion: 0.33
 Nodes (6): Actual twelve-attempt result, Durable evidence and recovery, Failure and correction, Gemini home trial: generation and refinement working, Verification and remaining acceptance, Visual inspection and accounting
 
 ### Community 77 - "docs/README.md"
-Cohesion: 0.29
+Cohesion: 0.20
 Nodes (4): Changes, Delivery and remaining gates, Image producers: first offline implementation slice, Local verification
 
 ### Community 78 - "Image providers: Gemini first"
@@ -378,19 +386,19 @@ Cohesion: 0.18
 Nodes (11): Delivery and first action, Existing foundation and necessary changes, Gemini adapter and first settings, Image providers: Gemini first, Intended result, Ordered delivery, Provider contract and durable jobs, Spending and data boundaries (+3 more)
 
 ### Community 79 - "Classroom companion: consolidated branch programme"
-Cohesion: 0.22
-Nodes (9): Architecture and ownership, Choices and release conditions, Classroom companion: consolidated branch programme, Completion dashboard, Current implementation and verification limits, Ordered delivery backlog, Outcome and fixed decisions, Stable S3 trial and recovery (+1 more)
+Cohesion: 0.20
+Nodes (10): Approved desktop Teaching Board workstream, Architecture and ownership, Choices and release conditions, Classroom companion: consolidated branch programme, Completion dashboard, Current implementation and verification limits, Ordered delivery backlog, Outcome and fixed decisions (+2 more)
 
 ### Community 81 - "Gemini rendering and workflow: offline implementation"
 Cohesion: 0.33
 Nodes (6): Configuration check, Delivery and remaining gates, Gemini rendering and workflow: offline implementation, Local verification, Provider and request boundary, Workflow and spending
 
-### Community 82 - "HostDiscovery"
-Cohesion: 0.21
-Nodes (17): IPAddress, String, HostDiscovery, begin, checkBeacon, discoverNow, _lastBeaconCheck, _lastDiscoveryAttempt (+9 more)
+### Community 82 - "HermesPanel"
+Cohesion: 0.07
+Nodes (28): fixture, review(), ESP32 & Windows Voice Compose & Dictate Companion - Interactive Desktop App…, _catalogue_item(), is_catalogue_context(), prepare_catalogue(), Bounded, opt-in library metadata for Hermes; recommendations confer no…, Resolve an untrusted result against its immutable submitted catalogue and local… (+20 more)
 
-### Community 83 - "Compose_Dictate_Repair_2026-10-17.md"
-Cohesion: 0.33
+### Community 83 - "Windows Compose and Dictate repair — 17 October 2026"
+Cohesion: 0.50
 Nodes (4): Everyday use, Repairs, Verification, Windows Compose and Dictate repair — 17 October 2026
 
 ### Community 84 - "Project documentation index"
@@ -398,20 +406,28 @@ Cohesion: 0.50
 Nodes (4): Completion language, Current plans and operating guides, Implementation and historical evidence, Project documentation index
 
 ### Community 85 - "ComposeApp"
-Cohesion: 0.06
-Nodes (15): ndarray, Tk, AudioCapture, find_default_wasapi_input_device(), Audio capture module using sounddevice and WASAPI for high-fidelity PC…, Starts recording audio from the PC microphone via WASAPI., Stops recording and returns: (wav_bytes_16khz, duration_seconds, rms_level), Finds the default Windows WASAPI recording device and its native sample rate. (+7 more)
+Cohesion: 0.05
+Nodes (17): ndarray, Tk, AudioCapture, find_default_wasapi_input_device(), Audio capture module using sounddevice and WASAPI for high-fidelity PC…, Starts recording audio from the PC microphone via WASAPI., Stops recording and returns: (wav_bytes_16khz, duration_seconds, rms_level), Finds the default Windows WASAPI recording device and its native sample rate. (+9 more)
 
 ### Community 86 - "FocusTracker"
-Cohesion: 0.13
-Nodes (17): FocusTracker, GUITHREADINFO, _key_event(), _key_is_down(), Focus tracking, UI Automation target lock, and multi-tier selection capture for…, Finds the specific child control with keyboard focus (e.g. Scintilla inside…, Sends WM_COPY directly to window handle without simulating keyboard events., Synthesizes Ctrl+C while the ESP32 chord is holding Alt/Shift. Keys this method… (+9 more)
+Cohesion: 0.18
+Nodes (12): FocusTracker, GUITHREADINFO, Finds the specific child control with keyboard focus (e.g. Scintilla inside…, Multi-tier document selection extraction: 1. UI Automation TextPattern (Word,…, test_capture_selected_text_extracts_via_text_pattern(), test_capture_selected_text_falls_back_to_chord_ctrl_c(), test_capture_selected_text_falls_back_to_parent(), test_capture_selected_text_falls_back_to_wm_copy_for_scintilla() (+4 more)
 
-### Community 87 - "State"
-Cohesion: 0.19
-Nodes (12): Action, State, active, down, latched, started, swallowed, Step (+4 more)
+### Community 87 - "ProbeState"
+Cohesion: 0.06
+Nodes (18): QGraphicsView, exercise(), identity(), image_bytes(), lesson(), obj(), ProbeState, THROWAWAY B0 fixture. Memory only; never opens user lessons or media stores. (+10 more)
 
 ### Community 88 - "Board upload safety"
 Cohesion: 0.25
 Nodes (8): Board upload safety, Build and check without writing, Historical CYD diagnostic upload route, Registered hardware and roles, S3 trial approval gate, Scoped S3 application trial and recovery, Verification, Verified on 21 October 2026
+
+### Community 89 - "ChannelStats"
+Cohesion: 0.14
+Nodes (8): ChannelStats, clipCount, count, maxVal, minVal, nonZeroCount, sum, sumSq
+
+### Community 90 - "_coeff_div"
+Cohesion: 0.15
+Nodes (13): _coeff_div, adc_div, adc_osr, bclk_div, dac_div, dac_osr, fs_mode, lrck_h (+5 more)
 
 ### Community 91 - "drawButton"
 Cohesion: 0.50
@@ -421,37 +437,57 @@ Nodes (4): companionCanPaste, drawButton, getButtonRect, getTouchTarget
 Cohesion: 0.67
 Nodes (3): build(), Build an allowlisted source preview without credentials or private reports., source_files()
 
-### Community 96 - "test_image_provider_layout.py"
-Cohesion: 0.31
-Nodes (7): descendants(), parametrize, Native layout and masking at both supported companion window sizes., test_frozen_choice_and_image_actions_fit_nested_media_page(), test_full_companion_device_feedback_and_media_actions_fit(), test_gemini_wait_keeps_ui_responsive_and_records_display_timing(), test_image_settings_masks_key_and_keeps_save_reachable()
+### Community 96 - "2026-10-25-development-workboard.md"
+Cohesion: 0.29
+Nodes (5): Environment and scope, Executed local checks, Teaching Board B0 renderer trial, What the comparison establishes, Throwaway Teaching Board renderer probes
 
-### Community 97 - "clipboard_manager.py"
-Cohesion: 0.33
-Nodes (6): _Input, _InputUnion, _KeyboardInput, Clipboard manager for Windows with atomic snapshot, paste injection, prior…, Send a checked native Ctrl+V, independently of the pointer position., send_paste_shortcut()
+### Community 97 - "load_env_config"
+Cohesion: 0.36
+Nodes (8): fallback_env_paths(), load_env_config(), _merge_nonempty(), _parse_env_file(), Path, Shared companion settings. Cloud keys may live in compose.env, server/.env, or…, Load Groq fallbacks, Compose, protected feature settings, then process…, test_google_key_is_never_loaded_from_environment_or_plain_file()
 
 ### Community 98 - "Create & Paste: approved page 7 device trial"
 Cohesion: 0.40
 Nodes (5): Attached feedback, Candidate, Create & Paste: approved page 7 device trial, Live result, Recovery and verification before writing
 
+### Community 99 - "Three practical routes"
+Cohesion: 0.25
+Nodes (8): Durable lessons and transactional undo, Integration, packaging and licence audit, Next decision and later prototype evidence, Pen, touch and ink, Settled needs and unresolved choices, Teacher and pupil windows, Teaching-board renderer options, Three practical routes
+
+### Community 100 - "Companion development workboard — 25 October 2026"
+Cohesion: 0.29
+Nodes (7): Companion development workboard — 25 October 2026, Decisions already settled, Evidence and acceptance ledger, Open decisions and facts to establish, Starting state and delivery discrepancy, Working method for today's continuation, Workstreams and dependencies
+
+### Community 101 - "Teaching Board: agreed design and development plan"
+Cohesion: 0.29
+Nodes (7): Agreed implementation increments, Capability boundary, Decision register, First accepted lesson scenario, Outcome and design tree, Teaching Board: agreed design and development plan, Technical options, still open
+
+### Community 102 - "Hermes readiness — 25 October 2026"
+Cohesion: 0.33
+Nodes (5): Acceptance remains open, Environment distinction, Exact remaining transport blocker, Hermes readiness — 25 October 2026, Today's observations
+
+### Community 103 - "Enclosure dimension and feature reconciliation"
+Cohesion: 0.33
+Nodes (5): Dimension and feature matrix, Enclosure dimension and feature reconciliation, Evidence and coordinate basis, Missing physical measurements and decisions, Next bounded CAD slices on a copied candidate
+
 ## Knowledge Gaps
-- **360 isolated node(s):** `Outcome and fixed decisions`, `Current implementation and verification limits`, `Architecture and ownership`, `Teacher workflow`, `Ordered delivery backlog` (+355 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 684 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **391 isolated node(s):** `Outcome and fixed decisions`, `Current implementation and verification limits`, `Architecture and ownership`, `Teacher workflow`, `Ordered delivery backlog` (+386 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 752 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `ComposeApp` connect `ComposeApp` to `test_compose.py`, `HotkeyState`, `compose_gui.py`, `test_image_provider_layout.py`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
-- **Why does `MediaStore` connect `MediaStore` to `test_image_provider_layout.py`, `media_service.py`, `test_image_provider_routing.py`, `test_device_feedback.py`, `test_gemini_images.py`, `test_image_workflow_two_desktops_and_offline_cache_without_history_sync`, `test_media_providers.py`, `ComposeApp`, `MediaService`?**
-  _High betweenness centrality (0.033) - this node is a cross-community bridge._
-- **Why does `MacroPadGUI` connect `MacroPadGUI` to `addVoiceTurn`, `gui.cpp`, `gui.h`, `drawAll`, `drawStorageExplorer`, `drawButton`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Are the 2 inferred relationships involving `ComposeApp` (e.g. with `make_app()` and `test_full_companion_device_feedback_and_media_actions_fit()`) actually correct?**
-  _`ComposeApp` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 9 inferred relationships involving `MediaStore` (e.g. with `.__init__()` and `OpenAIImageProvider`) actually correct?**
-  _`MediaStore` has 9 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 3 inferred relationships involving `MediaPanel` (e.g. with `._build_ui()` and `test_frozen_choice_and_image_actions_fit_nested_media_page()`) actually correct?**
-  _`MediaPanel` has 3 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `Outcome and fixed decisions`, `Current implementation and verification limits`, `Architecture and ownership` to the rest of the system?**
-  _360 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `ComposeApp` connect `ComposeApp` to `test_compose.py`, `HermesPanel`, `MediaPanel`, `MediaStore`?**
+  _High betweenness centrality (0.053) - this node is a cross-community bridge._
+- **Why does `MediaStore` connect `MediaStore` to `media_providers.py`, `test_image_provider_routing.py`, `test_device_feedback.py`, `test_gemini_images.py`, `test_image_workflow_two_desktops_and_offline_cache_without_history_sync`, `test_media_providers.py`, `HermesPanel`, `ComposeApp`, `MediaService`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+- **Why does `BoardValidationError` connect `BoardModel` to `ComposeApp`?**
+  _High betweenness centrality (0.029) - this node is a cross-community bridge._
+- **Are the 6 inferred relationships involving `ComposeApp` (e.g. with `HermesPanel` and `MediaPanel`) actually correct?**
+  _`ComposeApp` has 6 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 10 inferred relationships involving `MediaStore` (e.g. with `.__init__()` and `OpenAIImageProvider`) actually correct?**
+  _`MediaStore` has 10 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 2 inferred relationships involving `BoardModel` (e.g. with `BoardStore` and `test_current_damage_recovers_previous_without_promoting_orphan_writes()`) actually correct?**
+  _`BoardModel` has 2 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 10 inferred relationships involving `BoardValidationError` (e.g. with `BoardStore` and `test_aggregate_command_limit_precedes_candidate_mutation()`) actually correct?**
+  _`BoardValidationError` has 10 INFERRED edges - model-reasoned connections that need verification._
