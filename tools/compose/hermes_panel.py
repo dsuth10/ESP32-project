@@ -8,11 +8,13 @@ from tkinter import ttk, scrolledtext
 
 
 class HermesPanel(ttk.Frame):
-    def __init__(self, parent, service, post_ui, queue_text, local_only, settings_saving, enabled):
+    def __init__(self, parent, service, post_ui, queue_text, local_only, settings_saving, enabled,
+                 review_library=None):
         super().__init__(parent, padding=12)
         self.service = service
         self.post_ui = post_ui
         self.queue_text = queue_text
+        self.review_library = review_library
         self.local_only = local_only
         self.settings_saving = settings_saving
         self.enabled = enabled
@@ -29,13 +31,14 @@ class HermesPanel(ttk.Frame):
         self._prepared_context = ""
         self._result_text = ""
         self._result_request_id = None
+        self._selected_context = ''
         self.columnconfigure(0, weight=1)
         self.rowconfigure(7, weight=2)
 
         header = ttk.Frame(self)
         header.grid(row=0, column=0, sticky="ew")
         header.columnconfigure(0, weight=1)
-        ttk.Label(header, text="Hermes sends only the task and context you enter here. Groq Ask and local History stay separate.",
+        ttk.Label(header, text="Hermes sends only the task and selected context shown here. Groq Ask and local History stay separate.",
                   wraplength=760).grid(row=0, column=0, sticky="w")
         ttk.Button(header, text="Test connection", command=self.test_connection).grid(row=0, column=1, padx=4)
         ttk.Button(header, text="Refresh runs", command=self.refresh_runs).grid(row=0, column=2, padx=4)
@@ -46,7 +49,7 @@ class HermesPanel(ttk.Frame):
         ttk.Label(self, text="Teacher task (required)").grid(row=2, column=0, sticky="w", pady=(4, 0))
         self.task = scrolledtext.ScrolledText(self, wrap="word", height=4, font=("Segoe UI", 10))
         self.task.grid(row=3, column=0, sticky="ew", pady=(3, 5))
-        ttk.Label(self, text="Selected context (optional; entered here only, never copied from History)").grid(
+        ttk.Label(self, text="Selected context (optional; review before sending; History is never copied)").grid(
             row=4, column=0, sticky="nw", pady=(4, 0))
         self.context = scrolledtext.ScrolledText(self, wrap="word", height=3, font=("Segoe UI", 10))
         self.context.grid(row=5, column=0, sticky="ew", pady=(3, 5))
@@ -177,7 +180,10 @@ class HermesPanel(ttk.Frame):
         self.discard_button.configure(state="normal" if enabled and self._selected_status == "prepared" else "disabled")
         final_status = self._selected_status in {"completed", "succeeded", "success", "finished", "done"}
         queueable = self._result_text and self._result_request_id == self._active_request and final_status
-        self.queue_button.configure(state="normal" if queueable else "disabled")
+        from hermes_catalogue import is_catalogue_context
+        library_result = is_catalogue_context(getattr(self, '_selected_context', ''))
+        self.queue_button.configure(state="normal" if queueable else "disabled",
+                                    text="Preview library choice" if library_result else "Queue result for Paste Ready")
         input_state = "disabled" if self._prepared_request else "normal"
         self.task.configure(state=input_state)
         self.context.configure(state=input_state)
@@ -214,6 +220,21 @@ class HermesPanel(ttk.Frame):
             self._prepared_task = task
             self._prepared_context = context
             self.set_notice("Saving the bounded task preview locally…")
+            return True
+        return False
+
+    def load_library_task(self, task, context):
+        """Stage a visibly selected catalogue; the existing Send action remains explicit."""
+        if self._blocked():
+            return False
+        if self._busy or self._prepared_request:
+            self.set_notice("Finish or discard the current prepared Hermes task before selecting a library catalogue.")
+            return False
+        for widget, value in ((self.task, task), (self.context, context)):
+            widget.configure(state="normal")
+            widget.delete("1.0", "end")
+            widget.insert("1.0", value)
+        return bool(self.prepare())
 
     def _prepared(self, result):
         self._prepared_request = result.get("request_id")
@@ -222,6 +243,7 @@ class HermesPanel(ttk.Frame):
         self._selected_status = str(result.get("status", "prepared")).casefold()
         self._result_text = ""
         self._result_request_id = None
+        self._selected_context = self._prepared_context
         self.status_line.configure(text="Prepared: " + str(result.get("status", "unknown")))
         self.set_notice("Preview saved locally. Send only when you are ready; Hermes has not received it yet.")
         preview = self._prepared_task.strip()
@@ -283,6 +305,7 @@ class HermesPanel(ttk.Frame):
             self._active_run_id = None
             self._result_text = ""
             self._result_request_id = None
+            self._selected_context = ''
             self._selected_status = "loading"
             self._sync_controls()
             self._start(lambda: self.service.preview(request_id), self._show_preview, request_id)
@@ -299,6 +322,11 @@ class HermesPanel(ttk.Frame):
             self.status_line.configure(text="Status: " + self._selected_status)
         preview = str(result.get("task", ""))
         context = str(result.get("context", ""))
+        self._selected_context = context
+        from hermes_catalogue import is_catalogue_context
+        if is_catalogue_context(context) and isinstance(result.get('text'), str):
+            self._result_text = result['text'][:20000]
+            self._result_request_id = self._active_request
         if context:
             preview += "\n\nSelected context:\n" + context
         self._append_details({"kind": "saved_preview", "preview": preview,
@@ -346,6 +374,7 @@ class HermesPanel(ttk.Frame):
         self._selected_status = ""
         self._result_text = ""
         self._result_request_id = None
+        self._selected_context = ''
         self.task.configure(state="normal")
         self.context.configure(state="normal")
         self.status_line.configure(text="Unsent preview discarded locally.")
@@ -407,6 +436,14 @@ class HermesPanel(ttk.Frame):
                 self._result_request_id != self._active_request or
                 self._selected_status not in {"completed", "succeeded", "success", "finished", "done"}):
             self.set_notice("Select the saved request that produced this result before queueing it.")
+            return
+        from hermes_catalogue import is_catalogue_context
+        if is_catalogue_context(getattr(self, '_selected_context', '')):
+            callback = getattr(self, 'review_library', None)
+            if callback:
+                callback()
+            else:
+                self.set_notice('Preview this library choice from Image library before queueing an image.')
             return
         try:
             self.queue_text(self._result_text)

@@ -214,7 +214,9 @@ class ComposeApp:
         if self.media_service:
             self.media_service.recover_interrupted_jobs()
             self.media_panel = MediaPanel(self.media_tab, self.media_service, self._post_ui,
-                                          self._queue_media, self._toggle_media_recording, self._record_history)
+                                          self._queue_media, self._toggle_media_recording, self._record_history,
+                                          hermes_prepare=self._prepare_hermes_library,
+                                          hermes_review=self._review_hermes_library)
             self.media_panel.settings_saving = self._settings_saving
             self.media_panel.pack(fill="both", expand=True)
             media_options = ttk.Frame(self.media_tab)
@@ -239,7 +241,8 @@ class ComposeApp:
         self.hermes_panel = HermesPanel(self.hermes_tab, None, self._post_ui,
                                         self._queue_library_text, lambda: self.local_only,
                                         lambda: self.settings_panel._saving,
-                                        lambda: truthy(self.config.get("HERMES_ENABLED")))
+                                        lambda: truthy(self.config.get("HERMES_ENABLED")),
+                                        review_library=self._review_hermes_library)
         self.hermes_panel.pack(fill="both", expand=True)
         self.hermes_service = None
         self._start_hermes_service()
@@ -420,6 +423,40 @@ class ComposeApp:
             self.stop_recording_flow()
         elif self.media_service:
             self.start_recording_flow("media")
+
+    def _prepare_hermes_library(self, request, query):
+        from hermes_catalogue import prepare_catalogue
+        if self.hermes_panel._blocked():
+            return self.media_panel.tell('Enable and configure Hermes before preparing a library task.')
+        def prepared(selection):
+            if self.hermes_panel.load_library_task(selection['task'], selection['context']):
+                self.tabs.select(self.assistant_tab)
+                self.assistant_tabs.select(self.hermes_tab)
+                self.media_panel.tell(f"Selected {selection['count']} library records for review. Send the prepared task explicitly in Hermes tasks.")
+        self.media_panel.run(lambda:prepare_catalogue(self.media_store,request,query),prepared)
+
+    def _review_hermes_library(self):
+        from hermes_catalogue import resolve_recommendation, SUCCESS
+        self.tabs.select(self.media_tab)
+        request_id = self.hermes_panel._active_request
+        service = self.hermes_service
+        if not request_id or not service or self.hermes_panel._busy:
+            return self.media_panel.tell('Select a completed Hermes library run before previewing its choice.')
+        def review():
+            saved = service.preview(request_id)
+            if saved.get('status') not in SUCCESS:
+                raise ValueError('Wait for this library run to complete before previewing its choice.')
+            row, reason = resolve_recommendation(self.media_store,saved.get('context'),saved.get('text'))
+            return row, reason
+        def show(result):
+            if request_id != self.hermes_panel._active_request:
+                return self.media_panel.tell('The selected Hermes run changed. Review the intended library run again.')
+            row, reason = result
+            if row is None:
+                return self.media_panel.tell('Hermes found no suitable catalogue image. ' + reason)
+            self.media_panel.reveal_version(row)
+            self.media_panel.tell('Hermes suggested this saved image. Review it, then choose Queue for Paste Ready. ' + reason)
+        self.media_panel.run(review,show)
 
     def _device_feedback_tick(self):
         if self._stop_poller or not self.device_feedback:return

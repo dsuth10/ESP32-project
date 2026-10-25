@@ -13,7 +13,8 @@ from image_provider_config import PROVIDER_LABELS, CAPABILITIES, selected_provid
 
 
 class MediaPanel(ttk.Frame):
-    def __init__(self, parent, service, post_ui, on_queue, on_record, record_history=None):
+    def __init__(self, parent, service, post_ui, on_queue, on_record, record_history=None,
+                 hermes_prepare=None, hermes_review=None):
         super().__init__(parent, padding=10)
         self.service, self.post_ui, self.on_queue, self.on_record = service, post_ui, on_queue, on_record
         self.record_history=record_history
@@ -63,6 +64,11 @@ class MediaPanel(ttk.Frame):
         menu.add_command(label='Back up media library',command=self.backup)
         menu.add_command(label='Restore backup into a new folder',command=self.restore)
         menu.add_command(label='Review selected job',command=self.review_job)
+        if hermes_prepare and hermes_review:
+            menu.add_separator()
+            menu.add_command(label='Prepare Hermes library choice',
+                             command=lambda:hermes_prepare(self.text(),self.query.get()))
+            menu.add_command(label='Preview Hermes library choice',command=hermes_review)
         tools.configure(menu=menu);tools.grid(row=0,column=4,sticky='w',padx=2)
         ttk.Label(self,text='Describe a media request, or refine the selected image (Ctrl+Enter to send)').grid(row=4,column=0,sticky='w')
         self.prompt=scrolledtext.ScrolledText(self,height=2,wrap='word',font=('Segoe UI',11))
@@ -148,6 +154,19 @@ class MediaPanel(ttk.Frame):
     def select_version(self,event=None):
         index=self.version_box.current()
         if index>=0:self.show_version(self.versions[index])
+
+    def reveal_version(self,row):
+        """Reveal an externally selected saved version with consistent library controls."""
+        self.query.set('')
+        self.refresh()
+        asset_id=row['asset_id']
+        self.rows[asset_id]=row
+        if not self.gallery.exists(asset_id):
+            self.gallery.insert('',0,iid=asset_id,values=(row['title'],
+                'Kept' if row.get('canonical_version_id')==row['version_id'] else 'Draft'))
+        self.gallery.selection_set(asset_id)
+        self.gallery.see(asset_id)
+        self.select_asset()
 
     def show_version(self,row):
         self.selected=row
