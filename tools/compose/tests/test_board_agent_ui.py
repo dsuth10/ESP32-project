@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import sys
 import threading
+import time
 from types import SimpleNamespace
 
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
@@ -104,6 +105,8 @@ def wait_done(panel, statuses=('applied', 'failed', 'stale', 'cancelled', 'await
         if state['status'] in statuses:
             return state
         QTest.qWait(10)
+        # Native qWait can retain the GIL; let durable worker file I/O finish.
+        time.sleep(.002)
     raise AssertionError('Fake composition did not finish: ' + str(panel.controller.snapshot(panel.request_id)))
 
 
@@ -705,4 +708,73 @@ def test_reopen_rebinds_agent_to_new_session_and_invalidates_in_flight_request(e
     assert old_controller.snapshot(old_id)['status'] == 'cancelled'
     editor.test_composer.block.set()
     editor.test_composer.block = None
-    assert send(editor, 'Request after reopening')['status'] == 'applied'
+    reopened_state = send(editor, 'Request after reopening')
+    assert reopened_state['status'] == 'applied', panel.controller._requests[panel.request_id]['future'].exception()
+
+
+def saved_recovery_result(editor):
+    panel = editor.agent_panel
+    prepared = panel.controller.prepare('Saved interrupted request', local_only=True)
+    view = editor.session.teacher_view()
+    baseline = {key: copy.deepcopy(view[key]) for key in ('document', 'page_id', 'revision')}
+    panel.recovery_store.create(prepared, baseline)
+    result = editor.test_composer(prepared, lambda *_: None, lambda: False)
+    return panel.recovery_store.update(prepared['request_id'], status='completed', result=json.dumps(result))
+
+
+def test_saved_request_list_reopens_locally_and_review_requires_preview(editor, monkeypatch):
+    from board_recovery import BoardRecoveryStore
+    panel = editor.agent_panel
+    record = saved_recovery_result(editor)
+    panel.recovery_store = BoardRecoveryStore(panel.recovery_store.root)
+    panel.controller.recovery_store = panel.recovery_store
+    before = editor.session.teacher_view()['document']
+    panel.reload_saved_requests()
+    assert panel.recovery_requests.currentData() == record['request_id']
+    assert 'completed' in panel.recovery_requests.currentText()
+    previews = []
+    monkeypatch.setattr(panel, 'show_preview', lambda: previews.append(panel.controller.snapshot(panel.request_id)))
+    panel.recover_request_button.click()
+    assert previews[0]['status'] == 'awaiting_confirmation'
+    assert 'recovered_request' in previews[0]['confirmation_reasons']
+    assert editor.session.teacher_view()['document'] == before
+
+
+def test_refresh_existing_request_runs_off_ui_thread_without_new_composition(editor, monkeypatch):
+    panel = editor.agent_panel
+    record = saved_recovery_result(editor)
+    panel.reload_saved_requests()
+    panel.config['LOCAL_ONLY'] = False
+    panel.hermes = SimpleNamespace(list_requests=lambda: [])
+    gate, entered = threading.Event(), threading.Event()
+    owner = threading.get_ident()
+    calls = []
+    def refresh(request_id, service, *, local_only):
+        calls.append((request_id, threading.get_ident(), local_only))
+        entered.set(); gate.wait(2)
+        return record
+    monkeypatch.setattr(panel.recovery_store, 'refresh', refresh)
+    count = len(editor.test_composer.calls)
+    panel.refresh_request_button.click()
+    assert entered.wait(1)
+    assert calls == [(record['request_id'], calls[0][1], False)]
+    assert calls[0][1] != owner
+    assert panel._recovery_future is not None and not panel._recovery_future.done()
+    assert len(editor.test_composer.calls) == count
+    gate.set()
+    for _ in range(100):
+        panel.tick(); time.sleep(.002)
+        if panel._recovery_future is None:
+            break
+    assert panel._recovery_future is None
+
+
+def test_cancel_saved_request_prevents_local_review_in_local_only_mode(editor):
+    panel = editor.agent_panel
+    record = saved_recovery_result(editor)
+    panel.reload_saved_requests()
+    panel.stop_request_button.click()
+    assert panel.recovery_store.get(record['request_id'])['publication_status'] == 'cancelled'
+    panel.recover_request_button.click()
+    assert 'cannot be presented again' in panel.recovery_note.text()
+    assert panel._recovery_future is None

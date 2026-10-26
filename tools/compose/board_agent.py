@@ -6,7 +6,7 @@ and transport are explicit injectable seams; importing this module makes no call
 """
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, Future
 from dataclasses import asdict, dataclass
 import copy
 import hashlib
@@ -39,6 +39,10 @@ class BoardAgentError(BoardValidationError):
 
 class BoardAgentCancelled(BoardAgentError):
     pass
+
+
+class BoardAgentDetached(BoardAgentError):
+    """The view closed; preserve the remote task without polling or stopping it."""
 
 
 def _text(value, maximum, label, *, empty=True):
@@ -324,7 +328,7 @@ class BoardAgentController:
     ``local_only`` is enforced for a composer declaring ``remote=True``.
     """
     def __init__(self, session, *, composer, resource_resolver=None, resource_preparer=None,
-                 profile=None, executor=None, clock=time.monotonic, page_validator=None):
+                 profile=None, executor=None, clock=time.monotonic, page_validator=None, recovery_store=None):
         if not isinstance(session, BoardSession) or not callable(composer):
             raise BoardAgentError('Use a BoardSession and an explicit composition adapter.')
         self.session, self.composer = session, composer
@@ -333,6 +337,7 @@ class BoardAgentController:
         if page_validator is not None and not callable(page_validator):
             raise BoardAgentError('The page layout validator must be callable.')
         self.page_validator = page_validator
+        self.recovery_store = recovery_store
         self.profile = profile or TeachingProfile()
         if not isinstance(self.profile, TeachingProfile):
             raise BoardAgentError('Use a validated local teaching profile.')
@@ -441,7 +446,10 @@ class BoardAgentController:
                 if previous['status'] not in _TERMINAL:
                     previous['cancel'].set()
                     previous.update(status='stale', message='A newer Board request superseded this result.', finished=self._clock())
+                    self._publication(previous, 'stale')
+            view = self.session.teacher_view()
             job = {'request_id': request_id, 'prepared': copy.deepcopy(prepared), 'status': 'working',
+                   'baseline': {key: copy.deepcopy(view[key]) for key in ('document', 'page_id', 'revision')},
                    'stage': 'queued', 'message': 'Preparing a complete page; the pupil view stays unchanged.',
                    'started': self._clock(), 'cancel': threading.Event(), 'candidate': None,
                    'requires_confirmation': False, 'proposal_digest': None, 'confirmation_reasons': [],
@@ -452,6 +460,10 @@ class BoardAgentController:
         return request_id
 
     def _work(self, job):
+        def cancelled():
+            if self._closed and self.recovery_store is not None:
+                raise BoardAgentDetached('Board view closed. Refresh the saved task after reopening.')
+            return job['cancel'].is_set()
         def report(stage, message=''):
             if stage not in _STAGES:
                 raise BoardAgentError('Unsupported composition progress stage.')
@@ -460,18 +472,35 @@ class BoardAgentController:
                 if not job['cancel'].is_set() and job['status'] == 'working':
                     job.update(stage=stage, message=message or 'Preparing the complete page.')
         prepared = copy.deepcopy(job['prepared'])
-        if job['cancel'].is_set():
+        if cancelled():
             raise BoardAgentCancelled('Publication cancelled.')
         if self.resource_preparer:
             report('searching', 'Finding suitable saved resources.')
-            acquired = self.resource_preparer(copy.deepcopy(prepared), report, job['cancel'].is_set)
+            acquired = self.resource_preparer(copy.deepcopy(prepared), report, cancelled)
             context = json.loads(prepared['context'])
             context['selected_images'] = _merge_images(context['selected_images'], list(acquired))
             prepared = self._seal(context)
-        if job['cancel'].is_set():
+        if cancelled():
             raise BoardAgentCancelled('Publication cancelled.')
+        if self.recovery_store is not None:
+            with self._lock:
+                self.recovery_store.create(prepared, job['baseline'])
+                if job['cancel'].is_set():
+                    self.recovery_store.update(job['request_id'], publication_status='cancelled')
+                    raise BoardAgentCancelled('Publication cancelled before composition.')
         report('composing', 'Composing the complete page.')
-        result = self.composer(copy.deepcopy(prepared), report, job['cancel'].is_set)
+        try:
+            result = self.composer(copy.deepcopy(prepared), report, cancelled)
+        except BoardAgentDetached:
+            raise
+        except Exception:
+            if self.recovery_store is not None:
+                self.recovery_store.update(job['request_id'], status='needs_attention',
+                    message='Composition was interrupted. Refresh the existing saved task; no replacement was submitted.')
+            raise
+        if self.recovery_store is not None:
+            self.recovery_store.update(job['request_id'], status='completed',
+                result=result if isinstance(result, str) else canonical_json(result).decode('utf-8'))
         if job['cancel'].is_set():
             raise BoardAgentCancelled('Publication cancelled; any external work needs its own receipt.')
         report('validating', 'Checking the complete page and required resources.')
@@ -505,7 +534,71 @@ class BoardAgentController:
                 job.update(status='cancelled', message='Board publication cancelled. External work may still need reconciliation.',
                            candidate=None, commands=None, requires_confirmation=False, finished=self._clock())
                 job['future'].cancel()
+                self._publication(job, 'cancelled')
             return self.snapshot(request_id)
+
+    def _publication(self, job, status):
+        if self.recovery_store is not None:
+            try:
+                self.recovery_store.get(job['request_id'])
+            except FileNotFoundError:
+                return
+            self.recovery_store.update(job['request_id'], publication_status=status)
+
+    def recover(self, record):
+        """Validate a saved result locally and require an explicit complete preview.
+
+        A fresh session token is rebound only after the complete original lesson
+        matches. The original remote envelope is checked before that rebinding.
+        No composer, acquisition or network method is called here.
+        """
+        self._on_owner()
+        if self.recovery_store is None or not isinstance(record, dict):
+            raise BoardAgentError('Choose a saved Board request for recovery.')
+        if self._active and self._requests[self._active]['status'] not in _TERMINAL:
+            raise BoardAgentError('Finish or cancel the current Board request before reviewing a saved result.')
+        request_id = record.get('request_id')
+        saved = self.recovery_store.get(request_id)
+        if saved != record or saved.get('invalid') or saved.get('publication_status') not in {'pending', 'review'}:
+            raise BoardAgentError('This request cannot be presented again; review its saved outcome.')
+        if request_id in self._requests and self._requests[request_id]['status'] == 'applied':
+            raise BoardAgentError('This request has already been applied.')
+        view = self.session.teacher_view()
+        baseline = {key: copy.deepcopy(view[key]) for key in ('document', 'page_id', 'revision')}
+        if baseline != saved['baseline']:
+            raise BoardConflictError('The lesson has changed since this request. Its saved result cannot replace newer teaching work.')
+        original = saved['prepared']
+        context = json.loads(original['context'])
+        if self._seal(context) != original:
+            raise BoardAgentError('The original Board request is damaged.')
+        proposal = _parse(saved.get('result'), MAX_RESULT_BYTES)
+        expected = result_envelope(original)
+        if not isinstance(proposal, dict) or set(proposal) != set(expected):
+            raise BoardAgentError('The saved composition has missing or unsupported fields.')
+        for key in ('schema', 'request_id', 'context_sha256', 'lesson_id', 'expected_revision', 'session_token'):
+            if proposal[key] != expected[key] or (key in ('schema', 'expected_revision') and type(proposal[key]) is not int):
+                raise BoardAgentError('The saved composition does not match its original request.')
+        if (context['lesson_id'] != view['document']['lesson_id'] or context['revision'] != view['revision']
+                or context['page']['id'] != view['page_id']):
+            raise BoardConflictError('The saved request belongs to a different lesson or page.')
+        context['session_token'] = view['token']
+        prepared = self._seal(context)
+        rebound = result_envelope(prepared)
+        for key in ('session_token', 'context_sha256'):
+            proposal[key] = rebound[key]
+        candidate, commands, reasons, digest = self._review(prepared, proposal)
+        future = Future(); future.set_result((prepared, proposal))
+        job = {'request_id': request_id, 'prepared': prepared, 'status': 'awaiting_confirmation',
+               'stage': 'ready', 'message': 'Recovered complete page ready. Review before presenting.',
+               'started': self._clock(), 'finished': self._clock(), 'cancel': threading.Event(),
+               'candidate': candidate, 'commands': commands, 'requires_confirmation': True,
+               'proposal_digest': digest, 'confirmation_reasons': reasons + ['recovered_request'],
+               'external_work_may_continue': False, 'future': future, 'consumed': True}
+        self.recovery_store.update(request_id, publication_status='review')
+        self._prepared[request_id] = copy.deepcopy(prepared)
+        self._requests[request_id] = job
+        self._active = request_id
+        return request_id
 
     def _review(self, prepared, result):
         view, context = self._current(prepared)
@@ -594,7 +687,11 @@ class BoardAgentController:
 
     def _apply(self, job):
         view, _ = self._current(job['prepared'])
+        # A crash during publication is deliberately ambiguous, never replayable.
+        if self.recovery_store is not None:
+            self.recovery_store.claim_publication(job['request_id'])
         self.session.teacher_apply(job['commands'], expected_revision=view['revision'], expected_token=view['token'])
+        self._publication(job, 'applied')
         job.update(status='applied', stage='ready', message='Complete page applied. Undo restores the previous page.',
                    requires_confirmation=False, external_work_may_continue=False)
         job.setdefault('finished', self._clock())
@@ -624,6 +721,7 @@ class BoardAgentController:
                 job['cancel'].set()
                 job.update(status='stale', message='The Board changed; this older result was not published.',
                            candidate=None, commands=None, requires_confirmation=False, finished=self._clock())
+                self._publication(job, 'stale')
             except BoardValidationError as exc:
                 message = str(exc)[:400]
                 job.update(status='failed', message=message + ' The pupil page is unchanged.',
@@ -649,6 +747,7 @@ class BoardAgentController:
             except (BoardConflictError, BoardSessionError):
                 job.update(status='stale', message='The Board changed after preview; nothing was published.',
                            candidate=None, commands=None, requires_confirmation=False)
+                self._publication(job, 'stale')
             except BoardValidationError as exc:
                 job.update(status='failed', message=str(exc)[:400] + ' Nothing was published.',
                            candidate=None, commands=None, requires_confirmation=False)
@@ -662,7 +761,13 @@ class BoardAgentController:
         with self._lock:
             for job in self._requests.values():
                 if job['status'] not in _TERMINAL:
-                    self.cancel(job['request_id'])
+                    if self.recovery_store is None:
+                        self.cancel(job['request_id'])
+                    else:
+                        job.update(status='cancelled', message='This view closed; publication is detached. The saved task can be recovered.',
+                                   candidate=None, commands=None, requires_confirmation=False, finished=self._clock())
+                    # Durable jobs detach on closing. Workers may retain their
+                    # result but only this UI controller can publish it.
             self._closed = True
         if self._owns_executor:
             self._executor.shutdown(wait=False, cancel_futures=True)
@@ -677,20 +782,27 @@ class HermesBoardComposer:
     """
     remote = True
 
-    def __init__(self, service, *, poll_interval=0.5, wait=None):
+    def __init__(self, service, *, poll_interval=0.5, wait=None, recovery_store=None):
         self.service = service
         self.poll_interval = poll_interval
         self.wait = wait or (lambda cancelled: time.sleep(self.poll_interval))
         self.request_ids = {}
+        self.recovery_store = recovery_store
 
     def __call__(self, prepared, report, cancelled):
         if json.loads(prepared['context'])['local_only']:
             raise BoardAgentError('Hermes is disabled in local-only mode.')
         board_id = prepared['request_id']
+        if self.recovery_store is not None:
+            record = self.recovery_store.get(board_id)
+            if record.get('hermes_request_id'):
+                raise BoardAgentError('This Board request already has a saved Hermes identity. Refresh its existing task.')
         if board_id in self.request_ids:
             raise BoardAgentError('This Board request already has a Hermes identity; reconcile it instead of redispatching.')
         saved = self.service.prepare(prepared['task'], prepared['context'])
         request_id = saved['request_id']
+        if self.recovery_store is not None:
+            self.recovery_store.bind(board_id, request_id)
         self.request_ids[board_id] = request_id
         if cancelled():
             self.service.discard(request_id)

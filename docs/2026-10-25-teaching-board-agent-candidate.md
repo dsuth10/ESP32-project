@@ -59,6 +59,13 @@ containing `model.bin`, preventing an implicit download.
 
 ## Teacher controls
 
+- **Saved Board requests:** reopening a lesson lists its saved task identities
+  locally. **Refresh existing task** checks the same Hermes run;
+  **Review saved result** opens a complete preview before publication;
+  **Cancel saved request** blocks local publication and requests remote stop
+  when available. Changed lessons and ambiguous publication remain protected.
+  See the [recovery guide](2026-10-26-teaching-board-request-recovery.md) for
+  the workflow, limits and offline verification.
 - **Teaching profile:** save one local year level, Australian English, default
   instructions and explicit illustrative-data permission. Current request and
   lesson context take precedence. Effective context appears in the private

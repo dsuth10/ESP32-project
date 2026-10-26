@@ -26,10 +26,11 @@ DOCUMENTS = [
     "docs/hermes-tailscale-home-work.md",
 ]
 OPTIONAL_DOCUMENTS = [
-    # These concise school handover guides are separate, exact allowlist entries
+    # These concise teacher guides are separate, exact allowlist entries
     # so a missing guide does not block local package/test work in progress.
     "docs/2026-10-26-school-arrival-guide.md",
     "docs/2026-10-26-linux-hermes-school-handoff.md",
+    "docs/2026-10-26-teaching-board-request-recovery.md",
 ]
 
 

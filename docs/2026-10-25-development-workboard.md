@@ -1,5 +1,27 @@
 # Companion development workboard — 25 October 2026
 
+## 26 October: interrupted Board requests
+
+The [request recovery follow-up](2026-10-26-teaching-board-request-recovery.md)
+adds a private durable Board/Hermes link before dispatch, local saved-request
+enumeration, background refresh/cancellation of the same task and explicit
+complete-page review after restart. Exact lesson/content/resource checks,
+one atomic publication claim, Undo and Freeze protect newer teaching work.
+Independent local recovery/package verification passed 18 tests with no skips;
+the guide records the command and limits. This is companion coding evidence,
+separate from the user's school setup and remaining live-service/classroom gates.
+
+Final integrated verification outside the sandbox recorded **540 passed, one
+failed and two skipped in 38.46 seconds**. The sole failure was an existing
+package-install rename returning Windows `WinError 5`; the immediate complete
+package rerun passed **18 tests with one Windows symlink skip in 0.45 seconds**,
+without a source change for that transient. Optional `pdfplumber` accounted for
+the other integrated skip. These overlapping runs are not added or described
+as one unified all-pass result. The [recovery guide](2026-10-26-teaching-board-request-recovery.md)
+records exact commands and the earlier sandbox/temporary-directory diagnosis.
+Actual service interruption/relaunch and teacher/classroom acceptance remain
+pending separately from local engineering verification.
+
 ## School-readiness follow-up
 
 The user will use a different Windows PC through a phone mobile-data hotspot

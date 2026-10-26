@@ -1,5 +1,10 @@
 # Classroom companion: consolidated branch programme
 
+26 October companion-only follow-up: [interrupted Board request recovery](2026-10-26-teaching-board-request-recovery.md)
+adds durable request links, same-task refresh/cancellation and an explicit
+validated preview after restart. Local engineering evidence does not close
+permanent-route deployment, physical or classroom acceptance.
+
 25 October agent/library follow-up: the
 [integrated build plan](2026-10-25-teaching-board-agent-build-plan.md) records the
 first narrow local Teaching Board agent and reusable-library implementation and

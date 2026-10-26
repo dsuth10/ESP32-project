@@ -21,6 +21,7 @@ from board_model import canonical_json
 from board_runtime import (PrimaryBoardComposer, BoardResourcePreparer, create_resource_service,
                            HermesBoardComposer, HermesService, truthy)
 from media_store import MediaStore
+from board_recovery import BoardRecoveryStore
 
 
 def validate_page_layout(document, page_id, *, image_resolver=None):
@@ -64,10 +65,11 @@ class AgentPanel(QWidget):
         self._import_saved_catalogue()
         self.media_service = create_resource_service(self.library, self.config)
         self.preparer = BoardResourcePreparer(self.library, self.lesson_media, self.config, media_service=self.media_service)
+        self.recovery_store = BoardRecoveryStore(owner.store.root / 'board-requests')
         self.hermes = None
         if composer is None and truthy(self.config.get('HERMES_ENABLED')) and not truthy(self.config.get('LOCAL_ONLY')):
             self.hermes = HermesService(self.config, self.library.root / 'agent-runtime')
-            composer = HermesBoardComposer(self.hermes)
+            composer = HermesBoardComposer(self.hermes, recovery_store=self.recovery_store)
         self.composer = composer or PrimaryBoardComposer(self.config)
         self.controller = self._controller()
         self.request_id = None
@@ -77,6 +79,9 @@ class AgentPanel(QWidget):
         self.accepted_preview_versions = {}
         self._speech_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='board-microphone')
         self._speech_future = None
+        self._recovery_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='board-recovery')
+        self._recovery_future = None
+        self._saved_list_state = None
         self._audio = None
         self._closed = False
         layout = QVBoxLayout(self); layout.setContentsMargins(0, 0, 0, 0)
@@ -96,6 +101,16 @@ class AgentPanel(QWidget):
         self.preview_button.setEnabled(False); layout.addWidget(self.preview_button)
         self.progress = QLabel(self.profile_error or self.library_error or ('Local-only Board · cached resources and local model' if truthy(self.config.get('LOCAL_ONLY')) else 'Ready · requested tasks use configured services'))
         self.progress.setWordWrap(True); layout.addWidget(self.progress)
+        layout.addWidget(QLabel('Saved Board requests'))
+        self.recovery_requests = QComboBox(); layout.addWidget(self.recovery_requests)
+        recovery_actions = QHBoxLayout(); layout.addLayout(recovery_actions)
+        self.refresh_request_button = QPushButton('Refresh existing task')
+        self.refresh_request_button.clicked.connect(self.refresh_saved_request); recovery_actions.addWidget(self.refresh_request_button)
+        self.recover_request_button = QPushButton('Review saved result')
+        self.recover_request_button.clicked.connect(self.review_saved_request); recovery_actions.addWidget(self.recover_request_button)
+        self.stop_request_button = QPushButton('Cancel saved request')
+        self.stop_request_button.clicked.connect(self.stop_saved_request); layout.addWidget(self.stop_request_button)
+        self.recovery_note = QLabel(''); self.recovery_note.setWordWrap(True); layout.addWidget(self.recovery_note)
         self.query = QLineEdit(); self.query.setPlaceholderText('Search reusable resources'); self.query.returnPressed.connect(self.search)
         layout.addWidget(self.query)
         self.resource_type = QComboBox(); self.resource_type.addItems(['All resources', 'Images', 'Saved pages', 'Datasets', 'Charts'])
@@ -114,10 +129,12 @@ class AgentPanel(QWidget):
         self.index_timer = QTimer(self); self.index_timer.setSingleShot(True); self.index_timer.timeout.connect(self._index_batch)
         self.pending_sources = [self.lesson_media.root, self.library.media.root]
         self.index_timer.start(0)
+        self.reload_saved_requests()
 
     def _controller(self):
         return BoardAgentController(self.owner.session, composer=self.composer,
             profile=self.profile, resource_preparer=self.preparer,
+            recovery_store=self.recovery_store,
             page_validator=lambda document, page_id: validate_page_layout(document, page_id,
                 image_resolver=self.owner.session.resolve_image))
 
@@ -125,9 +142,96 @@ class AgentPanel(QWidget):
         self.controller.close()
         self.lesson_media = MediaStore(self.owner.store.root / 'media')
         self._import_saved_catalogue()
-        self.preparer.lesson_media = self.lesson_media
+        self.preparer = BoardResourcePreparer(self.library, self.lesson_media, self.config, media_service=self.media_service)
+        self.recovery_store = BoardRecoveryStore(self.owner.store.root / 'board-requests')
+        if isinstance(self.composer, HermesBoardComposer):
+            self.composer = HermesBoardComposer(self.hermes, recovery_store=self.recovery_store)
         self.controller = self._controller(); self.request_id = None
         self.preview_button.setEnabled(False)
+        self.reload_saved_requests()
+
+    def reload_saved_requests(self):
+        """Local enumeration only; opening a lesson never refreshes a remote task."""
+        selected = self.recovery_requests.currentData()
+        self.recovery_requests.clear()
+        try:
+            records = self.recovery_store.list_requests()
+            for record in records:
+                publication = record.get('publication_status', 'blocked')
+                status = ('needs attention' if record.get('invalid') or publication == 'applying' else
+                          'applied' if publication == 'applied' else
+                          'cancelled' if publication == 'cancelled' else record.get('status', 'needs attention'))
+                prepared = record.get('prepared') or {}
+                try:
+                    title = json.loads(prepared.get('context', '{}')).get('instruction', '')[:65]
+                except (ValueError, TypeError):
+                    title = ''
+                self.recovery_requests.addItem(status + ' · ' + (title or record['request_id'][:8]), record['request_id'])
+            index = self.recovery_requests.findData(selected)
+            if index >= 0:
+                self.recovery_requests.setCurrentIndex(index)
+            self.recovery_note.setText('Saved locally. Refresh checks the same task; review never submits another request.' if records else 'No saved Board requests in this lesson.')
+            if self.hermes is not None:
+                bound = {record.get('hermes_request_id') for record in records}
+                unbound = [row for row in self.hermes.list_requests() if row['request_id'] not in bound]
+                if unbound:
+                    self.recovery_note.setText(self.recovery_note.text() + ' Older unbound Hermes receipts need review in the companion Hermes tasks panel; they cannot be applied to this lesson.')
+        except Exception:
+            self.recovery_note.setText('Saved request records need attention. Manual editing and lesson saving remain available.')
+
+    def _selected_saved_request(self):
+        request_id = self.recovery_requests.currentData()
+        if not request_id:
+            raise BoardAgentError('Choose a saved Board request.')
+        return self.recovery_store.get(request_id)
+
+    def _saved_remote_action(self, action):
+        if self._recovery_future is not None:
+            return
+        try:
+            if truthy(self.config.get('LOCAL_ONLY')) or self.hermes is None:
+                raise BoardAgentError('Remote task checks are unavailable in local-only mode. Saved completed results can still be reviewed.')
+            record = self._selected_saved_request()
+            if action == 'stop':
+                self.recovery_store.update(record['request_id'], publication_status='cancelled')
+                if self.request_id == record['request_id']:
+                    self.controller.cancel(self.request_id)
+            store, service = self.recovery_store, self.hermes
+            self._recovery_future = self._recovery_executor.submit(
+                store.stop if action == 'stop' else store.refresh, record['request_id'], service, local_only=False)
+            self.recovery_note.setText('Checking the existing saved task…' if action == 'refresh' else 'Cancellation requested. The remote task may still be running.')
+        except Exception as error:
+            self.recovery_note.setText(str(error)[:400])
+
+    def refresh_saved_request(self):
+        self._saved_remote_action('refresh')
+
+    def stop_saved_request(self):
+        try:
+            record = self._selected_saved_request()
+            if record.get('publication_status') in {'applying', 'applied'}:
+                raise BoardAgentError('This publication has already been claimed. Review its saved outcome.')
+            if not record.get('hermes_request_id') or self.hermes is None or truthy(self.config.get('LOCAL_ONLY')):
+                self.recovery_store.update(record['request_id'], publication_status='cancelled')
+                if self.request_id == record['request_id']:
+                    self.controller.cancel(self.request_id)
+                self.reload_saved_requests()
+                self.recovery_note.setText('Local publication cancelled. No remote termination has been verified.')
+                return
+            self._saved_remote_action('stop')
+        except Exception as error:
+            self.recovery_note.setText(str(error)[:400])
+
+    def review_saved_request(self):
+        if not self.owner.flush_pending_edits():
+            return
+        try:
+            record = self._selected_saved_request()
+            self.request_id = self.controller.recover(record)
+            self.preview_button.setEnabled(True)
+            self.show_preview()
+        except Exception as error:
+            self.recovery_note.setText(str(error)[:400])
 
     def _import_saved_catalogue(self):
         self.library_error = ''
@@ -377,6 +481,14 @@ class AgentPanel(QWidget):
     def tick(self):
         if self._closed:
             return
+        if self._recovery_future and self._recovery_future.done():
+            future, self._recovery_future = self._recovery_future, None
+            try:
+                record = future.result()
+                self.reload_saved_requests()
+                self.recovery_note.setText(record.get('message', '')[:400] or 'Existing task checked. Review its saved result when complete.')
+            except Exception:
+                self.recovery_note.setText('The existing task could not be checked. Its saved identity is retained; try Refresh when the connection returns.')
         if self._speech_future and self._speech_future.done():
             future, self._speech_future = self._speech_future, None
             self.mic_button.setEnabled(True)
@@ -390,6 +502,10 @@ class AgentPanel(QWidget):
         if not self.request_id:
             return
         state = self.controller.poll(self.request_id)
+        saved_list_state = (self.request_id, state['status'], state['stage'])
+        if saved_list_state != self._saved_list_state:
+            self._saved_list_state = saved_list_state
+            self.reload_saved_requests()
         self.progress.setText(f"{state['message']} · {state['elapsed_seconds']:.1f} s" +
                               (' · continuing beyond the 15-second target' if state['target_exceeded'] and state['status'] == 'working' else ''))
         self.preview_button.setEnabled(state['status'] == 'awaiting_confirmation')
@@ -406,6 +522,7 @@ class AgentPanel(QWidget):
                 self.library.retain_page(page, self.request_id, media_store=self.lesson_media)
             except Exception:
                 self.progress.setText(state['message'] + ' Reusable page indexing needs attention; lesson autosave remains active.')
+            self.reload_saved_requests()
 
     def cancel(self):
         if self.request_id:
@@ -495,3 +612,4 @@ class AgentPanel(QWidget):
         if self._audio:
             self._audio.stop_recording(); self._audio = None
         self._speech_executor.shutdown(wait=False, cancel_futures=True)
+        self._recovery_executor.shutdown(wait=False, cancel_futures=True)
