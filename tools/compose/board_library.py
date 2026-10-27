@@ -152,7 +152,8 @@ class BoardResourceLibrary:
                 metadata['visual_kind'] = item['metadata']['visual_kind']
         if item and item['image_ref'] != ref:
             raise ValueError('A reusable version identity conflicts with its saved hash.')
-        if item and (item['title'] != title or item['tags'] != tags or item['metadata'] != metadata
+        if item and (item.get('source_title', item['title']) != title
+                     or item.get('source_tags', item['tags']) != tags or item['metadata'] != metadata
                      or any(item['provenance'].get(key) != value for key, value in source.items())):
             raise ValueError('A reusable version identity conflicts with its immutable title, tags or provenance.')
         if item is None:
@@ -224,6 +225,7 @@ class BoardResourceLibrary:
             version = int(db.execute('PRAGMA user_version').fetchone()[0])
             if version != 1:
                 raise ValueError('The imported lesson catalogue has an unsupported schema.')
+            tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
             rows = db.execute('SELECT * FROM resource_version ORDER BY created_at,version_id LIMIT ?',
                               (MAX_IMPORTED_RESOURCES + 1,)).fetchall()
             if len(rows) > MAX_IMPORTED_RESOURCES:
@@ -242,6 +244,14 @@ class BoardResourceLibrary:
                     'SELECT alias FROM resource_alias WHERE resource_id=? AND (version_id=? OR version_id IS NULL) ORDER BY normalised,alias',
                     (item['resource_id'], item['version_id']))]
                 item['review_state'] = item['review_state'] or 'draft'
+                # Corrections travel separately from immutable source metadata.
+                # Remembered names remain personal to the receiving library.
+                item['teacher_metadata'] = None
+                if 'resource_metadata_override' in tables:
+                    correction = db.execute('SELECT * FROM resource_metadata_override WHERE version_id=?',
+                                            (item['version_id'],)).fetchone()
+                    if correction:
+                        item['teacher_metadata'] = dict(correction)
                 records.append(item)
             relations = db.execute('SELECT * FROM resource_relationship ORDER BY relationship_id LIMIT ?',
                                    (MAX_IMPORTED_RELATIONSHIPS + 1,)).fetchall()
@@ -280,8 +290,9 @@ class BoardResourceLibrary:
                 if existing:
                     expected_ref = image_ref
                     if (existing['resource_id'] != item['resource_id'] or existing['resource_type'] != item['resource_type']
-                            or existing['title'] != item['title'] or existing['description'] != item['description']
-                            or existing['tags'] != item['tags'] or existing['metadata'] != item['metadata']
+                            or existing.get('source_title', existing['title']) != item['title']
+                            or existing.get('source_description', existing['description']) != item['description']
+                            or existing.get('source_tags', existing['tags']) != item['tags'] or existing['metadata'] != item['metadata']
                             or existing['provenance'] != item['provenance'] or existing['content_hash'] != item['content_hash']
                             or existing['mime'] != item['mime'] or existing['byte_size'] != item['byte_size']
                             or (expected_ref is not None and existing['image_ref'] != expected_ref)):
@@ -295,6 +306,13 @@ class BoardResourceLibrary:
                     content_hash=item['content_hash'], mime=item['mime'], byte_size=item['byte_size'],
                     availability=item['availability'], state=item['review_state'], image_ref=image_ref,
                     idempotency_key='import:' + item['version_id'])
+                correction = item.get('teacher_metadata')
+                if correction:
+                    fields = {key: correction[key] for key in ('title', 'description') if correction.get(key) is not None}
+                    for key in ('tags', 'topics', 'year_levels'):
+                        if correction.get(key + '_json') is not None:
+                            fields[key] = _strict_json(correction[key + '_json'], 'teacher ' + key)
+                    self.catalogue.update_metadata(item['version_id'], **fields)
             version_ids = {item['version_id'] for item in records}
             for relation in relations:
                 if (relation['source_version_id'] not in version_ids
@@ -374,24 +392,21 @@ class BoardResourceLibrary:
         self.catalogue.set_review_state(record['resource_id'], record['version_id'], 'approved',
                                         'Teacher accepted this exact resource for Board reuse.')
 
-    def search(self, query='', *, limit=8):
-        return self.catalogue.search(query, resource_types=['image'], limit=limit)
+    def search(self, query='', *, limit=8, **filters):
+        return self.catalogue.search(query, resource_types=['image'], limit=limit, **filters)
 
-    def search_resources(self, query='', *, resource_types=None, limit=8):
+    def search_resources(self, query='', *, resource_types=None, limit=8, **filters):
         """Search bounded reusable resource types for the Board chooser."""
-        return self.catalogue.search(query, resource_types=resource_types, limit=limit)
+        return self.catalogue.search(query, resource_types=resource_types, limit=limit, **filters)
 
     def automatic_match(self, query):
         """Resolve a single exact approved image alias, ignoring other types."""
         query = str(query).strip()
         if not query:
             return None
-        candidates = self.catalogue.search(query, resource_types=['image'], limit=8)
-        exact = [record for record in candidates
-                 if query.casefold() in {alias.casefold() for alias in record.get('aliases', [])}]
-        if len(exact) != 1:
+        record = self.catalogue.resolve(query, resource_types=['image'])
+        if record is None or record['resource_type'] != 'image':
             return None
-        record = exact[0]
         if record['review_state'] != 'approved' or record['availability'] == 'unavailable':
             return None
         try:

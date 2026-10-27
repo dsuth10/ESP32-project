@@ -200,12 +200,21 @@ def _catalogue_closure(catalogue: Any, refs: tuple[str, ...] | list[str]) -> tup
             # This is a local request receipt, not portable lesson provenance.
             provenance = {name: value for name, value in provenance.items() if name != "request_id"}
         resources[key] = {"resource_id": item["resource_id"], "version_id": item["version_id"],
-                          "resource_type": item["resource_type"], "title": item["title"],
-                          "description": item["description"], "tags": item["tags"],
+                          "resource_type": item["resource_type"], "title": item.get("source_title", item["title"]),
+                          "description": item.get("source_description", item["description"]),
+                          "tags": item.get("source_tags", item["tags"]),
                           "aliases": item["aliases"],
                           "metadata": metadata, "provenance": _private_safe(provenance),
                           "content_hash": item["content_hash"], "mime": item["mime"], "byte_size": item["byte_size"],
                           "availability": item["availability"], "review_state": item["review_state"]}
+        teacher_metadata = {name: item[name] for name in ("title", "description", "tags", "topics", "year_levels")
+                            if name in item}
+        if (item.get("has_teacher_metadata")
+                or any(item.get("source_" + name, item[name]) != item[name] for name in ("title", "description", "tags"))
+                or item.get("topics") or item.get("year_levels")):
+            if _private_safe(teacher_metadata) != teacher_metadata:
+                raise ValueError("Teacher resource metadata contains private fields and cannot be exported unchanged.")
+            resources[key]["teacher_metadata"] = teacher_metadata
         for edge in catalogue.relationships(item["resource_id"], item["version_id"]):
             # Follow dependencies only from this resource to its targets.
             # Incoming consumers (such as unrelated saved pages using a
@@ -451,8 +460,19 @@ def _read_package(path: Path) -> tuple[BoardModel, dict[str, dict[str, Any]], di
         for resource in catalogue_data["resources"]:
             required = {"resource_id", "version_id", "resource_type", "title", "description", "tags", "aliases",
                         "metadata", "provenance", "content_hash", "mime", "byte_size", "availability", "review_state"}
-            if not isinstance(resource, dict) or set(resource) != required:
+            if not isinstance(resource, dict) or set(resource) - {"teacher_metadata"} != required:
                 raise ValueError("Portable lesson catalogue resource fields are invalid.")
+            if "teacher_metadata" in resource:
+                correction = resource["teacher_metadata"]
+                if (not isinstance(correction, dict)
+                        or set(correction) != {"title", "description", "tags", "topics", "year_levels"}
+                        or not isinstance(correction["title"], str) or not correction["title"].strip()
+                        or len(correction["title"]) > 200
+                        or not isinstance(correction["description"], str) or len(correction["description"]) > 4000
+                        or any(not isinstance(correction[name], list) or len(correction[name]) > 100
+                               or any(not isinstance(value, str) or len(value) > 200 for value in correction[name])
+                               for name in ("tags", "topics", "year_levels"))):
+                    raise ValueError("Portable lesson teacher metadata is invalid.")
             if (not _is_uuid(resource["resource_id"]) or not _is_uuid(resource["version_id"])
                     or resource["resource_type"] not in {"image", "dataset", "chart", "page", "video", "audio", "document", "attachment"}
                     or not isinstance(resource["title"], str) or not resource["title"].strip() or len(resource["title"]) > 200
@@ -555,6 +575,8 @@ def import_lesson(package_path: Path | str, destination: Path | str) -> BoardSto
                 if fields.get("resource_type") == "image":
                     fields["image_ref"] = {"asset_id": item["resource_id"], "version_id": item["version_id"], "sha256": item["content_hash"]}
                 catalogue.save_resource(**fields)
+                if item.get("teacher_metadata"):
+                    catalogue.update_metadata(item["version_id"], **item["teacher_metadata"])
             for edge in catalogue_data["relationships"]:
                 catalogue.add_relationship(edge["source_version_id"], edge["relation"], edge["target_version_id"], edge.get("metadata"))
         store = BoardStore(staging)

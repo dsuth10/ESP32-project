@@ -77,12 +77,23 @@ containing `model.bin`, preventing an implicit download.
 - **PC microphone:** explicitly start/stop up to 30 seconds of recording. Review
   the transcript, then send it as a Board request. Existing Compose/Dictate and
   handheld actions are unchanged.
-- **Reusable resources:** search all types or filter images/pages/datasets/charts.
+- **Reusable resources:** search corrected metadata and saved names; filter by
+  topic, Prep/Years 1–12, resource type and approval. Results explain matches and
+  show verified local image thumbnails, approval and availability.
   **Index saved library** reads an existing `media.sqlite3` source without
   changing it. Backfill is resumable and metadata-only; selected image bytes and
   hashes are checked before use. Only a unique exact approved match is selected
   automatically; other matches use thumbnails. Selected bytes are retained in
   the reusable cache and lesson, preserving their original identities.
+- **Resource details and remembered names:** select a result to edit its title,
+  description, tags, topics and year levels. Corrections survive re-indexing and
+  reopening. Remember a phrase for the exact chosen version, or forget it later;
+  assigning an existing name moves its binding. Naming does not approve a draft.
+  Explicit review filters expose excluded/rejected rows for management only.
+  Portable lessons retain included-resource corrections separately from source
+  metadata; remembered names stay local. See the
+  [library guide](2026-10-27-reusable-resource-library.md) and
+  [search-quality report](2026-10-27-resource-library-search-quality.md).
 - **Saved pages:** completed requested pages are automatically retained as
   immutable editable resources. Select one and choose **Reuse selected saved
   page** to restore it offline through the same complete preview/Undo path.

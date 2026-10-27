@@ -170,7 +170,10 @@ class BoardResourcePreparer:
         query = plan['query'].strip()
         explicit_source = self._confirmed_source(context['instruction'], plan['source'])
         source_overrides_library = explicit_source in {'commons', 'google'}
-        if not source_overrides_library:
+        # A selected dataset defines a deterministic chart operation. Broad
+        # library suggestions must not replace or block its exact values.
+        supplied_chart = plan['kind'] == 'chart' and dataset is not None and explicit_source != 'library'
+        if not source_overrides_library and not supplied_chart:
             exact = self.library.automatic_match(query)
             if exact:
                 return [self.library.select(exact, self.lesson_media)]

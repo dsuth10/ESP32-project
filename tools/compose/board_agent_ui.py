@@ -13,7 +13,7 @@ from PySide6.QtCore import QTimer, Qt, QSize, QRectF
 from PySide6.QtGui import QFont, QTextDocument, QIcon, QTransform
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QLineEdit, QTextEdit, QListWidget, QListWidgetItem, QDialog, QFormLayout, QSpinBox,
-    QCheckBox, QDialogButtonBox, QFileDialog, QMessageBox, QGraphicsScene, QGraphicsView, QComboBox)
+    QCheckBox, QDialogButtonBox, QFileDialog, QMessageBox, QGraphicsScene, QGraphicsView, QComboBox, QInputDialog)
 
 from board_agent import BoardAgentController, TeachingProfile, load_profile, save_profile, BoardAgentError, result_envelope
 from board_library import BoardResourceLibrary
@@ -74,6 +74,7 @@ class AgentPanel(QWidget):
         self.controller = self._controller()
         self.request_id = None
         self.selected_resource = None
+        self.library_record = None
         self.records = []
         self.completed = set()
         self.accepted_preview_versions = {}
@@ -113,13 +114,38 @@ class AgentPanel(QWidget):
         self.recovery_note = QLabel(''); self.recovery_note.setWordWrap(True); layout.addWidget(self.recovery_note)
         self.query = QLineEdit(); self.query.setPlaceholderText('Search reusable resources'); self.query.returnPressed.connect(self.search)
         layout.addWidget(self.query)
-        self.resource_type = QComboBox(); self.resource_type.addItems(['All resources', 'Images', 'Saved pages', 'Datasets', 'Charts'])
+        self.resource_type = QComboBox(); self.resource_type.addItems(['All resources', 'Images', 'Saved pages', 'Datasets', 'Charts', 'Videos', 'Audio', 'Documents', 'Attachments'])
         layout.addWidget(self.resource_type)
+        filters = QHBoxLayout(); layout.addLayout(filters)
+        self.topic_filter = QLineEdit(); self.topic_filter.setPlaceholderText('Topic (optional)')
+        self.topic_filter.setAccessibleName('Resource topic filter'); self.topic_filter.returnPressed.connect(self.search)
+        filters.addWidget(self.topic_filter)
+        self.year_filter = QComboBox(); self.year_filter.addItem('All years', None)
+        self.year_filter.setAccessibleName('Resource year level filter')
+        self.year_filter.addItem('Prep', '0')
+        for year in range(1, 13):
+            self.year_filter.addItem(f'Year {year}', str(year))
+        filters.addWidget(self.year_filter)
+        self.review_filter = QComboBox()
+        self.review_filter.setAccessibleName('Resource approval status filter')
+        for label, value in [('Reusable · all reviews', None), ('Approved', 'approved'), ('Draft', 'draft'),
+                             ('Rejected', 'rejected'), ('Excluded', 'excluded')]:
+            self.review_filter.addItem(label, value)
+        layout.addWidget(self.review_filter)
         search_row = QHBoxLayout(); layout.addLayout(search_row)
         search = QPushButton('Search'); search.clicked.connect(self.search); search_row.addWidget(search)
         source = QPushButton('Index saved library…'); source.clicked.connect(self.add_source); search_row.addWidget(source)
         self.results = QListWidget(); self.results.setMaximumHeight(135); self.results.setIconSize(QSize(95, 65))
+        self.results.setWordWrap(True); self.results.setTextElideMode(Qt.TextElideMode.ElideNone)
+        self.results.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.results.itemClicked.connect(self.choose); layout.addWidget(self.results)
+        metadata_actions = QHBoxLayout(); layout.addLayout(metadata_actions)
+        self.edit_resource_button = QPushButton('Edit details…'); self.edit_resource_button.clicked.connect(self.edit_resource)
+        metadata_actions.addWidget(self.edit_resource_button)
+        self.remember_button = QPushButton('Remember name…'); self.remember_button.clicked.connect(self.remember_choice)
+        metadata_actions.addWidget(self.remember_button)
+        self.forget_button = QPushButton('Forget name…'); self.forget_button.clicked.connect(self.forget_choice)
+        layout.addWidget(self.forget_button)
         clear = QPushButton('Clear selected resource'); clear.clicked.connect(self.clear_choice); layout.addWidget(clear)
         approve = QPushButton('Approve selected resource for reuse'); approve.clicked.connect(self.approve_choice); layout.addWidget(approve)
         reuse_page = QPushButton('Reuse selected saved page…'); reuse_page.clicked.connect(self.reuse_page); layout.addWidget(reuse_page)
@@ -280,27 +306,55 @@ class AgentPanel(QWidget):
                 self.progress.setText('The teaching profile could not be saved; previous defaults remain active.')
 
     def search(self):
+        self.clear_choice()
+        self.records = []; self.results.clear()
         try:
             from board_candidate import decode_image
-            kind = {'Images': 'image', 'Saved pages': 'page', 'Datasets': 'dataset', 'Charts': 'chart'}.get(self.resource_type.currentText())
-            self.records = self.library.catalogue.search(self.query.text().strip(), resource_types=[kind] if kind else None, limit=8)
-            self.results.clear(); self.selected_resource = None
+            kind = {'Images': 'image', 'Saved pages': 'page', 'Datasets': 'dataset', 'Charts': 'chart',
+                    'Videos': 'video', 'Audio': 'audio', 'Documents': 'document', 'Attachments': 'attachment'}.get(self.resource_type.currentText())
+            review = self.review_filter.currentData()
+            year = self.year_filter.currentData()
+            topic = self.topic_filter.text().strip()
+            self.records = self.library.catalogue.search(self.query.text().strip(), resource_types=[kind] if kind else None,
+                topics=[topic] if topic else None, year_levels=[year] if year is not None else None,
+                review_states=[review] if review else None, limit=8)
+            self.results.clear(); self.selected_resource = None; self.library_record = None
             for index, record in enumerate(self.records):
-                item = QListWidgetItem(record['title'] + ' · ' + record['resource_type'] + (' · review needed' if record['review_state'] != 'approved' else ''))
+                reasons = '; '.join(record.get('match_reasons', []))
+                names = ', '.join(record.get('remembered_names', []))
+                text = record['title'] + ' · ' + record['resource_type'] + ' · ' + record['review_state']
+                text += ' · ' + record['availability']
+                if reasons:
+                    text += '\n' + reasons
+                if names:
+                    text += '\nRemembered: ' + names
+                item = QListWidgetItem(text)
+                item.setToolTip(record.get('description', '') + '\nExact version: ' + record['version_id'])
                 item.setData(Qt.ItemDataRole.UserRole, index)
                 try:
                     if record['resource_type'] == 'image':
                         _, prepared = self.library.prepare_record(record)
                         item.setIcon(QIcon(decode_image(prepared.data)))
                 except Exception:
-                    item.setText(item.text() + ' · unavailable locally')
+                    item.setText(item.text() + '\nThumbnail unavailable locally')
                 self.results.addItem(item)
-            self.progress.setText(f'{len(self.records)} local matches. Select one for the next request.' if self.records else 'No local match. The next request uses the agreed resource route.')
+            count = len(self.records)
+            self.progress.setText(f'{count} local {"match" if count == 1 else "matches"} (up to 8 shown). Select one to review or reuse.' if self.records else 'No local match for these words and filters. Try a shorter topic or change the filters.')
         except Exception:
             self.progress.setText('Resource search is unavailable; the lesson remains editable.')
 
     def choose(self, item):
-        self.selected_resource = self.records[item.data(Qt.ItemDataRole.UserRole)]
+        self.preparer.dataset = None; self.preparer.chart_spec = None
+        self.library_record = self.records[item.data(Qt.ItemDataRole.UserRole)]
+        self.selected_resource = None
+        if (self.library_record['review_state'] in {'rejected', 'excluded'}
+                or self.library_record['availability'] == 'unavailable'):
+            self.progress.setText('Selected for library management only. This version is excluded, rejected or unavailable for reuse.')
+            return
+        if self.library_record['resource_type'] not in {'image', 'page', 'dataset', 'chart'}:
+            self.progress.setText('Selected for library management. This resource type has metadata only; Board reuse is not available.')
+            return
+        self.selected_resource = self.library_record
         self.progress.setText('Selected exact resource: ' + self.selected_resource['title'])
         try:
             record = self.selected_resource
@@ -323,7 +377,70 @@ class AgentPanel(QWidget):
             self.progress.setText('This resource is missing a supported dataset or dependency. Choose another saved version.')
 
     def clear_choice(self):
-        self.selected_resource = None; self.results.clearSelection()
+        self.preparer.dataset = None; self.preparer.chart_spec = None
+        self.selected_resource = None; self.library_record = None; self.results.clearSelection()
+
+    def edit_resource(self):
+        record = self.library_record
+        if not record:
+            self.progress.setText('Choose a resource to edit its details.'); return
+        dialog = QDialog(self); dialog.setWindowTitle('Resource details · saved on this computer')
+        form = QFormLayout(dialog)
+        title = QLineEdit(record['title']); title.setObjectName('resource_title'); title.setMaxLength(200)
+        description = QTextEdit(record.get('description', '')); description.setObjectName('resource_description')
+        description.setMaximumHeight(110)
+        tags = QLineEdit(', '.join(record.get('tags', []))); tags.setObjectName('resource_tags')
+        topics = QLineEdit(', '.join(record.get('topics', []))); topics.setObjectName('resource_topics')
+        years = QLineEdit(', '.join(str(value) for value in record.get('year_levels', []))); years.setObjectName('resource_years')
+        years.setPlaceholderText('0 for Prep; 1–12, separated by commas')
+        form.addRow('Title', title); form.addRow('Description', description)
+        form.addRow('Tags (comma separated)', tags); form.addRow('Topics (comma separated)', topics)
+        form.addRow('Year levels', years)
+        note = QLabel('Corrections apply to this exact saved version and survive re-indexing. Approval and image bytes stay unchanged.')
+        note.setWordWrap(True); form.addRow(note)
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
+        buttons.accepted.connect(dialog.accept); buttons.rejected.connect(dialog.reject); form.addRow(buttons)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+        try:
+            split = lambda text: [part.strip() for part in text.split(',') if part.strip()]
+            year_levels = split(years.text())
+            self.library.catalogue.update_metadata(record['version_id'], title=title.text(),
+                description=description.toPlainText(), tags=split(tags.text()), topics=split(topics.text()), year_levels=year_levels)
+            self.search()
+            self.progress.setText('Resource details saved locally for the selected version. Approval is unchanged.')
+        except Exception as error:
+            self.progress.setText('Resource details were not saved: ' + str(error)[:250])
+
+    def remember_choice(self):
+        record = self.library_record
+        if not record:
+            self.progress.setText('Choose the exact resource version to remember.'); return
+        name, accepted = QInputDialog.getText(self, 'Remember this exact version',
+            'Name (for example, our usual water-cycle diagram). An existing name will point to this version:')
+        if not accepted:
+            return
+        try:
+            self.library.catalogue.remember_name(name, record['version_id'])
+            self.search()
+            self.progress.setText('Name remembered for exact version ' + record['version_id'][:8] + '. Approval is unchanged.')
+        except Exception as error:
+            self.progress.setText('Name was not saved: ' + str(error)[:250])
+
+    def forget_choice(self):
+        record = self.library_record
+        if not record or not record.get('remembered_names'):
+            self.progress.setText('Choose a resource with a remembered name.'); return
+        name, accepted = QInputDialog.getItem(self, 'Forget a remembered name', 'Name to remove:',
+            record['remembered_names'], 0, False)
+        if not accepted:
+            return
+        try:
+            self.library.catalogue.forget_name(name)
+            self.search()
+            self.progress.setText('Remembered name removed. The saved resource remains in the library.')
+        except Exception as error:
+            self.progress.setText('Name could not be removed: ' + str(error)[:250])
 
     def approve_choice(self):
         if self.selected_resource:

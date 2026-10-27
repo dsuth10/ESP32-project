@@ -1,5 +1,10 @@
 # Classroom companion: consolidated branch programme
 
+27 October reusable-library follow-up: [local search and curation](2026-10-27-reusable-resource-library.md)
+adds teacher corrections, version-pinned remembered names, filtered explained
+search and a synthetic classroom-query benchmark. Its local evidence is separate
+from deployment, real-library retrieval judgements and classroom acceptance.
+
 26 October companion-only follow-up: [interrupted Board request recovery](2026-10-26-teaching-board-request-recovery.md)
 adds durable request links, same-task refresh/cancellation and an explicit
 validated preview after restart. Local engineering evidence does not close
