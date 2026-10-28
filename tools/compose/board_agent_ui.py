@@ -694,7 +694,10 @@ class AgentPanel(QWidget):
             from audio_capture import AudioCapture
             self._audio = AudioCapture(max_duration_sec=30)
             if not self._audio.start_recording():
-                self._audio = None; raise ValueError()
+                reason = self._audio.last_error
+                self._audio = None
+                self.progress.setText(reason or 'The PC microphone is unavailable. Type a Board request instead.')
+                return
             self.mic_button.setText('Stop microphone')
             self.progress.setText('Listening to the PC microphone for a Board request (up to 30 s).')
         except Exception:

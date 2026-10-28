@@ -31,19 +31,23 @@ OPTIONAL_DOCUMENTS = [
     "docs/2026-10-26-school-arrival-guide.md",
     "docs/2026-10-26-linux-hermes-school-handoff.md",
     "docs/2026-10-26-teaching-board-request-recovery.md",
+    "docs/2026-10-28-unified-desktop-plan.md",
+    "docs/2026-10-28-unified-desktop-guide.md",
 ]
 
 
 def source_files(root=ROOT):
     root = Path(root).resolve()
     paths = [root/p for p in [
-        "start_companion.bat", "start_companion_feature.bat",
+        "start_companion.bat", "start_companion_feature.bat", "start_classroom_companion.bat",
         "setup_companion_feature.bat", "server/media_library_server.py",
         "server/hermes_voice_receiver.py", "server/requirements-media.txt",
         "server/tests/test_media_server_portable.py",
         "tools/build_companion_preview.py", "tools/companion_package.py",
         "tools/compose/run_teaching_board_candidate.ps1",
         "tools/compose/setup_teaching_board_candidate.ps1",
+        "tools/compose/run_unified_desktop.ps1",
+        "tools/compose/setup_unified_desktop.ps1",
         "tools/compose/requirements-board.txt",
         "tools/compose/examples/teaching-board-illustrative-rainfall.json",
     ] + DOCUMENTS]
@@ -53,7 +57,8 @@ def source_files(root=ROOT):
                 not any(p.startswith(".") for p in path.relative_to(root).parts)):
             if (path.suffix in {".py", ".bat"}
                     or (path.suffix == ".ps1" and path.name in {
-                        "run_teaching_board_candidate.ps1", "setup_teaching_board_candidate.ps1"})
+                        "run_teaching_board_candidate.ps1", "setup_teaching_board_candidate.ps1",
+                        "run_unified_desktop.ps1", "setup_unified_desktop.ps1"})
                     or path.name in {"requirements.txt", "requirements-board.txt", "compose.env.example"}):
                 paths.append(path)
     # Deployment templates and helpers have their own explicit source subtree.

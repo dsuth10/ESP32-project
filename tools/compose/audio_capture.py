@@ -11,6 +11,7 @@ import time
 import wave
 import threading
 import logging
+from audio_lease import MicrophoneLease
 import numpy as np
 import sounddevice as sd
 try:
@@ -75,6 +76,8 @@ class AudioCapture:
         self._lock = threading.Lock()
         self._is_recording = False
         self._start_time = 0.0
+        self._microphone_lease = MicrophoneLease()
+        self.last_error = ''
 
     @property
     def device_name(self) -> str:
@@ -104,6 +107,10 @@ class AudioCapture:
         with self._lock:
             if self._is_recording:
                 return True
+            if not self._microphone_lease.acquire():
+                self.last_error = 'The PC microphone is in use by the other workspace. Finish that recording first.'
+                return False
+            self.last_error = ''
             self._chunks = []
             self._is_recording = True
             self._start_time = time.time()
@@ -132,6 +139,10 @@ class AudioCapture:
                     self._stream.close()
                 finally:
                     self._stream = None
+                    self._microphone_lease.release()
+            else:
+                self._microphone_lease.release()
+            self.last_error = 'The PC microphone could not open. Check Windows microphone permissions and device selection.'
             logging.error("Failed to start WASAPI audio stream: %s", e)
             return False
 
@@ -151,6 +162,7 @@ class AudioCapture:
                 logging.error("Error closing stream: %s", e)
             finally:
                 self._stream = None
+        self._microphone_lease.release()
 
         with self._lock:
             chunks = list(self._chunks)

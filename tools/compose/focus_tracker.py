@@ -43,6 +43,35 @@ class GUITHREADINFO(ctypes.Structure):
 
 
 class FocusTracker:
+    # The unified teacher shell and its pupil window live in another process.
+    # Register only a parent validated by the embedded entry point, never an
+    # untrusted PID taken from a document or model response.
+    _internal_processes: set[int] = set()
+
+    @classmethod
+    def register_internal_process(cls, pid: int) -> None:
+        if isinstance(pid, int) and not isinstance(pid, bool) and pid > 0:
+            cls._internal_processes.add(pid)
+
+    @classmethod
+    def unregister_internal_process(cls, pid: int) -> None:
+        cls._internal_processes.discard(pid)
+
+    @classmethod
+    def is_internal_process(cls, pid: int) -> bool:
+        return pid == os.getpid() or pid in cls._internal_processes
+
+    @classmethod
+    def is_internal_snapshot(cls, snapshot: dict | None) -> bool:
+        return bool(snapshot and cls.is_internal_process(snapshot.get('pid', 0)))
+
+    @classmethod
+    def is_internal_window(cls, hwnd: int) -> bool:
+        if not hwnd:
+            return False
+        _, pid = win32process.GetWindowThreadProcessId(hwnd)
+        return cls.is_internal_process(pid)
+
     @staticmethod
     def get_focus_snapshot() -> dict:
         """
@@ -88,12 +117,14 @@ class FocusTracker:
     def restore_focus(snapshot: dict | None) -> bool:
         """Bring the recorded document window back to the foreground."""
         hwnd = snapshot.get("hwnd") if snapshot else 0
-        if not hwnd:
+        if not hwnd or FocusTracker.is_internal_snapshot(snapshot):
             return False
         try:
             if not win32gui.IsWindow(hwnd):
                 return False
             _, pid = win32process.GetWindowThreadProcessId(hwnd)
+            if FocusTracker.is_internal_process(pid):
+                return False
             if snapshot.get("pid") and pid != snapshot["pid"]:
                 return False
             if snapshot.get("title") and win32gui.GetWindowText(hwnd) != snapshot["title"]:
@@ -128,11 +159,13 @@ class FocusTracker:
         """
         Verifies if the current foreground window and control still match the snapshot.
         """
-        if not snapshot or not snapshot.get("hwnd"):
+        if not snapshot or not snapshot.get("hwnd") or FocusTracker.is_internal_snapshot(snapshot):
             return False
 
         current_hwnd = win32gui.GetForegroundWindow()
         if current_hwnd != snapshot["hwnd"]:
+            return False
+        if FocusTracker.is_internal_window(current_hwnd):
             return False
 
         if snapshot.get("pid"):
@@ -265,9 +298,24 @@ class FocusTracker:
         3. Direct Win32 WM_COPY to foreground HWND.
         4. Chord-aware synthetic Ctrl+C (with held Alt/Shift modifier compensation).
         """
+        # Reject internal teacher/pupil/companion windows before *any* UIA read,
+        # clipboard copy or key injection. A stale target must not capture the
+        # currently focused teacher request field instead of its document.
+        current_hwnd = win32gui.GetForegroundWindow()
+        if not current_hwnd or (fg_hwnd and fg_hwnd != current_hwnd):
+            return ""
+        fg_hwnd = current_hwnd
+        if cls.is_internal_window(fg_hwnd):
+            return ""
+
+        def unchanged_external_target():
+            return win32gui.GetForegroundWindow() == fg_hwnd and not cls.is_internal_window(fg_hwnd)
+
         # Tier 1: UI Automation
         try:
             with auto.UIAutomationInitializerInThread():
+                if not unchanged_external_target():
+                    return ""
                 focused = auto.GetFocusedControl()
                 if focused:
                     pattern = focused.GetPattern(auto.PatternId.TextPattern)
@@ -280,7 +328,7 @@ class FocusTracker:
                         ranges = pattern.GetSelection()
                         if ranges:
                             text = "".join(r.GetText(-1) for r in ranges)
-                            if text.strip():
+                            if text.strip() and unchanged_external_target():
                                 logging.debug("[FocusTracker] Captured text via UIA TextPattern (%d chars)", len(text))
                                 return text
         except Exception as e:
@@ -292,25 +340,27 @@ class FocusTracker:
 
         if fg_hwnd:
             _, fg_pid = win32process.GetWindowThreadProcessId(fg_hwnd)
-            if fg_pid == os.getpid():
+            if cls.is_internal_process(fg_pid) or not unchanged_external_target():
                 return ""
             child_hwnd = cls.get_focused_child_hwnd(fg_hwnd)
             if child_hwnd:
                 text = cls._capture_via_wm_copy(child_hwnd)
-                if text.strip():
+                if text.strip() and unchanged_external_target():
                     logging.debug("[FocusTracker] Captured text via Win32 WM_COPY on child HWND %s (%d chars)", child_hwnd, len(text))
                     return text
 
             # Tier 2b: Win32 WM_COPY on foreground HWND
-            if fg_hwnd != child_hwnd:
+            if fg_hwnd != child_hwnd and unchanged_external_target():
                 text = cls._capture_via_wm_copy(fg_hwnd)
-                if text.strip():
+                if text.strip() and unchanged_external_target():
                     logging.debug("[FocusTracker] Captured text via Win32 WM_COPY on fg HWND %s (%d chars)", fg_hwnd, len(text))
                     return text
 
         # Tier 3: Chord-aware Ctrl+C
+        if not unchanged_external_target():
+            return ""
         text = cls._capture_via_chord_ctrl_c()
-        if text.strip():
+        if text.strip() and unchanged_external_target():
             logging.debug("[FocusTracker] Captured text via chord Ctrl+C (%d chars)", len(text))
             return text
 

@@ -1,5 +1,11 @@
 # Build an ESP32 classroom companion with an AI coding agent
 
+**Shared teacher window:** `start_companion.bat` now opens Teaching Board and Voice
+companion in one window, retaining the separate pupil presentation. See the
+[guide](docs/2026-10-28-unified-desktop-guide.md) and
+[implementation plan](docs/2026-10-28-unified-desktop-plan.md). Standalone Board
+and voice launchers remain available for recovery.
+
 **Current branch programme:** [holistic plan and completion dashboard](docs/2026-10-21-companion-media-agent-master-plan.md). We are continuing with the original ES3C28P ESP32-S3; its installed firmware stays stable/write-locked. The CYD application port is abandoned. The branch contains an isolated image-library candidate; live deployment and teacher acceptance are still open.
 
 **Branches:** `main` is the stable reference. All current companion, Hermes and SQLite/media-library development is on `codex/companion-media-agent`.
@@ -157,7 +163,7 @@ Copy [tools/compose/compose.env.example](tools/compose/compose.env.example) to `
 
 ### Embedded assistant and reusable writing
 
-Run `start_companion.bat` and open **Ask your companion**. **Ask / write** answers text requests; **Manage companion** can inspect limited live companion status and save text. It reuses your Groq configuration, with optional `GROQ_ASSISTANT_MODEL`. Without a Groq key, or with `LOCAL_ONLY=1`, it uses your configured Ollama endpoint. Management needs a model supporting tool calling. This assistant tab has no live web search; Compose retains its existing optional search path.
+Run `start_companion.bat`, choose **Voice companion**, then open **Ask your companion**. **Ask / write** answers text requests; **Manage companion** can inspect limited live companion status and save text. It reuses your Groq configuration, with optional `GROQ_ASSISTANT_MODEL`. Without a Groq key, or with `LOCAL_ONLY=1`, it uses your configured Ollama endpoint. Management needs a model supporting tool calling. This assistant tab has no live web search; Compose retains its existing optional search path.
 
 **History & saved text** retains new Compose, Dictate and assistant text on this Windows account. Search previous results, save useful responses, copy, export or delete individual entries. **Queue for Paste Ready** holds the selected response; focus your document and use the hardware/keyboard Paste Ready shortcut to insert it. Queueing does not paste into the companion.
 

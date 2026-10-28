@@ -19,11 +19,15 @@ SHA-256 digest is checked before extraction. Unlisted files, traversal paths,
 symlinks and Windows path collisions are rejected. Hash verification establishes
 internal integrity; download authenticity and code signing remain release gates.
 
-Open **Start Companion Feature.cmd** in the installation folder. On the first
-installation, run `setup_companion_feature.bat` inside the current release folder
-to create its Python environment and install dependencies. This separately
+Open **Start Companion Feature.cmd** in the installation folder. Current packages
+open the shared teacher window and a separate pupil presentation window. On the
+first installation, run `tools/compose/setup_unified_desktop.ps1` inside the
+current release folder to prepare its isolated Board and voice dependencies. This
 requires network access and may need school IT approval. Setup is not run by the
-package tool. Python 3.12 or 3.13 and the requirements file remain prerequisites.
+package tool. Python 3.12 or 3.13 and the requirements files remain prerequisites.
+See the [shared-window guide](2026-10-28-unified-desktop-guide.md). The existing
+`setup_companion_feature.bat` and `start_companion_feature.bat` remain voice-only
+recovery routes; the standalone Board launcher is retained too.
 
 The feature launcher uses separate data at
 `%LOCALAPPDATA%/ESP32ClassroomCompanion-Feature`. Hardware inputs default off;
@@ -35,8 +39,15 @@ Hermes or media settings never enrols a computer in Tailscale or deploys Linux.
 Install a newer preview with the same command and destination. Source releases
 are retained separately and the launcher switches only after full verification.
 If managed source files have local edits, update stops and preserves them.
-Back up those edits before proceeding. Settings, History and media live outside
-the installed source tree.
+Back up those edits before proceeding. Voice settings, History and image media
+live outside the installed source tree. The provisional Board still stores its
+lessons, saved-lesson catalogue, reusable resources and Qt environment under each
+checkout/release's `.local` folder. Updating a source preview selects a new
+release folder; it does not migrate that Board data or environment. The old
+release/data remains available for rollback or deliberate portable lesson export
+and import. Automatic Board continuity across installed updates is not accepted;
+back up/export lessons before updating. Signed unified installation and stable
+external Board storage remain release work.
 
 ```powershell
 python tools/companion_package.py rollback

@@ -65,19 +65,22 @@ def load_env_config() -> dict:
 
 
 class ComposeApp:
-    def __init__(self, root: tk.Tk):
+    def __init__(self, root: tk.Tk, *, embedded=False):
         self.root = root
+        self.embedded = embedded
+        self._shutdown_prepared = False
         self._last_external_snap = FocusTracker.snapshot_foreground_window()
-        if self._last_external_snap.get("pid") == os.getpid():
+        if FocusTracker.is_internal_snapshot(self._last_external_snap):
             self._last_external_snap = None
         self.root.title("🎙️ ESP32 Voice Compose & Dictate Companion")
         self.root.geometry("920x740")
         self.root.minsize(720, 640)
         self.root.configure(bg="#0B0F19")
-        self.root.lift()
-        self.root.attributes("-topmost", True)
-        self.root.after(300, lambda: self.root.attributes("-topmost", False))
-        self.root.focus_force()
+        if not embedded:
+            self.root.lift()
+            self.root.attributes("-topmost", True)
+            self.root.after(300, lambda: self.root.attributes("-topmost", False))
+            self.root.focus_force()
 
         self.config = load_env_config()
         self.local_only = self.config.get("LOCAL_ONLY", "0").lower() in ("1", "true", "yes")
@@ -550,7 +553,8 @@ class ComposeApp:
         self._post_ui(self.media_panel.tell, message)
 
     def _settings_saving(self):
-        return bool(getattr(getattr(self, "settings_panel", None), "_saving", False))
+        return (getattr(self, '_shutdown_prepared', False) or
+                bool(getattr(getattr(self, "settings_panel", None), "_saving", False)))
 
     def _quiesce_sync(self):
         self._sync_stop.set()
@@ -568,6 +572,8 @@ class ComposeApp:
         return selected
 
     def _validate_settings_before_save(self, values):
+        if getattr(self, '_shutdown_prepared', False):
+            raise ValueError('Closing is being prepared. Wait or cancel closing before changing settings.')
         if (self._busy or self.is_recording or
                 (hasattr(self, "media_panel") and self.media_panel._busy) or
                 (hasattr(self, "assistant_panel") and self.assistant_panel._busy) or
@@ -753,6 +759,8 @@ class ComposeApp:
             self.stop_recording_flow()
 
     def inject_paste_ui(self):
+        if getattr(self, '_shutdown_prepared', False):
+            return
         if self._busy or self.is_recording:
             self.log("Finish the current operation before pasting.")
             return
@@ -765,7 +773,7 @@ class ComposeApp:
             return
         # Only the explicit Paste Ready gesture may restore a document window.
         snap = FocusTracker.get_focus_snapshot()
-        if snap.get("pid") == os.getpid():
+        if FocusTracker.is_internal_snapshot(snap):
             target = getattr(self, "_last_external_snap", None)
             if not target or not FocusTracker.restore_focus(target) or not FocusTracker.is_focus_matched(target):
                 self.set_status("READY: Focus your document, then press PASTE READY", "#F59E0B")
@@ -854,8 +862,11 @@ class ComposeApp:
             self.set_status('Paste or clear the queued item before recording another request.', '#F59E0B')
             return
         if not self.audio_capture.start_recording():
-            self.log("Microphone could not open. Check Windows microphone permissions and device selection.")
-            self.set_status("ERROR: Could not open microphone", "#EF4444")
+            reason = getattr(self.audio_capture, 'last_error', '')
+            if not isinstance(reason, str) or not reason.strip():
+                reason = 'Check Windows microphone permissions and device selection.'
+            self.log('Microphone could not open. ' + reason)
+            self.set_status('Microphone unavailable: ' + reason, "#EF4444")
             return
         self.is_recording = True
         self.recording_mode = mode
@@ -870,7 +881,7 @@ class ComposeApp:
         # Snapshot window focus and selected text safely
         try:
             self._target_focus_snap = FocusTracker.get_focus_snapshot()
-            if self._target_focus_snap.get("pid") == os.getpid():
+            if FocusTracker.is_internal_snapshot(self._target_focus_snap):
                 previous = getattr(self, "_last_external_snap", None)
                 self._target_focus_snap = None
                 if mode != "media" and previous and FocusTracker.restore_focus(previous) and FocusTracker.is_focus_matched(previous):
@@ -1030,7 +1041,7 @@ class ComposeApp:
             return
         try:
             snap = FocusTracker.snapshot_foreground_window()
-            if snap.get("pid") and snap.get("pid") != os.getpid():
+            if snap.get("pid") and not FocusTracker.is_internal_snapshot(snap):
                 self._last_external_snap = snap
         except Exception:
             logging.debug("Foreground window tracking unavailable", exc_info=True)
@@ -1043,7 +1054,11 @@ class ComposeApp:
         if mode == 'library':
             if edge == 'down' and hasattr(self,'media_tab'):
                 self.tabs.select(self.media_tab)
-                self.root.deiconify();self.root.lift();self.root.focus_force()
+                callback = getattr(self, 'show_embedded_workspace', None)
+                if callback:
+                    callback()
+                else:
+                    self.root.deiconify();self.root.lift();self.root.focus_force()
                 self.media_panel.refresh()
             return
         if mode == "paste":
@@ -1070,17 +1085,9 @@ if __name__ == "__main__":
     logging.basicConfig(filename=Path(__file__).with_name("companion.log"),
                         level=logging.INFO, encoding="utf-8",
                         format="%(asctime)s %(levelname)s %(message)s")
-    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
-    kernel32.CreateMutexW.argtypes = [ctypes.c_void_p, ctypes.wintypes.BOOL, ctypes.wintypes.LPCWSTR]
-    kernel32.CreateMutexW.restype = ctypes.wintypes.HANDLE
-    import hashlib
-    instance_name = "Local\\ESP32ComposeGui"
-    if os.environ.get("ESP32_COMPANION_DATA_DIR"):
-        instance_name += "-" + hashlib.sha256(str(data_directory().resolve()).casefold().encode()).hexdigest()[:12]
-    instance_mutex = kernel32.CreateMutexW(None, False, instance_name)
-    if not instance_mutex:
-        raise ctypes.WinError(ctypes.get_last_error())
-    if ctypes.get_last_error() == 183:
+    from companion_embedded import claim_instance_mutex
+    instance_mutex = claim_instance_mutex(data_directory())
+    if instance_mutex is None:
         print("The ESP32 companion is already running.")
         sys.exit(0)
     root = tk.Tk()

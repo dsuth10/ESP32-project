@@ -77,6 +77,16 @@ def test_microphone_failure_does_not_claim_to_record():
     app.root.after.assert_not_called()
 
 
+def test_microphone_lease_contention_explains_the_other_workspace():
+    app = make_app()
+    app.audio_capture.start_recording.return_value = False
+    app.audio_capture.last_error = 'The other workspace is using the microphone.'
+    app.start_recording_flow('compose')
+    assert not app.is_recording
+    app.set_status.assert_called_with(
+        'Microphone unavailable: The other workspace is using the microphone.', '#EF4444')
+
+
 def test_busy_pipeline_rejects_new_recording():
     app = make_app()
     app._busy = True
@@ -298,7 +308,9 @@ def test_capture_selected_text_extracts_via_text_pattern():
     mock_control = Mock()
     mock_control.GetPattern.side_effect = lambda pat_id: mock_pattern if pat_id == auto.PatternId.TextPattern else None
 
-    with patch("uiautomation.GetFocusedControl", return_value=mock_control):
+    with patch("uiautomation.GetFocusedControl", return_value=mock_control), \
+         patch('focus_tracker.win32gui.GetForegroundWindow', return_value=999), \
+         patch('focus_tracker.win32process.GetWindowThreadProcessId', return_value=(1, 987654321)):
         assert FocusTracker.capture_selected_text() == "Selected essay text"
 
 
@@ -319,7 +331,9 @@ def test_capture_selected_text_falls_back_to_parent():
     mock_control.GetPattern.return_value = None
     mock_control.GetParentControl.return_value = mock_parent
 
-    with patch("uiautomation.GetFocusedControl", return_value=mock_control):
+    with patch("uiautomation.GetFocusedControl", return_value=mock_control), \
+         patch('focus_tracker.win32gui.GetForegroundWindow', return_value=999), \
+         patch('focus_tracker.win32process.GetWindowThreadProcessId', return_value=(1, 987654321)):
         assert FocusTracker.capture_selected_text() == "Parent essay text"
 
 
@@ -327,6 +341,8 @@ def test_capture_selected_text_falls_back_to_wm_copy_for_scintilla():
     from focus_tracker import FocusTracker
 
     with patch("uiautomation.GetFocusedControl", return_value=None), \
+         patch('focus_tracker.win32gui.GetForegroundWindow', return_value=999), \
+         patch('focus_tracker.win32process.GetWindowThreadProcessId', return_value=(1, 987654321)), \
          patch.object(FocusTracker, "get_focused_child_hwnd", return_value=12345), \
          patch.object(FocusTracker, "_capture_via_wm_copy", return_value="Notepad++ essay text") as mock_copy:
         result = FocusTracker.capture_selected_text(fg_hwnd=999)
@@ -338,6 +354,9 @@ def test_capture_selected_text_falls_back_to_chord_ctrl_c():
     from focus_tracker import FocusTracker
 
     with patch("uiautomation.GetFocusedControl", return_value=None), \
+         patch('focus_tracker.win32gui.GetForegroundWindow', return_value=999), \
+         patch('focus_tracker.win32process.GetWindowThreadProcessId', return_value=(1, 987654321)), \
+         patch.object(FocusTracker, 'get_focused_child_hwnd', return_value=999), \
          patch.object(FocusTracker, "_capture_via_wm_copy", return_value=""), \
          patch.object(FocusTracker, "_capture_via_chord_ctrl_c", return_value="Chord captured text") as mock_ctrl_c:
         result = FocusTracker.capture_selected_text(fg_hwnd=999)
@@ -398,6 +417,7 @@ def test_capture_selected_text_ignores_this_process():
     from focus_tracker import FocusTracker
 
     with patch("uiautomation.GetFocusedControl", return_value=None), \
+         patch('focus_tracker.win32gui.GetForegroundWindow', return_value=999), \
          patch("focus_tracker.win32process.GetWindowThreadProcessId", return_value=(1, os.getpid())), \
          patch.object(FocusTracker, "_capture_via_wm_copy") as copy, \
          patch.object(FocusTracker, "_capture_via_chord_ctrl_c") as chord:

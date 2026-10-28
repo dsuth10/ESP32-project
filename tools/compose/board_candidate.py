@@ -1105,6 +1105,41 @@ class BoardCandidate(QWidget):
             self.error = str(error); self.refresh(); return False
         return self._save_copy(destination, title)
 
+    def open_saved_lesson(self, root):
+        """Open an existing lesson in this teacher workspace, preserving pupils.
+
+        The unified shell chooses a catalogue entry; standalone recovery
+        launchers retain their existing separate entry point.
+        """
+        if self.session.teacher_view()['frozen']:
+            self.error = 'Resume the pupil display before opening a different lesson. Your frozen view is unchanged.'
+            self.refresh(); return False
+        if not self.prepare_close(wait_for_work=True):
+            return False
+        try:
+            root = candidate_directory(root)
+            validate_candidate_storage(root)
+            if not any((root / name).is_file() for name in ('lesson.json', 'lesson.previous.json')):
+                raise ValueError('The selected saved lesson is unavailable. No new lesson was created.')
+            claim = getattr(self, 'claim_lesson', None)
+            if claim:
+                claim(root)
+            store = BoardStore(root)
+            resolver = image_resolver(MediaStore(root / 'media'))
+            replacement = BoardSession.open(store, image_resolver=resolver)
+        except Exception as error:
+            self.error = str(error); self.refresh(); return False
+        previous = self.session
+        self.session, self.store, self.resolver = replacement, store, resolver
+        previous.close()
+        if self.agent_panel:
+            self.agent_panel.session_changed()
+        self.aspect_locks.clear(); self.selected = None; self.selection_view = None
+        self.name.setModified(False); self.name_capture = None
+        self.recovery_notice = replacement.teacher_view().get('recovery_status') == 'recovered_previous'
+        self.error = ''; self.refresh(); self.select(None); self.sync_saved_lessons()
+        return True
+
     def _save_copy(self, destination, title):
         if self.session.teacher_view()['frozen']:
             self.error = 'Resume the pupil display before opening a separate lesson copy. Your frozen view is unchanged.'
@@ -1112,6 +1147,9 @@ class BoardCandidate(QWidget):
         if not self.save_now():
             return False
         try:
+            claim = getattr(self, 'claim_lesson', None)
+            if claim:
+                claim(destination)
             replacement, store, resolver = copy_saved_lesson(self.session, self.store.root, destination, title)
         except Exception as error:
             self.error = str(error); self.refresh(); return False
@@ -1196,6 +1234,9 @@ class BoardCandidate(QWidget):
         try:
             from board_export import import_lesson
             destination = new_saved_lesson_directory('Imported lesson')
+            claim = getattr(self, 'claim_lesson', None)
+            if claim:
+                claim(destination)
             store = import_lesson(Path(path), destination)
             resolver = image_resolver(MediaStore(store.root / 'media'))
             replacement = BoardSession.open(store, image_resolver=resolver)
@@ -1216,20 +1257,44 @@ class BoardCandidate(QWidget):
         self.pupil.show(); self.show_pupil.setChecked(True)
         self.pupil.windowHandle().setScreen(screen); self.pupil.move(screen.geometry().topLeft())
 
-    def closeEvent(self, event):
+    def prepare_close(self, *, wait_for_work=False):
+        """Save/check closure without stopping the session or hiding pupils.
+
+        The shared teacher shell uses this preflight before asking the separate
+        voice runtime to close. A veto on either side must leave both usable.
+        """
+        if wait_for_work and self.agent_panel:
+            panel = self.agent_panel
+            active = bool(panel._audio or panel._speech_future or panel._recovery_future)
+            if panel.request_id:
+                active = active or panel.controller.snapshot(panel.request_id)['status'] == 'working'
+            if active:
+                self.error = 'Finish or cancel the active Board request or microphone work before closing.'
+                self.refresh()
+                return False
         if not self.flush_pending_edits():
-            event.ignore(); return
+            return False
         self.save_now()
         if self.session.teacher_view()['dirty'] or self.name.isModified():
             choice = QMessageBox.question(self, 'Unsaved lesson', 'The latest changes could not be saved. Close and discard those unsaved changes?',
                                           QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Cancel,
                                           QMessageBox.StandardButton.Cancel)
             if choice != QMessageBox.StandardButton.Discard:
-                event.ignore(); return
+                return False
+        return True
+
+    def finish_close(self):
+        """Commit an already approved close; no further dialogue or save."""
         self.save_timer.stop(); self.property_timer.stop(); self.group_timer.stop()
         if self.agent_panel:
             self.agent_panel.close_runtime()
-        self.session.close(); self.pupil.hide(); event.accept()
+        self.session.close(); self.pupil.hide()
+
+    def closeEvent(self, event):
+        if not self.prepare_close():
+            event.ignore(); return
+        self.finish_close()
+        event.accept()
 
 
 def smoke(candidate, root):
@@ -1285,8 +1350,11 @@ def main():
     if existing and (args.demo or args.smoke):
         parser.error('Demo/smoke requires a fresh candidate folder; existing lesson was preserved.')
     app = QApplication(sys.argv[:1])
-    store = BoardStore(args.data_root); media = MediaStore(args.data_root/'media'); resolver = image_resolver(media)
+    from desktop_instance import LessonInstances
+    instances = LessonInstances()
     try:
+        instances.claim_lesson(args.data_root)
+        store = BoardStore(args.data_root); media = MediaStore(args.data_root/'media'); resolver = image_resolver(media)
         if existing:
             session = BoardSession.open(store, image_resolver=resolver)
         else:
@@ -1298,6 +1366,7 @@ def main():
         source_library = SavedImageLibrary(args.library_root).root if args.library_root else None
         candidate = BoardCandidate(session, store=store, resolver=resolver, agent_config=config,
                                    library_root=source_library)
+        candidate.claim_lesson = instances.claim_lesson
         if source_library and candidate.agent_panel:
             candidate.agent_panel.pending_sources.append(source_library)
             candidate.agent_panel.index_timer.start(0)
@@ -1312,6 +1381,8 @@ def main():
             raise
         QMessageBox.critical(None, 'Lesson could not open', str(error) + '\nExisting lesson files were preserved.')
         return 1
+    finally:
+        instances.release()
 
 
 if __name__ == '__main__':

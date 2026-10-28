@@ -13,6 +13,7 @@ from pathlib import Path, PurePosixPath
 import shutil
 import stat
 import tempfile
+import time
 import zipfile
 
 MAX_PACKAGE_BYTES = 64 * 1024 * 1024
@@ -130,14 +131,36 @@ def _verify_release(root, identity):
 
 
 def _activate(root, current, previous):
-    _verify_release(root, current)
+    _release, files = _verify_release(root, current)
     launcher = root / "Start Companion Feature.cmd"
-    text = '@echo off\r\ncall "%~dp0releases\\' + current + '\\start_companion_feature.bat"\r\n'
+    entry = 'start_companion.bat' if 'start_companion.bat' in files else 'start_companion_feature.bat'
+    text = _launcher_text(current, entry)
     # Save the recoverable pointer before the launcher. A launch failure never
     # removes the old release; rerunning rollback recreates both files.
     _atomic(root / "installation.json", json.dumps(
         {"format": 1, "current": current, "previous": previous}, indent=2).encode())
     _atomic(launcher, text.encode("utf-8"))
+
+
+def _launcher_text(identity, entry):
+    return '@echo off\r\ncall "%~dp0releases\\' + identity + '\\' + entry + '"\r\n'
+
+
+def _publish_release(staging, release):
+    """Allow a short-lived Windows scanner handle to settle before publication.
+
+    This retries only an unchanged atomic directory move. It never deletes a
+    destination, bypasses permissions or activates partially published files.
+    """
+    for attempt in range(5):
+        try:
+            os.replace(staging, release)
+            return
+        except PermissionError as error:
+            if (os.name != 'nt' or getattr(error, 'winerror', None) not in {5, 32, 33}
+                    or attempt == 4 or release.exists()):
+                raise
+            time.sleep(.05 * (2 ** attempt))
 
 
 def install(package, destination):
@@ -163,7 +186,7 @@ def install(package, destination):
             (staging / MANIFEST).write_text(json.dumps(
                 {"format": "source-preview", "files": files}, indent=2), encoding="utf-8")
             release.parent.mkdir(exist_ok=True)
-            os.replace(staging, release)
+            _publish_release(staging, release)
         finally:
             if staging.exists():
                 shutil.rmtree(staging)
@@ -208,8 +231,9 @@ def uninstall(destination):
             release.rmdir()
     launcher = root / "Start Companion Feature.cmd"
     if launcher.exists():
-        expected = '@echo off\r\ncall "%~dp0releases\\' + state["current"] + '\\start_companion_feature.bat"\r\n'
-        if launcher.read_bytes() == expected.encode():
+        expected = {_launcher_text(state['current'], entry).encode()
+                    for entry in ('start_companion.bat', 'start_companion_feature.bat')}
+        if launcher.read_bytes() in expected:
             launcher.unlink()
     (root / "installation.json").unlink()
     return {"removed_managed_sources": True, "data_preserved": True,

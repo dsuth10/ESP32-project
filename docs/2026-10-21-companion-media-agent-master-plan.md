@@ -1,5 +1,11 @@
 # Classroom companion: consolidated branch programme
 
+28 October shared-window follow-up: the [unified desktop plan](2026-10-28-unified-desktop-plan.md)
+and [teacher guide](2026-10-28-unified-desktop-guide.md) add one teacher window
+containing the existing Board and Voice companion workspaces, with a separate
+pupil display. Functionality, storage and provider decisions remain separate.
+Local integration evidence does not close deployment, physical or classroom gates.
+
 27 October reusable-library follow-up: [local search and curation](2026-10-27-reusable-resource-library.md)
 adds teacher corrections, version-pinned remembered names, filtered explained
 search and a synthetic classroom-query benchmark. Its local evidence is separate
