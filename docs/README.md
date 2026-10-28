@@ -7,6 +7,7 @@
 | Document | Use it for |
 | --- | --- |
 | [Consolidated branch programme](2026-10-21-companion-media-agent-master-plan.md) | Fixed decisions, implemented versus unaccepted work, M0–M9 roadmap, dependencies and completion dashboard. |
+| [Unified desktop settings and image repair](2026-10-28-unified-desktop-settings-repair.md) | Hosted text-entry repair, explicit Board settings selection/reload, image prerequisites and verification limits. |
 | [Shared teacher window plan](2026-10-28-unified-desktop-plan.md) and [guide](2026-10-28-unified-desktop-guide.md) | One teacher window with separate Teaching Board/Voice companion workspaces and an independent pupil presentation; lifecycle, data and acceptance. |
 | [Reusable library search and curation](2026-10-27-reusable-resource-library.md) | Teacher corrections, version-pinned names, local filters/matching reasons and measured synthetic search quality. |
 | [Teaching Board candidate](2026-10-25-teaching-board-candidate.md) | Isolated teacher/pupil editor, saving/copies, native verification and pending participant acceptance. |

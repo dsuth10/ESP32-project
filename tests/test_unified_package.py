@@ -25,6 +25,8 @@ def test_unified_source_preview_contains_both_workspaces_and_no_local_data(tmp_p
         'tools/compose/setup_unified_desktop.ps1', 'tools/compose/requirements.txt',
         'tools/compose/requirements-board.txt', 'docs/2026-10-28-unified-desktop-plan.md',
         'docs/2026-10-28-unified-desktop-guide.md',
+        'docs/2026-10-28-unified-desktop-settings-repair.md',
+        'tools/compose/board_resource_policy.py', 'tools/compose/settings_panel.py',
     }
     assert required <= set(manifest)
     assert all(not name.startswith('.local/') and not name.endswith(('.dpapi', '.sqlite3', '.log', '.env'))

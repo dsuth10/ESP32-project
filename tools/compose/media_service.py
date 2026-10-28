@@ -68,7 +68,8 @@ class MediaService:
             if job.get('image_settings', snapshot) != image_snapshot(self.config):
                 raise ValueError('Image output settings changed. Prepare the image again before generation.')
             estimate = snapshot['allocation_cents']
-            if estimate <= 0 or not self.sync:
+            uncapped = snapshot.get('spending_mode') == 'uncapped'
+            if not uncapped and (estimate <= 0 or not self.sync):
                 raise ValueError('Configure a conservative AUD allocation and the shared budget server first.')
             parent_id = job.get('parent_version_id')
             parent = self.store.get_version(parent_id) if parent_id else None
@@ -82,13 +83,15 @@ class MediaService:
                                           allocation_cents=estimate, provider_dispatched=False)
             if not claimed:
                 raise ValueError('This image attempt is already claimed. Review its current state; do not repeat it.')
-            if on_stage:on_stage('Reserving image allocation')
-            reservation_attempted = True
-            self.sync.reserve_budget(job_id, estimate)
+            if on_stage:on_stage('Preparing uncapped image request' if uncapped else 'Reserving image allocation')
+            if not uncapped:
+                reservation_attempted = True
+                self.sync.reserve_budget(job_id, estimate)
             self.store.update_job(job_id, 'acquiring', allocation_cents=estimate)
             # Freeze this allocation before provider dispatch; a crash cannot
             # leave an apparently releasable reservation for a possibly paid job.
-            self.sync.mark_budget_uncertain(job_id)
+            if not uncapped:
+                self.sync.mark_budget_uncertain(job_id)
             # Persist dispatch intent before network I/O. Restart never blindly resubmits.
             submitted = True
             self.store.update_job(job_id, 'acquiring', provider_dispatched=True)
@@ -109,7 +112,10 @@ class MediaService:
             self.store.update_job(job_id, 'preview_ready', version_id=version['version_id'], asset_id=version['asset_id'],
                                   workflow_seconds=round(time.perf_counter() - started, 3))
             try:
-                self.sync.commit_budget(job_id, estimate)
+                if uncapped:
+                    self.store.update_job(job_id, 'preview_ready', accounting='uncapped_provider_billing')
+                else:
+                    self.sync.commit_budget(job_id, estimate)
             except Exception:
                 # Image is durable even if accounting ACK is lost. Keep reservation held.
                 self.store.update_job(job_id, 'preview_ready', accounting='reservation_held_pending_reconciliation')
@@ -117,7 +123,7 @@ class MediaService:
         except Exception as error:
             if submitted:
                 fields = {'provider_receipt': error.receipt} if isinstance(error, ProviderFailure) and error.receipt else {}
-                self.store.update_job(job_id, 'needs_recovery', error='Image dispatch may have completed. No automatic retry; allocation remains held.',
+                self.store.update_job(job_id, 'needs_recovery', error='Image dispatch may have completed. Check provider billing; no automatic retry.' if uncapped else 'Image dispatch may have completed. No automatic retry; allocation remains held.',
                                       workflow_seconds=round(time.perf_counter() - started, 3), **fields)
                 raise ProviderFailure('Image attempt needs recovery. Check the library and provider account before starting another attempt.') from None
             allocation_released = not reservation_attempted

@@ -49,11 +49,31 @@ def load_board_settings(root):
     """
     from companion_settings import load_settings
     from config_loader import load_env_config
-    root = safe_path(root)
+    root = validate_board_settings_root(root)
     if not (root / 'settings.json').is_file():
         raise ValueError('The selected companion profile has no saved Settings. Configure Settings on this computer first.')
-    protected = load_settings(root)
-    return load_env_config(settings_loader=lambda: protected)
+    try:
+        protected = load_settings(root)
+        return load_env_config(settings_loader=lambda: protected)
+    except Exception:
+        raise RuntimeError('The selected saved settings could not be opened on this Windows account. Save Voice Settings on this computer, then reload the Board.') from None
+
+
+def validate_board_settings_root(root):
+    """Only explicitly selected, isolated protected profiles may configure Board work."""
+    root = safe_path(root)
+    if any(part.name.casefold() == 'esp32classroomcompanion' for part in (root, *root.parents)):
+        raise ValueError('Use an isolated feature settings profile; stable companion settings are protected.')
+    for name in ('settings.json', 'credentials.dpapi', '.settings-transaction.json', '.settings.lock'):
+        safe_path(root / name)
+    return root
+
+
+def default_board_settings_selection():
+    """Private application preference, outside lessons and portable exports."""
+    root = Path(os.environ.get('ESP32_COMPANION_DATA_DIR') or
+        str(Path(os.environ.get('LOCALAPPDATA', Path.home())) / 'ESP32ClassroomCompanion-Feature'))
+    return validate_board_settings_root(root) / 'board-settings-selection.json'
 
 
 def candidate_directory(value):
@@ -498,7 +518,8 @@ class PupilWindow(QWidget):
 
 class BoardCandidate(QWidget):
     def __init__(self, session, *, store=None, resolver=None, library_root=None,
-                 agent_config=None, resource_root=None, composer=None):
+                 agent_config=None, resource_root=None, composer=None, agent_settings_root=None,
+                 settings_selection_path=None):
         super().__init__()
         self.session, self.store, self.resolver = session, store, resolver
         self.library_root = Path(library_root) if library_root else None
@@ -616,7 +637,8 @@ class BoardCandidate(QWidget):
                            else store.root / 'resource-library')
             try:
                 self.agent_panel = AgentPanel(self, config=agent_config, resource_root=resource_root or shared_root,
-                                               composer=composer)
+                                               composer=composer, settings_root=agent_settings_root,
+                                               settings_selection_path=settings_selection_path)
                 side_layout.insertWidget(0, self.agent_panel)
             except Exception:
                 self.catalogue_error = 'Board assistant unavailable. Manual editing and lesson saving remain available.'
@@ -1360,12 +1382,11 @@ def main():
         else:
             model = demo_model(media) if args.demo or args.smoke else BoardModel()
             session = BoardSession(model, store=store, image_resolver=resolver)
-        config = None
-        if args.settings_root:
-            config = load_board_settings(args.settings_root)
+        config = load_board_settings(args.settings_root) if args.settings_root else None
         source_library = SavedImageLibrary(args.library_root).root if args.library_root else None
         candidate = BoardCandidate(session, store=store, resolver=resolver, agent_config=config,
-                                   library_root=source_library)
+                                   library_root=source_library, agent_settings_root=args.settings_root,
+                                   settings_selection_path=default_board_settings_selection())
         candidate.claim_lesson = instances.claim_lesson
         if source_library and candidate.agent_panel:
             candidate.agent_panel.pending_sources.append(source_library)

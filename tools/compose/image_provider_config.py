@@ -10,6 +10,10 @@ GOOGLE_MODEL = 'gemini-nano-banana-2.1'
 PROVIDER_LABELS = {'openai': 'OpenAI', 'gemini': 'Google Gemini'}
 
 
+def uncapped_images(config):
+    return str(config.get('IMAGE_SPENDING_UNCAPPED', '0')).lower() in {'1', 'true', 'yes', 'on'}
+
+
 @dataclass(frozen=True)
 class ImageCapabilities:
     generation: bool
@@ -79,6 +83,9 @@ def image_snapshot(config, options=None):
     # deliberate allocation. Never borrow an OpenAI allocation for Google.
     allocation_key = f"GOOGLE_IMAGE_ESTIMATE_{output['size']}_AUD_CENTS" if provider == 'gemini' else 'IMAGE_ESTIMATE_AUD_CENTS'
     try:
+        if uncapped_images(config):
+            return {'schema': 1, 'provider': provider, 'model': selected_model(config, provider),
+                    'options': output, 'allocation_cents': 0, 'spending_mode': 'uncapped'}
         allocation = int(config.get(allocation_key) or 0)
     except (TypeError, ValueError):
         raise ValueError('Configure a conservative AUD allocation in Settings.') from None
@@ -98,7 +105,8 @@ def image_readiness(config):
     local = str(config.get('LOCAL_ONLY', '0')).lower() in {'1', 'true', 'yes', 'on'}
     return (f'{PROVIDER_LABELS[provider]} credentials: {credentials}. Adapter: {adapter}.\n'
             f'Generation: {"blocked by local-only mode" if local else "enabled" if enabled else "disabled"}. '
-            'Budget: not checked here; the authenticated ledger must reserve before dispatch.')
+            + ('Spending: no application spending cap; provider charges apply.' if uncapped_images(config)
+               else 'Budget: not checked here; the authenticated ledger must reserve before dispatch.'))
 
 
 def create_image_provider(snapshot, config, *, session=None) -> ImageProvider:

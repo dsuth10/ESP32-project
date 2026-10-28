@@ -335,6 +335,69 @@ def google_service(media_store, provider):
     return MediaService(media_store, config, Ledger(), provider=provider)
 
 
+@pytest.mark.parametrize(('override', 'with_provider', 'with_ledger', 'message'), [
+    ({'IMAGE_PROVIDER': 'openai'}, True, True, 'Select Google Gemini'),
+    ({'IMAGE_GENERATION_ENABLED': '0'}, True, True, 'Enable paid image requests'),
+    ({}, False, True, 'Google image API key'),
+    ({'GOOGLE_IMAGE_MODEL': 'unsupported'}, True, True, 'supported Google model'),
+    ({'GOOGLE_IMAGE_SIZE': '2K'}, True, True, 'Choose 1K'),
+    ({'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS': '0'}, True, True, '1–50 AUD cents'),
+    ({'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS': '51'}, True, True, '1–50 AUD cents'),
+    ({}, True, False, 'shared budget service'),
+])
+def test_board_generation_setup_rejected_before_job_creation(tmp_path, override, with_provider, with_ledger, message):
+    library = BoardResourceLibrary(tmp_path / 'board')
+    provider = FakeImageProvider()
+    media = google_service(library.media, provider)
+    media.config.update(override)
+    if not with_provider:
+        media.provider = None
+    if not with_ledger:
+        media.sync = None
+    preparer = BoardResourcePreparer(library, __import__('media_store').MediaStore(tmp_path / 'lesson'),
+        media.config, media_service=media, planner=planned('illustration', None, 'dog'))
+    with pytest.raises(Exception, match=message):
+        preparer(context('Draw a dog'), lambda *args: None, lambda: False)
+    assert media.store.list_jobs() == []
+    assert provider.calls == []
+    if media.sync is not None:
+        assert media.sync.reservations == []
+
+
+def test_local_dog_image_error_does_not_ask_for_chart_data(tmp_path):
+    library = BoardResourceLibrary(tmp_path / 'board')
+    preparer = BoardResourcePreparer(library, __import__('media_store').MediaStore(tmp_path / 'lesson'),
+        {'LOCAL_ONLY': '1'}, planner=planned('illustration', None, 'dog'))
+    with pytest.raises(Exception) as error:
+        preparer(context('Add an image of a dog'), lambda *args: None, lambda: False)
+    assert 'local-only' in str(error.value)
+    assert 'Board settings' in str(error.value)
+    assert 'chart' not in str(error.value)
+    assert library.media.list_jobs() == []
+
+
+def test_chart_without_dataset_still_asks_for_units_source_and_date(tmp_path):
+    library = BoardResourceLibrary(tmp_path / 'board')
+    preparer = BoardResourcePreparer(library, __import__('media_store').MediaStore(tmp_path / 'lesson'),
+        {'LOCAL_ONLY': '1'}, planner=planned('chart', None, 'rainfall'))
+    with pytest.raises(Exception, match='chart dataset with units, source and date'):
+        preparer(context('Add a rainfall chart'), lambda *args: None, lambda: False)
+
+
+def test_lazy_media_close_never_constructs_service_and_closes_existing_sessions(tmp_path, monkeypatch):
+    from unittest.mock import Mock
+    library = BoardResourceLibrary(tmp_path / 'board')
+    lazy = create_resource_service(library, {'LOCAL_ONLY': '0'})
+    monkeypatch.setattr(lazy, '_get', lambda: pytest.fail('Cleanup constructed a service'))
+    lazy.close()
+    service = Mock()
+    lazy._service = service
+    lazy.close()
+    service.close.assert_called_once_with()
+    service.sync.close.assert_called_once_with()
+    assert lazy._service is None
+
+
 def test_one_google_attempt_is_reserved_once_saved_and_marked_for_first_use_preview(tmp_path):
     library = BoardResourceLibrary(tmp_path / 'board')
     lesson_media = __import__('media_store').MediaStore(tmp_path / 'lesson')

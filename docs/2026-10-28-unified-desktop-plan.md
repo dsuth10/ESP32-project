@@ -4,6 +4,12 @@
 This plan adds a shared desktop interface to the current programme; it does not
 close its deployment, provider, physical-input or classroom acceptance gates.
 
+Same-day repair follow-up: the [settings/image repair record](2026-10-28-unified-desktop-settings-repair.md)
+extends this initial integration after real text-entry testing exposed missing
+native focus handling. It also adds explicit remembered Board settings, safe
+recovery and route-specific image readiness. The original smoke below did not
+test keyboard entry into the hosted Settings controls.
+
 ## Intended result
 
 One teacher application window has two clearly labelled workspaces:

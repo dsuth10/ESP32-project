@@ -11,6 +11,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget
+from PySide6.QtCore import QEvent
 from PySide6.QtTest import QTest
 import companion_host
 from companion_host import CompanionHost, direct_python_executable, native_window_owned_by
@@ -100,6 +101,23 @@ def test_commit_timeout_keeps_board_open_without_killing_child(host, monkeypatch
     assert results[-1][0] is False
     assert host.is_running
     assert host._close_request is None
+
+
+def test_activation_restores_only_a_ready_visible_companion(host, app):
+    host.process = FakeProcess(); host._ready = True
+    host.show(); app.processEvents()
+    host.process.stdin = io.BytesIO()
+    host.eventFilter(host.window(), QEvent(QEvent.Type.WindowActivate))
+    app.processEvents()
+    assert b'"restore_input_focus"' in host.process.stdin.getvalue()
+    host.hide(); app.processEvents()
+    before = host.process.stdin.getvalue()
+    host._request_input_focus()
+    assert host.process.stdin.getvalue() == before
+    host._ready = False; host.show(); app.processEvents()
+    before = host.process.stdin.getvalue()
+    host._request_input_focus()
+    assert host.process.stdin.getvalue() == before
 
 
 def test_native_identity_rejects_wrong_process_and_invalid_values(app):
@@ -231,4 +249,82 @@ def test_real_child_is_embedded_resized_and_shuts_down_after_two_phase_close(app
         pane._timer.stop()
         window.close()
         window.deleteLater()
+        app.processEvents()
+
+
+FOCUS_CHILD = '''
+import ctypes,json,os,queue,sys,threading,tkinter as tk
+from tkinter import ttk
+sys.path.insert(0,__COMPOSE__)
+from companion_embedded import EmbeddedInputFocus
+root=tk.Tk();root.withdraw();root.geometry('720x640')
+plain=ttk.Entry(root);plain.pack();masked=ttk.Entry(root,show='*');masked.pack()
+handover={'plain':0,'masked':0}
+for name,entry in [('plain',plain),('masked',masked)]:
+ original=entry.focus_force
+ def force(name=name,original=original):
+  handover[name]+=1;original()
+ entry.focus_force=force
+focus=EmbeddedInputFocus(root)
+root.overrideredirect(True);root.update_idletasks()
+u=ctypes.windll.user32;u.GetAncestor.restype=ctypes.c_void_p
+hwnd=int(u.GetAncestor(root.winfo_id(),2));commands=queue.Queue()
+def emit(v):print(json.dumps(v),flush=True)
+def reader():
+ for line in sys.stdin:commands.put(json.loads(line))
+ commands.put({'type':'eof'})
+def drain():
+ while not commands.empty():
+  value=commands.get();kind=value.get('type')
+  if kind=='attached':root.withdraw();root.deiconify();root.update_idletasks()
+  elif kind=='probe_inputs':
+   checks={}
+   for name,entry in [('plain',plain),('masked',masked)]:
+    entry.event_generate('<ButtonPress-1>',x=4,y=4)
+    entry.event_generate('<ButtonRelease-1>',x=4,y=4);root.update()
+    checks[name+'_focused']=root.focus_get()==entry
+    checks[name+'_native_handover']=handover[name]>0
+    for key in 'dog':entry.event_generate('<KeyPress-'+key+'>')
+    root.update();checks[name+'_typed']=entry.get()=='dog'
+   emit({'type':'input_probe','checks':checks})
+  elif kind=='eof':focus.close();root.destroy();return
+ root.after(30,drain)
+threading.Thread(target=reader,daemon=True).start();root.after(30,drain)
+emit({'type':'ready','pid':os.getpid(),'hwnd':hwnd});root.mainloop()
+'''
+
+
+@pytest.mark.skipif(os.name != 'nt', reason='Native Windows hosted input')
+def test_hosted_clicks_reach_native_focus_handover_before_synthetic_keys(app, tmp_path, monkeypatch):
+    child = tmp_path / 'hosted_input_child.py'
+    child.write_text(FOCUS_CHILD.replace('__COMPOSE__', repr(str(Path(__file__).resolve().parents[1]))), encoding='utf-8')
+    popen = companion_host.subprocess.Popen
+    def synthetic_popen(arguments, **kwargs):
+        arguments[2] = str(child.resolve())
+        return popen(arguments, **kwargs)
+    monkeypatch.setattr(companion_host.subprocess, 'Popen', synthetic_popen)
+    window = QMainWindow()
+    pane = CompanionHost(tmp_path / 'profile')
+    window.setCentralWidget(pane); window.resize(1000, 800)
+    results = []
+    receive = pane._receive
+    def observe(value):
+        if value.get('type') == 'input_probe':
+            results.append(value['checks'])
+        else:
+            receive(value)
+    pane._receive = observe
+    window.show(); window.activateWindow()
+    try:
+        pane.start()
+        wait_until(app, lambda: pane.is_ready)
+        pane._send({'type': 'probe_inputs'})
+        wait_until(app, lambda: bool(results))
+        assert results == [{'plain_focused': True, 'plain_native_handover': True, 'plain_typed': True,
+                            'masked_focused': True, 'masked_native_handover': True, 'masked_typed': True}]
+    finally:
+        pane._release_on_host_exit()
+        if pane.process:
+            pane.process.wait(timeout=5)
+        pane._timer.stop(); window.close(); window.deleteLater()
         app.processEvents()

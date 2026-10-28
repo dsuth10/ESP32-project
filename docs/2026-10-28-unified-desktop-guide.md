@@ -66,18 +66,63 @@ companion uses the existing `%LOCALAPPDATA%/ESP32ClassroomCompanion-Feature`
 profile, or an explicit feature-profile override. Lesson files, reusable
 resources, History, image jobs and protected settings are not merged or migrated.
 
-Voice Settings controls the voice workspace. The Board remains local-only by
-default. To use an explicitly selected existing feature configuration for Board
-requests, supply its protected settings folder when launching:
+Voice Settings stores protected provider settings. The Board remains local-only
+until you explicitly select saved settings for it:
+
+1. Open **Voice companion → Settings**, enter the required keys/options, then
+   choose **Save and apply settings**. The hosted text fields now accept keyboard
+   focus; clicking an entry does not redirect text into Office.
+2. Return to **Teaching Board → Board settings…** and choose **Use saved Voice
+   Settings**. Alternatively choose a different saved feature settings folder.
+3. Read the effective Board mode and image-readiness explanation. Applying saved
+   settings does not send a model/image request or change the pupil lesson.
+4. After later Voice Settings changes, choose **Reload selected saved settings**
+   in Board settings. Use **Use local-only Board** to explicitly return to local
+   operation. Finish active Board work or previews before changing its settings.
+
+The selected folder is remembered privately in the feature companion profile,
+across normal relaunches and saved-lesson switches. The selection file also keeps
+service fingerprints so unfinished work reconnects to its original service; it
+contains no raw keys or service URLs and is excluded from portable lesson exports.
+Missing/unreadable saved settings fall back to local-only with a visible
+explanation. Credentials stay in protected Voice storage. Restoring the original
+saved service settings allows recovery of its unfinished receipts; selecting a
+different service waits until those receipts are reconciled.
+
+Older image receipts that predate service fingerprints can be reviewed with
+**Review image attempts…**, including in local-only mode. Review the original
+provider/account outcome for the exact displayed job before confirming. This
+clears only its local automatic-attempt barrier: allocations remain held and no
+image is retried or money released. New fingerprinted receipts retain their
+original-service requirement.
+
+The launcher override remains available:
 
 ```powershell
 & tools/compose/run_unified_desktop.ps1 -BoardSettingsRoot '<feature settings folder>'
 ```
 
-The Board loads that selected configuration at launch; later voice Settings edits
-do not silently reconfigure a running Board. Close and relaunch with the selected
-profile when you want the Board to load updated settings. Do not pass credentials
-as arguments or copy Windows-protected credentials between computers.
+Later Voice Settings edits do not silently reconfigure a running Board. Use its
+explicit reload action to apply them. Do not pass credentials as arguments or copy
+Windows-protected credentials between computers.
+
+Automatic new Board illustrations require Google Gemini, its supported model,
+**1K** resolution, enabled paid image requests and a Google key. Select
+**No spending cap** in Voice Settings to use provider billing directly without
+an application spending limit or shared budget server. With this option off,
+Board images require a **1–50 AUD-cent** allocation (up to A$0.50), and private
+media sync must supply the authenticated shared budget service.
+Actual service availability and Google model access still need to be
+checked; the readiness message inspects configuration only. OpenAI and larger
+Google outputs remain available through the Voice image library. New generated
+Board pictures require teacher preview before their first pupil-facing use.
+An ordinary dog photo can instead use the bounded reusable-photo route when
+external lookup is enabled; saved images remain available locally.
+
+The 28 October user-requested configuration enables Google image generation and
+No spending cap in the existing protected feature profile, selected for both
+workspaces on the next launch. Close and reopen an already-running application
+to load the added option. See [the settings record](2026-10-28-uncapped-image-settings.md).
 
 Other optional launcher arguments are `-DataRoot`, `-CompanionDataRoot`,
 `-LibraryRoot`, `-PythonExecutable`, `-CompanionPythonExecutable` and `-Demo`.

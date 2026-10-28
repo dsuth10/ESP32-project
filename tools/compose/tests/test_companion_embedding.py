@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from companion_embedded import EmbeddedLifecycle, close_block_reason, validate_parent, _detach
+from companion_embedded import EmbeddedLifecycle, EmbeddedInputFocus, close_block_reason, validate_parent, _detach
 from focus_tracker import FocusTracker
 from compose_gui import ComposeApp
 
@@ -18,6 +18,14 @@ def internal_pids():
     previous = set(FocusTracker._internal_processes)
     yield
     FocusTracker._internal_processes = previous
+
+
+@pytest.fixture(scope='module')
+def tk_root():
+    import tkinter as tk
+    root = tk.Tk(); root.withdraw()
+    yield root
+    root.destroy()
 
 
 def idle_app():
@@ -165,3 +173,98 @@ def test_lifecycle_events_contain_no_queued_text():
     events = []
     EmbeddedLifecycle(app, events.append).handle({'type': 'prepare_close', 'request_id': 'x'})
     assert 'Private pupil' not in str(events)
+
+
+def test_embedded_focus_only_follows_an_explicit_eligible_click():
+    focus = EmbeddedInputFocus.__new__(EmbeddedInputFocus)
+    focus._closed = False
+    focus.enabled = lambda: True
+    focus.root = Mock()
+    focus.root.grab_current.return_value = None
+    focus._error = RuntimeError
+    widget = Mock()
+    widget.winfo_toplevel.return_value = focus.root
+    widget.instate.return_value = False
+    event = SimpleNamespace(widget=widget)
+    focus._clicked(event)
+    widget.focus_force.assert_called_once_with()
+    widget.focus_force.reset_mock()
+    for blocked in ('disabled', 'grab', 'other_toplevel', 'shutdown', 'closed'):
+        widget.instate.return_value = blocked == 'disabled'
+        focus.root.grab_current.return_value = object() if blocked == 'grab' else None
+        widget.winfo_toplevel.return_value = object() if blocked == 'other_toplevel' else focus.root
+        focus.enabled = lambda: blocked != 'shutdown'
+        focus._closed = blocked == 'closed'
+        focus._clicked(event)
+        widget.focus_force.assert_not_called()
+
+
+def test_embedded_focus_bindings_precede_class_actions_and_leave_modals_alone(tk_root):
+    import tkinter as tk
+    from tkinter import ttk
+    root = tk_root
+    entry = ttk.Entry(root)
+    combo = ttk.Combobox(root, state='readonly', values=['One', 'Two'])
+    modal = tk.Toplevel(root); modal.withdraw()
+    modal_entry = ttk.Entry(modal)
+    try:
+        focus = EmbeddedInputFocus(root)
+        assert entry.bind('<ButtonPress-1>')
+        assert combo.bind('<ButtonPress-1>')
+        assert not modal_entry.bind('<ButtonPress-1>')
+        late = tk.Text(root)
+        focus._mapped(SimpleNamespace(widget=late))
+        assert late.bind('<ButtonPress-1>')
+        # Instance bindings run before the Tk class that opens the combobox.
+        assert combo.bindtags().index(str(combo)) < combo.bindtags().index('TCombobox')
+        focus.close()
+        assert not entry.bind('<ButtonPress-1>')
+        assert not late.bind('<ButtonPress-1>')
+    finally:
+        for child in root.winfo_children():
+            child.destroy()
+
+
+def test_embedded_focus_ignores_toolkit_paths_and_restores_only_foreground_visible_control(tk_root):
+    from tkinter import ttk
+    root = tk_root
+    try:
+        entry = ttk.Entry(root); entry.pack()
+        focus = EmbeddedInputFocus(root, can_restore=lambda: False)
+        focus._mapped(SimpleNamespace(widget='.combobox.popdown.f.l'))
+        focus._focused(SimpleNamespace(widget='.combobox.popdown.f.l'))
+        focus._clicked(SimpleNamespace(widget='.combobox.popdown.f.l'))
+        focus._focused(SimpleNamespace(widget=entry))
+        with patch.object(entry, 'focus_force') as native:
+            focus.restore()
+            native.assert_not_called()  # Background or hidden host never steals focus.
+            focus.can_restore = lambda: True
+            focus.restore()
+            native.assert_not_called()  # A hidden notebook/page is not a restore target.
+        focus.close()
+    finally:
+        for child in root.winfo_children():
+            child.destroy()
+
+
+def test_focus_return_remembers_tab_destination_and_preserves_widget_state():
+    import weakref
+    focus = EmbeddedInputFocus.__new__(EmbeddedInputFocus)
+    focus.root = Mock(); focus.root.grab_current.return_value = None
+    focus._closed = False; focus.enabled = lambda: True
+    focus.can_restore = lambda: True
+    focus._error = RuntimeError
+    first, tabbed = Mock(), Mock()
+    for widget in (first, tabbed):
+        widget.winfo_toplevel.return_value = focus.root
+        widget.winfo_exists.return_value = True
+        widget.winfo_viewable.return_value = True
+        widget.instate.return_value = False
+    focus._bindings = weakref.WeakKeyDictionary({first: 'one', tabbed: 'two'})
+    focus._last_widget = weakref.ref(first)
+    focus._focused(SimpleNamespace(widget=tabbed))
+    focus.restore()
+    first.focus_force.assert_not_called()
+    tabbed.focus_force.assert_called_once_with()
+    tabbed.delete.assert_not_called(); tabbed.insert.assert_not_called()
+    tabbed.selection_clear.assert_not_called(); tabbed.icursor.assert_not_called()

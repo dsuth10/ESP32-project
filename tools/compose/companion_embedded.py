@@ -16,9 +16,103 @@ from pathlib import Path
 import queue
 import sys
 import threading
+import time
+import weakref
 
 MAX_MESSAGE = 2048
 PENDING_TEXT_REASON = 'Text is still waiting in Paste Ready. Paste it before closing, or explicitly discard this queued copy.'
+
+
+class EmbeddedInputFocus:
+    """Give an explicitly clicked hosted control its native keyboard focus.
+
+    Windows does not reliably activate a Tk control through Qt's foreign-window
+    container. A widget binding runs before its normal class binding, so an
+    editable combobox can take focus before opening its own popdown. Never force
+    focus on a timer, into a modal window, or while another control owns a grab.
+    """
+    CONTROL_CLASSES = frozenset({'Entry', 'TEntry', 'Text', 'Spinbox', 'TSpinbox',
+                                 'TCombobox', 'Listbox', 'Treeview'})
+
+    def __init__(self, root, enabled=lambda: True, can_restore=lambda: False):
+        import tkinter as tk
+        self.root, self.enabled, self.can_restore = root, enabled, can_restore
+        self._error = tk.TclError
+        self._bindings = weakref.WeakKeyDictionary()
+        self._closed = False
+        self._last_widget = None
+        self._map_binding = root.bind('<Map>', self._mapped, add='+')
+        self._focus_binding = root.bind('<FocusIn>', self._focused, add='+')
+        self._install(root)
+
+    def _install(self, widget):
+        if not callable(getattr(widget, 'winfo_toplevel', None)):
+            return  # Toolkit-owned popdown/menu paths are not Python widgets.
+        try:
+            if widget.winfo_toplevel() != self.root:
+                return
+            if widget.winfo_class() in self.CONTROL_CLASSES and widget not in self._bindings:
+                self._bindings[widget] = widget.bind('<ButtonPress-1>', self._clicked, add='+')
+            for child in widget.winfo_children():
+                self._install(child)
+        except self._error:
+            pass  # A dynamically removed control needs no focus binding.
+
+    def _mapped(self, event):
+        if not self._closed:
+            self._install(event.widget)
+
+    def _clicked(self, event):
+        self._focus_widget(event.widget)
+
+    def _focus_widget(self, widget):
+        if self._closed or not self.enabled():
+            return
+        if not callable(getattr(widget, 'winfo_toplevel', None)):
+            return
+        try:
+            if widget.winfo_toplevel() != self.root or self.root.grab_current() is not None:
+                return
+            disabled = (widget.instate(('disabled',)) if hasattr(widget, 'instate')
+                        else str(widget.cget('state')) == 'disabled')
+            if disabled:
+                return
+            self._last_widget = weakref.ref(widget)
+            widget.focus_force()
+        except self._error:
+            pass
+
+    def _focused(self, event):
+        widget = event.widget
+        if (not self._closed and callable(getattr(widget, 'winfo_toplevel', None))
+                and widget in self._bindings):
+            self._last_widget = weakref.ref(widget)
+
+    def restore(self):
+        """Restore on a deliberate host activation/tab return, never in background."""
+        if self._closed or not self.enabled() or not self.can_restore() or self._last_widget is None:
+            return
+        widget = self._last_widget()
+        try:
+            if (widget is not None and widget.winfo_exists() and widget.winfo_viewable()
+                    and self.root.grab_current() is None):
+                self._focus_widget(widget)
+        except self._error:
+            pass
+
+    def close(self):
+        self._closed = True
+        try:
+            self.root.unbind('<Map>', self._map_binding)
+            self.root.unbind('<FocusIn>', self._focus_binding)
+        except self._error:
+            pass
+        for widget, binding in list(self._bindings.items()):
+            try:
+                widget.unbind('<ButtonPress-1>', binding)
+            except self._error:
+                pass
+        self._bindings.clear()
 
 
 def claim_instance_mutex(data_root: Path):
@@ -172,6 +266,9 @@ def main(argv=None):
         root.update_idletasks()
         import win32gui
         hwnd = win32gui.GetAncestor(root.winfo_id(), 2)
+        input_focus = EmbeddedInputFocus(root,
+            lambda: app.embedded and not app._shutdown_prepared,
+            lambda: win32gui.GetForegroundWindow() == args.parent_hwnd)
         lifecycle = EmbeddedLifecycle(app, emit, lambda enabled: win32gui.EnableWindow(hwnd, enabled))
         app.show_embedded_workspace = lambda: emit({'type': 'show_companion'})
         # A window-manager close also follows the parent-owned preflight.
@@ -201,6 +298,7 @@ def main(argv=None):
                 disconnected.set()
 
         def recover_controls():
+            input_focus.close()
             lifecycle.cancel()
             app.embedded = False
             app.show_embedded_workspace = None
@@ -208,7 +306,10 @@ def main(argv=None):
             _detach(root, hwnd, args.parent_pid)
             app.set_status('Teacher window disconnected. Companion controls were recovered in this window.', '#F59E0B')
 
+        last_status = 0.0
+
         def drain():
+            nonlocal last_status
             if app._stop_poller:
                 return
             if disconnected.is_set():
@@ -223,6 +324,8 @@ def main(argv=None):
                     root.withdraw()
                     root.deiconify()
                     root.update_idletasks()
+                elif isinstance(message, dict) and message.get('type') == 'restore_input_focus':
+                    input_focus.restore()
                 elif isinstance(message, dict) and message.get('type') == 'detach':
                     recover_controls()
                     return
@@ -230,13 +333,16 @@ def main(argv=None):
                     lifecycle.handle(message)
                 if app._stop_poller:
                     return
-            emit({'type': 'status', 'recording': bool(app.is_recording),
-                  'busy': bool(app._busy or any(getattr(getattr(app, name, None), '_busy', False)
-                                              for name in ('assistant_panel', 'media_panel', 'hermes_panel')))})
-            root.after(150, drain)
+            now = time.monotonic()
+            if now - last_status >= .15:
+                emit({'type': 'status', 'recording': bool(app.is_recording),
+                      'busy': bool(app._busy or any(getattr(getattr(app, name, None), '_busy', False)
+                                                  for name in ('assistant_panel', 'media_panel', 'hermes_panel')))})
+                last_status = now
+            root.after(25, drain)
 
         threading.Thread(target=read_commands, daemon=True, name='teacher-control-reader').start()
-        root.after(50, drain)
+        root.after(25, drain)
         emit({'type': 'ready', 'hwnd': hwnd, 'pid': os.getpid()})
         root.mainloop()
         return 0

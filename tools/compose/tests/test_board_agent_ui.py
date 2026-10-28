@@ -37,6 +37,7 @@ class FakePreparer:
         self.resources = []
         self.dataset, self.chart_spec = None, None
         self.reconcile_calls = []
+        self.reconcile_modes = []
 
     def choose_for_request(self, request_id, record):
         self.choices[request_id] = copy.deepcopy(record)
@@ -46,8 +47,9 @@ class FakePreparer:
         report('searching', 'Checking local saved resources.')
         return copy.deepcopy(self.resources)
 
-    def reconcile_google_attempt(self, request_id, job_id, *, outcome):
+    def reconcile_google_attempt(self, request_id, job_id, *, outcome, legacy_outcome_reviewed=False):
         self.reconcile_calls.append((request_id, job_id, outcome))
+        self.reconcile_modes.append(legacy_outcome_reviewed)
 
 
 class FakeComposer:
@@ -206,19 +208,24 @@ def test_imported_dataset_and_chart_catalogue_absorbs_exact_ids_metadata_and_rel
 
 
 @pytest.mark.parametrize('action', ['chooser_cancel', 'confirm_cancel', 'confirmed', 'still_running'])
-def test_review_image_attempts_requires_exact_choice_and_explicit_outcome_review(editor, monkeypatch, action):
+@pytest.mark.parametrize('legacy', [False, True])
+def test_review_image_attempts_requires_exact_choice_and_explicit_outcome_review(editor, monkeypatch, action, legacy):
     from board_resource_policy import BoardRequestAcquisition
     panel = editor.agent_panel
     pending = [{'request_id': 'request-original-A', 'job_id': 'job-original-A', 'status': 'uncertain'},
                {'request_id': 'request-original-B', 'job_id': 'job-original-B', 'status': 'claimed'}]
+    if not legacy:
+        for item in pending:
+            item['budget_fingerprint'] = 'a' * 64
     monkeypatch.setattr(BoardRequestAcquisition, 'unresolved', staticmethod(lambda root: copy.deepcopy(pending)))
     reads, questions = [], []
     def get_job(job_id):
         reads.append(job_id)
-        return {'job_id': job_id, 'phase': 'running' if action == 'still_running' else 'needs_recovery'}
-    panel.preparer.media = SimpleNamespace(store=SimpleNamespace(get_job=get_job))
+        return {'job_id': job_id, 'kind': 'generate', 'phase': 'running' if action == 'still_running' else 'needs_recovery'}
+    monkeypatch.setattr(panel.library.media, 'get_job', get_job)
+    panel.preparer.media = None if legacy else SimpleNamespace(store=panel.library.media)
     monkeypatch.setattr(QInputDialog, 'getItem', lambda *args, **kwargs:
-        ('job-original-B · claimed', action != 'chooser_cancel'))
+        (args[3][1], action != 'chooser_cancel'))
     def question(*args, **kwargs):
         questions.append(args[2])
         return QMessageBox.StandardButton.Yes if action == 'confirmed' else QMessageBox.StandardButton.Cancel
@@ -234,7 +241,10 @@ def test_review_image_attempts_requires_exact_choice_and_explicit_outcome_review
     else:
         assert reads == ['job-original-B']
         assert panel.preparer.reconcile_calls == [('request-original-B', 'job-original-B', 'provider_account_reviewed')]
+        assert panel.preparer.reconcile_modes == [legacy]
         assert len(questions) == 1 and 'allocations stay held' in questions[0]
+        if legacy:
+            assert 'original provider/account outcome' in questions[0] and 'No service identity is adopted' in questions[0]
         assert 'original receipt and allocation are retained' in panel.progress.text()
     assert not editor.test_composer.calls
 
@@ -731,7 +741,8 @@ def test_saved_request_list_reopens_locally_and_review_requires_preview(editor, 
     before = editor.session.teacher_view()['document']
     panel.reload_saved_requests()
     assert panel.recovery_requests.currentData() == record['request_id']
-    assert 'completed' in panel.recovery_requests.currentText()
+    assert 'response saved; not presented' in panel.recovery_requests.currentText()
+    assert not panel.refresh_request_button.isEnabled()
     previews = []
     monkeypatch.setattr(panel, 'show_preview', lambda: previews.append(panel.controller.snapshot(panel.request_id)))
     panel.recover_request_button.click()
@@ -743,9 +754,11 @@ def test_saved_request_list_reopens_locally_and_review_requires_preview(editor, 
 def test_refresh_existing_request_runs_off_ui_thread_without_new_composition(editor, monkeypatch):
     panel = editor.agent_panel
     record = saved_recovery_result(editor)
-    panel.reload_saved_requests()
+    panel.recovery_store.bind(record['request_id'], 'fixture-existing-task')
+    record = panel.recovery_store.update(record['request_id'], status='running')
     panel.config['LOCAL_ONLY'] = False
     panel.hermes = SimpleNamespace(list_requests=lambda: [])
+    panel.reload_saved_requests()
     gate, entered = threading.Event(), threading.Event()
     owner = threading.get_ident()
     calls = []

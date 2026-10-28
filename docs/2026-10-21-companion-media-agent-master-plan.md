@@ -1,10 +1,26 @@
 # Classroom companion: consolidated branch programme
 
+28 October image-placement follow-up: the [plain image repair](2026-10-28-board-image-placement-repair.md)
+uses typed local layout for simple single-image requests, reuses a sole cached
+match and distinguishes saved responses from presented pages. Final verification
+was stopped at the user's request; user testing remains open.
+
+28 October image-spending follow-up: the user requested image generation with no
+spending cap. The [uncapped image setting](2026-10-28-uncapped-image-settings.md)
+adds an explicit opt-in for direct provider billing without the shared ledger.
+The current feature profile enables it; other profiles retain capped defaults.
+Paid attempts still retain durable claims, recovery and teacher preview.
+
 28 October shared-window follow-up: the [unified desktop plan](2026-10-28-unified-desktop-plan.md)
 and [teacher guide](2026-10-28-unified-desktop-guide.md) add one teacher window
 containing the existing Board and Voice companion workspaces, with a separate
 pupil display. Functionality, storage and provider decisions remain separate.
 Local integration evidence does not close deployment, physical or classroom gates.
+
+28 October repair follow-up: the [settings and image repair](2026-10-28-unified-desktop-settings-repair.md)
+addresses hosted keyboard focus, explicit remembered Board provider settings and
+image-readiness messages. Its local fixtures/native checks remain separate from
+live provider, deployment and classroom acceptance.
 
 27 October reusable-library follow-up: [local search and curation](2026-10-27-reusable-resource-library.md)
 adds teacher corrections, version-pinned remembered names, filtered explained

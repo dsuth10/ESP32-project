@@ -11,16 +11,18 @@ from html.parser import HTMLParser
 import json
 import re
 import threading
+import textwrap
 from datetime import datetime, timezone
 import uuid
 from pathlib import Path
 
-from board_agent import BoardAgentError, BoardAgentCancelled, HermesBoardComposer
+from board_agent import BoardAgentError, BoardAgentCancelled, HermesBoardComposer, result_envelope
 from board_images import SavedImageLibrary, import_prepared
 from board_library import BoardResourceLibrary
-from board_model import canonical_json
+from board_model import canonical_json, new_object
 from board_resource_policy import (route_resource, validate_commons_candidate,
-    format_attribution, BoardRequestAcquisition, render_chart)
+    format_attribution, BoardRequestAcquisition, render_chart,
+    board_image_issues, board_image_readiness)
 from hermes_service import HermesService
 
 
@@ -115,7 +117,62 @@ class PrimaryBoardComposer:
     def __call__(self, prepared, report, cancelled):
         if cancelled():
             raise BoardAgentCancelled('Board request cancelled.')
-        return self.complete(prepared['task'], prepared['context'])
+        placed = simple_image_composition(prepared)
+        if placed is not None:
+            report('composing', 'Placing the saved image and its source credit on the Board.')
+            return placed
+        example = result_envelope(prepared)
+        task = (prepared['task'] + '\nComplete envelope shape (retain every top-level field): '
+            + json.dumps(example) + '\nFor edit commands the discriminator is "op", never "type". '
+            'An added image object needs exactly id,type,x,y,width,height,rotation,locked,image_ref. '
+            'Text/captions must be separate complete text objects, never extra image fields. '
+            'Use an application template for a complete page whenever possible.')
+        return self.complete(task, prepared['context'])
+
+
+def simple_image_composition(prepared):
+    """Compile a plain single-image request on an empty page without model code.
+
+    Complex briefs and existing pages retain the ordinary composition path.
+    The controller still validates exact resources, credits, layout and preview.
+    """
+    context = json.loads(prepared['context'])
+    images, page = context['selected_images'], context['page']
+    if (page['objects'] or context.get('required_wording') or context.get('selected_object_ids')
+            or len(images) != 1 or images[0].get('visual_kind') == 'chart'):
+        return None
+    instruction = context['instruction'].strip()
+    match = re.fullmatch(
+        r'(?:(?:i (?:need|want)(?: you)? to|can you|could you|please)\s+)?'
+        r'(?:put|add|show|display|place)\s+(?:an?|the)\s+'
+        r'(?:image|picture|photo|photograph|illustration)\s+of\s+(.+?)'
+        r'(?:\s+(?:up\s+)?(?:on|onto)\s+(?:the\s+)?(?:(?:class|classroom)\s+)?(?:teaching\s+)?board)?[.!?]?',
+        instruction, re.IGNORECASE)
+    if not match or re.search(r'\b(and|with|without|including|explain|label\w*|caption\w*|text|title|compare)\b|[\n;:]',
+                              match[1], re.IGNORECASE):
+        return None
+    image = images[0]
+    width, height = page['width'], page['height']
+    margin = 64 * min(width / 1600, height / 900)
+    credit = image.get('credit', '').strip()
+    credit_width = width - 2 * margin
+    # Size for native wrapping while retaining the exact original attribution.
+    lines = len(textwrap.wrap(credit, width=max(1, int(credit_width / 24)))) if credit else 0
+    credit_height = lines * 28 + 16 if credit else 0
+    available_height = height - 2 * margin - credit_height - (28 if credit else 0)
+    if credit_width <= 0 or available_height < height * .35:
+        return None
+    scale = min(credit_width / image['width'], available_height / image['height'])
+    w, h = image['width'] * scale, image['height'] * scale
+    objects = [new_object('image', image_ref=image['image_ref'], x=(width-w)/2,
+                          y=margin+(available_height-h)/2, width=w, height=h)]
+    if credit:
+        objects.append(new_object('text', text=credit, x=margin, y=height-margin-credit_height,
+                                  width=credit_width, height=credit_height, font_size=20, colour='#374151'))
+    for index, obj in enumerate(objects):
+        obj['id'] = str(uuid.uuid5(uuid.UUID(context['request_id']), f'plain-image-{index}'))
+    return result_envelope(prepared, commands=[{'op':'add_object', 'page_id':page['id'], 'object':obj}
+                                               for obj in objects], required_image_refs=[image['image_ref']])
 
 
 class BoardResourcePreparer:
@@ -178,6 +235,14 @@ class BoardResourcePreparer:
             if exact:
                 return [self.library.select(exact, self.lesson_media)]
             candidates = self.library.search(query)
+            if (len(candidates) == 1 and plan['kind'] in {'photo', 'illustration'}
+                    and candidates[0].get('review_state') not in {'rejected', 'excluded'}
+                    and candidates[0].get('availability') != 'unavailable'):
+                # A single saved match can satisfy the requested visual without
+                # asking the teacher to choose between nonexistent alternatives.
+                # Exact bytes, provenance and generated-first-use review remain
+                # enforced by select() and the controller publication checks.
+                return [self.library.select(candidates[0], self.lesson_media)]
             if candidates:
                 raise BoardAgentError('Several saved resources may fit. Search resources, select a thumbnail and send the request again.')
             if explicit_source == 'library':
@@ -199,7 +264,12 @@ class BoardResourcePreparer:
             report('acquiring', 'Building a clearly labelled illustrative chart from example values.')
             return [self._chart(illustrative, chart_spec, context)]
         if route.route == 'teacher_choice':
-            raise BoardAgentError('Supply chart data with units/source/date, or choose an available image. ' + route.reason)
+            if plan['kind'] == 'chart' or explicit_source == 'chart':
+                raise BoardAgentError('Supply a chart dataset with units, source and date, or explicitly allow illustrative data. ' + route.reason)
+            if self.local_only:
+                raise BoardAgentError('The image is unavailable in local-only mode. Choose or import a saved image, '
+                    'or select and reload saved provider settings in Board settings. The pupil page is unchanged.')
+            raise BoardAgentError('Choose or import a suitable image. ' + route.reason + '. The pupil page is unchanged.')
         if not self.media:
             raise BoardAgentError('Configure the resource service or choose a saved image before requesting an external visual.')
         if route.route == 'commons_once':
@@ -234,7 +304,17 @@ class BoardResourcePreparer:
                 return [selected]
             raise BoardAgentError('No supported reusable photo was found. Choose an image or change the subject.')
         if route.route == 'google_once':
-            report('acquiring', 'Preparing one Google picture within the shared allocation.')
+            # Reject incomplete configuration before creating a durable image job.
+            # The lazy production service uses protected configuration; existing
+            # injected fixture services can provide a provider and ledger directly.
+            lazy = isinstance(self.media, _LazyMediaService)
+            issues = board_image_issues(self.config,
+                provider_available=not lazy and getattr(self.media, 'provider', None) is not None,
+                budget_available=None if lazy else getattr(self.media, 'sync', None) is not None)
+            if issues:
+                raise BoardAgentError(' '.join(issues) + ' Save Voice Settings, then reload them in Board settings. The pupil page is unchanged.')
+            report('acquiring', 'Preparing one Google picture with no application spending cap.'
+                if _truthy(self.config.get('IMAGE_SPENDING_UNCAPPED')) else 'Preparing one Google picture within the shared allocation.')
             attempts_root = self.library.root / 'board-attempts'
             try:
                 pending = BoardRequestAcquisition.unresolved(attempts_root)
@@ -306,12 +386,16 @@ class BoardResourcePreparer:
         if any(kind != 'by' or version != '4.0' for kind, version in licences):
             raise ValueError('Source-page terms contain unsupported or conflicting licences.')
 
-    def reconcile_google_attempt(self, request_id, job_id, *, outcome):
+    def reconcile_google_attempt(self, request_id, job_id, *, outcome, legacy_outcome_reviewed=False):
         """Explicit teacher action to reconcile one durable prior paid job."""
+        state_path = self.library.root / 'board-attempts' / (request_id + '.json')
+        guard = BoardRequestAcquisition(state_path, request_id)
+        if legacy_outcome_reviewed:
+            return guard.reconcile_legacy_local(self.library.media, job_id, outcome=outcome,
+                original_outcome_reviewed=legacy_outcome_reviewed)
         if not self.media:
             raise BoardAgentError('The existing media service is unavailable; preserve the unresolved allocation.')
-        state_path = self.library.root / 'board-attempts' / (request_id + '.json')
-        return BoardRequestAcquisition(state_path, request_id).reconcile(self.media, job_id, outcome=outcome)
+        return guard.reconcile(self.media, job_id, outcome=outcome)
 
     def _chart(self, dataset, spec, context):
         if not spec:
@@ -371,6 +455,18 @@ class _LazyMediaService:
 
     def generate(self, *args, **kwargs):
         return self._get().generate(*args, **kwargs)
+
+    def close(self):
+        # Reload/shutdown must never instantiate a network service just to
+        # dispose it. Close only resources acquired by an earlier request.
+        if self._service is not None:
+            service = self._service
+            self._service = None
+            try:
+                service.close()
+            finally:
+                if service.sync is not None:
+                    service.sync.close()
 
     @property
     def retriever(self):

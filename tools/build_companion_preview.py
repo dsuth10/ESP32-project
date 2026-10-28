@@ -33,6 +33,8 @@ OPTIONAL_DOCUMENTS = [
     "docs/2026-10-26-teaching-board-request-recovery.md",
     "docs/2026-10-28-unified-desktop-plan.md",
     "docs/2026-10-28-unified-desktop-guide.md",
+    "docs/2026-10-28-unified-desktop-settings-repair.md",
+    "docs/2026-10-28-unified-desktop-image-settings-diagnosis.md",
 ]
 
 

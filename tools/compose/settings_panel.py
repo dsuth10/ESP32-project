@@ -4,7 +4,8 @@ from tkinter import ttk
 
 from companion_settings import save_settings
 from image_provider_config import (PROVIDER_LABELS, OPENAI_MODEL, GOOGLE_MODEL,
-                                   selected_provider, selected_model, image_readiness, image_snapshot)
+                                   selected_provider, selected_model, image_readiness, image_snapshot, uncapped_images)
+from board_resource_policy import board_image_readiness
 
 
 class SettingsPanel(ttk.Frame):
@@ -85,7 +86,8 @@ class SettingsPanel(ttk.Frame):
         row += 1
         flags = [('HERMES_ENABLED', 'Enable the separate Hermes task panel', '0'),
                  ('MEDIA_SYNC_ENABLED', 'Synchronise media automatically with my private server', '0'),
-                 ('IMAGE_GENERATION_ENABLED', 'Enable paid image requests when I press Generate\n(shared budget required)', '0'),
+                 ('IMAGE_GENERATION_ENABLED', 'Enable paid image requests', '0'),
+                 ('IMAGE_SPENDING_UNCAPPED', 'No spending cap — charge image requests directly to my provider account\n(no shared budget server required)', '0'),
                  ('LOCAL_ONLY', 'Local-only providers; disables Groq, Hermes, media sync, web and image providers', '0'),
                  ('ESP32_ENABLE_HOTKEYS', 'Enable handheld/keyboard hotkeys in this feature app\n(restart required)', '0'),
                  ('ESP32_START_RECEIVER', 'Start a voice receiver from this feature app (restart required)', '0')]
@@ -98,6 +100,9 @@ class SettingsPanel(ttk.Frame):
         self.image_status = ttk.Label(content, text='', wraplength=600, justify='left')
         self.image_status.grid(row=row, column=0, columnspan=2, sticky='ew', pady=8)
         row += 1
+        self.board_image_status = ttk.Label(content, text='', wraplength=800, justify='left')
+        self.board_image_status.grid(row=row, column=0, columnspan=2, sticky='ew', pady=8)
+        row += 1
         self.check_button = ttk.Button(content, text='Check Google connection (no image)', command=self.check_connection)
         self.check_button.grid(row=row, column=0, columnspan=2, sticky='w', pady=4)
         row += 1
@@ -107,7 +112,10 @@ class SettingsPanel(ttk.Frame):
         for variable in self.values.values():
             variable.trace_add('write', lambda *_: self._image_status())
         self._image_status()
-        ttk.Label(content, text='A$30/month is the pilot design allowance on the shared server. Allocations are estimates, not provider invoice amounts.\n'
+        ttk.Label(content, text='With No spending cap selected, images use provider billing directly without an application spending limit or shared budget server.\n'
+                  'Otherwise the shared server enforces its allowance (A$30/month by default). Allocations are estimates, not provider invoice amounts.\n'
+                  'Automatic Board illustrations use Google Gemini at 1K; capped mode requires a 1–50 AUD-cent allocation (up to A$0.50). '
+                  'OpenAI and larger Google images remain available in the Voice image library.\n'
                   'A failed or ambiguous dispatched attempt retains its allocation until reconciled. No paid request runs during setup.',
                   wraplength=800).grid(row=row, column=0, columnspan=2, sticky='w', pady=8)
         row += 1
@@ -128,6 +136,8 @@ class SettingsPanel(ttk.Frame):
         except ValueError as error:
             text = str(error)
         self.image_status.configure(text=text)
+        if hasattr(self, 'board_image_status'):
+            self.board_image_status.configure(text=board_image_readiness({key: var.get() for key, var in self.values.items()}))
 
     def check_connection(self):
         if self._checking or self._saving or self._closed:return
@@ -171,9 +181,9 @@ class SettingsPanel(ttk.Frame):
             for key in ('IMAGE_ESTIMATE_AUD_CENTS', 'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS',
                         'GOOGLE_IMAGE_ESTIMATE_2K_AUD_CENTS', 'GOOGLE_IMAGE_ESTIMATE_4K_AUD_CENTS'):
                 amount = values[key]
-                if amount and (not amount.isdecimal() or not 1 <= int(amount) <= 3000):
+                if not uncapped_images(values) and amount and (not amount.isdecimal() or not 1 <= int(amount) <= 3000):
                     raise ValueError('Set allocations from 1 to 3000 AUD cents, or leave unused allocations empty.')
-            if values['IMAGE_GENERATION_ENABLED'] == '1' and not image_snapshot(values)['allocation_cents']:
+            if values['IMAGE_GENERATION_ENABLED'] == '1' and not uncapped_images(values) and not image_snapshot(values)['allocation_cents']:
                 raise ValueError('Configure the per-attempt allocation before enabling paid images.')
             self._saving = True
             self.status.configure(text='Checking active work and protecting settings…')

@@ -42,6 +42,8 @@ class UnifiedDesktop(QMainWindow):
     def __init__(self, board, companion, *, parent=None):
         super().__init__(parent)
         self.board, self.companion = board, companion
+        if board.agent_panel:
+            board.agent_panel.companion_settings_root = Path(getattr(companion, 'data_root', feature_data_root()))
         self._close_pending = False
         self._close_committed = False
         self.tabs = QTabWidget()
@@ -164,7 +166,7 @@ class UnifiedDesktop(QMainWindow):
             self.companion.prepare_close()
 
 
-def create_board(data_root, *, demo=False, settings_root=None, library_root=None):
+def create_board(data_root, *, demo=False, settings_root=None, library_root=None, settings_selection_path=None):
     validate_candidate_storage(data_root)
     existing = any((data_root / name).exists() for name in ('lesson.json', 'lesson.previous.json'))
     if existing and demo:
@@ -176,7 +178,8 @@ def create_board(data_root, *, demo=False, settings_root=None, library_root=None
                BoardSession(demo_model(media) if demo else BoardModel(), store=store, image_resolver=resolver))
     config = load_board_settings(settings_root) if settings_root else None
     source = SavedImageLibrary(library_root).root if library_root else None
-    board = BoardCandidate(session, store=store, resolver=resolver, agent_config=config, library_root=source)
+    board = BoardCandidate(session, store=store, resolver=resolver, agent_config=config, library_root=source,
+                           agent_settings_root=settings_root, settings_selection_path=settings_selection_path)
     if source and board.agent_panel:
         board.agent_panel.pending_sources.append(source)
         board.agent_panel.index_timer.start(0)
@@ -203,7 +206,7 @@ def main():
             raise ValueError('This lesson or companion profile is already open in another teacher window. Return to that window first.')
         os.environ['ESP32_COMPANION_MICROPHONE_LEASE'] = str(profile / 'unified-microphone.lock')
         board = create_board(args.data_root, demo=args.demo, settings_root=args.board_settings_root,
-                             library_root=args.library_root)
+                             library_root=args.library_root, settings_selection_path=profile / 'board-settings-selection.json')
         board.claim_lesson = instance.claim_lesson
         companion = CompanionHost(profile, python_executable=args.companion_python)
         window = UnifiedDesktop(board, companion)

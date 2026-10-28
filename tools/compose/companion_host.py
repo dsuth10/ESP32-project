@@ -17,7 +17,7 @@ import threading
 import time
 import uuid
 
-from PySide6.QtCore import QTimer, Signal
+from PySide6.QtCore import QEvent, QTimer, Signal
 from PySide6.QtGui import QWindow
 from PySide6.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget
 
@@ -121,6 +121,7 @@ class CompanionHost(QWidget):
                 self._set_notice('The recovered companion is still open in its own window. Close that window before restarting it here.')
             return
         self._clear_container()
+        self.window().installEventFilter(self)
         self._ready = self._exit_reported = False
         self._released = False
         self._hwnd = None
@@ -304,6 +305,18 @@ class CompanionHost(QWidget):
             self._layout.activate()
             self._container.show()
             self._send({'type': 'attached'})
+            self._request_input_focus()
+
+    def eventFilter(self, watched, event):
+        if watched is self.window() and event.type() == QEvent.Type.WindowActivate:
+            QTimer.singleShot(0, self._request_input_focus)
+        return super().eventFilter(watched, event)
+
+    def _request_input_focus(self):
+        if self.is_ready and self.isVisible():
+            # The child independently verifies foreground ownership and restores
+            # only its last focused control. No content crosses this channel.
+            self._send({'type': 'restore_input_focus'})
 
     def set_peer_microphone(self, active):
         self._peer_microphone = bool(active)

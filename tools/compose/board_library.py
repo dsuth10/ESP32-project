@@ -144,26 +144,43 @@ class BoardResourceLibrary:
         # asks the resolver to verify the exact version's bytes.
         with sqlite3.connect(self.registry) as db:
             db.execute('INSERT OR REPLACE INTO source_version VALUES (?,?)', (ref['version_id'], str(safe_path(source_root))))
+        def existing_version(item):
+            expected_metadata = dict(metadata)
+            if not (source_metadata and source_metadata.get('visual_kind') in {'image', 'chart'}):
+                # Re-indexing exact retained bytes must preserve typed visual
+                # metadata already attached by the chart/resource pipeline.
+                if item['metadata'].get('visual_kind') in {'image', 'chart'}:
+                    expected_metadata['visual_kind'] = item['metadata']['visual_kind']
+            if item['image_ref'] != ref:
+                raise ValueError('A reusable version identity conflicts with its saved hash.')
+            if (item.get('source_title', item['title']) != title
+                    or item.get('source_tags', item['tags']) != tags or item['metadata'] != expected_metadata
+                    or any(item['provenance'].get(key) != value for key, value in source.items())):
+                raise ValueError('A reusable version identity conflicts with its immutable title, tags or provenance.')
+            return item
+
         item = self.catalogue.get_resource_by_version(ref['version_id'])
-        if item and not (source_metadata and source_metadata.get('visual_kind') in {'image', 'chart'}):
-            # Re-indexing exact retained bytes must preserve typed visual
-            # metadata already attached by the chart/resource pipeline.
-            if item['metadata'].get('visual_kind') in {'image', 'chart'}:
-                metadata['visual_kind'] = item['metadata']['visual_kind']
-        if item and item['image_ref'] != ref:
-            raise ValueError('A reusable version identity conflicts with its saved hash.')
-        if item and (item.get('source_title', item['title']) != title
-                     or item.get('source_tags', item['tags']) != tags or item['metadata'] != metadata
-                     or any(item['provenance'].get(key) != value for key, value in source.items())):
-            raise ValueError('A reusable version identity conflicts with its immutable title, tags or provenance.')
+        if item is not None:
+            return existing_version(item)
         if item is None:
             self._index_mode.metadata_only = availability == 'metadata_only'
             try:
-                item = self.catalogue.save_resource('image', title,
-                    resource_id=ref['asset_id'], version_id=ref['version_id'], image_ref=ref,
-                    tags=tags, metadata=metadata, provenance=provenance,
-                    state='approved' if approved else 'draft', availability=availability,
-                    idempotency_key='media:' + ref['version_id'])
+                try:
+                    item = self.catalogue.save_resource('image', title,
+                        resource_id=ref['asset_id'], version_id=ref['version_id'], image_ref=ref,
+                        tags=tags, metadata=metadata, provenance=provenance,
+                        state='approved' if approved else 'draft', availability=availability,
+                        idempotency_key='media:' + ref['version_id'])
+                except ValueError:
+                    # Another thread/process can create this exact version after
+                    # our read. Its backfill availability/review state may differ
+                    # from acquisition. Re-read the committed winner and apply the
+                    # same immutable checks as an ordinary repeated index; do not
+                    # overwrite review decisions or relax catalogue idempotency.
+                    winner = self.catalogue.get_resource_by_version(ref['version_id'])
+                    if winner is None:
+                        raise
+                    item = existing_version(winner)
             finally:
                 self._index_mode.metadata_only = False
         return item

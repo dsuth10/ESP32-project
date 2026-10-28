@@ -726,6 +726,14 @@ class BoardAgentController:
                 message = str(exc)[:400]
                 job.update(status='failed', message=message + ' The pupil page is unchanged.',
                            candidate=None, commands=None, requires_confirmation=False, finished=self._clock())
+                if self.recovery_store is not None:
+                    try:
+                        self.recovery_store.get(request_id)
+                    except FileNotFoundError:
+                        pass
+                    else:
+                        self.recovery_store.update(request_id, status='needs_attention',
+                            message='The page was not presented: ' + message)
             except Exception:
                 job.update(status='failed', message='Composition or required-resource validation failed. The pupil page is unchanged.',
                            candidate=None, commands=None, requires_confirmation=False, finished=self._clock())

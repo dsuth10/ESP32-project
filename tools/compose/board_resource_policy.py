@@ -18,12 +18,98 @@ import tempfile
 from datetime import date
 from typing import Any, Callable
 from urllib.parse import urlparse
+from image_provider_config import uncapped_images
 
 MAX_GOOGLE_ESTIMATE_CENTS = 50
 MAX_CHART_POINTS = 50
 MAX_RENDER_CHART_POINTS = 12
 MAX_CHART_VALUE = 1_000_000_000
 CHART_WIDTH, CHART_HEIGHT = 960, 720
+
+
+def _configured(value):
+    return bool(str(value or '').strip())
+
+
+def _enabled(value):
+    return str(value or '').lower() in {'1', 'true', 'yes', 'on'}
+
+
+def board_image_issues(config, *, provider_available=False, budget_available=None):
+    """Inspect local configuration only; never contact a provider or ledger.
+
+    An already constructed service may supply a provider/ledger directly (for
+    example an offline fixture). Their availability is checked by the caller;
+    the UI uses the protected configuration and makes no availability claim.
+    All messages are fixed text: values may contain credentials and are not echoed.
+    """
+    if _enabled(config.get('LOCAL_ONLY')):
+        return ['The Board is in local-only mode. Choose a saved image, or select and reload saved provider settings in Board settings.']
+    issues = []
+    if config.get('IMAGE_PROVIDER', 'openai') != 'gemini':
+        issues.append('Select Google Gemini for automatic Board illustrations; OpenAI remains available in the Voice image library.')
+    if not _enabled(config.get('IMAGE_GENERATION_ENABLED')):
+        issues.append('Enable paid image requests in saved Settings.')
+    if not provider_available and not _configured(config.get('GOOGLE_IMAGE_API_KEY')):
+        issues.append('Add a Google image API key in saved Settings.')
+    from image_provider_config import GOOGLE_MODEL, image_snapshot
+    if (config.get('GOOGLE_IMAGE_MODEL') or GOOGLE_MODEL) != GOOGLE_MODEL:
+        issues.append('Select the supported Google model in saved Settings.')
+    if (config.get('GOOGLE_IMAGE_SIZE') or '1K') != '1K':
+        issues.append('Choose 1K Google resolution for automatic Board illustrations; 2K and 4K remain available in the Voice image library.')
+    try:
+        snapshot = image_snapshot({**config, 'IMAGE_PROVIDER': 'gemini'}, {'size': '1K'})
+        if not uncapped_images(config) and not 1 <= snapshot['allocation_cents'] <= MAX_GOOGLE_ESTIMATE_CENTS:
+            raise ValueError()
+    except (TypeError, ValueError):
+        issues.append('Set valid Google output options and a 1K allocation of 1–50 AUD cents (up to A$0.50) in saved Settings.')
+    if uncapped_images(config):
+        return issues
+    if budget_available is False:
+        issues.append('Configure the authenticated shared budget service before generating a Board image.')
+    elif budget_available is None:
+        parsed = None
+        try:
+            parsed = urlparse(str(config.get('MEDIA_SERVER_URL') or ''))
+            valid_url = ((parsed.scheme == 'https' and parsed.hostname is not None)
+                or (parsed.scheme == 'http' and parsed.hostname in {'127.0.0.1', 'localhost', '::1'}))
+            valid_url = valid_url and not (parsed.username or parsed.password or parsed.query or parsed.fragment)
+        except ValueError:
+            valid_url = False
+        if (not _enabled(config.get('MEDIA_SYNC_ENABLED')) or not valid_url
+                or not _configured(config.get('MEDIA_SERVER_TOKEN'))):
+            issues.append('Enable private media sync and configure its HTTPS URL and bearer token for the shared budget service (loopback HTTP is allowed for local tests).')
+    return issues
+
+
+def board_image_readiness(config):
+    """Human-readable, secret-free Board image readiness; no remote checks."""
+    issues = board_image_issues(config)
+    if issues:
+        images = 'Board images: ' + ' '.join(issues) + ' Save Voice Settings, then select or reload them in Board settings.'
+        return images + '\n' + board_composition_readiness(config)
+    from image_provider_config import image_snapshot
+    if uncapped_images(config):
+        return ('Board images: Google Gemini, 1K, no application spending cap. Provider charges apply. '
+                'Google model access has not been checked here. Generated pictures require teacher preview.\n'
+                + board_composition_readiness(config))
+    allocation = image_snapshot(config)['allocation_cents']
+    return (f'Board images: Google Gemini, 1K, {allocation} AUD cents per attempt configured. '
+            'Google model access and shared budget availability have not been checked here; '
+            'each request must reserve its allocation before dispatch. Generated pictures require teacher preview.\n'
+            + board_composition_readiness(config))
+
+
+def board_composition_readiness(config):
+    """Describe routing without claiming a language model or Hermes is reachable."""
+    planning = ('Groq key configured' if not _enabled(config.get('LOCAL_ONLY'))
+        and _configured(config.get('GROQ_API_KEY')) else 'local model fallback')
+    if not _enabled(config.get('LOCAL_ONLY')) and _enabled(config.get('HERMES_ENABLED')):
+        composition = ('Hermes configured' if _configured(config.get('HERMES_URL'))
+            and _configured(config.get('HERMES_TOKEN')) else 'Hermes configuration incomplete')
+    else:
+        composition = planning
+    return f'Board resource planning: {planning}. Page composition: {composition}. Model/service access is unverified.'
 
 
 @dataclass(frozen=True)
@@ -296,6 +382,26 @@ class BoardRequestAcquisition:
         self.path = Path(state_path)
         self.request_id = request_id
 
+    @staticmethod
+    def _budget_fingerprint(config):
+        """Bind the accounting service without retaining its origin or credential."""
+        if uncapped_images(config):
+            provider = str(config.get('IMAGE_PROVIDER') or 'openai')
+            key = str(config.get('GOOGLE_IMAGE_API_KEY' if provider == 'gemini' else 'OPENAI_API_KEY') or '')
+            return hashlib.sha256(('uncapped\0' + provider + '\0' + key).encode('utf-8')).hexdigest() if key else None
+        url = str(config.get('MEDIA_SERVER_URL') or '').strip().rstrip('/')
+        token = str(config.get('MEDIA_SERVER_TOKEN') or '')
+        if not url or not token:
+            return None
+        return hashlib.sha256((url + '\0' + token).encode('utf-8')).hexdigest()
+
+    @staticmethod
+    def _validate_budget_binding(value):
+        fingerprint = value.get('budget_fingerprint')
+        if fingerprint is not None and (not isinstance(fingerprint, str) or not re.fullmatch(r'[0-9a-f]{64}', fingerprint)):
+            raise ValueError('The saved Board image accounting identity is invalid; review its original receipt.')
+        return fingerprint
+
     def _read(self) -> dict | None:
         if not self.path.exists():
             return None
@@ -309,6 +415,7 @@ class BoardRequestAcquisition:
                 or value.get('request_id') != self.request_id
                 or value.get('status') not in {'claimed', 'completed', 'uncertain', 'reconciled'}):
             raise ValueError('Board acquisition identity or state is invalid; no retry is allowed.')
+        self._validate_budget_binding(value)
         return value
 
     @staticmethod
@@ -341,19 +448,22 @@ class BoardRequestAcquisition:
                     or not isinstance(job_id, str) or not job_id
                     or status not in {'claimed', 'completed', 'uncertain', 'reconciled'}):
                 raise ValueError('A Board acquisition record is invalid; no new Google attempt is allowed.')
+            fingerprint = BoardRequestAcquisition._validate_budget_binding(value)
             if status in {'claimed', 'uncertain'}:
-                pending.append({'request_id': request_id, 'job_id': job_id, 'status': status})
+                item = {'request_id': request_id, 'job_id': job_id, 'status': status}
+                if fingerprint is not None:
+                    item['budget_fingerprint'] = fingerprint
+                pending.append(item)
         return pending
 
-    def reconcile(self, media_service, job_id: str, *, outcome: str):
-        """Clear an unresolved barrier only after an explicit existing-job review."""
+    def _review_state(self, media_store, job_id, outcome):
         if outcome not in {'saved_result_reviewed', 'provider_account_reviewed', 'pre_dispatch_failure_reviewed'}:
             raise ValueError('Choose an explicit completed provider, saved-result or pre-dispatch review.')
         state = self._read()
         if not state or state.get('job_id') != job_id or state.get('status') not in {'claimed', 'uncertain'}:
             raise ValueError('Select the unresolved job bound to this Board request.')
-        job = media_service.store.get_job(job_id)
-        if not job or job.get('job_id') != job_id:
+        job = media_store.get_job(job_id)
+        if not job or job.get('job_id') != job_id or job.get('kind') != 'generate':
             raise ValueError('The existing media job is unavailable; retain its allocation for recovery.')
         phase = job.get('phase')
         if outcome == 'saved_result_reviewed' and (phase != 'preview_ready' or not job.get('version_id')):
@@ -362,7 +472,30 @@ class BoardRequestAcquisition:
             raise ValueError('The selected media job is not awaiting provider reconciliation.')
         if outcome == 'pre_dispatch_failure_reviewed' and (phase != 'failed' or job.get('provider_dispatched')):
             raise ValueError('The selected media job may have dispatched and cannot be cleared as a pre-dispatch failure.')
+        return state
+
+    def reconcile(self, media_service, job_id: str, *, outcome: str):
+        """Clear an unresolved barrier only after an explicit existing-job review."""
+        state = self._review_state(media_service.store, job_id, outcome)
+        fingerprint = state.get('budget_fingerprint')
+        if fingerprint is not None and fingerprint != self._budget_fingerprint(getattr(media_service, 'config', {})):
+            raise ValueError('Reconnect the original shared budget service and credential before reconciling this image receipt.')
         state.update(status='reconciled', reconciliation=outcome)
+        _atomic_json(self.path, state)
+        return state
+
+    def reconcile_legacy_local(self, media_store, job_id: str, *, outcome: str, original_outcome_reviewed=False):
+        """Record manual review of an older receipt, without guessing any service.
+
+        This changes only the local automatic-attempt barrier. It cannot contact
+        an account, release an allocation, acquire a service binding or replay a job.
+        """
+        if original_outcome_reviewed is not True:
+            raise ValueError('Confirm review of the original provider/account outcome for this exact older job.')
+        state = self._review_state(media_store, job_id, outcome)
+        if state.get('budget_fingerprint') is not None:
+            raise ValueError('This receipt has a known service identity; reconnect that original service for review.')
+        state.update(status='reconciled', reconciliation=outcome, review_mode='legacy_local_outcome_review')
         _atomic_json(self.path, state)
         return state
 
@@ -370,7 +503,10 @@ class BoardRequestAcquisition:
                       action: str = 'generate', on_stage=None):
         if action != 'generate':
             raise ValueError('Automatic Board acquisition cannot refine or create a second candidate.')
-        if type(estimate_cents) is not int or not 1 <= estimate_cents <= MAX_GOOGLE_ESTIMATE_CENTS:
+        config = getattr(media_service, 'config', {})
+        valid_estimate = (type(estimate_cents) is int and
+            (estimate_cents == 0 if uncapped_images(config) else 1 <= estimate_cents <= MAX_GOOGLE_ESTIMATE_CENTS))
+        if not valid_estimate:
             raise ValueError('The configured Google estimate must be positive and no more than A$0.50 per request.')
         job = media_service.store.get_job(job_id)
         if not job or job.get('kind') != 'generate' or job.get('phase') != 'awaiting_user':
@@ -399,6 +535,12 @@ class BoardRequestAcquisition:
                 raise ValueError('This Board request already claimed a different provider job; no replacement identity is allowed.')
             raise ValueError('This Board request already attempted Google. Reconcile the same job; do not retry automatically.')
         claim = {'schema': 1, 'request_id': self.request_id, 'job_id': job_id, 'status': 'claimed'}
+        fingerprint = self._budget_fingerprint(config)
+        if fingerprint is not None:
+            # The service identity is in the same exclusive, durable claim as
+            # the job identity, before generate can reserve or dispatch. A later
+            # settings selection in another lesson cannot rebind this attempt.
+            claim['budget_fingerprint'] = fingerprint
         try:
             _create_claim(self.path, claim)
         except FileExistsError:

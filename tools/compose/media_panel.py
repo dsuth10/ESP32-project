@@ -271,8 +271,10 @@ class MediaPanel(ttk.Frame):
                   wraplength=550,padding=12).pack(fill='x')
         if job.get('image_provider'):
             snapshot=job['image_provider']
+            spending = ('No application spending cap; provider billing applies' if snapshot.get('spending_mode') == 'uncapped'
+                else f"A${snapshot['allocation_cents']/100:.2f} allocation (estimate, not invoice)")
             ttk.Label(window,text=f"{PROVIDER_LABELS[snapshot['provider']]} · {snapshot['model']}\n"
-                f"{snapshot['options']} · A${snapshot['allocation_cents']/100:.2f} allocation (estimate, not invoice)",
+                f"{snapshot['options']} · {spending}",
                 wraplength=550,padding=12).pack(fill='x')
         if job.get('provider_receipt'):
             receipt=scrolledtext.ScrolledText(window,height=9,width=65,wrap='word')
@@ -288,8 +290,10 @@ class MediaPanel(ttk.Frame):
                     lambda result:self.tell('Saved image accounting reconciled using its retained design allocation. No image request was sent.'))
             ttk.Button(window,text='Reconcile saved image allocation',command=reconcile_saved).pack(padx=12,pady=12)
         if job['phase']=='needs_recovery':
+            uncapped = (job.get('image_provider') or {}).get('spending_mode') == 'uncapped'
             ttk.Label(window,text='Check the provider account or target document before making another attempt.\n'
-                'Closing this attempt retains its full design allocation and does not claim that an image was generated or inserted.',
+                + ('Provider charges may apply. Closing this attempt does not retry it.' if uncapped else
+                   'Closing this attempt retains its full design allocation and does not claim that an image was generated or inserted.'),
                 wraplength=550,padding=12).pack(fill='x')
             def reconcile():
                 def work():
@@ -299,7 +303,7 @@ class MediaPanel(ttk.Frame):
                     self.service.store.update_job(job['job_id'],'reconciled',reconciled_by_user=True)
                 window.destroy()
                 self.run(work,lambda result:self.tell('Attempt closed after user review. No automatic retry or insertion was performed.'))
-            ttk.Button(window,text='I have checked — close attempt, retaining allocation',command=reconcile).pack(padx=12,pady=12)
+            ttk.Button(window,text='I have checked — close attempt' if uncapped else 'I have checked — close attempt, retaining allocation',command=reconcile).pack(padx=12,pady=12)
 
     def text(self):return self.prompt.get('1.0','end-1c').strip()
 
@@ -321,13 +325,14 @@ class MediaPanel(ttk.Frame):
             self._prepared_frame.grid()
             snapshot=job['image_provider']
             estimate=snapshot['allocation_cents']
+            uncapped = snapshot.get('spending_mode') == 'uncapped'
             self.prepared_choice.configure(text=f"Frozen choice: {PROVIDER_LABELS[snapshot['provider']]} · {snapshot['model']}\n"
                 f"{snapshot['options']['size']} · {snapshot['options']['aspect_ratio']}"
                 + (f" · {snapshot['options']['thinking']} thinking" if 'thinking' in snapshot['options'] else '')
-                + f" · A${estimate/100:.2f} allocation")
+                + (' · No application spending cap' if uncapped else f" · A${estimate/100:.2f} allocation"))
             available=CAPABILITIES[snapshot['provider']].adapter_available
             self.generate_button.configure(state='normal' if available else 'disabled',
-                text=f'Generate prepared image — A${estimate/100:.2f} design allocation' if available else 'Google rendering pending implementation')
+                text=('Generate prepared image — no spending cap' if uncapped else f'Generate prepared image — A${estimate/100:.2f} design allocation') if available else 'Google rendering pending implementation')
             message=('Generate sends one paid attempt for the frozen choice above. '
                 + ('The selected reference image will be sent to this producer. ' if refine else '')
                 + 'Settings changes require re-preparation. Result previews before insertion.')

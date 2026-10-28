@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 import json
+import os
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 import copy
@@ -47,12 +48,21 @@ def validate_page_layout(document, page_id, *, image_resolver=None):
 
 
 class AgentPanel(QWidget):
-    def __init__(self, owner, *, config=None, resource_root=None, composer=None, library=None):
+    def __init__(self, owner, *, config=None, resource_root=None, composer=None, library=None, settings_root=None,
+                 settings_selection_path=None):
         super().__init__(owner)
         self.owner = owner
-        self.config = dict(config or {'LOCAL_ONLY': True})
         root = Path(resource_root or owner.store.root / 'resource-library')
         self.library = library or BoardResourceLibrary(root)
+        self.settings_selection_path = Path(settings_selection_path) if settings_selection_path is not None else self.library.root / 'board-settings-selection.json'
+        self.settings_root = None
+        self._settings_bindings = {}
+        self.settings_error = ''
+        self.companion_settings_root = Path(os.environ.get('ESP32_COMPANION_DATA_DIR') or
+            str(Path(os.environ.get('LOCALAPPDATA', Path.home())) / 'ESP32ClassroomCompanion-Feature'))
+        self._composer_override = composer
+        self.recovery_store = BoardRecoveryStore(owner.store.root / 'board-requests')
+        self.config = self._initial_settings(config, settings_root)
         self.profile_path = self.library.root.parent / 'teaching-profile.json'
         self.profile_error = ''
         self.library_error = ''
@@ -65,7 +75,6 @@ class AgentPanel(QWidget):
         self._import_saved_catalogue()
         self.media_service = create_resource_service(self.library, self.config)
         self.preparer = BoardResourcePreparer(self.library, self.lesson_media, self.config, media_service=self.media_service)
-        self.recovery_store = BoardRecoveryStore(owner.store.root / 'board-requests')
         self.hermes = None
         if composer is None and truthy(self.config.get('HERMES_ENABLED')) and not truthy(self.config.get('LOCAL_ONLY')):
             self.hermes = HermesService(self.config, self.library.root / 'agent-runtime')
@@ -88,7 +97,14 @@ class AgentPanel(QWidget):
         layout = QVBoxLayout(self); layout.setContentsMargins(0, 0, 0, 0)
         heading = QHBoxLayout(); layout.addLayout(heading)
         heading.addWidget(QLabel('Board assistant'), 1)
+        self.settings_button = QPushButton('Board settings…')
+        self.settings_button.clicked.connect(self.show_settings)
         profile = QPushButton('Teaching profile…'); profile.clicked.connect(self.edit_profile); heading.addWidget(profile)
+        layout.addWidget(self.settings_button)
+        self.settings_status = QLabel(); self.settings_status.setWordWrap(True)
+        self.settings_status.setTextFormat(Qt.TextFormat.PlainText)
+        layout.addWidget(self.settings_status)
+        self._refresh_settings_status()
         self.instruction = QTextEdit(); self.instruction.setMaximumHeight(85)
         self.instruction.setPlaceholderText('Ask for a page or a targeted change. Select an object to refer to it.')
         layout.addWidget(self.instruction)
@@ -157,9 +173,243 @@ class AgentPanel(QWidget):
         self.index_timer.start(0)
         self.reload_saved_requests()
 
-    def _controller(self):
-        return BoardAgentController(self.owner.session, composer=self.composer,
-            profile=self.profile, resource_preparer=self.preparer,
+    def _initial_settings(self, config, settings_root):
+        """Reopen only an explicit remembered selection; never discover cloud settings."""
+        from board_candidate import load_board_settings, validate_board_settings_root
+        try:
+            if config is not None and settings_root is None:
+                HermesService._validated_config(config)
+                self._settings_bindings = self._service_bindings(config)
+                return dict(config)
+            from board_images import safe_path
+            validate_board_settings_root(self.settings_selection_path.parent)
+            path = safe_path(self.settings_selection_path)
+            if path.is_file():
+                if path.stat().st_size > 16384:
+                    raise ValueError('Oversized settings selection.')
+                value = json.loads(path.read_text(encoding='utf-8'))
+                if (not isinstance(value, dict) or set(value) not in ({'schema', 'settings_root'}, {'schema', 'settings_root', 'service_bindings'})
+                        or type(value['schema']) is not int or value['schema'] != 1
+                        or value['settings_root'] is not None and not isinstance(value['settings_root'], str)):
+                    raise ValueError('Invalid settings selection.')
+                bindings = value.get('service_bindings', {})
+                if (not isinstance(bindings, dict) or set(bindings) - {'hermes', 'budget'}
+                        or any(not isinstance(item, str) or len(item) != 64 or any(char not in '0123456789abcdef' for char in item) for item in bindings.values())):
+                    raise ValueError('Invalid saved service bindings.')
+                self._settings_bindings = bindings
+                if value['settings_root'] is not None:
+                    # Retain the original folder/bindings if protected storage is
+                    # temporarily unavailable, so exact-service recovery can reconnect.
+                    self.settings_root = validate_board_settings_root(value['settings_root'])
+            root = validate_board_settings_root(settings_root) if settings_root is not None else self.settings_root
+            if root is not None:
+                selected = dict(config) if config is not None else load_board_settings(root)
+                HermesService._validated_config(selected)
+                if self._recovery_change_blocker(root, selected):
+                    raise ValueError('Saved service identities changed during unfinished work.')
+                self._remember_settings(root, selected)
+                self.settings_root = root
+                self._settings_bindings = self._service_bindings(selected)
+                return selected
+        except Exception:
+            self.settings_error = 'Saved Board settings could not be opened. The Board is local-only; select saved settings again.'
+        return {'LOCAL_ONLY': True}
+
+    @staticmethod
+    def _service_bindings(config):
+        from board_resource_policy import BoardRequestAcquisition
+        bindings = {}
+        for label, url_key, token_key in [('hermes', 'HERMES_URL', 'HERMES_TOKEN'),
+                                           ('budget', 'MEDIA_SERVER_URL', 'MEDIA_SERVER_TOKEN')]:
+            url, token = str(config.get(url_key) or '').strip().rstrip('/'), str(config.get(token_key) or '')
+            if url and token:
+                bindings[label] = hashlib.sha256((url + '\0' + token).encode('utf-8')).hexdigest()
+        budget_identity = BoardRequestAcquisition._budget_fingerprint(config)
+        if budget_identity:
+            bindings['budget'] = budget_identity
+        return bindings
+
+    def _remember_settings(self, root, config):
+        from board_images import safe_path
+        from board_candidate import validate_board_settings_root
+        validate_board_settings_root(self.settings_selection_path.parent)
+        path = safe_path(self.settings_selection_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_name('.board-settings-' + uuid.uuid4().hex + '.tmp')
+        try:
+            with temporary.open('x', encoding='utf-8') as stream:
+                json.dump({'schema': 1, 'settings_root': str(root) if root is not None else None,
+                           'service_bindings': self._service_bindings(config)}, stream)
+                stream.flush(); os.fsync(stream.fileno())
+            os.replace(temporary, path)
+        finally:
+            temporary.unlink(missing_ok=True)
+
+    def _refresh_settings_status(self):
+        mode = 'local-only' if truthy(self.config.get('LOCAL_ONLY')) else 'configured services'
+        source = self.settings_root.name if self.settings_root else 'no saved provider profile'
+        self.settings_status.setText(self.settings_error or f'Board: {mode} · {source}. Board settings selects or reloads saved Voice Settings.')
+
+    def _settings_change_blocker(self):
+        if self._closed or not self.isEnabled():
+            return 'The Board is closing. Finish the close decision before changing Board settings.'
+        if self._audio or self._speech_future is not None or self._recovery_future is not None:
+            return 'Finish Board microphone, transcription or saved-task checking before changing Board settings.'
+        # Superseded/cancelled requests can have terminal publication state while
+        # their workers are still finishing. Do not replace their service objects.
+        with self.controller._lock:
+            for job in self.controller._requests.values():
+                future = job.get('future')
+                if job['status'] not in {'applied', 'failed', 'stale', 'cancelled'} or (future is not None and not future.done()):
+                    return 'Finish or cancel Board work and any completed page preview before changing Board settings. Wait for its worker to finish.'
+        return ''
+
+    def _recovery_change_blocker(self, root, config):
+        """Permit reconnecting original services; never rebind an unfinished operation."""
+        from board_images import safe_path
+        from board_resource_policy import BoardRequestAcquisition
+        terminal = {'completed', 'failed', 'cancelled', 'canceled', 'interrupted', 'succeeded', 'success', 'finished', 'done'}
+        required = {}
+        try:
+            for attempt in BoardRequestAcquisition.unresolved(self.library.root / 'board-attempts'):
+                # A shared saved preference can change in another lesson. Only
+                # this attempt's pre-dispatch identity can authorise recovery.
+                required.setdefault('budget', set()).add(attempt.get('budget_fingerprint'))
+            runtime = safe_path(self.library.root / 'agent-runtime' / 'hermes-runs')
+            folders = list(runtime.iterdir()) if runtime.is_dir() else []
+            if len(folders) > 1000:
+                raise ValueError('Too many saved tasks.')
+            known = set()
+            for folder in folders:
+                folder = safe_path(folder)
+                if not folder.is_dir():
+                    continue
+                state_path = safe_path(folder / 'state.json')
+                if state_path.stat().st_size > 65536:
+                    raise ValueError('Oversized task state.')
+                state = json.loads(state_path.read_text(encoding='utf-8'))
+                if str(state.get('status', 'unknown')).casefold() in terminal:
+                    continue
+                known.add(folder.name)
+                identity_path = safe_path(folder / 'dispatch-identity.json')
+                if identity_path.is_file():
+                    if identity_path.stat().st_size > 4096:
+                        raise ValueError('Oversized task binding.')
+                    identity = json.loads(identity_path.read_text(encoding='utf-8')).get('fingerprint')
+                else:
+                    identity = self._settings_bindings.get('hermes')
+                required.setdefault('hermes', set()).add(identity)
+            for record in self.recovery_store.list_requests():
+                if record.get('invalid'):
+                    raise ValueError('Damaged Board task.')
+                task_id = record.get('hermes_request_id')
+                if task_id and task_id not in known and str(record.get('status', '')).casefold() not in terminal:
+                    required.setdefault('hermes', set()).add(self._settings_bindings.get('hermes'))
+        except Exception:
+            return 'Saved Board task or image-attempt records need review before changing Board settings.'
+        if not required:
+            return ''
+        if root is None:
+            return 'Unfinished Board tasks or image attempts need their original saved profile. Reconnect that profile, then review and reconcile the existing work.'
+        proposed = self._service_bindings(config)
+        for service, identities in required.items():
+            if None in identities or identities != {proposed.get(service)}:
+                return 'Unfinished Board work is bound to its original service and credential. Restore those saved settings to reconnect, or reconcile the original receipts before selecting another service.'
+            if service == 'hermes' and (truthy(config.get('LOCAL_ONLY')) or not truthy(config.get('HERMES_ENABLED'))):
+                return 'Enable the original Hermes service in the selected saved profile to reconnect its unfinished tasks.'
+            if service == 'budget' and (truthy(config.get('LOCAL_ONLY')) or
+                    (not truthy(config.get('IMAGE_SPENDING_UNCAPPED')) and not truthy(config.get('MEDIA_SYNC_ENABLED')))):
+                return 'Enable the original private media service in the selected saved profile to reconnect its unfinished image receipts.'
+        return ''
+
+    def apply_settings_profile(self, root):
+        """Select/reload a saved profile atomically, only between Board operations."""
+        blocker = self._settings_change_blocker()
+        if blocker:
+            self.settings_error = blocker; self._refresh_settings_status(); return False
+        new_media = new_hermes = new_controller = None
+        try:
+            from board_candidate import load_board_settings, validate_board_settings_root
+            selected_root = validate_board_settings_root(root) if root is not None else None
+            config = load_board_settings(selected_root) if selected_root is not None else {'LOCAL_ONLY': True}
+            recovery_blocker = self._recovery_change_blocker(selected_root, config)
+            if recovery_blocker:
+                self.settings_error = recovery_blocker; self._refresh_settings_status(); return False
+            new_media = create_resource_service(self.library, config)
+            new_preparer = BoardResourcePreparer(self.library, self.lesson_media, config, media_service=new_media)
+            new_preparer.dataset = copy.deepcopy(self.preparer.dataset)
+            new_preparer.chart_spec = copy.deepcopy(self.preparer.chart_spec)
+            if self._composer_override is None and truthy(config.get('HERMES_ENABLED')) and not truthy(config.get('LOCAL_ONLY')):
+                new_hermes = HermesService(config, self.library.root / 'agent-runtime')
+                new_composer = HermesBoardComposer(new_hermes, recovery_store=self.recovery_store)
+            else:
+                new_composer = self._composer_override or PrimaryBoardComposer(config)
+            new_controller = self._controller(composer=new_composer, preparer=new_preparer)
+            self._remember_settings(selected_root, config)
+        except Exception:
+            if new_controller is not None:
+                new_controller.close()
+            if new_hermes is not None:
+                new_hermes.close()
+            if new_media is not None:
+                new_media.close()
+            self.settings_error = 'Board settings were not changed. Save Voice Settings on this computer, check the selected feature folder, then try again. No keys were displayed.'
+            self._refresh_settings_status(); return False
+        previous_controller, previous_media, previous_hermes = self.controller, self.media_service, self.hermes
+        self.config, self.settings_root = config, selected_root
+        self._settings_bindings = self._service_bindings(config)
+        self.media_service, self.preparer, self.hermes = new_media, new_preparer, new_hermes
+        self.composer, self.controller = new_composer, new_controller
+        self.request_id = None; self._saved_list_state = None
+        self.accepted_preview_versions.clear(); self.preview_button.setEnabled(False)
+        previous_controller.close()
+        if previous_media is not None:
+            previous_media.close()
+        if previous_hermes is not None:
+            previous_hermes.close()
+        self.settings_error = ''; self._refresh_settings_status(); self.reload_saved_requests()
+        self.progress.setText('Saved Board settings applied. Existing lesson and pupil content are unchanged. No request was sent.')
+        return True
+
+    def show_settings(self):
+        from board_runtime import board_image_readiness
+        dialog = QDialog(self); dialog.setWindowTitle('Board settings')
+        layout = QVBoxLayout(dialog)
+        explanation = QLabel('Save changes in Voice companion → Settings first. Then explicitly select or reload those saved settings here for Board requests. Keys stay in protected storage. No image or model request runs when applying settings.')
+        explanation.setWordWrap(True); layout.addWidget(explanation)
+        active = QLabel(); active.setWordWrap(True); active.setTextFormat(Qt.TextFormat.PlainText); layout.addWidget(active)
+        readiness = QLabel(); readiness.setWordWrap(True); readiness.setTextFormat(Qt.TextFormat.PlainText); layout.addWidget(readiness)
+        notice = QLabel(); notice.setWordWrap(True); layout.addWidget(notice)
+        def refresh():
+            mode = 'Local-only' if truthy(self.config.get('LOCAL_ONLY')) else 'Configured services'
+            active.setText(mode + '\nSaved profile: ' + (str(self.settings_root) if self.settings_root else 'none'))
+            readiness.setText(board_image_readiness(self.config))
+            notice.setText(self.settings_error)
+        def select(root):
+            applied = self.apply_settings_profile(root)
+            refresh()
+            if applied:
+                notice.setText('Saved settings applied; the lesson and pupil display are unchanged.')
+        use_voice = QPushButton('Use saved Voice Settings'); use_voice.clicked.connect(lambda: select(self.companion_settings_root)); layout.addWidget(use_voice)
+        def choose():
+            path = QFileDialog.getExistingDirectory(dialog, 'Choose a saved feature settings folder', str(self.settings_root or self.companion_settings_root))
+            if path:
+                select(Path(path))
+        choose_button = QPushButton('Choose saved settings folder…'); choose_button.clicked.connect(choose); layout.addWidget(choose_button)
+        reload_button = QPushButton('Reload selected saved settings')
+        def reload():
+            if self.settings_root is None:
+                notice.setText('Select saved settings first, or use saved Voice Settings.')
+            else:
+                select(self.settings_root)
+        reload_button.clicked.connect(reload); layout.addWidget(reload_button)
+        local = QPushButton('Use local-only Board'); local.clicked.connect(lambda: select(None)); layout.addWidget(local)
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); buttons.rejected.connect(dialog.reject); layout.addWidget(buttons)
+        refresh(); dialog.resize(600, 500); dialog.exec()
+
+    def _controller(self, *, composer=None, preparer=None):
+        return BoardAgentController(self.owner.session, composer=composer or self.composer,
+            profile=self.profile, resource_preparer=preparer or self.preparer,
             recovery_store=self.recovery_store,
             page_validator=lambda document, page_id: validate_page_layout(document, page_id,
                 image_resolver=self.owner.session.resolve_image))
@@ -186,7 +436,11 @@ class AgentPanel(QWidget):
                 publication = record.get('publication_status', 'blocked')
                 status = ('needs attention' if record.get('invalid') or publication == 'applying' else
                           'applied' if publication == 'applied' else
-                          'cancelled' if publication == 'cancelled' else record.get('status', 'needs attention'))
+                          'cancelled' if publication == 'cancelled' else
+                          'page not presented' if record.get('status') == 'needs_attention' else
+                          'ready to review' if publication == 'review' else
+                          'response saved; not presented' if record.get('status') == 'completed' else
+                          record.get('status', 'needs attention'))
                 prepared = record.get('prepared') or {}
                 try:
                     title = json.loads(prepared.get('context', '{}')).get('instruction', '')[:65]
@@ -196,7 +450,10 @@ class AgentPanel(QWidget):
             index = self.recovery_requests.findData(selected)
             if index >= 0:
                 self.recovery_requests.setCurrentIndex(index)
-            self.recovery_note.setText('Saved locally. Refresh checks the same task; review never submits another request.' if records else 'No saved Board requests in this lesson.')
+            self.recovery_note.setText('Past requests are saved here. The progress message above tells you whether the page was presented.' if records else 'No saved Board requests in this lesson.')
+            remote_pending = any(record.get('hermes_request_id') and record.get('status') not in
+                {'completed', 'failed', 'cancelled', 'canceled', 'interrupted', 'succeeded', 'success', 'done'} for record in records)
+            self.refresh_request_button.setEnabled(remote_pending and self.hermes is not None)
             if self.hermes is not None:
                 bound = {record.get('hermes_request_id') for record in records}
                 unbound = [row for row in self.hermes.list_requests() if row['request_id'] not in bound]
@@ -523,31 +780,37 @@ class AgentPanel(QWidget):
     def review_attempts(self):
         from board_resource_policy import BoardRequestAcquisition
         from PySide6.QtWidgets import QInputDialog
+        blocker = self._settings_change_blocker()
+        if blocker:
+            self.progress.setText(blocker); return
         try:
             pending = BoardRequestAcquisition.unresolved(self.library.root / 'board-attempts')
             if not pending:
                 self.progress.setText('No unresolved automatic Board image attempts.'); return
-            if self.preparer.media is None:
-                self.progress.setText('Reconnect the configured resource service to review the existing image job.'); return
-            labels = [item['job_id'] + ' · ' + item['status'] for item in pending]
+            labels = [item['job_id'] + ' · ' + item['status'] + (' · older receipt: local review' if not item.get('budget_fingerprint') else '') for item in pending]
             selected, accepted = QInputDialog.getItem(self, 'Review the existing image attempt',
                 'Choose the exact job you have reviewed in the library/provider account:', labels, editable=False)
             if not accepted:
                 return
             item = pending[labels.index(selected)]
-            job = self.preparer.media.store.get_job(item['job_id'])
+            legacy = not item.get('budget_fingerprint')
+            if not legacy and self.preparer.media is None:
+                self.progress.setText('Reconnect the original resource service to review this bound image job.'); return
+            job = self.library.media.get_job(item['job_id'])
             phase = job.get('phase') if job else None
             outcome = {'preview_ready': 'saved_result_reviewed', 'needs_recovery': 'provider_account_reviewed',
                        'failed': 'pre_dispatch_failure_reviewed'}.get(phase)
             if not outcome:
                 self.progress.setText('The existing job is still unresolved. No additional automatic image was authorised.'); return
-            answer = QMessageBox.question(self, 'Confirm this exact review',
-                'Have you reviewed the saved result or provider outcome for job ' + item['job_id'] +
-                '?\nThis clears its automatic-attempt barrier. Billing allocations stay held; it does not retry or release money.',
+            question = ('This older receipt has no saved service identity. Have you reviewed the original provider/account outcome for exact job '
+                if legacy else 'Have you reviewed the saved result or provider outcome for job ') + item['job_id'] + '?'
+            question += '\nThis records local review and clears only its automatic-attempt barrier. No service identity is adopted. Billing allocations stay held; it does not retry or release money.'
+            answer = QMessageBox.question(self, 'Review older image receipt locally' if legacy else 'Confirm this exact review', question,
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel)
             if answer != QMessageBox.StandardButton.Yes:
                 return
-            self.preparer.reconcile_google_attempt(item['request_id'], item['job_id'], outcome=outcome)
+            self.preparer.reconcile_google_attempt(item['request_id'], item['job_id'], outcome=outcome,
+                                                  legacy_outcome_reviewed=legacy)
             self.progress.setText('Existing job review recorded. Its original receipt and allocation are retained.')
         except BoardAgentError as error:
             self.progress.setText(str(error)[:400])
