@@ -4,13 +4,19 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).parents[1] / "stage_media_service.py"
-PROJECT_ROOT = SCRIPT.parents[3]
+PROJECT_ROOT = SCRIPT.parents[2]
 spec = importlib.util.spec_from_file_location("stage_media_service", SCRIPT)
 stage_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(stage_module)
 
 
 class StageMediaTests(unittest.TestCase):
+    def test_project_root_is_the_repository_not_the_filesystem_root(self):
+        self.assertTrue((PROJECT_ROOT / "server" / "deployment" / "stage_media_service.py").is_file())
+        self.assertNotEqual(PROJECT_ROOT.resolve(), Path("/").resolve())
+        with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as temp:
+            self.assertTrue(Path(temp).resolve().is_relative_to(PROJECT_ROOT.resolve()))
+
     def test_preflight_is_read_only_and_reviewed_stage_is_no_overwrite(self):
         with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as temp:
             destination = Path(temp) / "stage"
