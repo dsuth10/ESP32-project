@@ -169,7 +169,7 @@ def test_chmod_read_only_folder_refuses_save_when_the_process_is_not_root(editor
     editor.add_object('text')
     assert editor.save_now()
     saved = editor.store.current_path.read_bytes()
-    editor.add_object('shape')
+    editor.add_object('rectangle')
     mode = editor.store.root.stat().st_mode
     os.chmod(editor.store.root, 0o555)
     try:
@@ -234,14 +234,16 @@ def test_two_teacher_windows_cannot_own_or_clobber_the_same_lesson(app, tmp_path
         second_store = BoardStore(root)
         second = gui.BoardCandidate(BoardSession.open(second_store, image_resolver=gui.image_resolver(
             MediaStore(root / 'media'))), store=second_store, resolver=gui.image_resolver(MediaStore(root / 'media')))
-        second.add_object('shape')
+        first.add_object('text')
+        assert first.save_now()
+        second.add_object('rectangle')
         assert not second.save_now()
         assert 'save failed' in second.session.teacher_view()['save_error'].casefold()
         reopened = BoardStore(root).load()
         page = reopened.snapshot()['pages'][0]
-        kinds = {obj['type'] for obj in page['objects']}
-        assert kinds == {'text'}
-        assert 'shape' not in kinds
+        kinds = [obj['type'] for obj in page['objects']]
+        assert kinds == ['text', 'text']
+        assert 'rectangle' not in {obj.get('shape') for obj in page['objects']}
         held = BoardStore(root)
         with first_store._exclusive():
             with pytest.raises(BoardStoreError, match='busy'):

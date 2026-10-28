@@ -157,6 +157,20 @@ def _install_ctypes_windll() -> None:
     INSTALLED.append('ctypes.windll')
 
 
+def _install_faster_whisper() -> None:
+    if not _missing('faster_whisper'):
+        return
+
+    class WhisperModel:
+        def __init__(self, *_args, **_kwargs):
+            raise RuntimeError('faster_whisper stub: no local Whisper weights on this host.')
+
+        def transcribe(self, *_args, **_kwargs):
+            raise RuntimeError('faster_whisper stub: no local Whisper weights on this host.')
+
+    _module('faster_whisper', WhisperModel=WhisperModel)
+
+
 def _install_sounddevice() -> None:
     if sys.modules.get('sounddevice') is not None:
         return
@@ -199,4 +213,5 @@ def install_windows_stubs() -> list[str]:
     _install_win32()
     _install_ctypes_windll()
     _install_sounddevice()
+    _install_faster_whisper()
     return list(INSTALLED)
