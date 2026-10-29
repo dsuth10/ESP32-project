@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator
 
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, ImageOps, UnidentifiedImageError
 
 
 _SCHEMA_VERSION = 2
@@ -213,6 +213,47 @@ class MediaStore:
         return result
 
     @staticmethod
+    def upright_image_bytes(data: bytes) -> bytes:
+        """Bake EXIF orientation into the pixel data used for new local imports.
+
+        Saved-library copies keep their original bytes and digests. Phone photos
+        added as local files are stored upright so Qt does not squash them.
+        Images without an orientation tag are returned unchanged.
+        """
+        import io
+        if not data:
+            return data
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("error", Image.DecompressionBombWarning)
+                with Image.open(io.BytesIO(data)) as image:
+                    image_format = image.format
+                    if image_format not in _MIME_BY_FORMAT:
+                        return data
+                    orientation = 1
+                    try:
+                        orientation = int(image.getexif().get(0x0112, 1) or 1)
+                    except (TypeError, ValueError):
+                        orientation = 1
+                    if orientation == 1:
+                        return data
+                    transposed = ImageOps.exif_transpose(image)
+                    if transposed is image:
+                        return data
+                    converted = transposed
+                    if image_format == "JPEG" and converted.mode not in ("RGB", "L"):
+                        converted = converted.convert("RGB")
+                    output = io.BytesIO()
+                    options = {"quality": 95} if image_format == "JPEG" else {}
+                    converted.save(output, format=image_format, **options)
+                    result = output.getvalue()
+            MediaStore._inspect(result)
+            return result
+        except (UnidentifiedImageError, OSError, Image.DecompressionBombError,
+                Image.DecompressionBombWarning, ValueError):
+            return data
+
+    @staticmethod
     def _inspect(data: bytes) -> tuple[str, int, int]:
         if not data:
             raise ValueError("image data is empty")
@@ -277,6 +318,7 @@ class MediaStore:
         title = title[:_MAX_TITLE_LENGTH]
         tags_value = self._tags(tags)
         source_value = _source(source)
+        data = self.upright_image_bytes(data)
         mime, width, height = self._inspect(data)
         sha256 = hashlib.sha256(data).hexdigest()
         if operation_id is not None:

@@ -51,7 +51,7 @@ class PreparedImage:
 
 
 def prepare_file(path):
-    data = read_image(path)
+    data = MediaStore.upright_image_bytes(read_image(path))
     _, width, height = MediaStore._inspect(data)
     return PreparedImage(data, Path(path).stem[:200] or 'Imported image', width, height)
 

@@ -12,7 +12,7 @@ import uuid
 from pathlib import Path
 
 SCRIPT = Path(__file__).parents[1] / "media_backup.py"
-PROJECT_ROOT = SCRIPT.parents[3]
+PROJECT_ROOT = SCRIPT.parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 from server.media_library_server import create_server
@@ -37,6 +37,12 @@ def make_data(root: Path):
 
 
 class MediaBackupTests(unittest.TestCase):
+    def test_project_root_is_the_repository_not_the_filesystem_root(self):
+        self.assertTrue((PROJECT_ROOT / "server" / "deployment" / "media_backup.py").is_file())
+        self.assertNotEqual(PROJECT_ROOT.resolve(), Path("/").resolve())
+        with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as temp:
+            self.assertTrue(Path(temp).resolve().is_relative_to(PROJECT_ROOT.resolve()))
+
     def test_requires_quiesced_service_and_never_overwrites_backup_or_restore(self):
         with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as temp:
             root = Path(temp)

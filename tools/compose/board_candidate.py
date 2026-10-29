@@ -40,6 +40,8 @@ import board_theme
 
 REPOSITORY = Path(__file__).resolve().parents[2]
 CANDIDATE_ROOT = REPOSITORY / '.local' / 'teaching-board-candidate'
+MIN_INSERTED_IMAGE_SIDE = 240
+VIEW_STATE_NAME = 'lesson.view.json'
 
 
 def load_board_settings(root):
@@ -117,6 +119,9 @@ def decode_image(data):
         raise ValueError('Image exceeds the candidate byte limit.')
     buffer = QBuffer(); buffer.setData(data); buffer.open(QIODevice.OpenModeFlag.ReadOnly)
     reader = QImageReader(buffer)
+    # Keep stored pixels as-is. New local imports bake EXIF orientation into the
+    # bytes; flipping the default here would squash already-saved phone photos.
+    reader.setAutoTransform(False)
     size = reader.size()
     if (bytes(reader.format()).lower() not in (b'png', b'jpeg', b'jpg', b'webp')
             or size.width() <= 0 or size.height() <= 0 or size.width()*size.height() > 25_000_000):
@@ -125,6 +130,25 @@ def decode_image(data):
     if image.isNull():
         raise ValueError('Image could not be decoded.')
     return QPixmap.fromImage(image)
+
+
+def fitted_image_size(page, source_width, source_height):
+    """Place a new image at a usable teaching size without stretching it.
+
+    Large photos still fit within 60% of the page and are never upscaled past
+    their native pixels. Tiny icons are grown to at least 240 logical units on
+    the shorter side, still within that page cap, so they are not 12×12 specks.
+    """
+    if source_width <= 0 or source_height <= 0:
+        raise ValueError('Image has unsafe pixel dimensions.')
+    max_width, max_height = page['width'] * .6, page['height'] * .6
+    scale = min(max_width / source_width, max_height / source_height, 1)
+    width, height = source_width * scale, source_height * scale
+    shortest = min(width, height)
+    if shortest < MIN_INSERTED_IMAGE_SIDE:
+        grow = min(MIN_INSERTED_IMAGE_SIDE / shortest, max_width / width, max_height / height)
+        width, height = width * grow, height * grow
+    return width, height
 
 
 def demo_model(media):
@@ -588,6 +612,10 @@ class BoardCandidate(QWidget):
                 self.freeze_button = button
             elif label == 'Resume':
                 self.resume_button = button
+        self.add_image_toolbar = QPushButton('Add image…')
+        self.add_image_toolbar.setToolTip('Insert a saved-library or local image on this page.')
+        self.add_image_toolbar.clicked.connect(self.add_image)
+        toolbar.addWidget(self.add_image_toolbar)
         self.zoom = QSpinBox(); self.zoom.setRange(25, 300); self.zoom.setSuffix('%'); self.zoom.setValue(100)
         self.zoom.valueChanged.connect(self.set_zoom); toolbar.addWidget(self.zoom)
         splitter = QSplitter(); layout.addWidget(splitter, 1)
@@ -597,10 +625,14 @@ class BoardCandidate(QWidget):
         self.side_scroll.setMaximumWidth(390); splitter.addWidget(self.side_scroll)
         side = QWidget(); side_layout = QVBoxLayout(side); self.side_scroll.setWidget(side)
         side.setMaximumWidth(370)
+        self.page_tool_buttons = []
         self.add_image_button = QPushButton('Add image…')
-        self.add_image_button.clicked.connect(self.add_image); side_layout.addWidget(self.add_image_button)
+        self.add_image_button.clicked.connect(self.add_image)
+        side_layout.addWidget(self.add_image_button)
+        self.page_tool_buttons.append(self.add_image_button)
         for label, kind in [('Add text', 'text'), ('Rectangle', 'rectangle'), ('Ellipse', 'ellipse'), ('Arrow', 'arrow')]:
             button = QPushButton(label); button.clicked.connect(lambda checked=False, k=kind: self.add_object(k)); side_layout.addWidget(button)
+            self.page_tool_buttons.append(button)
         self.text = QTextEdit(); self.text.setPlaceholderText('Select a text box to edit its text.'); self.text.setMaximumHeight(120)
         side_layout.addWidget(self.text)
         form = QFormLayout(); side_layout.addLayout(form)
@@ -651,15 +683,17 @@ class BoardCandidate(QWidget):
                 self.agent_panel = AgentPanel(self, config=agent_config, resource_root=resource_root or shared_root,
                                                composer=composer, settings_root=agent_settings_root,
                                                settings_selection_path=settings_selection_path)
-                side_layout.insertWidget(0, self.agent_panel)
+                side_layout.insertWidget(side_layout.indexOf(self.page_tool_buttons[-1]) + 1, self.agent_panel)
             except Exception:
                 self.catalogue_error = 'Board assistant unavailable. Manual editing and lesson saving remain available.'
-                notice = QLabel(self.catalogue_error); notice.setWordWrap(True); side_layout.insertWidget(0, notice)
+                notice = QLabel(self.catalogue_error); notice.setWordWrap(True)
+                side_layout.insertWidget(side_layout.indexOf(self.page_tool_buttons[-1]) + 1, notice)
         exports = QHBoxLayout(); layout.addLayout(exports)
         for label, command in [('Export editable lesson…', self.export_package), ('Export PDF…', self.export_pdf),
                                ('Import editable lesson…', self.import_package)]:
             button = QPushButton(label); button.clicked.connect(command); exports.addWidget(button)
         self.resize(1280, 860); self.pupil.resize(1100, 720)
+        self._restore_view_state()
         board_theme.install(self)
         self.refresh()
         if not self.session.teacher_view()['dirty']:
@@ -822,8 +856,7 @@ class BoardCandidate(QWidget):
                     # An indexing error cannot prevent a valid local insertion.
                     self.catalogue_error = 'Image retained in the lesson; reusable catalogue indexing needs attention.'
             page = page_from(captured)
-            scale = min(page['width'] * .6 / prepared.width, page['height'] * .6 / prepared.height, 1)
-            width, height = prepared.width * scale, prepared.height * scale
+            width, height = fitted_image_size(page, prepared.width, prepared.height)
             reference = {key: record[key] for key in ('asset_id', 'version_id', 'sha256')}
             value = new_object('image', x=(page['width']-width)/2, y=(page['height']-height)/2,
                                width=width, height=height, image_ref=reference)
@@ -1083,8 +1116,40 @@ class BoardCandidate(QWidget):
             self.run(lambda: self.session.save(expected_token=view['token']), save=False)
         saved = not self.session.teacher_view()['dirty']
         if saved:
+            self._write_view_state()
             self.sync_saved_lessons()
         return saved
+
+    def _view_state_path(self):
+        if self.store is None:
+            return None
+        return safe_path(self.store.root / VIEW_STATE_NAME)
+
+    def _write_view_state(self):
+        """Remember the current page. Freeze remains session-local by design."""
+        path = self._view_state_path()
+        if path is None:
+            return
+        try:
+            path.write_text(json.dumps({'page_id': self.session.teacher_view()['page_id']}), encoding='utf-8')
+        except (OSError, ValueError):
+            # A view-sidecar failure must not undo a successful lesson save.
+            pass
+
+    def _restore_view_state(self):
+        path = self._view_state_path()
+        if path is None or not path.is_file():
+            return
+        try:
+            data = json.loads(path.read_text(encoding='utf-8'))
+            page_id = data.get('page_id') if isinstance(data, dict) else None
+            view = self.session.teacher_view()
+            if (isinstance(page_id, str)
+                    and any(page['id'] == page_id for page in view['document']['pages'])
+                    and page_id != view['page_id']):
+                self.session.teacher_navigate(page_id, expected_token=view['token'])
+        except (OSError, ValueError, TypeError):
+            return
 
     def sync_saved_lessons(self):
         """Discovery failures are separate from successful durable lesson saves."""
@@ -1173,7 +1238,7 @@ class BoardCandidate(QWidget):
         self.aspect_locks.clear(); self.selected = None; self.selection_view = None
         self.name.setModified(False); self.name_capture = None
         self.recovery_notice = replacement.teacher_view().get('recovery_status') == 'recovered_previous'
-        self.error = ''; self.refresh(); self.select(None); self.sync_saved_lessons()
+        self.error = ''; self._restore_view_state(); self.refresh(); self.select(None); self.sync_saved_lessons()
         return True
 
     def _save_copy(self, destination, title):
@@ -1182,6 +1247,7 @@ class BoardCandidate(QWidget):
             self.refresh(); return False
         if not self.save_now():
             return False
+        current_page = self.session.teacher_view()['page_id']
         try:
             claim = getattr(self, 'claim_lesson', None)
             if claim:
@@ -1197,6 +1263,11 @@ class BoardCandidate(QWidget):
         self.aspect_locks.clear(); self.selected = None; self.selection_view = None
         self.name.setModified(False); self.name_capture = None
         self.recovery_notice = False; self.error = ''
+        if any(page['id'] == current_page for page in self.session.teacher_view()['document']['pages']):
+            view = self.session.teacher_view()
+            if current_page != view['page_id']:
+                self.session.teacher_navigate(current_page, expected_token=view['token'])
+        self._write_view_state()
         self.refresh(); self.select(None)
         self.sync_saved_lessons()
         return True
@@ -1222,6 +1293,7 @@ class BoardCandidate(QWidget):
         self.recovery_notice = replacement.teacher_view().get('recovery_status') == 'recovered_previous'
         self.name.setText(replacement.teacher_view()['document']['title']); self.name.setModified(False)
         self.name_capture = None; self.selected = None; self.selection_view = None
+        self._restore_view_state()
         self.select(None)
 
     def set_zoom(self, value):

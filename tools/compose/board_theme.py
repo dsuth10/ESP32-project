@@ -587,6 +587,11 @@ def _install_teacher_chrome(candidate):
     for button in candidate.teacher_tools.values():
         button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         rail_col.addWidget(button)
+    toolbar_image = getattr(candidate, 'add_image_toolbar', None)
+    if toolbar_image is not None:
+        toolbar_image.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        toolbar_image.setObjectName('boardPrimary')
+        rail_col.addWidget(toolbar_image)
     rail_col.addStretch(1)
     chrome['tool_rail'] = rail
 
