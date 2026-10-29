@@ -28,14 +28,14 @@ def test_configured_readiness_never_claims_remote_verification_or_exposes_secret
 
 @pytest.mark.parametrize(('override', 'message'), [
     ({'LOCAL_ONLY': '1'}, 'local-only'),
-    ({'IMAGE_PROVIDER': 'openai'}, 'Select Google Gemini'),
+    ({'IMAGE_PROVIDER': 'unsupported-private-provider'}, 'supported image producer'),
     ({'GOOGLE_IMAGE_API_KEY': ''}, 'Google image API key'),
-    ({'GOOGLE_IMAGE_MODEL': 'unexpected-private-model'}, 'supported Google model'),
+    ({'GOOGLE_IMAGE_MODEL': 'unexpected-private-model'}, 'supported image model'),
     ({'IMAGE_GENERATION_ENABLED': '0'}, 'Enable paid image requests'),
-    ({'GOOGLE_IMAGE_SIZE': '2K'}, 'Choose 1K'),
-    ({'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS': '0'}, '1–50 AUD cents'),
-    ({'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS': '51'}, '1–50 AUD cents'),
-    ({'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS': 'invalid-private-amount'}, '1–50 AUD cents'),
+    ({'GOOGLE_IMAGE_SIZE': 'invalid-private-size'}, 'supported image model'),
+    ({'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS': '0'}, '1–3000 AUD cents'),
+    ({'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS': '3001'}, '1–3000 AUD cents'),
+    ({'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS': 'invalid-private-amount'}, '1–3000 AUD cents'),
     ({'MEDIA_SYNC_ENABLED': '0'}, 'shared budget service'),
     ({'MEDIA_SERVER_TOKEN': ''}, 'bearer token'),
     ({'MEDIA_SERVER_URL': 'http://private.invalid'}, 'HTTPS'),
@@ -53,6 +53,30 @@ def test_missing_or_invalid_configuration_is_actionable_and_secret_free(override
 def test_loopback_ledger_is_allowed_without_remote_access():
     config = {**configured(), 'MEDIA_SERVER_URL': 'http://127.0.0.1:8643'}
     assert board_image_issues(config) == []
+
+
+@pytest.mark.parametrize('size', ['1K', '2K', '4K'])
+@pytest.mark.parametrize('ratio', ['1:1', '3:4', '4:3'])
+@pytest.mark.parametrize('thinking', ['minimal', 'medium', 'high'])
+def test_board_accepts_all_supported_google_output_choices(size, ratio, thinking):
+    config = {**configured(), 'GOOGLE_IMAGE_SIZE': size,
+              'GOOGLE_IMAGE_ASPECT_RATIO': ratio, 'GOOGLE_IMAGE_THINKING': thinking,
+              f'GOOGLE_IMAGE_ESTIMATE_{size}_AUD_CENTS': '125'}
+    assert board_image_issues(config) == []
+    text = board_image_readiness(config)
+    assert all(value in text for value in ('Google Gemini', size, ratio, thinking, '125 AUD cents'))
+
+
+def test_openai_uses_its_own_key_and_allocation_and_ignores_unused_google_options():
+    config = {**configured(), 'IMAGE_PROVIDER': 'openai',
+              'OPENAI_API_KEY': 'synthetic-openai-secret', 'IMAGE_ESTIMATE_AUD_CENTS': '125',
+              'GOOGLE_IMAGE_SIZE': 'unused', 'GOOGLE_IMAGE_MODEL': 'unused'}
+    assert board_image_issues(config) == []
+    text = board_image_readiness(config)
+    assert all(value in text for value in ('OpenAI', '1024x1024', 'high quality', '125 AUD cents'))
+    assert 'secret' not in text
+    config['OPENAI_API_KEY'] = ''
+    assert 'OpenAI API key' in ' '.join(board_image_issues(config))
 
 
 def test_runtime_can_use_explicitly_injected_provider_and_ledger():

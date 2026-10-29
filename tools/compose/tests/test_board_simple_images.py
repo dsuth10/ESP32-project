@@ -85,6 +85,26 @@ def test_generated_image_still_requires_first_use_preview(tmp_path, monkeypatch)
 
 
 @pytest.mark.parametrize('instruction', [
+    'I need you to generate an image of a horse and put it up on the board',
+    'Generate an image of a horse and put it on the board.',
+    'Please create a picture of a horse and display it on the teaching board.',
+    'Could you draw an illustration of a horse and then show it on the board?',
+    'Make me an image of a horse.',
+])
+def test_generation_and_placement_phrasing_uses_typed_layout_and_preview(tmp_path, monkeypatch, instruction):
+    session, controller, _, image, calls = setup(tmp_path, monkeypatch, generated=True)
+    try:
+        request = controller.start(controller.prepare(instruction, selected_images=[image]))
+        state = finish(controller, request)
+        assert state['status'] == 'awaiting_confirmation', state
+        assert not session.pupil_view()['document']['pages'][0]['objects']
+        assert controller.confirm(request, state['proposal_digest'])['status'] == 'applied'
+        assert calls == []
+    finally:
+        controller.close(); session.close()
+
+
+@pytest.mark.parametrize('instruction', [
     'Put an image of a dog on the board and explain its features.',
     'Put an image of a dog with labels on the board.',
     'Compare dogs and cats.',

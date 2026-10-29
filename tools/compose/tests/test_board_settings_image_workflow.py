@@ -1,7 +1,8 @@
 """Saved protected settings through a real Board request and first-use preview.
 
-Only the composer, image provider, ledger and credential cipher are fixtures.
-The Board UI/session, profile selection, acquisition and persistence are real.
+Only the image provider, ledger and credential cipher are fixtures; unexpected
+text-model calls fail the test. Board UI/session, settings, acquisition,
+composition, validation, preview and persistence are real.
 """
 import io
 import json
@@ -16,10 +17,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import pytest
 from PIL import Image
 from PySide6.QtWidgets import QApplication, QDialog
-from board_agent import result_envelope
 import board_agent_ui as ui
 import board_candidate as gui
-from board_model import BoardModel
+from board_model import BoardModel, new_object
 from board_session import BoardSession
 from board_store import BoardStore
 from board_runtime import PrimaryBoardComposer, truthy
@@ -43,25 +43,32 @@ class FixtureLedger:
         self.committed.append((job_id, cents))
 
 
-class FixtureDogProvider:
-    def __init__(self):
+class FixtureImageProvider:
+    def __init__(self, producer='gemini'):
         self.calls = []
+        self.producer = producer
 
     def generate(self, prompt, **options):
         self.calls.append((prompt, options))
         image = io.BytesIO()
         Image.new('RGB', (200, 160), '#bc915f').save(image, format='PNG')
         return {'data': image.getvalue(), 'mime': 'image/png',
-                'source': {'provider': 'gemini', 'model': 'gemini-nano-banana-2.1'},
+                'source': {'provider': self.producer, 'model': 'fixture'},
                 'usage': {}, 'request_id': 'fixture-dog',
-                'receipt': {'provider': 'gemini', 'outcome': 'image_received'}}
+                'receipt': {'provider': self.producer, 'outcome': 'image_received'}}
 
     def close(self):
         pass
 
 
+@pytest.mark.parametrize('producer,size', [('gemini', '1K'), ('gemini', '2K'), ('gemini', '4K'), ('openai', '1024x1024')])
 @pytest.mark.parametrize('uncapped', [False, True])
-def test_saved_voice_profile_enables_dog_preview_and_survives_board_reopen(tmp_path, monkeypatch, uncapped):
+@pytest.mark.parametrize(('instruction', 'occupied'), [
+    ('Can you put an image of a horse up on the board?', False),
+    ('I need you to generate an image of a horse and put it up on the board', False),
+    ('I need you to generate an image of a horse and put it up on the board', True),
+], ids=['put', 'generate', 'generate-existing-page'])
+def test_saved_voice_profile_enables_horse_preview_and_survives_board_reopen(tmp_path, monkeypatch, uncapped, producer, size, instruction, occupied):
     app = QApplication.instance() or QApplication([])
     for key in config_loader.ENV_KEYS:
         monkeypatch.delenv(key, raising=False)
@@ -76,24 +83,22 @@ def test_saved_voice_profile_enables_dog_preview_and_survives_board_reopen(tmp_p
                 'GOOGLE_IMAGE_API_KEY': 'fixture-google-secret', 'GROQ_API_KEY': 'fixture-groq-secret',
                 'MEDIA_SYNC_ENABLED': '1', 'MEDIA_SERVER_URL': 'https://fixture.invalid',
                 'MEDIA_SERVER_TOKEN': 'fixture-budget-secret', 'HERMES_ENABLED': '0'}
+    settings.update(IMAGE_PROVIDER=producer, GOOGLE_IMAGE_SIZE=size if producer == 'gemini' else '1K',
+                    GOOGLE_IMAGE_ASPECT_RATIO='4:3', GOOGLE_IMAGE_THINKING='high',
+                    OPENAI_API_KEY='fixture-openai-secret', IMAGE_ESTIMATE_AUD_CENTS='125')
+    if producer == 'gemini':
+        settings[f'GOOGLE_IMAGE_ESTIMATE_{size}_AUD_CENTS'] = '125'
     if uncapped:
         settings.update(IMAGE_SPENDING_UNCAPPED='1', MEDIA_SYNC_ENABLED='0',
                         MEDIA_SERVER_URL='', MEDIA_SERVER_TOKEN='', GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS='')
     companion_settings.save_settings(settings, profile)
     assert 'fixture-google-secret' not in (profile / 'settings.json').read_text()
-    provider, ledger = FixtureDogProvider(), FixtureLedger()
+    provider, ledger = FixtureImageProvider(producer), FixtureLedger()
     monkeypatch.setattr(ui, 'create_resource_service', lambda library, config:
                         None if truthy(config.get('LOCAL_ONLY')) else
                         MediaService(library.media, config, None if uncapped else ledger, provider=provider))
     monkeypatch.setattr(PrimaryBoardComposer, 'complete', lambda *_:
-                        json.dumps({'kind': 'illustration', 'source': None, 'query': 'dog'}))
-
-    def compose(self, prepared, report, cancelled):
-        image = json.loads(prepared['context'])['selected_images'][0]
-        return result_envelope(prepared, template={'name': 'title_image', 'title': 'A dog',
-            'body': 'Dogs are mammals.', 'image_ref': image['image_ref']})
-
-    monkeypatch.setattr(PrimaryBoardComposer, '__call__', compose)
+                        (_ for _ in ()).throw(AssertionError('A plain image request must not need model classification')))
 
     def open_board():
         store = BoardStore(lesson)
@@ -107,6 +112,17 @@ def test_saved_voice_profile_enables_dog_preview_and_survives_board_reopen(tmp_p
     try:
         panel = board.agent_panel
         assert panel is not None and truthy(panel.config.get('LOCAL_ONLY'))
+        if occupied:
+            old_bytes = io.BytesIO()
+            Image.new('RGB', (160, 120), '#335577').save(old_bytes, 'PNG')
+            old = panel.lesson_media.import_bytes(old_bytes.getvalue(), 'Previous image',
+                source={'attribution': 'Required previous-image attribution'})
+            view = board.session.teacher_view()
+            board.session.teacher_apply([
+                {'op': 'add_object', 'page_id': view['page_id'], 'object': new_object('image',
+                    image_ref={key: old[key] for key in ('asset_id', 'version_id', 'sha256')})},
+                {'op': 'add_object', 'page_id': view['page_id'], 'object': new_object('text', text='Existing teaching work')},
+            ], expected_revision=view['revision'], expected_token=view['token'])
         before = board.session.pupil_view()['document']
         panel.companion_settings_root = profile
         assert panel.apply_settings_profile(profile), panel.settings_error
@@ -118,7 +134,7 @@ def test_saved_voice_profile_enables_dog_preview_and_survives_board_reopen(tmp_p
         assert set(selection['service_bindings']) == {'budget'}
         assert all(secret not in json.dumps(selection) for secret in
                    ('fixture-google-secret', 'fixture-budget-secret', 'https://fixture.invalid'))
-        panel.instruction.setPlainText('Draw a dog and add it to the teaching board.')
+        panel.instruction.setPlainText(instruction)
         panel.send()
         assert panel.request_id, panel.progress.text()
         for _ in range(250):
@@ -130,13 +146,20 @@ def test_saved_voice_profile_enables_dog_preview_and_survives_board_reopen(tmp_p
             time.sleep(.01)
         assert state['status'] == 'awaiting_confirmation', state
         assert 'first_generated_image_use' in state['confirmation_reasons']
+        if occupied:
+            assert 'whole_page_replacement' in state['confirmation_reasons']
         assert board.session.pupil_view()['document'] == before
         assert len(provider.calls) == 1
+        assert provider.calls[0][0] == 'horse'
+        options = provider.calls[0][1]['options']
+        assert options['size'] == size
+        assert options['aspect_ratio'] == ('4:3' if producer == 'gemini' else '1:1')
+        assert options.get('thinking', options.get('quality')) == 'high'
         if uncapped:
             assert ledger.reserved == ledger.committed == []
         else:
             assert ledger.reserved == ledger.committed and len(ledger.reserved) == 1
-            assert ledger.reserved[0][1] == 24
+            assert ledger.reserved[0][1] == 125
         monkeypatch.setattr(QDialog, 'exec', lambda _dialog: QDialog.DialogCode.Accepted)
         panel.show_preview()
         panel.tick()

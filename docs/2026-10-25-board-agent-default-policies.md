@@ -1,5 +1,13 @@
 # Board agent: delegated operating defaults
 
+29 October follow-up: the [image-options update](2026-10-29-board-image-options.md)
+supersedes this note's Google/1K/A$0.50-only Board restriction and its treatment
+of an ordinary image request as a factual-photo request. Simple requests such as
+“Can you put an image of a horse up on the board?” reuse a saved image first,
+then use the selected image generator when no suitable saved image exists.
+Explicit photographs and factual visual evidence retain photo retrieval with
+no automatic synthetic fallback. Chart-data and first-use-preview rules remain.
+
 Later implementation record: the [agent build plan](2026-10-25-teaching-board-agent-build-plan.md)
 and [candidate guide](2026-10-25-teaching-board-agent-candidate.md) record the
 integrated local enforcement and tests. The implementation-status statements in

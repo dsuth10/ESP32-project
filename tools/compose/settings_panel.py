@@ -114,8 +114,8 @@ class SettingsPanel(ttk.Frame):
         self._image_status()
         ttk.Label(content, text='With No spending cap selected, images use provider billing directly without an application spending limit or shared budget server.\n'
                   'Otherwise the shared server enforces its allowance (A$30/month by default). Allocations are estimates, not provider invoice amounts.\n'
-                  'Automatic Board illustrations use Google Gemini at 1K; capped mode requires a 1–50 AUD-cent allocation (up to A$0.50). '
-                  'OpenAI and larger Google images remain available in the Voice image library.\n'
+                  'Board illustrations use the selected producer and output options, including Google 1K/2K/4K or OpenAI. '
+                  'Save here, then reload Board settings to apply changes.\n'
                   'A failed or ambiguous dispatched attempt retains its allocation until reconciled. No paid request runs during setup.',
                   wraplength=800).grid(row=row, column=0, columnspan=2, sticky='w', pady=8)
         row += 1

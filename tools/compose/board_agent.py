@@ -735,7 +735,15 @@ class BoardAgentController:
                         self.recovery_store.update(request_id, status='needs_attention',
                             message='The page was not presented: ' + message)
             except Exception:
-                job.update(status='failed', message='Composition or required-resource validation failed. The pupil page is unchanged.',
+                # Provider exceptions can contain URLs, headers or credentials.
+                # Explain which step failed without exposing their raw text.
+                message = {
+                    'searching': 'Resource planning or saved-image lookup failed. Check saved provider settings and resource-library access.',
+                    'acquiring': 'Image acquisition failed. Check the Image library and Review image attempts before starting another paid request.',
+                    'composing': 'Page composition failed. Any acquired images remain in the Image library.',
+                    'validating': 'Page validation failed. Any saved images remain available; the proposed page was not presented.',
+                }.get(job['stage'], 'The Board request failed before a complete page was ready.')
+                job.update(status='failed', message=message + ' The pupil page is unchanged.',
                            candidate=None, commands=None, requires_confirmation=False, finished=self._clock())
             return self.snapshot(request_id)
 

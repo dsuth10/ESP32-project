@@ -18,9 +18,9 @@ import tempfile
 from datetime import date
 from typing import Any, Callable
 from urllib.parse import urlparse
-from image_provider_config import uncapped_images
+from image_provider_config import uncapped_images, selected_provider, image_snapshot, PROVIDER_LABELS
 
-MAX_GOOGLE_ESTIMATE_CENTS = 50
+MAX_IMAGE_ESTIMATE_CENTS = 3000
 MAX_CHART_POINTS = 50
 MAX_RENDER_CHART_POINTS = 12
 MAX_CHART_VALUE = 1_000_000_000
@@ -46,23 +46,22 @@ def board_image_issues(config, *, provider_available=False, budget_available=Non
     if _enabled(config.get('LOCAL_ONLY')):
         return ['The Board is in local-only mode. Choose a saved image, or select and reload saved provider settings in Board settings.']
     issues = []
-    if config.get('IMAGE_PROVIDER', 'openai') != 'gemini':
-        issues.append('Select Google Gemini for automatic Board illustrations; OpenAI remains available in the Voice image library.')
+    try:
+        provider = selected_provider(config)
+    except ValueError:
+        return ['Choose a supported image producer in saved Settings.']
     if not _enabled(config.get('IMAGE_GENERATION_ENABLED')):
         issues.append('Enable paid image requests in saved Settings.')
-    if not provider_available and not _configured(config.get('GOOGLE_IMAGE_API_KEY')):
-        issues.append('Add a Google image API key in saved Settings.')
-    from image_provider_config import GOOGLE_MODEL, image_snapshot
-    if (config.get('GOOGLE_IMAGE_MODEL') or GOOGLE_MODEL) != GOOGLE_MODEL:
-        issues.append('Select the supported Google model in saved Settings.')
-    if (config.get('GOOGLE_IMAGE_SIZE') or '1K') != '1K':
-        issues.append('Choose 1K Google resolution for automatic Board illustrations; 2K and 4K remain available in the Voice image library.')
+    key = 'GOOGLE_IMAGE_API_KEY' if provider == 'gemini' else 'OPENAI_API_KEY'
+    if not provider_available and not _configured(config.get(key)):
+        label = 'a Google image' if provider == 'gemini' else 'an OpenAI'
+        issues.append(f'Add {label} API key in saved Settings.')
     try:
-        snapshot = image_snapshot({**config, 'IMAGE_PROVIDER': 'gemini'}, {'size': '1K'})
-        if not uncapped_images(config) and not 1 <= snapshot['allocation_cents'] <= MAX_GOOGLE_ESTIMATE_CENTS:
+        snapshot = image_snapshot(config)
+        if not uncapped_images(config) and not 1 <= snapshot['allocation_cents'] <= MAX_IMAGE_ESTIMATE_CENTS:
             raise ValueError()
     except (TypeError, ValueError):
-        issues.append('Set valid Google output options and a 1K allocation of 1–50 AUD cents (up to A$0.50) in saved Settings.')
+        issues.append('Set a supported image model and output options in saved Settings; capped requests need an allocation of 1–3000 AUD cents for the selected output.')
     if uncapped_images(config):
         return issues
     if budget_available is False:
@@ -88,14 +87,17 @@ def board_image_readiness(config):
     if issues:
         images = 'Board images: ' + ' '.join(issues) + ' Save Voice Settings, then select or reload them in Board settings.'
         return images + '\n' + board_composition_readiness(config)
-    from image_provider_config import image_snapshot
+    snapshot = image_snapshot(config)
+    output = snapshot['options']
+    label = f"{PROVIDER_LABELS[snapshot['provider']]}, {output['size']}, {output['aspect_ratio']}"
+    label += f", {output.get('thinking', output.get('quality'))} {'thinking' if 'thinking' in output else 'quality'}"
     if uncapped_images(config):
-        return ('Board images: Google Gemini, 1K, no application spending cap. Provider charges apply. '
-                'Google model access has not been checked here. Generated pictures require teacher preview.\n'
+        return (f'Board images: {label}, no application spending cap. Provider charges apply. '
+                'Model access has not been checked here. Generated pictures require teacher preview.\n'
                 + board_composition_readiness(config))
-    allocation = image_snapshot(config)['allocation_cents']
-    return (f'Board images: Google Gemini, 1K, {allocation} AUD cents per attempt configured. '
-            'Google model access and shared budget availability have not been checked here; '
+    allocation = snapshot['allocation_cents']
+    return (f'Board images: {label}, {allocation} AUD cents per attempt configured. '
+            'Model access and shared budget availability have not been checked here; '
             'each request must reserve its allocation before dispatch. Generated pictures require teacher preview.\n'
             + board_composition_readiness(config))
 
@@ -135,14 +137,14 @@ def route_resource(intent: str, *, saved_matches=(), explicit_source: str | None
                 raise ValueError('A saved match must identify its immutable version.')
             return RouteDecision('saved', 'single suitable saved version', version)
         return RouteDecision('choose_saved', 'several suitable saved versions')
-    if explicit_source not in (None, 'library', 'commons', 'google', 'chart'):
+    if explicit_source not in (None, 'library', 'commons', 'google', 'openai', 'generate', 'chart'):
         raise ValueError('Choose a supported Board resource source.')
     if explicit_source == 'library':
         return RouteDecision('teacher_choice', 'no suitable saved version; select or import one')
     if intent not in {'photo', 'factual_image', 'illustration', 'chart', 'dataset'}:
         raise ValueError('The Board resource intent is unsupported.')
     if intent in {'chart', 'dataset'} or explicit_source == 'chart':
-        if explicit_source in {'commons', 'google'}:
+        if explicit_source in {'commons', 'google', 'openai', 'generate'}:
             return RouteDecision('teacher_choice', 'external pictures cannot supply factual chart measurements')
         if dataset_available:
             return RouteDecision('local_chart', 'validated teacher-supplied or saved dataset')
@@ -151,13 +153,13 @@ def route_resource(intent: str, *, saved_matches=(), explicit_source: str | None
         return RouteDecision('teacher_choice', 'factual data is required for this chart')
     if local_only:
         return RouteDecision('teacher_choice', 'local-only mode blocks external acquisition')
-    if explicit_source == 'google':
+    if explicit_source in {'google', 'openai', 'generate'}:
         if intent in {'photo', 'factual_image'}:
-            return RouteDecision('teacher_choice', 'Google generation cannot substitute for factual photographic evidence')
-        return RouteDecision('google_once', 'explicit illustration source')
+            return RouteDecision('teacher_choice', 'Image generation cannot substitute for factual photographic evidence')
+        return RouteDecision('generate_once', 'explicit illustration source')
     if explicit_source == 'commons' or intent in {'photo', 'factual_image'}:
         return RouteDecision('commons_once', 'bounded Commons retrieval for a real subject')
-    return RouteDecision('google_once', 'original illustration')
+    return RouteDecision('generate_once', 'original illustration')
 
 
 class _PlainText(HTMLParser):
@@ -430,7 +432,7 @@ class BoardRequestAcquisition:
             raise ValueError('Board acquisition state directory or scan limit is invalid.')
         files = sorted(root.glob('*.json'))
         if len(files) > maximum:
-            raise ValueError('Too many Board acquisition records need review before another Google attempt.')
+            raise ValueError('Too many Board acquisition records need review before another image attempt.')
         pending = []
         for path in files:
             if path.is_symlink() or path.is_junction() or path.stat().st_size > 4096:
@@ -438,16 +440,16 @@ class BoardRequestAcquisition:
             try:
                 value = json.loads(path.read_text(encoding='utf-8'))
             except (OSError, ValueError, UnicodeError):
-                raise ValueError('A Board acquisition record needs recovery; no new Google attempt is allowed.') from None
+                raise ValueError('A Board acquisition record needs recovery; no new image attempt is allowed.') from None
             if not isinstance(value, dict):
-                raise ValueError('A Board acquisition record is invalid; no new Google attempt is allowed.')
+                raise ValueError('A Board acquisition record is invalid; no new image attempt is allowed.')
             request_id, job_id, status = value.get('request_id'), value.get('job_id'), value.get('status')
             if (value.get('schema') != 1
                     or not isinstance(request_id, str) or not re.fullmatch(r'[A-Za-z0-9._:-]{1,200}', request_id)
                     or path.name != request_id + '.json'
                     or not isinstance(job_id, str) or not job_id
                     or status not in {'claimed', 'completed', 'uncertain', 'reconciled'}):
-                raise ValueError('A Board acquisition record is invalid; no new Google attempt is allowed.')
+                raise ValueError('A Board acquisition record is invalid; no new image attempt is allowed.')
             fingerprint = BoardRequestAcquisition._validate_budget_binding(value)
             if status in {'claimed', 'uncertain'}:
                 item = {'request_id': request_id, 'job_id': job_id, 'status': status}
@@ -505,9 +507,9 @@ class BoardRequestAcquisition:
             raise ValueError('Automatic Board acquisition cannot refine or create a second candidate.')
         config = getattr(media_service, 'config', {})
         valid_estimate = (type(estimate_cents) is int and
-            (estimate_cents == 0 if uncapped_images(config) else 1 <= estimate_cents <= MAX_GOOGLE_ESTIMATE_CENTS))
+            (estimate_cents == 0 if uncapped_images(config) else 1 <= estimate_cents <= MAX_IMAGE_ESTIMATE_CENTS))
         if not valid_estimate:
-            raise ValueError('The configured Google estimate must be positive and no more than A$0.50 per request.')
+            raise ValueError('The configured image allocation must be 1–3000 AUD cents, or zero in uncapped mode.')
         job = media_service.store.get_job(job_id)
         if not job or job.get('kind') != 'generate' or job.get('phase') != 'awaiting_user':
             raise ValueError('Select a fresh Board generation job before acquisition.')
@@ -523,17 +525,16 @@ class BoardRequestAcquisition:
             current_snapshot = image_snapshot(config, options)
             current_settings = image_snapshot(config)
         except (TypeError, ValueError):
-            raise ValueError('The configured Google estimate and output settings are invalid.') from None
-        if (snapshot.get('provider') != 'gemini' or snapshot.get('model') != 'gemini-nano-banana-2.1'
-                or options.get('size') != '1K' or type(snapshot.get('allocation_cents')) is not int
+            raise ValueError('The configured image model, allocation or output settings are invalid.') from None
+        if (type(snapshot.get('allocation_cents')) is not int
                 or snapshot.get('allocation_cents') != estimate_cents
                 or snapshot != current_snapshot or job.get('image_settings', snapshot) != current_settings):
-            raise ValueError('Board acquisition requires the configured Google Nano Banana 2.1 estimate and 1K output.')
+            raise ValueError('Board acquisition requires the configured image producer, model, allocation and output settings.')
         previous = self._read()
         if previous:
             if previous.get('job_id') != job_id:
                 raise ValueError('This Board request already claimed a different provider job; no replacement identity is allowed.')
-            raise ValueError('This Board request already attempted Google. Reconcile the same job; do not retry automatically.')
+            raise ValueError('This Board request already attempted image generation. Reconcile the same job; do not retry automatically.')
         claim = {'schema': 1, 'request_id': self.request_id, 'job_id': job_id, 'status': 'claimed'}
         fingerprint = self._budget_fingerprint(config)
         if fingerprint is not None:
