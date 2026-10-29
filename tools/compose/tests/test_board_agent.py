@@ -170,6 +170,29 @@ def test_completed_ordinary_edit_is_one_atomic_batch_and_undo_redo(board):
     assert controller.poll(request_id)['status'] == 'applied'  # Cannot replay after Undo/Redo.
 
 
+@pytest.mark.parametrize(('stage', 'message'), [
+    ('searching', 'Resource planning'),
+    ('acquiring', 'Image acquisition'),
+    ('composing', 'Page composition'),
+    ('validating', 'Page validation'),
+])
+def test_unexpected_failure_identifies_stage_without_exposing_provider_details(board, stage, message):
+    def preparer(prepared, report, cancelled):
+        report(stage, 'Fixture stage')
+        raise RuntimeError('PRIVATE TOKEN AND PROVIDER URL')
+    preparer.remote = False
+    controller, executor = make_controller(board, resource_preparer=preparer)
+    before = board[0].pupil_view()
+    try:
+        _, state = complete(controller, executor)
+        assert state['status'] == 'failed'
+        assert message in state['message']
+        assert 'PRIVATE' not in state['message']
+        assert board[0].pupil_view() == before
+    finally:
+        controller.close()
+
+
 def test_prepare_cannot_be_tampered_replayed_or_borrowed_by_another_controller(board):
     controller, executor = make_controller(board)
     prepared = controller.prepare('Explain')

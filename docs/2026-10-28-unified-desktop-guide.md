@@ -106,16 +106,33 @@ Later Voice Settings edits do not silently reconfigure a running Board. Use its
 explicit reload action to apply them. Do not pass credentials as arguments or copy
 Windows-protected credentials between computers.
 
-Automatic new Board illustrations require Google Gemini, its supported model,
-**1K** resolution, enabled paid image requests and a Google key. Select
+Board illustrations use the producer and output choices saved in Voice Settings:
+Google Gemini supports **1K, 2K and 4K**, aspect ratios **1:1, 3:4 and 4:3**, and
+minimal, medium or high thinking. OpenAI supports **1024 × 1024**, square output
+at high quality. Enable paid image requests and configure the selected producer's
+API key. Save Voice Settings, then reload the selected settings in Board settings.
+Naming a different producer in a request explains how to select it before dispatch.
+Select
 **No spending cap** in Voice Settings to use provider billing directly without
 an application spending limit or shared budget server. With this option off,
-Board images require a **1–50 AUD-cent** allocation (up to A$0.50), and private
+Board images require a **1–3000 AUD-cent** allocation for the selected producer
+and resolution, and private
 media sync must supply the authenticated shared budget service.
-Actual service availability and Google model access still need to be
-checked; the readiness message inspects configuration only. OpenAI and larger
-Google outputs remain available through the Voice image library. New generated
+Actual service availability and model access still need to be
+checked; the readiness message inspects configuration only. The same choices
+remain available through the Voice image library. New generated
 Board pictures require teacher preview before their first pupil-facing use.
+You can ask **“Can you put an image of a horse up on the board?”** Ordinary
+single-image requests reuse a suitable saved image or generate one with the
+selected producer. They do not require special AI wording. Asking for a photo
+or factual visual evidence retains the reusable-photo search route.
+
+**“I need you to generate an image of a horse and put it up on the board”**
+requests a fresh generated image, even if a saved horse image exists. Simple
+generate/create/draw/make requests use application-built placement without a text
+model constructing image commands. If the active page already has content,
+review the complete replacement preview before accepting; the original page
+stays visible until acceptance, and Undo restores it afterwards.
 An ordinary dog photo can instead use the bounded reusable-photo route when
 external lookup is enabled; saved images remain available locally.
 

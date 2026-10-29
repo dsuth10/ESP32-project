@@ -57,7 +57,7 @@ def test_saved_library_wins_and_multiple_versions_remain_a_choice():
     assert (ambiguous.route, ambiguous.saved_version_id) == ('choose_saved', None)
 
 
-@pytest.mark.parametrize(('intent', 'source'), [('photo', 'commons_once'), ('illustration', 'google_once')])
+@pytest.mark.parametrize(('intent', 'source'), [('photo', 'commons_once'), ('illustration', 'generate_once')])
 def test_source_routing_uses_intent_without_sequential_fallback(intent, source):
     assert route_resource(intent).route == source
     assert route_resource(intent, local_only=True).route == 'teacher_choice'
@@ -225,6 +225,27 @@ def test_durable_guard_calls_shared_media_service_once_and_rejects_restart_retry
     service.generate.assert_called_once()
 
 
+@pytest.mark.parametrize(('provider', 'size'), [('gemini', '2K'), ('gemini', '4K'), ('openai', '1024x1024')])
+def test_all_producers_keep_durable_no_replay_guard_and_frozen_options(tmp_path, provider, size):
+    job = fresh_job(provider=provider, model='gemini-nano-banana-2.1' if provider == 'gemini' else 'gpt-image-2.5-sunburst',
+                    size=size, estimate=125)
+    service = media_service(job)
+    guard = BoardRequestAcquisition(tmp_path / 'request.json', 'request')
+    guard.generate_once(service, 'job-1', estimate_cents=125)
+    with pytest.raises(ValueError, match='already attempted'):
+        guard.generate_once(service, 'job-1', estimate_cents=125)
+    service.generate.assert_called_once()
+
+    other = media_service(copy.deepcopy(job))
+    if provider == 'gemini':
+        other.config['GOOGLE_IMAGE_SIZE'] = '1K'
+    else:
+        other.config['IMAGE_MODEL'] = 'changed-model'
+    with pytest.raises(ValueError, match='configured image producer'):
+        BoardRequestAcquisition(tmp_path / 'other.json', 'other').generate_once(other, 'job-1', estimate_cents=125)
+    other.generate.assert_not_called()
+
+
 def test_failed_or_uncertain_dispatch_keeps_claim_and_cannot_replace_identity(tmp_path):
     state = tmp_path / 'board-request.json'
     service = media_service(fresh_job(), failure=TimeoutError('uncertain'))
@@ -254,7 +275,7 @@ def test_concurrent_guard_instances_cannot_replace_the_exclusive_request_claim(t
 
 
 @pytest.mark.parametrize('kwargs', [
-    {'estimate_cents': 0}, {'estimate_cents': 51}, {'estimate_cents': True},
+    {'estimate_cents': 0}, {'estimate_cents': 3001}, {'estimate_cents': True},
 ])
 def test_guard_rejects_invalid_or_over_limit_configured_estimate(tmp_path, kwargs):
     service = media_service(fresh_job())
@@ -264,7 +285,7 @@ def test_guard_rejects_invalid_or_over_limit_configured_estimate(tmp_path, kwarg
 
 
 @pytest.mark.parametrize('job', [
-    fresh_job(provider='openai'), fresh_job(model='different'), fresh_job(size='2K'),
+    fresh_job(provider='unsupported'), fresh_job(model='invalid/model'), fresh_job(size='invalid'),
     fresh_job(estimate=49), {**fresh_job(), 'kind': 'refine'},
 ])
 def test_guard_rejects_refinement_wrong_model_resolution_and_estimate(tmp_path, job):

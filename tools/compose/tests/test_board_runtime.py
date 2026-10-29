@@ -335,14 +335,108 @@ def google_service(media_store, provider):
     return MediaService(media_store, config, Ledger(), provider=provider)
 
 
+def test_plain_horse_image_request_generates_instead_of_exhausting_photo_search(tmp_path):
+    from unittest.mock import Mock
+    library = BoardResourceLibrary(tmp_path / 'board')
+    provider = FakeImageProvider()
+    media = google_service(library.media, provider)
+    media.search_web = Mock(return_value=[])
+    # Reproduce the photo classification that sent the user's ordinary image
+    # request to an empty reusable-photo search instead of image generation.
+    preparer = BoardResourcePreparer(library, __import__('media_store').MediaStore(tmp_path / 'lesson'),
+        media.config, media_service=media, planner=planned('photo', None, 'horse'))
+    selected = preparer(context('Can you put an image of a horse up on the board?'), lambda *args: None, lambda: False)
+    assert len(provider.calls) == 1
+    assert provider.calls[0][0] == 'horse'
+    assert selected[0]['generated_unreviewed']
+    media.search_web.assert_not_called()
+
+
+@pytest.mark.parametrize('wording', [
+    'Can you put a photo of a horse up on the board?',
+    'Put an image of an actual horse on the board.',
+    'Put an image of historical evidence on the board.',
+])
+def test_explicit_photographic_evidence_never_falls_back_to_generation(tmp_path, wording):
+    from unittest.mock import Mock
+    library = BoardResourceLibrary(tmp_path / 'board')
+    provider = FakeImageProvider()
+    media = google_service(library.media, provider)
+    media.search_web = Mock(return_value=[])
+    preparer = BoardResourcePreparer(library, __import__('media_store').MediaStore(tmp_path / 'lesson'),
+        media.config, media_service=media, planner=lambda *_: pytest.fail('Simple intent must be deterministic'))
+    with pytest.raises(Exception, match='No supported reusable photo'):
+        preparer(context(wording), lambda *args: None, lambda: False)
+    media.search_web.assert_called_once()
+    assert provider.calls == []
+
+
+def test_plain_horse_request_still_reuses_saved_image_before_generation(tmp_path):
+    library = BoardResourceLibrary(tmp_path / 'board')
+    saved = library.media.import_bytes(png_bytes(), 'horse')
+    library._index(saved, library.media.root, approved=True)
+    provider = FakeImageProvider()
+    media = google_service(library.media, provider)
+    preparer = BoardResourcePreparer(library, __import__('media_store').MediaStore(tmp_path / 'lesson'),
+        media.config, media_service=media, planner=lambda *_: pytest.fail('Simple intent must be deterministic'))
+    selected = preparer(context('Can you put an image of a horse up on the board?'), lambda *args: None, lambda: False)
+    assert selected[0]['image_ref']['version_id'] == saved['version_id']
+    assert provider.calls == []
+
+
+def test_explicit_generation_creates_new_image_even_when_saved_horse_exists(tmp_path):
+    library = BoardResourceLibrary(tmp_path / 'board')
+    saved = library.media.import_bytes(png_bytes(), 'horse')
+    library._index(saved, library.media.root, approved=True)
+    provider = FakeImageProvider()
+    media = google_service(library.media, provider)
+    preparer = BoardResourcePreparer(library, __import__('media_store').MediaStore(tmp_path / 'lesson'),
+        media.config, media_service=media, planner=lambda *_: pytest.fail('Simple generation needs no classifier'))
+    selected = preparer(context('I need you to generate an image of a horse and put it up on the board'), lambda *args: None, lambda: False)
+    assert provider.calls[0][0] == 'horse'
+    assert len(provider.calls) == 1
+    assert selected[0]['image_ref']['version_id'] != saved['version_id']
+    assert selected[0]['generated_unreviewed']
+
+
+@pytest.mark.parametrize(('producer', 'source', 'instruction'), [
+    ('openai', 'openai', 'Use OpenAI to draw a dog'),
+    ('gemini', 'google', 'Use Google to draw a dog'),
+])
+def test_named_producer_overrides_saved_match_and_does_not_silently_switch(tmp_path, producer, source, instruction):
+    library = BoardResourceLibrary(tmp_path / 'board')
+    saved = library.media.import_bytes(png_bytes(), 'dog')
+    library._index(saved, library.media.root, approved=True)
+    provider = FakeImageProvider()
+    media = google_service(library.media, provider)
+    media.config.update(IMAGE_PROVIDER=producer, IMAGE_ESTIMATE_AUD_CENTS='125')
+    preparer = BoardResourcePreparer(library, __import__('media_store').MediaStore(tmp_path / 'lesson'),
+        media.config, media_service=media, planner=planned('illustration', source, 'dog'))
+    selected = preparer(context(instruction), lambda *args: None, lambda: False)
+    assert selected[0]['generated_unreviewed']
+    assert len(provider.calls) == 1
+    assert media.store.list_jobs()[0]['image_provider']['provider'] == producer
+
+    preparer.config['IMAGE_PROVIDER'] = 'gemini' if producer == 'openai' else 'openai'
+    with pytest.raises(Exception, match='Select .* in Voice Settings'):
+        preparer(context(instruction), lambda *args: None, lambda: False)
+    assert len(provider.calls) == 1
+    assert len(media.store.list_jobs()) == 1
+
+
+def test_model_proposed_openai_source_requires_teacher_words():
+    assert BoardResourcePreparer._confirmed_source('Draw a dog', 'openai') is None
+    assert BoardResourcePreparer._confirmed_source('Use OpenAI to draw a dog', 'openai') == 'openai'
+
+
 @pytest.mark.parametrize(('override', 'with_provider', 'with_ledger', 'message'), [
-    ({'IMAGE_PROVIDER': 'openai'}, True, True, 'Select Google Gemini'),
+    ({'IMAGE_PROVIDER': 'unsupported'}, True, True, 'supported image producer'),
     ({'IMAGE_GENERATION_ENABLED': '0'}, True, True, 'Enable paid image requests'),
     ({}, False, True, 'Google image API key'),
-    ({'GOOGLE_IMAGE_MODEL': 'unsupported'}, True, True, 'supported Google model'),
-    ({'GOOGLE_IMAGE_SIZE': '2K'}, True, True, 'Choose 1K'),
-    ({'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS': '0'}, True, True, '1–50 AUD cents'),
-    ({'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS': '51'}, True, True, '1–50 AUD cents'),
+    ({'GOOGLE_IMAGE_MODEL': 'unsupported'}, True, True, 'supported image model'),
+    ({'GOOGLE_IMAGE_SIZE': 'invalid'}, True, True, 'supported image model'),
+    ({'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS': '0'}, True, True, '1–3000 AUD cents'),
+    ({'GOOGLE_IMAGE_ESTIMATE_1K_AUD_CENTS': '3001'}, True, True, '1–3000 AUD cents'),
     ({}, True, False, 'shared budget service'),
 ])
 def test_board_generation_setup_rejected_before_job_creation(tmp_path, override, with_provider, with_ledger, message):
@@ -422,7 +516,7 @@ def test_cancel_before_paid_dispatch_and_uncertain_dispatch_never_retry(tmp_path
     preparer = BoardResourcePreparer(library, __import__('media_store').MediaStore(tmp_path / 'lesson'),
         media.config, media_service=media, planner=planned('illustration'))
     calls = iter([False, False, True])
-    with pytest.raises(Exception, match='Cancelled before the Google attempt'):
+    with pytest.raises(Exception, match='Cancelled before the image attempt'):
         preparer(context('Draw a water cycle'), lambda *args: None, lambda: next(calls))
     assert not media.sync.reservations
     assert len(media.store.list_jobs()) == 1 and media.store.list_jobs()[0]['phase'] == 'awaiting_user'
