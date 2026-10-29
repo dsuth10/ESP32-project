@@ -149,10 +149,10 @@ def build_stylesheet(palette=None, *, pupil_scale=False):
     }}
     QLabel#boardLibraryHeading {{
         color: {t['primary']};
-        font-family: "{mono}";
-        font-size: 11px;
+        font-family: "{ui}";
+        font-size: 12px;
         font-weight: 700;
-        letter-spacing: 1px;
+        letter-spacing: 0;
     }}
     QListWidget#boardLibraryResults {{
         min-height: 120px;
@@ -723,13 +723,12 @@ def install_agent_panel(panel):
     if getattr(panel, 'progress', None):
         panel.progress.setObjectName('boardStatus')
         _repolish(panel.progress)
-    for label in panel.findChildren(QLabel):
-        text = label.text()
-        if text in {'Board assistant', 'BOARD ASSISTANT', 'Saved Board requests'}:
-            label.setObjectName('boardLibraryHeading')
-            if text == 'Board assistant':
-                label.setText('BOARD ASSISTANT')
-            _repolish(label)
+    heading = next((label for label in panel.findChildren(QLabel)
+                    if label.text() in {'Board assistant', 'BOARD ASSISTANT'}), None)
+    if heading is not None:
+        heading.setObjectName('boardLibraryHeading')
+        heading.setWordWrap(True)
+        _repolish(heading)
     for button in panel.findChildren(QPushButton):
         if button.text() == 'Search':
             button.setObjectName('boardPrimary')

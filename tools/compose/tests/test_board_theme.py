@@ -177,7 +177,7 @@ def test_agent_panel_settings_profile_and_library_dialogs_use_theme(tmp_path):
         assert panel.settings_status.objectName() == 'boardSettingsStatus'
         headings = [label.text() for label in panel.findChildren(QLabel)
                     if label.objectName() == 'boardLibraryHeading']
-        assert 'BOARD ASSISTANT' in headings
+        assert 'Board assistant' in headings
         seen = []
         original = QDialog.exec
 
