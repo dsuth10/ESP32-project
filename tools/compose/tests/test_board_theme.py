@@ -129,3 +129,108 @@ def test_swapping_tokens_rebuilds_the_sheet():
     assert '#12081a' in sheet
     assert '#f59e0b' in sheet
     assert original['primary_container'] not in sheet
+
+
+def test_remaining_surface_selectors_are_in_the_sheet():
+    sheet = board_theme.build_stylesheet()
+    for name in ('#boardShell', '#boardWorkspaces', '#boardCompanionHost',
+                 '#boardDialogLead', '#boardSettingsStatus', '#boardLibraryHeading',
+                 '#boardLibraryResults'):
+        assert name in sheet
+    assert board_theme.tokens()['warning'] == '#f59e0b'
+
+
+def test_qt_free_tokens_apply_to_tk():
+    import pytest
+    try:
+        import tkinter as tk
+    except ImportError:
+        pytest.skip('Native Tk unavailable')
+    from board_theme_tokens import TOKENS, apply_tk, style_tk_text
+    try:
+        root = tk.Tk()
+    except tk.TclError:
+        pytest.skip('Native Tk unavailable')
+    try:
+        apply_tk(root)
+        assert root.cget('bg') == TOKENS['background']
+        text = tk.Text(root)
+        style_tk_text(text)
+        assert text.cget('bg') == TOKENS['input_fill']
+        assert text.cget('fg') == TOKENS['on_surface']
+    finally:
+        root.destroy()
+
+
+def test_agent_panel_settings_profile_and_library_dialogs_use_theme(tmp_path):
+    from PySide6.QtWidgets import QDialog, QLabel, QPushButton
+    app = QApplication.instance() or QApplication([])
+    media = MediaStore(tmp_path / 'media')
+    store = BoardStore(tmp_path)
+    session = BoardSession(demo_model(media), store=store, image_resolver=image_resolver(media))
+    window = BoardCandidate(session, store=store, resolver=image_resolver(media))
+    panel = window.agent_panel
+    try:
+        assert panel.objectName() == 'boardLibraryPanel'
+        assert panel.send_button.objectName() == 'boardPrimary'
+        assert panel.results.objectName() == 'boardLibraryResults'
+        assert panel.settings_status.objectName() == 'boardSettingsStatus'
+        headings = [label.text() for label in panel.findChildren(QLabel)
+                    if label.objectName() == 'boardLibraryHeading']
+        assert 'BOARD ASSISTANT' in headings
+        seen = []
+        original = QDialog.exec
+
+        def capture(dialog):
+            seen.append(dialog)
+            board_theme.install_dialog(dialog)
+            assert dialog.objectName() == 'boardDialog'
+            return QDialog.DialogCode.Rejected
+
+        try:
+            QDialog.exec = capture
+            panel.show_settings()
+            panel.edit_profile()
+        finally:
+            QDialog.exec = original
+        titles = {dialog.windowTitle() for dialog in seen}
+        assert any('Board settings' in title for title in titles)
+        assert any('Teaching profile' in title for title in titles)
+        primaries = []
+        for dialog in seen:
+            primaries.extend(button.text() for button in dialog.findChildren(QPushButton)
+                             if button.objectName() == 'boardPrimary')
+        assert any('Voice Settings' in text for text in primaries)
+        assert any(text.replace('&', '') == 'Save' for text in primaries)
+    finally:
+        window.save_timer.stop(); window.property_timer.stop(); window.group_timer.stop()
+        window.session.close(); window.pupil.hide(); window.hide(); window.deleteLater()
+        app.processEvents()
+
+
+def test_unified_desktop_and_companion_host_use_theme(tmp_path):
+    from companion_host import CompanionHost
+    from unified_desktop import UnifiedDesktop
+    app = QApplication.instance() or QApplication([])
+    media = MediaStore(tmp_path / 'media')
+    store = BoardStore(tmp_path)
+    session = BoardSession(demo_model(media), store=store, image_resolver=image_resolver(media))
+    board = BoardCandidate(session, store=store, resolver=image_resolver(media))
+    host = CompanionHost(tmp_path / 'companion-data')
+    window = UnifiedDesktop(board, host)
+    try:
+        assert window.objectName() == 'boardShell'
+        assert window.tabs.objectName() == 'boardWorkspaces'
+        assert host.objectName() == 'boardCompanionHost'
+        assert host.notice.objectName() == 'boardNotice'
+        assert host.retry.objectName() == 'boardPrimary'
+        assert window.tabs.tabText(0) == 'Teaching Board'
+        assert window.tabs.tabText(1) == 'Voice companion'
+        assert 'voice companion' in host.notice.text().casefold()
+    finally:
+        window._microphone_timer.stop()
+        if not board.session._closed:
+            board.finish_close()
+        host.hide(); window.hide(); board.pupil.hide()
+        window.deleteLater(); host.deleteLater()
+        app.processEvents()

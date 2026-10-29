@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext
 
 from assistant_service import AssistantService
+from board_theme_tokens import style_tk_text
 
 
 class AssistantPanel(ttk.Frame):
@@ -35,9 +36,11 @@ class AssistantPanel(ttk.Frame):
 
         self.chat = scrolledtext.ScrolledText(self, wrap="word", state="disabled", height=12,
                                               font=("Segoe UI", 11))
+        style_tk_text(self.chat)
         self.chat.grid(row=2, column=0, sticky="nsew")
         ttk.Label(self, text="Your request (Ctrl+Enter to send)").grid(row=3, column=0, sticky="w", pady=(8, 0))
         self.prompt = scrolledtext.ScrolledText(self, wrap="word", height=4, font=("Segoe UI", 11))
+        style_tk_text(self.prompt)
         self.prompt.grid(row=4, column=0, sticky="ew", pady=(4, 5))
         self.prompt.bind("<Control-Return>", self._send_shortcut)
 

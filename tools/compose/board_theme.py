@@ -19,45 +19,12 @@ from PySide6.QtWidgets import (
     QStyleFactory, QVBoxLayout, QWidget,
 )
 
-FONT_DIR = Path(__file__).resolve().parent / 'board_theme_fonts'
+from board_theme_tokens import (
+    TOKENS, apply_tk, style_tk_canvas, style_tk_listbox, style_tk_menu,
+    style_tk_text, tokens as _token_copy,
+)
 
-# CompanionOS glassmorphism tokens from DESIGN.md, plus projector-safe solids.
-TOKENS = {
-    'background': '#0b1326',
-    'surface': '#0b1326',
-    'surface_dim': '#0b1326',
-    'surface_lowest': '#060e20',
-    'surface_low': '#131b2e',
-    'surface_container': '#171f33',
-    'surface_high': '#222a3d',
-    'surface_highest': '#2d3449',
-    'on_surface': '#dae2fd',
-    'on_surface_variant': '#bbc9cd',
-    'outline': '#859397',
-    'outline_variant': '#3c494c',
-    'primary': '#8aebff',
-    'primary_container': '#22d3ee',
-    'on_primary': '#00363e',
-    'on_primary_container': '#005763',
-    'secondary': '#cebdff',
-    'secondary_container': '#4f319c',
-    'on_secondary_container': '#bea8ff',
-    'tertiary': '#68f5b8',
-    'tertiary_container': '#46d89d',
-    'on_tertiary': '#003824',
-    'error': '#ffb4ab',
-    'error_container': '#93000a',
-    'on_error_container': '#ffdad6',
-    'freeze': '#dc2626',
-    'freeze_fill': '#93000a',
-    'live': '#68f5b8',
-    'live_fill': '#005a3d',
-    'page': '#ffffff',
-    'viewport': '#131b2e',
-    'selection': '#22d3ee',
-    'input_fill': '#060e20',
-    'placeholder': '#859397',
-}
+FONT_DIR = Path(__file__).resolve().parent / 'board_theme_fonts'
 
 _UI_FAMILY = 'Segoe UI'
 _MONO_FAMILY = 'Consolas'
@@ -68,8 +35,8 @@ _FALLBACK_MONO = ('JetBrains Mono', 'Cascadia Mono', 'Consolas', 'DejaVu Sans Mo
 
 
 def tokens():
-    """Copy of the active colour tokens."""
-    return dict(TOKENS)
+    """Copy of the active colour tokens (same object family as board_theme_tokens)."""
+    return _token_copy()
 
 
 def color(name):
@@ -136,8 +103,64 @@ def build_stylesheet(palette=None, *, pupil_scale=False):
         color: {t['on_surface']};
         font-size: {body};
     }}
-    QMainWindow, QDialog, QTabWidget, QScrollArea, QSplitter {{
+    QMainWindow, QMainWindow#boardShell, QDialog, QTabWidget, QScrollArea, QSplitter {{
         background-color: {t['background']};
+    }}
+    QMainWindow#boardShell QStatusBar {{
+        background-color: {t['surface_lowest']};
+        color: {t['on_surface_variant']};
+        font-size: 12px;
+        padding: 4px 10px;
+    }}
+    QTabWidget#boardWorkspaces::pane {{
+        border: 1px solid {t['outline_variant']};
+        border-radius: 12px;
+        background-color: {t['background']};
+        top: -1px;
+        padding: 6px;
+    }}
+    QTabWidget#boardWorkspaces QTabBar::tab {{
+        min-width: 150px;
+        padding: 10px 18px;
+        margin-right: 6px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }}
+    QWidget#boardCompanionHost {{
+        background-color: {t['background']};
+    }}
+    QWidget#boardCompanionHost QLabel#boardNotice {{
+        font-size: 16px;
+        font-weight: 600;
+        color: {t['on_surface']};
+        background-color: {t['surface_low']};
+        border: 1px solid {t['outline_variant']};
+        border-radius: 12px;
+        padding: 24px;
+        letter-spacing: 0;
+        font-family: "{ui}";
+    }}
+    QLabel#boardDialogLead, QLabel#boardSettingsStatus {{
+        color: {t['on_surface_variant']};
+        background-color: {t['surface_container']};
+        border: 1px solid {t['outline_variant']};
+        border-radius: 8px;
+        padding: 10px 12px;
+    }}
+    QLabel#boardLibraryHeading {{
+        color: {t['primary']};
+        font-family: "{mono}";
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }}
+    QListWidget#boardLibraryResults {{
+        min-height: 120px;
+        border-radius: 10px;
+        padding: 4px;
+    }}
+    QWidget#boardLibraryPanel {{
+        background-color: transparent;
     }}
     QLabel {{
         background: transparent;
@@ -408,8 +431,14 @@ def build_stylesheet(palette=None, *, pupil_scale=False):
         border: none;
         padding: 4px;
     }}
-    QMessageBox {{
+    QMessageBox, QInputDialog {{
         background-color: {t['surface_low']};
+    }}
+    QDialogButtonBox {{
+        background: transparent;
+    }}
+    QFormLayout QLabel, QWidget#boardDialog QLabel {{
+        background: transparent;
     }}
     QToolTip {{
         background-color: {t['surface_high']};
@@ -666,12 +695,80 @@ def install_dialog(dialog):
     apply_application()
     dialog.setObjectName('boardDialog')
     dialog.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+    labels = [label for label in dialog.findChildren(QLabel) if label.text().strip()]
+    if labels and not labels[0].objectName():
+        labels[0].setObjectName('boardDialogLead')
+        _repolish(labels[0])
     for button in dialog.findChildren(QPushButton):
-        text = button.text().casefold()
-        if 'insert' in text or text in {'save', 'present this page', 'use image and present'}:
+        text = button.text().casefold().replace('&', '')
+        if ('insert' in text or 'voice settings' in text
+                or text in {'save', 'present this page', 'use image and present'}):
             button.setObjectName('boardPrimary')
             _repolish(button)
     return dialog
+
+
+def install_agent_panel(panel):
+    """Mark Board assistant / reusable-library controls. No new actions."""
+    apply_application()
+    panel.setObjectName('boardLibraryPanel')
+    if getattr(panel, 'send_button', None):
+        panel.send_button.setObjectName('boardPrimary')
+        _repolish(panel.send_button)
+    if getattr(panel, 'results', None):
+        panel.results.setObjectName('boardLibraryResults')
+    if getattr(panel, 'settings_status', None):
+        panel.settings_status.setObjectName('boardSettingsStatus')
+        _repolish(panel.settings_status)
+    if getattr(panel, 'progress', None):
+        panel.progress.setObjectName('boardStatus')
+        _repolish(panel.progress)
+    for label in panel.findChildren(QLabel):
+        text = label.text()
+        if text in {'Board assistant', 'BOARD ASSISTANT', 'Saved Board requests'}:
+            label.setObjectName('boardLibraryHeading')
+            if text == 'Board assistant':
+                label.setText('BOARD ASSISTANT')
+            _repolish(label)
+    for button in panel.findChildren(QPushButton):
+        if button.text() == 'Search':
+            button.setObjectName('boardPrimary')
+            _repolish(button)
+            break
+    return panel
+
+
+def install_companion_host(host):
+    """Style the Voice companion Qt host pane (native Tk child stays in its process)."""
+    apply_application()
+    if host is None:
+        return host
+    host.setObjectName('boardCompanionHost')
+    host.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+    notice = getattr(host, 'notice', None)
+    if notice is not None:
+        notice.setObjectName('boardNotice')
+        notice.setWordWrap(True)
+        _repolish(notice)
+    retry = getattr(host, 'retry', None)
+    if retry is not None:
+        retry.setObjectName('boardPrimary')
+        _repolish(retry)
+    return host
+
+
+def install_unified_desktop(window):
+    """Style the shared teacher shell tabs, menu and status bar."""
+    apply_application()
+    window.setObjectName('boardShell')
+    window.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+    if getattr(window, 'tabs', None) is not None:
+        window.tabs.setObjectName('boardWorkspaces')
+    install_companion_host(getattr(window, 'companion', None))
+    _repolish(window)
+    if getattr(window, 'tabs', None) is not None:
+        _repolish(window.tabs)
+    return window
 
 
 def sync(candidate):

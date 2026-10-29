@@ -6,6 +6,8 @@ import threading
 import tkinter as tk
 from tkinter import ttk, scrolledtext
 
+from board_theme_tokens import style_tk_text
+
 
 class HermesPanel(ttk.Frame):
     def __init__(self, parent, service, post_ui, queue_text, local_only, settings_saving, enabled,
@@ -48,10 +50,12 @@ class HermesPanel(ttk.Frame):
 
         ttk.Label(self, text="Teacher task (required)").grid(row=2, column=0, sticky="w", pady=(4, 0))
         self.task = scrolledtext.ScrolledText(self, wrap="word", height=4, font=("Segoe UI", 10))
+        style_tk_text(self.task)
         self.task.grid(row=3, column=0, sticky="ew", pady=(3, 5))
         ttk.Label(self, text="Selected context (optional; review before sending; History is never copied)").grid(
             row=4, column=0, sticky="nw", pady=(4, 0))
         self.context = scrolledtext.ScrolledText(self, wrap="word", height=3, font=("Segoe UI", 10))
+        style_tk_text(self.context)
         self.context.grid(row=5, column=0, sticky="ew", pady=(3, 5))
 
         controls = ttk.Frame(self)
@@ -97,6 +101,7 @@ class HermesPanel(ttk.Frame):
         self.queue_button = ttk.Button(actions, text="Queue result for Paste Ready", command=self.queue_result, state="disabled")
         self.queue_button.grid(row=1, column=1, sticky="ew", padx=2, pady=2)
         self.details = scrolledtext.ScrolledText(detail_frame, wrap="word", height=12, state="disabled", font=("Segoe UI", 9))
+        style_tk_text(self.details)
         self.details.grid(row=1, column=0, sticky="nsew", pady=(4, 0))
 
     def set_service(self, service):
