@@ -99,6 +99,11 @@ class CompanionHost(QWidget):
         self.retry = QPushButton('Start voice companion')
         self.retry.clicked.connect(self.start)
         self._layout.addWidget(self.retry)
+        try:
+            import board_theme
+            board_theme.install_companion_host(self)
+        except Exception:
+            pass
         self._timer = QTimer(self)
         self._timer.setInterval(40)
         self._timer.timeout.connect(self._poll)

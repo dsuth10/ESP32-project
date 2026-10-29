@@ -50,10 +50,13 @@ class ImagePicker(QDialog):
             label.setTextFormat(Qt.TextFormat.PlainText)
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Cancel)
         self.insert_button = buttons.addButton('Insert on this page', QDialogButtonBox.ButtonRole.AcceptRole)
+        self.insert_button.setObjectName('boardPrimary')
         self.insert_button.setEnabled(False); buttons.accepted.connect(self.accept); buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
         self.tabs.currentChanged.connect(self.clear_choice)
         self.load_library(library_root)
+        import board_theme
+        board_theme.install_dialog(self)
 
     def clear_choice(self, *_):
         self.prepared = None; self.insert_button.setEnabled(False)

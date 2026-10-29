@@ -6,6 +6,7 @@ from companion_settings import save_settings
 from image_provider_config import (PROVIDER_LABELS, OPENAI_MODEL, GOOGLE_MODEL,
                                    selected_provider, selected_model, image_readiness, image_snapshot, uncapped_images)
 from board_resource_policy import board_image_readiness
+from board_theme_tokens import TOKENS, style_tk_canvas
 
 
 class SettingsPanel(ttk.Frame):
@@ -19,7 +20,8 @@ class SettingsPanel(ttk.Frame):
         self._checking = False
         self._image_revision = 0
         self.values = {}
-        canvas = tk.Canvas(self, highlightthickness=0)
+        canvas = tk.Canvas(self, highlightthickness=0, bg=TOKENS['background'])
+        style_tk_canvas(canvas)
         scrollbar = ttk.Scrollbar(self, orient='vertical', command=canvas.yview)
         canvas.configure(yscrollcommand=scrollbar.set)
         canvas.pack(side='left', fill='both', expand=True)

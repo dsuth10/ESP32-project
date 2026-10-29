@@ -87,9 +87,12 @@ def test_pixel_sized_wrapped_text(candidate):
 
 
 def test_fixed_page_is_white_clipped_and_distinct_from_viewport(candidate):
+    from board_theme import tokens
+    palette = tokens()
     for canvas in (candidate.teacher_canvas, candidate.pupil_canvas):
-        assert canvas.scene().backgroundBrush().color().name() == '#dde2e7'
-        assert canvas.page_item.brush().color().name() == '#ffffff'
+        assert canvas.scene().backgroundBrush().color().name() == palette['viewport']
+        assert canvas.page_item.brush().color().name() == palette['page']
+        assert palette['page'] != palette['viewport']
         assert canvas.page_item.rect().width() / canvas.page_item.rect().height() == pytest.approx(16/9)
         assert canvas.page_item.flags() & QGraphicsItem.GraphicsItemFlag.ItemClipsChildrenToShape
         assert all(item.parentItem() is not None for item in canvas.scene().items() if item.data(0))

@@ -18,6 +18,7 @@ from board_candidate import (BoardCandidate, BoardModel, BoardSession, BoardStor
     validate_candidate_storage, image_resolver, demo_model, load_board_settings)
 from companion_host import CompanionHost
 from desktop_instance import DesktopInstance
+import board_theme
 
 
 def feature_data_root():
@@ -73,6 +74,7 @@ class UnifiedDesktop(QMainWindow):
         self._microphone_timer = QTimer(self)
         self._microphone_timer.timeout.connect(self._update_microphone_state)
         self._microphone_timer.start(150)
+        board_theme.install_unified_desktop(self)
 
     def show_companion(self):
         if self._close_pending:

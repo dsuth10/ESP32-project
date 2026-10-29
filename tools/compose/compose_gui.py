@@ -50,6 +50,11 @@ from settings_panel import SettingsPanel
 from media_voice_bridge import VoiceBridge
 from hermes_panel import HermesPanel
 from hermes_service import HermesService, HermesServiceError
+from board_theme_tokens import TOKENS, apply_tk, style_tk_text
+
+
+def _theme(name):
+    return TOKENS[name]
 
 
 def truthy(value):
@@ -75,7 +80,7 @@ class ComposeApp:
         self.root.title("🎙️ ESP32 Voice Compose & Dictate Companion")
         self.root.geometry("920x740")
         self.root.minsize(720, 640)
-        self.root.configure(bg="#0B0F19")
+        self.root.configure(bg=_theme('background'))
         if not embedded:
             self.root.lift()
             self.root.attributes("-topmost", True)
@@ -187,17 +192,19 @@ class ComposeApp:
         self.root.after(350, self._restore_queued_image)
 
     def _build_ui(self):
-        status = tk.Frame(self.root, bg="#111827")
+        apply_tk(self.root)
+        status = tk.Frame(self.root, bg=_theme('surface_low'))
         status.pack(fill="x", padx=8, pady=(8, 0))
-        self.global_status_dot = tk.Label(status, text="●", bg="#111827", fg="#10B981", padx=8)
+        self.global_status_dot = tk.Label(status, text="●", bg=_theme('surface_low'), fg=_theme('tertiary'), padx=8)
         self.global_status_dot.pack(side="left", anchor="n", pady=6)
-        self.global_status_lbl = tk.Label(status, text="READY: Waiting for an action", bg="#111827",
-                                          fg="#F8FAFC", justify="left", anchor="w", wraplength=650, pady=6)
+        self.global_status_lbl = tk.Label(status, text="READY: Waiting for an action", bg=_theme('surface_low'),
+                                          fg=_theme('on_surface'), justify="left", anchor="w", wraplength=650, pady=6)
         self.global_status_lbl.pack(side="left", fill="x", expand=True)
         self.root.bind("<Configure>", self._resize_global_status, add="+")
         self.tabs = ttk.Notebook(self.root)
         self.tabs.pack(fill="both", expand=True, padx=8, pady=8)
-        self.writing_tab = tk.Frame(self.tabs, bg="#0B0F19")
+        apply_tk(self.root, self.tabs)
+        self.writing_tab = tk.Frame(self.tabs, bg=_theme('background'))
         self.tabs.add(self.writing_tab, text="Compose & Dictate")
         self.assistant_tab = ttk.Frame(self.tabs)
         self.tabs.add(self.assistant_tab, text="Ask your companion")
@@ -267,47 +274,53 @@ class ComposeApp:
 
         parent = self.writing_tab
         # Header Frame
-        hdr = tk.Frame(parent, bg="#111827", padx=16, pady=12, highlightthickness=1, highlightbackground="#374151")
+        hdr = tk.Frame(parent, bg=_theme('surface_low'), padx=16, pady=12, highlightthickness=1,
+                       highlightbackground=_theme('outline_variant'))
         hdr.pack(fill="x", padx=14, pady=(14, 8))
 
-        title_lbl = tk.Label(hdr, text="🎙️ ESP32 Voice Compose & Dictate", font=("Segoe UI", 13, "bold"), fg="#F9FAFB", bg="#111827")
+        title_lbl = tk.Label(hdr, text="🎙️ ESP32 Voice Compose & Dictate", font=("Segoe UI", 13, "bold"),
+                             fg=_theme('on_surface'), bg=_theme('surface_low'))
         title_lbl.pack(anchor="w")
 
         sub_text = f"Hardware Satellite Companion  •  Mic: {self.audio_capture.device_name}  •  WASAPI Native"
-        sub_lbl = tk.Label(hdr, text=sub_text, font=("Segoe UI", 8), fg="#9CA3AF", bg="#111827")
+        sub_lbl = tk.Label(hdr, text=sub_text, font=("Segoe UI", 8), fg=_theme('on_surface_variant'),
+                           bg=_theme('surface_low'))
         sub_lbl.pack(anchor="w", pady=(2, 0))
 
         self.receiver_lbl = tk.Label(
             hdr,
             text="Voice receiver: starting…",
             font=("Segoe UI", 8),
-            fg="#FBBF24",
-            bg="#111827",
+            fg=_theme('warning'),
+            bg=_theme('surface_low'),
         )
         self.receiver_lbl.pack(anchor="w", pady=(4, 0))
 
         # Status Bar Card
-        status_card = tk.Frame(parent, bg="#1F2937", padx=14, pady=10, highlightthickness=1, highlightbackground="#374151")
+        status_card = tk.Frame(parent, bg=_theme('surface_high'), padx=14, pady=10, highlightthickness=1,
+                               highlightbackground=_theme('outline_variant'))
         status_card.pack(fill="x", padx=14, pady=6)
 
-        self.status_dot = tk.Label(status_card, text="●", font=("Segoe UI", 14), fg="#10B981", bg="#1F2937")
+        self.status_dot = tk.Label(status_card, text="●", font=("Segoe UI", 14), fg=_theme('tertiary'),
+                                   bg=_theme('surface_high'))
         self.status_dot.pack(side="left", padx=(0, 8))
 
-        self.status_lbl = tk.Label(status_card, text="READY: Waiting for button press...", font=("Segoe UI", 10, "bold"), fg="#F9FAFB", bg="#1F2937")
+        self.status_lbl = tk.Label(status_card, text="READY: Waiting for button press...", font=("Segoe UI", 10, "bold"),
+                                   fg=_theme('on_surface'), bg=_theme('surface_high'))
         self.status_lbl.pack(side="left")
 
         # Quick Test Button Bar
-        btn_frame = tk.Frame(parent, bg="#0B0F19")
+        btn_frame = tk.Frame(parent, bg=_theme('background'))
         btn_frame.pack(fill="x", padx=14, pady=8)
 
         self.btn_compose = tk.Button(
             btn_frame,
             text="🎙️ COMPOSE (Click to Speak)",
             font=("Segoe UI", 10, "bold"),
-            bg="#D97706",
-            fg="#FFFFFF",
-            activebackground="#B45309",
-            activeforeground="#FFFFFF",
+            bg=_theme('warning'),
+            fg=_theme('on_primary'),
+            activebackground=_theme('warning'),
+            activeforeground=_theme('on_primary'),
             relief="flat",
             padx=14,
             pady=8,
@@ -320,10 +333,10 @@ class ComposeApp:
             btn_frame,
             text="📝 DICTATE (Click to Speak)",
             font=("Segoe UI", 10, "bold"),
-            bg="#0891B2",
-            fg="#FFFFFF",
-            activebackground="#0E7490",
-            activeforeground="#FFFFFF",
+            bg=_theme('primary_container'),
+            fg=_theme('on_primary'),
+            activebackground=_theme('primary_container'),
+            activeforeground=_theme('on_primary'),
             relief="flat",
             padx=14,
             pady=8,
@@ -336,10 +349,10 @@ class ComposeApp:
             btn_frame,
             text="📋 PASTE READY",
             font=("Segoe UI", 10, "bold"),
-            bg="#059669",
-            fg="#FFFFFF",
-            activebackground="#047857",
-            activeforeground="#FFFFFF",
+            bg=_theme('tertiary_container'),
+            fg=_theme('on_tertiary'),
+            activebackground=_theme('tertiary_container'),
+            activeforeground=_theme('on_tertiary'),
             relief="flat",
             padx=14,
             pady=8,
@@ -349,7 +362,8 @@ class ComposeApp:
         self.btn_paste.pack(side="left", expand=True, fill="x", padx=(6, 0))
 
         # Instructions / Shortcut Guide
-        guide_frame = tk.Frame(parent, bg="#111827", padx=12, pady=8, highlightthickness=1, highlightbackground="#1F2937")
+        guide_frame = tk.Frame(parent, bg=_theme('surface_low'), padx=12, pady=8, highlightthickness=1,
+                               highlightbackground=_theme('surface_high'))
         guide_frame.pack(fill="x", padx=14, pady=4)
 
         guide_txt = (
@@ -357,25 +371,28 @@ class ComposeApp:
             "F13 Compose · F14 Dictate · F15 Paste Ready · F16 Images · F17 Library.\n"
             "Fallback: Ctrl+Alt+Shift with F9 / F10 / F11 / F8 / F7 respectively."
         )
-        tk.Label(guide_frame, text=guide_txt, font=("Segoe UI", 8), fg="#9CA3AF", bg="#111827", justify="left", wraplength=650).pack(anchor="w")
+        tk.Label(guide_frame, text=guide_txt, font=("Segoe UI", 8), fg=_theme('on_surface_variant'),
+                 bg=_theme('surface_low'), justify="left", wraplength=650).pack(anchor="w")
 
         # Live Event Log
-        log_header = tk.Label(parent, text="LIVE EVENT & TRANSCRIPT LOG:", font=("Segoe UI", 9, "bold"), fg="#9CA3AF", bg="#0B0F19")
+        log_header = tk.Label(parent, text="LIVE EVENT & TRANSCRIPT LOG:", font=("Segoe UI", 9, "bold"),
+                              fg=_theme('on_surface_variant'), bg=_theme('background'))
         log_header.pack(anchor="w", padx=16, pady=(10, 2))
 
         self.log_box = scrolledtext.ScrolledText(
             parent,
-            bg="#030712",
-            fg="#E5E7EB",
+            bg=_theme('input_fill'),
+            fg=_theme('on_surface'),
             font=("Consolas", 9),
-            insertbackground="#FFFFFF",
+            insertbackground=_theme('on_surface'),
             relief="flat",
             highlightthickness=1,
-            highlightbackground="#374151",
+            highlightbackground=_theme('outline_variant'),
             padx=10,
             pady=8,
             height=8,
         )
+        style_tk_text(self.log_box)
         self.log_box.pack(fill="both", expand=True, padx=14, pady=(0, 14))
 
     def log(self, text: str, content: bool = False):
@@ -419,7 +436,7 @@ class ComposeApp:
         if getattr(self, "pending_media", None):
             raise ValueError("Paste or clear the queued image before queueing text.")
         self.pending_ready_payload = text
-        self.set_status("READY: Focus your document, then press PASTE READY", "#F59E0B")
+        self.set_status("READY: Focus your document, then press PASTE READY", _theme('warning'))
 
     def _toggle_media_recording(self):
         if self.is_recording:
@@ -495,7 +512,7 @@ class ComposeApp:
         self.media_store.update_job(job_id, "insert_queued", version_id=version["version_id"])
         self.pending_media, self.pending_media_job = version, job_id
         self.media_panel.refresh_jobs()
-        self.set_status("IMAGE READY: Focus Word or OneNote, then press PASTE READY", "#F59E0B")
+        self.set_status("IMAGE READY: Focus Word or OneNote, then press PASTE READY", _theme('warning'))
         if target and target.get('executable') == 'WINWORD.EXE':
             self._insert_ready_image(target)
 
@@ -507,15 +524,15 @@ class ComposeApp:
               if job['kind']=='insert' and job['phase']=='insert_queued']
         if not jobs:return
         if len(jobs)!=1:
-            self._report_image_status('Multiple saved image queues need review in the library. Nothing was inserted.', '#F59E0B')
+            self._report_image_status('Multiple saved image queues need review in the library. Nothing was inserted.', _theme('warning'))
             return
         job=jobs[0];version=self.media_store.get_version(job.get('version_id'))
         if not version or not self.media_store.blob_path(version['sha256']).is_file():
-            self._report_image_status('The saved queued image is unavailable locally. Restore it before pasting.', '#F59E0B')
+            self._report_image_status('The saved queued image is unavailable locally. Restore it before pasting.', _theme('warning'))
             return
         self.pending_media,self.pending_media_job=version,job['job_id']
         self.media_panel.show_version(version)
-        self._report_image_status('IMAGE READY (restored): Focus Word or OneNote, then press PASTE READY.', '#F59E0B')
+        self._report_image_status('IMAGE READY (restored): Focus Word or OneNote, then press PASTE READY.', _theme('warning'))
 
     def _clear_media_queue(self):
         if self.pending_media_job:
@@ -530,10 +547,10 @@ class ComposeApp:
         try:
             target = capture_target(allow_onenote_keyboard_paste=True) if explicit_paste else capture_target()
             if expected_target and any(target.get(key) != expected_target.get(key) for key in ('hwnd','pid','executable','document','start','end')):
-                self._report_image_status("Target changed. Image retained in READY; select the destination and press PASTE READY.", "#F59E0B")
+                self._report_image_status("Target changed. Image retained in READY; select the destination and press PASTE READY.", _theme('warning'))
                 return
         except Exception as error:
-            self._report_image_status(str(error) if isinstance(error, ValueError) else "Image target unavailable. Image retained in READY.", "#F59E0B")
+            self._report_image_status(str(error) if isinstance(error, ValueError) else "Image target unavailable. Image retained in READY.", _theme('warning'))
             return
         # All checks before dispatch can safely retain the queue. From this point,
         # an exception may follow an insertion and must not cause duplicate retries.
@@ -545,10 +562,10 @@ class ComposeApp:
             self._report_image_status(receipt["message"])
         except Exception:
             self.media_store.update_job(job_id, "needs_recovery", error="Check the target document before retrying; insertion outcome may be uncertain.")
-            self._report_image_status("Check the target document before retrying; image attempt needs recovery.", "#F59E0B")
+            self._report_image_status("Check the target document before retrying; image attempt needs recovery.", _theme('warning'))
         self._post_ui(self.media_panel.refresh_jobs)
 
-    def _report_image_status(self, message, colour="#10B981"):
+    def _report_image_status(self, message, colour=None):
         self.set_status(message, colour)
         self._post_ui(self.media_panel.tell, message)
 
@@ -730,8 +747,8 @@ class ComposeApp:
         self.log_box.insert("end", msg)
         self.log_box.see("end")
 
-    def set_status(self, text: str, dot_color: str = "#10B981"):
-        self._ui_events.put((self._update_status, (text, dot_color)))
+    def set_status(self, text: str, dot_color: str = None):
+        self._ui_events.put((self._update_status, (text, dot_color or _theme('tertiary'))))
 
     def _update_status(self, text: str, dot_color: str):
         self.status_lbl.config(text=text)
@@ -776,13 +793,13 @@ class ComposeApp:
         if FocusTracker.is_internal_snapshot(snap):
             target = getattr(self, "_last_external_snap", None)
             if not target or not FocusTracker.restore_focus(target) or not FocusTracker.is_focus_matched(target):
-                self.set_status("READY: Focus your document, then press PASTE READY", "#F59E0B")
+                self.set_status("READY: Focus your document, then press PASTE READY", _theme('warning'))
                 return
         if ClipboardManager.inject_paste(payload, restore_delay=self.restore_delay):
             self.pending_ready_payload = None
-            self.set_status("Paste shortcut sent", "#10B981")
+            self.set_status("Paste shortcut sent", _theme('tertiary'))
         else:
-            self.set_status("Paste failed; text retained in READY", "#EF4444")
+            self.set_status("Paste failed; text retained in READY", _theme('error'))
 
     def _deliver_result(self, text, focus_snap):
         self.pending_ready_payload = text
@@ -790,10 +807,10 @@ class ComposeApp:
             if ClipboardManager.inject_paste(text, restore_delay=self.restore_delay):
                 self.pending_ready_payload = None
                 self.log("Paste shortcut sent to the original document.")
-                self.set_status("COMPLETED: Paste shortcut sent", "#10B981")
+                self.set_status("COMPLETED: Paste shortcut sent", _theme('tertiary'))
                 return
         self.log("Text retained in READY. Focus your document and press PASTE READY.")
-        self.set_status("READY: Focus document, then press PASTE READY", "#F59E0B")
+        self.set_status("READY: Focus document, then press PASTE READY", _theme('warning'))
 
     def _drain_ui_events(self):
         for _ in range(100):
@@ -805,7 +822,7 @@ class ComposeApp:
                 callback(*args)
             except Exception:
                 logging.exception("Companion UI action failed")
-                self._update_status("Action failed; see companion.log", "#EF4444")
+                self._update_status("Action failed; see companion.log", _theme('error'))
         if not self._stop_poller:
             self.root.after(20, self._drain_ui_events)
 
@@ -815,16 +832,16 @@ class ComposeApp:
         self._receiver_watch_ticks += 1
         if self.receiver.is_listening():
             note = "Closing this window stops it." if self.receiver.owns_process else "Already running; closing this window leaves it running."
-            self.receiver_lbl.config(text=f"Voice receiver: running on port {self.receiver.port}. {note}", fg="#34D399")
+            self.receiver_lbl.config(text=f"Voice receiver: running on port {self.receiver.port}. {note}", fg=_theme('tertiary'))
             return
         if self.receiver.exited():
-            self.receiver_lbl.config(text="Voice receiver stopped. See receiver.log", fg="#F87171")
+            self.receiver_lbl.config(text="Voice receiver stopped. See receiver.log", fg=_theme('error'))
             self.log("Voice receiver exited. See tools/compose/receiver.log")
             return
         if self._receiver_watch_ticks < 60:
             self.root.after(1000, self._watch_receiver)
             return
-        self.receiver_lbl.config(text="Voice receiver is still starting. See receiver.log", fg="#FBBF24")
+        self.receiver_lbl.config(text="Voice receiver is still starting. See receiver.log", fg=_theme('warning'))
 
     def close(self):
         if self._settings_saving():
@@ -859,14 +876,14 @@ class ComposeApp:
         if self.is_recording or self._busy or self._settings_saving() or getattr(getattr(self,'media_panel',None),'_busy',False):
             return
         if getattr(self,'pending_ready_payload',None) or getattr(self,'pending_media',None):
-            self.set_status('Paste or clear the queued item before recording another request.', '#F59E0B')
+            self.set_status('Paste or clear the queued item before recording another request.', _theme('warning'))
             return
         if not self.audio_capture.start_recording():
             reason = getattr(self.audio_capture, 'last_error', '')
             if not isinstance(reason, str) or not reason.strip():
                 reason = 'Check Windows microphone permissions and device selection.'
             self.log('Microphone could not open. ' + reason)
-            self.set_status('Microphone unavailable: ' + reason, "#EF4444")
+            self.set_status('Microphone unavailable: ' + reason, _theme('error'))
             return
         self.is_recording = True
         self.recording_mode = mode
@@ -902,14 +919,14 @@ class ComposeApp:
                 self.log(f"📋 Context captured from document ({len(self._target_selected_text)} chars): \"{preview}\"", content=True)
             else:
                 self.log("📋 Context: No text selected in document.")
-            self.set_status("RECORDING (Compose)... Speak prompt, click again to write!", "#F59E0B")
-            self.btn_compose.config(text="🛑 FINISH RECORDING", bg="#DC2626")
+            self.set_status("RECORDING (Compose)... Speak prompt, click again to write!", _theme('warning'))
+            self.btn_compose.config(text="🛑 FINISH RECORDING", bg=_theme('freeze'), fg=_theme('on_error_container'))
             self.log(">>> RECORDING STARTED (Compose) <<< Speak your instruction into your microphone...")
         elif mode == "media":
-            self.set_status("RECORDING (Media request)... Speak, then finish recording.", "#06B6D4")
+            self.set_status("RECORDING (Media request)... Speak, then finish recording.", _theme('primary_container'))
         else:
-            self.set_status("RECORDING (Dictate)... Speak text, click again to paste!", "#06B6D4")
-            self.btn_dictate.config(text="🛑 FINISH RECORDING", bg="#DC2626")
+            self.set_status("RECORDING (Dictate)... Speak text, click again to paste!", _theme('primary_container'))
+            self.btn_dictate.config(text="🛑 FINISH RECORDING", bg=_theme('freeze'), fg=_theme('on_error_container'))
             self.log(">>> RECORDING STARTED (Dictate) <<< Speak verbatim text into your microphone...")
 
     def stop_recording_flow(self):
@@ -920,15 +937,15 @@ class ComposeApp:
             self.root.after_cancel(self._recording_timer)
             self._recording_timer = None
 
-        self.btn_compose.config(text="🎙️ COMPOSE (Click to Speak)", bg="#D97706")
-        self.btn_dictate.config(text="📝 DICTATE (Click to Speak)", bg="#0891B2")
+        self.btn_compose.config(text="🎙️ COMPOSE (Click to Speak)", bg=_theme('warning'), fg=_theme('on_primary'))
+        self.btn_dictate.config(text="📝 DICTATE (Click to Speak)", bg=_theme('primary_container'), fg=_theme('on_primary'))
 
         wav_bytes, dur, rms = self.audio_capture.stop_recording()
         self.log(f"Recording stopped. Duration: {dur:.2f}s | RMS: {rms:.1f} | Captured {len(wav_bytes)} bytes")
 
         if dur < 0.20:
             self.log("Recording too short (<0.2s), dropped.")
-            self.set_status("READY: Waiting for button press...", "#10B981")
+            self.set_status("READY: Waiting for button press...", _theme('tertiary'))
             return
 
         mode = self.recording_mode
@@ -962,13 +979,13 @@ class ComposeApp:
     def _process_pipeline_worker(self, mode: str, wav_bytes: bytes, focus_snap: dict | None, selected_text: str):
         transcript = ""
         try:
-            self.set_status("TRANSCRIBING: Sending speech to Whisper...", "#8B5CF6")
+            self.set_status("TRANSCRIBING: Sending speech to Whisper...", _theme('secondary'))
             self.log("Transcribing audio via Speech Pipeline...")
             transcript, stt_prov, stt_lat = self.speech_pipeline.transcribe(wav_bytes)
 
             if not transcript.strip():
                 self.log("⚠️ No speech detected in recording.")
-                self.set_status("No speech detected", "#EF4444")
+                self.set_status("No speech detected", _theme('error'))
                 return
 
             self.log(f"Transcript ({stt_prov}, {stt_lat:.2f}s): \"{transcript}\"", content=True)
@@ -982,15 +999,15 @@ class ComposeApp:
                 web_context = ""
                 grounding = getattr(self, "web_grounding", None)
                 if grounding is not None:
-                    self.set_status("ROUTING: Checking if live web info is needed...", "#8B5CF6")
+                    self.set_status("ROUTING: Checking if live web info is needed...", _theme('secondary'))
                     web = grounding.fetch_context(
                         transcript, selected_text, local_only=self.local_only,
-                        on_status=lambda msg: self.set_status(f"SEARCHING: {msg}", "#3B82F6"),
+                        on_status=lambda msg: self.set_status(f"SEARCHING: {msg}", _theme('primary_container')),
                     )
                     self.log(web.summary())
                     web_context = web.context
 
-                self.set_status("WRITING: Synthesizing response with LLM...", "#8B5CF6")
+                self.set_status("WRITING: Synthesizing response with LLM...", _theme('secondary'))
                 self.log("Building prompt and generating response with LLM...")
                 messages = build_compose_messages(transcript, selected_text, web_context)
                 reply, llm_prov, llm_lat, parts = self.llm_pipeline.generate(messages, temperature=0.3)
@@ -998,7 +1015,7 @@ class ComposeApp:
 
                 if not reply.strip():
                     self.log("⚠️ LLM returned empty reply.")
-                    self.set_status("LLM returned empty reply", "#EF4444")
+                    self.set_status("LLM returned empty reply", _theme('error'))
                     return
 
                 self.log(f"Generated text ({llm_prov}, {llm_lat:.2f}s, {len(reply)} chars):")
@@ -1008,7 +1025,7 @@ class ComposeApp:
                 self._ui_events.put((self._deliver_result, (reply, focus_snap)))
 
             else:  # Dictate
-                self.set_status("CLEANING: Polishing verbatim text...", "#8B5CF6")
+                self.set_status("CLEANING: Polishing verbatim text...", _theme('secondary'))
                 self.log("Running Grammar Guard and formatting dictate output...")
                 messages = build_dictate_messages(transcript)
                 llm_prov = "original transcript"
@@ -1027,7 +1044,7 @@ class ComposeApp:
         except Exception as e:
             self._record_history(mode, transcript, "Writing could not complete.", status="failed")
             self.log(f"Pipeline failed ({type(e).__name__}). Check the microphone and processing provider.")
-            self.set_status("Writing failed; check microphone and processing provider", "#EF4444")
+            self.set_status("Writing failed; check microphone and processing provider", _theme('error'))
         finally:
             self._ui_events.put((self._pipeline_finished, ()))
 
