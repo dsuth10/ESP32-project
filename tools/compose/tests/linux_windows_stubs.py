@@ -42,6 +42,7 @@ def _install_win32() -> None:
             GetForegroundWindow=lambda: 0,
             GetWindowText=lambda hwnd: '',
             IsWindow=lambda hwnd: False,
+            IsIconic=lambda hwnd: False,
             ShowWindow=lambda hwnd, cmd=None: None,
             SetForegroundWindow=lambda hwnd: True,
             SetParent=lambda hwnd, parent: 0,
