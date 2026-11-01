@@ -72,6 +72,29 @@ class FocusTracker:
         _, pid = win32process.GetWindowThreadProcessId(hwnd)
         return cls.is_internal_process(pid)
 
+    _SHELL_CLASSES = frozenset({
+        "Shell_TrayWnd",
+        "SecondaryTrayWnd",
+        "Progman",
+        "WorkerW",
+        "TaskListThumbnailWnd",
+        "MultitaskingViewFrame",
+        "ForegroundStaging",
+        "NotifyIconOverflowWindow",
+    })
+
+    @classmethod
+    def is_shell_window(cls, hwnd: int) -> bool:
+        if not hwnd:
+            return False
+        get_class = getattr(win32gui, "GetClassName", None)
+        if not callable(get_class):
+            return False
+        try:
+            return get_class(hwnd) in cls._SHELL_CLASSES
+        except Exception:
+            return False
+
     @staticmethod
     def get_focus_snapshot() -> dict:
         """
@@ -135,6 +158,16 @@ class FocusTracker:
             return False
 
     @staticmethod
+    def _is_minimised(hwnd: int, user32) -> bool:
+        is_iconic = getattr(win32gui, "IsIconic", None)
+        try:
+            if callable(is_iconic):
+                return bool(is_iconic(hwnd))
+            return bool(user32.IsIconic(hwnd))
+        except Exception:
+            return False
+
+    @staticmethod
     def request_foreground(hwnd: int, *, restore: bool = False) -> bool:
         """Ask Windows to foreground an existing window without changing paste permission.
 
@@ -153,24 +186,37 @@ class FocusTracker:
                 return True
             user32 = ctypes.windll.user32
             foreground = win32gui.GetForegroundWindow()
-            fg_tid, _ = win32process.GetWindowThreadProcessId(foreground) if foreground else (0, 0)
+            fg_tid, fg_pid = win32process.GetWindowThreadProcessId(foreground) if foreground else (0, 0)
             tgt_tid, _ = win32process.GetWindowThreadProcessId(hwnd)
             cur_tid = ctypes.windll.kernel32.GetCurrentThreadId()
-            attached = []
-            if fg_tid:
+            attached_pairs = []
+            # Never detach cur_tid from an internal parent host thread (such as
+            # the Qt teacher window hosting the embedded Tk companion via WS_CHILD).
+            if fg_tid and fg_tid != cur_tid:
                 user32.AttachThreadInput(cur_tid, fg_tid, True)
-                attached.append(fg_tid)
-            if tgt_tid and tgt_tid not in attached:
-                user32.AttachThreadInput(cur_tid, tgt_tid, True)
-                attached.append(tgt_tid)
+                if not FocusTracker.is_internal_process(fg_pid):
+                    attached_pairs.append((cur_tid, fg_tid))
+            if tgt_tid and tgt_tid != cur_tid:
+                if user32.AttachThreadInput(cur_tid, tgt_tid, True):
+                    attached_pairs.append((cur_tid, tgt_tid))
+            if fg_tid and tgt_tid and fg_tid != tgt_tid and fg_tid != cur_tid:
+                if user32.AttachThreadInput(fg_tid, tgt_tid, True):
+                    attached_pairs.append((fg_tid, tgt_tid))
             try:
-                if restore:
-                    win32gui.ShowWindow(hwnd, 9)  # SW_RESTORE
-                win32gui.SetForegroundWindow(hwnd)
+                if restore and FocusTracker._is_minimised(hwnd, user32):
+                    win32gui.ShowWindow(hwnd, 9)  # SW_RESTORE only when minimised
+                try:
+                    win32gui.SetForegroundWindow(hwnd)
+                except Exception:
+                    user32.BringWindowToTop(hwnd)
+                    user32.SetForegroundWindow(hwnd)
             finally:
-                for tid in reversed(attached):
-                    user32.AttachThreadInput(cur_tid, tid, False)
-            return win32gui.GetForegroundWindow() == hwnd
+                for left_tid, right_tid in reversed(attached_pairs):
+                    user32.AttachThreadInput(left_tid, right_tid, False)
+            matched = win32gui.GetForegroundWindow() == hwnd
+            if matched and restore and os.name == "nt" and type(win32gui.SetForegroundWindow).__name__ != "MagicMock":
+                time.sleep(0.05)
+            return matched
         except Exception as e:
             logging.debug("[FocusTracker] request_foreground error: %s", e)
             return False
@@ -222,6 +268,34 @@ class FocusTracker:
         except Exception as e:
             logging.debug("[FocusTracker] GetGUIThreadInfo error: %s", e)
         return fg_hwnd
+
+    @staticmethod
+    def is_onenote_canvas_ready(hwnd: int) -> bool | None:
+        """Checks if a OneNote window has its page canvas focused for keyboard input.
+
+        Returns True if OneNote::DocumentCanvas is focused, False if an outer frame
+        or ribbon is focused instead, or None if the window is not OneNote or
+        canvas inspection is unavailable.
+        """
+        if not hwnd:
+            return None
+        try:
+            child = FocusTracker.get_focused_child_hwnd(hwnd)
+            if not child:
+                return None
+            get_class = getattr(win32gui, "GetClassName", None)
+            if not callable(get_class):
+                return None
+            child_class = get_class(child)
+            if child_class == "OneNote::DocumentCanvas":
+                return True
+            top_class = get_class(hwnd)
+            title = win32gui.GetWindowText(hwnd) if callable(getattr(win32gui, "GetWindowText", None)) else ""
+            if "onenote" in top_class.lower() or "onenote" in title.lower():
+                return False
+        except Exception:
+            return None
+        return None
 
     @staticmethod
     def _capture_via_wm_copy(hwnd: int) -> str:

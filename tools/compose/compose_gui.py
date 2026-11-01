@@ -72,7 +72,8 @@ class ComposeApp:
         self.embedded = embedded
         self._shutdown_prepared = False
         self._last_external_snap = FocusTracker.snapshot_foreground_window()
-        if FocusTracker.is_internal_snapshot(self._last_external_snap):
+        if (FocusTracker.is_internal_snapshot(self._last_external_snap)
+                or FocusTracker.is_shell_window(self._last_external_snap.get("hwnd", 0))):
             self._last_external_snap = None
         self.root.title("🎙️ ESP32 Voice Compose & Dictate Companion")
         self.root.geometry("920x740")
@@ -373,7 +374,23 @@ class ComposeApp:
             cursor="hand2",
             command=self.open_onenote_on_classroom_display,
         )
-        self.btn_classroom_onenote.pack(side="left", fill="x", expand=True)
+        self.btn_classroom_onenote.pack(side="left", fill="x", expand=True, padx=(0, 6))
+
+        self.btn_clear_ready = tk.Button(
+            classroom_btn_frame,
+            text="🗑️ Clear Ready",
+            font=("Segoe UI", 10, "bold"),
+            bg="#374151",
+            fg="#E5E7EB",
+            activebackground="#4B5563",
+            activeforeground="#FFFFFF",
+            relief="flat",
+            padx=14,
+            pady=8,
+            cursor="hand2",
+            command=self.clear_ready_queue,
+        )
+        self.btn_clear_ready.pack(side="left")
 
         # Instructions / Shortcut Guide
         guide_frame = tk.Frame(parent, bg="#111827", padx=12, pady=8, highlightthickness=1, highlightbackground="#1F2937")
@@ -786,6 +803,21 @@ class ComposeApp:
         else:
             self.stop_recording_flow()
 
+    def clear_ready_queue(self):
+        if getattr(self, "_shutdown_prepared", False):
+            return
+        had_text = bool(self.pending_ready_payload)
+        had_media = bool(getattr(self, "pending_media", None))
+        self.pending_ready_payload = None
+        if had_media:
+            self._clear_media_queue()
+            return
+        if had_text:
+            self.log("Cleared queued READY text (response remains saved in History).")
+            self.set_status("READY: Waiting for button press...", "#10B981")
+        else:
+            self.log("Ready queue is already empty.")
+
     def inject_paste_ui(self):
         if getattr(self, '_shutdown_prepared', False):
             return
@@ -804,22 +836,48 @@ class ComposeApp:
         if FocusTracker.is_internal_snapshot(snap):
             target = getattr(self, "_last_external_snap", None)
             if not target or not FocusTracker.restore_focus(target) or not FocusTracker.is_focus_matched(target):
+                self.log("Focus your document window first, then press PASTE READY.")
                 self.set_status("READY: Focus your document, then press PASTE READY", "#F59E0B")
                 return
+            snap = FocusTracker.get_focus_snapshot()
+
+        # Canvas check for OneNote: verify if a page canvas is active rather than outer ribbon/frame
+        target_hwnd = snap.get("hwnd", 0) if snap else 0
+        if target_hwnd and FocusTracker.is_onenote_canvas_ready(target_hwnd) is False:
+            self.log("OneNote page canvas is not focused. Click where you want to type on the page, then press PASTE READY.")
+            self.set_status("READY: Click inside the OneNote page, then press PASTE READY", "#F59E0B")
+            return
+
         if ClipboardManager.inject_paste(payload, restore_delay=self.restore_delay):
             self.pending_ready_payload = None
+            self.log("Paste shortcut sent to the document.")
             self.set_status("Paste shortcut sent", "#10B981")
         else:
+            self.log("Paste failed; text retained in READY.")
             self.set_status("Paste failed; text retained in READY", "#EF4444")
 
     def _deliver_result(self, text, focus_snap):
         self.pending_ready_payload = text
-        if focus_snap and FocusTracker.is_focus_matched(focus_snap):
-            if ClipboardManager.inject_paste(text, restore_delay=self.restore_delay):
-                self.pending_ready_payload = None
-                self.log("Paste shortcut sent to the original document.")
-                self.set_status("COMPLETED: Paste shortcut sent", "#10B981")
-                return
+        if focus_snap:
+            # If the user started/stopped from the on-screen button, the companion
+            # or teacher window may still be in the foreground. If no outside app
+            # took focus in the meantime, restore focus to the intended document.
+            current_fg = FocusTracker.snapshot_foreground_window()
+            if FocusTracker.is_internal_snapshot(current_fg):
+                target_window = {**focus_snap, "runtime_id": None}
+                FocusTracker.restore_focus(target_window)
+
+            if FocusTracker.is_focus_matched(focus_snap):
+                target_hwnd = focus_snap.get("hwnd", 0)
+                if FocusTracker.is_onenote_canvas_ready(target_hwnd) is False:
+                    self.log("OneNote page canvas is not focused. Click where you want to type on the page, then press PASTE READY.")
+                    self.set_status("READY: Click inside the OneNote page, then press PASTE READY", "#F59E0B")
+                    return
+                if ClipboardManager.inject_paste(text, restore_delay=self.restore_delay):
+                    self.pending_ready_payload = None
+                    self.log("Paste shortcut sent to the original document.")
+                    self.set_status("COMPLETED: Paste shortcut sent", "#10B981")
+                    return
         self.log("Text retained in READY. Focus your document and press PASTE READY.")
         self.set_status("READY: Focus document, then press PASTE READY", "#F59E0B")
 
@@ -889,6 +947,7 @@ class ComposeApp:
         if self.is_recording or self._busy or self._settings_saving() or getattr(getattr(self,'media_panel',None),'_busy',False):
             return
         if getattr(self,'pending_ready_payload',None) or getattr(self,'pending_media',None):
+            self.log('Paste or clear the queued item before recording another request.')
             self.set_status('Paste or clear the queued item before recording another request.', '#F59E0B')
             return
         if not self.audio_capture.start_recording():
@@ -964,6 +1023,17 @@ class ComposeApp:
         mode = self.recording_mode
         focus_snap = self._target_focus_snap
         sel_txt = self._target_selected_text
+        if focus_snap and not FocusTracker.is_internal_snapshot(focus_snap):
+            try:
+                current_fg = FocusTracker.snapshot_foreground_window()
+                if FocusTracker.is_internal_snapshot(current_fg):
+                    target_window = {**focus_snap, "runtime_id": None}
+                    if FocusTracker.restore_focus(target_window) and FocusTracker.is_focus_matched(target_window):
+                        refreshed = FocusTracker.get_focus_snapshot()
+                        if refreshed and refreshed.get("hwnd") == focus_snap.get("hwnd"):
+                            focus_snap = refreshed
+            except Exception:
+                pass
 
         self._busy = True
         # Run transcription & synthesis in background worker thread
@@ -1071,9 +1141,11 @@ class ComposeApp:
             return
         try:
             snap = FocusTracker.snapshot_foreground_window()
-            if snap.get("pid") and not FocusTracker.is_internal_snapshot(snap):
+            hwnd = snap.get("hwnd", 0)
+            if (snap.get("pid")
+                    and not FocusTracker.is_internal_snapshot(snap)
+                    and not FocusTracker.is_shell_window(hwnd)):
                 self._last_external_snap = snap
-                hwnd = snap.get("hwnd")
                 backend = getattr(getattr(self, "monitor_shortcut", None), "backend", None)
                 if hwnd and backend is not None:
                     backend.note_foreground(hwnd)

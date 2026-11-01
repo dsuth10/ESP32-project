@@ -267,7 +267,7 @@ def main(argv=None):
         import win32gui
         hwnd = win32gui.GetAncestor(root.winfo_id(), 2)
         input_focus = EmbeddedInputFocus(root,
-            lambda: app.embedded and not app._shutdown_prepared,
+            lambda: app.embedded and not app._shutdown_prepared and not app.is_recording and not getattr(app, '_handing_off_focus', False),
             lambda: win32gui.GetForegroundWindow() == args.parent_hwnd)
         lifecycle = EmbeddedLifecycle(app, emit, lambda enabled: win32gui.EnableWindow(hwnd, enabled))
         app.show_embedded_workspace = lambda: emit({'type': 'show_companion'})

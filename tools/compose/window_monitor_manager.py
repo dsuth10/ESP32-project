@@ -396,6 +396,10 @@ class Win32WindowMonitorBackend:
         user32 = ctypes.WinDLL('user32', use_last_error=True)
         if not self.is_window_alive(hwnd):
             return False
+        if (not user32.IsIconic(hwnd)
+                and verify_placement(self.window_bounds(hwnd), work_area)
+                and bool(user32.IsZoomed(hwnd)) == bool(maximise)):
+            return True
         SW_RESTORE = 9
         SW_SHOWMAXIMIZED = 3
         SWP_NOZORDER = 0x0004
