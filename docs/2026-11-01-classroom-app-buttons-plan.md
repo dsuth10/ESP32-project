@@ -2,8 +2,10 @@
 
 1 November 2026. Planning only on `board-tester/plan-app-buttons`, based on
 the latest `codex/companion-media-agent` (including the merged classroom-display
-OneNote action). No application, firmware, test, flash or device change is
-included. This does not close M5, M7, physical or classroom acceptance.
+OneNote action). Same-day follow-up: Douglas answered the three open
+decisions; they are recorded in [section 7](#7-decisions-1-november-2026).
+No application, firmware, test, flash or device change is included. This
+does not close M5, M7, physical or classroom acceptance.
 
 ## Summary
 
@@ -18,12 +20,17 @@ after you explicitly approve a recoverable firmware trial. Do not squeeze new
 buttons onto the current Create & Paste page: its sixth slot is not a spare
 button, and Paste Ready is already the full-width bottom control.
 
-**Recommended Board meaning:** the Board button shows the pupil lesson on the
-classroom display and brings it to the front. It does not hide OneNote, Word
-or Chrome, and it does not Freeze, Resume or change the lesson page.
+**Decided:** the Board button shows the pupil lesson on the classroom display
+and brings it to the front. It does not hide OneNote, Word or Chrome, and it
+does not Freeze, Resume or change the lesson page.
 
-If that Board meaning is not what you want, the one question to answer is at
-the end of [section 3](#3-board-pupil-callable-to-the-main-pupil-display).
+**Decided:** later device firmware adds Classroom Apps as a **new ninth
+page**. Custom Keys stay unchanged. Create & Paste stays on page 7 (its
+zero-based index stays 6). After that trial the device will show pages as
+*n*/9 instead of *n*/8.
+
+**Decided:** Chrome uses the most recent window by default. The
+teacher-chosen window list remains an option, the same as OneNote.
 
 ## What you asked for
 
@@ -55,10 +62,12 @@ notebook page, and it does not become Paste Ready.
 The handheld still only sends keyboard codes. Windows chooses the screen and
 the window. Bluetooth cannot pick a monitor.
 
-Create & Paste on the device (page 7 of 8) is unchanged: Compose, Dictate,
-Images, Library and the full-width Paste Ready. Those five controls already
-have a basic physical pass. Their firmware is an approved recoverable trial;
-the original 16 MiB backup and write-locked registration remain in place.
+Create & Paste on the device (page 7 of 8 today; page 7 of 9 after a later
+ninth-page trial) is unchanged: Compose, Dictate, Images, Library and the
+full-width Paste Ready. Those five controls already have a basic physical
+pass. Their firmware is an approved recoverable trial; the original 16 MiB
+backup and write-locked registration remain in place. Custom Keys stay on
+their current page.
 
 ## 1. A small app list, not three one-off buttons
 
@@ -104,8 +113,10 @@ Rules:
 
 - Match visible Chrome windows belonging to `chrome.exe`. Ignore tiny or
   tool windows.
-- Default: the **most recently used** Chrome window, same as OneNote.
-- You may pin a **specific window** in Classroom display.
+- **Decided default:** the **most recently used** Chrome window, same as
+  OneNote.
+- **Decided option:** you may still pin a **specific window** from the
+  chosen-window list in Classroom display.
 - If several windows are open and none has a “last used” time, refuse with a
   clear line such as: “Several Chrome windows are open. Choose one in
   Classroom display, or bring the intended window to the front once.”
@@ -156,13 +167,13 @@ Do not put OneNote, Word or Chrome there.
 | **A. Companion buttons first (recommended now)** | OneNote, Word, Chrome and Board buttons on the computer, plus optional shortcuts left off | Matches how OneNote already works | No handheld press yet |
 | **B. Optional keyboard shortcuts** | New `HotkeyState` modes, off until you tick them | Good for home testing without a flash | Easy to press by accident if left on |
 | **C. Fill Create & Paste’s sixth slot** | One extra button on page 7 | Only one button; breaks full-width Paste Ready | Needs a new firmware trial; not enough space for four apps |
-| **D. Remap Custom Keys (recommended later firmware)** | Replace the current three Custom Keys with a **Classroom Apps** page: OneNote, Word, Chrome, Board | Four labelled buttons; leaves Create & Paste alone; still 8 pages | You lose the on-device Custom Keys; those chords remain typeable on a keyboard |
-| **E. Add a ninth page** | New page after Storage Explorer | Keeps Custom Keys | Changes page count (today the device shows 7/8 and 8/8); larger firmware change |
+| **D. Remap Custom Keys** | Replace the current three Custom Keys with Classroom Apps | Four labelled buttons; still 8 pages | **Not chosen.** Custom Keys stay |
+| **E. Add a ninth page (decided later firmware)** | New Classroom Apps page after Storage Explorer | Keeps Custom Keys and Create & Paste | Changes page count from 8 to 9; status, wrap and USB `page N` range all follow `NUM_PAGES` |
 | **F. New F-keys only, no new page** | Firmware emits F18–F21 from some remapped existing button | Small code change | Poor labels; easy to confuse with Create & Paste |
 | **G. Host command over Wi-Fi** | Historical design; not implemented | Would let the device name the app | Large, separate M7 design; out of scope |
 
-**Recommended order:** A, then B if you want keyboard testing, then **D**
-only after explicit approval. Do not do C, F or G for this request.
+**Recommended order:** A, then B if you want keyboard testing, then **E**
+only after explicit approval. Do not do C, D, F or G for this request.
 
 The handheld still only sends a key. Windows still chooses the screen. A
 firmware button that “opens OneNote on the board” is the same desktop
@@ -203,8 +214,12 @@ PowerToys Keyboard Manager).
 
 ### Screen layout and labels (firmware, later)
 
-Recommended **Classroom Apps** page (replacing Custom Keys), portrait 2×3
-grid, four buttons used:
+**Decided:** Classroom Apps is a **new ninth page** after Storage Explorer.
+Custom Keys stay on page 5 of 9 with their three current buttons. Create &
+Paste stays page 7 of 9 with its current labels and full-width Paste Ready.
+Storage Explorer stays page 8 of 9.
+
+Classroom Apps (page 9 of 9), portrait 2×3 grid, four buttons used:
 
 ```
 ONENOTE     WORD
@@ -215,23 +230,50 @@ CHROME      BOARD
 Short subtitles the teacher can read at arm’s length, for example
 “Classroom screen”. Spare slots stay blank. Do not add Paste Ready here.
 
-Create & Paste stays page 7 of 8 with its current labels and full-width
-Paste Ready.
+Today the device lists eight pages (`NUM_PAGES` is 8). The status bar prints
+`currentPage + 1 / NUM_PAGES`, so Create & Paste reads **7/8** and Storage
+reads **8/8**. A ninth page must raise that constant to 9. After the trial
+those labels become **7/9**, **8/9** and **9/9**. The zero-based indexes do
+not shuffle: Create & Paste stays `PAGE_COMPOSE` 6; Storage stays
+`PAGE_STORAGE` 7; Classroom Apps is a new `PAGE_CLASSROOM_APPS` 8. The
+`PROFILES[NUM_PAGES]` table gains one extra entry.
+
+Page navigation uses the same wrap as today: previous from page 1 goes to
+the last page, next from the last page returns to System. After the trial,
+previous from System lands on Classroom Apps (not Storage), and next from
+Storage lands on Classroom Apps instead of wrapping to System. The USB
+`page N` command already accepts `1` through `NUM_PAGES`, so `page 9`
+becomes valid once the constant changes. Soft-wake restores a saved page
+only when `rtcSavedPage < NUM_PAGES`.
+
+USB companion feedback must stay on Create & Paste. The current handshake
+is `page7-v1` and, after a successful link, writes `page 7`. That must
+still open Create & Paste. Do not retarget the handshake or the once-per-
+link `page 7` write to the new ninth page.
 
 ### Firmware trial and safety
 
 A handheld button is a firmware write. Choosing the S3 does not authorise
-it. Before any trial:
+it. A ninth page is a larger candidate than remapping Custom Keys, because
+it changes the compile-time page count, the wrap-around, the on-screen
+*n*/9 label, the USB page range and the sleep-restore bound. It still stays
+inside the ordinary application image. Before any trial:
 
-1. You say yes, in writing, to that exact candidate.
+1. You say yes, in writing, to that exact ninth-page candidate (Classroom
+   Apps added; Custom Keys and Create & Paste unchanged).
 2. A complete private **16 MiB** recovery image is taken and matched on a
-   second full read.
+   second full read. The board currently runs the approved page 7 trial;
+   this new write needs its own backup/authorisation, not a reuse of the
+   older page 7 receipt.
 3. The write uses only the scoped `tools/board_trial.py` route: application
-   area only, one durable claim, independent read-back.
+   area only, one durable claim, independent read-back. It cannot write
+   bootloaders, partition tables, OTA selection, NVS or filesystems.
 4. The stable registry stays **write-locked**. A guard refusal is
    investigated, not edited to pass.
-5. Create & Paste behaviour is rechecked so Compose, Dictate, Images,
-   Library and Paste Ready still work.
+5. After the write, recheck Create & Paste (Compose, Dictate, Images,
+   Library, Paste Ready), Custom Keys unchanged, Storage still page 8 of 9,
+   Classroom Apps on page 9 of 9, previous/next wrap, and that a USB link
+   still opens page 7 — not page 9.
 
 Follow [board upload safety](board-upload-safety.md) and the
 [Create & Paste trial record](2026-10-24-create-paste-device-trial.md).
@@ -239,28 +281,28 @@ Host testing never grants a flash.
 
 ## 3. Board pupil callable to the main pupil display
 
-Two readings of the request are plausible.
+Two readings of the request were plausible. **Meaning A is decided.**
 
-### Meaning A — recommended
+### Meaning A — decided
 
 **Bring the Teaching Board pupil window onto the classroom display when you
 ask.** Same Classroom display role as OneNote, Word and Chrome. The pupil
 window is shown if it was hidden, moved to that screen, and brought to the
-front.
+front. It does **not** hide OneNote, Word or Chrome.
 
 This matches “I want the class to see the Board now”, and reuses the
 Identify-screens setup you already have.
 
-### Meaning B — not recommended unless you ask for it
+### Meaning B — not chosen
 
 **The Board button swaps the classroom screen** between OneNote/Word/Chrome
 and the Board, hiding the other app.
 
 That is a show-control toggle. It can surprise a live class (a notebook
 vanishes), and it is a different product from “bring this app to the
-screen”.
+screen”. Douglas chose meaning A.
 
-### Recommended behaviour for meaning A
+### Decided behaviour for meaning A
 
 | Situation | What happens |
 | --- | --- |
@@ -289,14 +331,6 @@ sleeping a screen does not send the lesson to the laptop.
   still must not mark the Board as a Word/OneNote insert target.
 - Status on the classroom screen is enough; do not steal typing focus from
   a document the teacher is editing unless they pressed Board on purpose.
-
-### The one question, if meaning A is wrong
-
-**When you press Board, should it only bring the Teaching Board pupil
-window onto the classroom screen (recommended), or should it also hide
-OneNote, Word or Chrome so the class sees only the Board?**
-
-If you do not answer, the plan uses the first option.
 
 ## 4. Phased work and what “done” means
 
@@ -345,18 +379,22 @@ Chrome windows, and with the Teaching Board pupil on the second screen.
 
 ### Phase F1 — Firmware trial (only after you approve)
 
-Replace Custom Keys with Classroom Apps (or a ninth page if you decide to
-keep Custom Keys). Emit F18–F21 as one-shot keys. Keep Create & Paste
-untouched.
+Add Classroom Apps as a **new ninth page**. Keep Custom Keys and Create &
+Paste untouched. Emit F18–F21 as one-shot keys. Raise `NUM_PAGES` from 8
+to 9; do not shuffle existing page indexes.
 
 **Acceptance**
 
-- Written approval, matched 16 MiB recovery, scoped trial write and
-  read-back.
+- Written approval for this ninth-page candidate, a new matched 16 MiB
+  recovery (not the old page 7 receipt), scoped trial write and read-back.
 - Labels readable; each button sends the key in the table once; hold does
   not repeat.
 - Companion, with shortcuts enabled for the trial, places the right app.
-- Create & Paste still has its basic physical pass.
+- Create & Paste still has its basic physical pass. Custom Keys still
+  match their current three chords. Status shows 7/9, 8/9 and 9/9.
+- Previous from System opens Classroom Apps; next from Storage opens
+  Classroom Apps; next from Classroom Apps wraps to System. USB `page 7`
+  still opens Create & Paste; `page 9` opens Classroom Apps.
 - BLE disconnect stops a held key. Stable registry still write-locked.
 - Physical restore is a separate record if you choose to roll back.
 
@@ -408,31 +446,30 @@ from Linux.
 | Board treated like OneNote | Focus rules currently refuse our own windows, which is correct for paste | Separate Board move path; still not an insert target |
 | Freeze accidentally resumed | Class would see unfinished edits | Board button never calls Resume or Freeze |
 | Recreating the pupil window | Can lose Freeze or tickle the old Next crash | Move the existing window only |
-| Filling Create & Paste’s sixth slot | Breaks the approved full-width Paste Ready | New page / remapped Custom Keys instead |
+| Filling Create & Paste’s sixth slot | Breaks the approved full-width Paste Ready | Leave page 7 alone; add a ninth page later |
 | Flashing too early | Risks the working page 7 trial | Desktop first; scoped trial only after you approve |
 | Shortcut clashes | F5/F4/F3 alone are common keys | Always Ctrl+Alt+Shift; leave the option off |
 | Calling this M7 done | M7 is still “change buttons from the computer at runtime” | This is a fixed labelled page, not general profile editing |
+| Ninth page changes wrap and *n*/8 labels | Teachers who swipe past Storage expect System; USB `page N` and sleep-restore follow `NUM_PAGES`; the Create & Paste USB handshake must stay on page 7 | Own trial approval and 16 MiB recovery; recheck wrap, Custom Keys, page 7 USB link and 7/9–9/9 labels |
 
-## 7. Open decisions for Douglas
+## 7. Decisions (1 November 2026)
 
-Only three. Each has a recommended default. If you say nothing, we use the
-recommendation when implementation is authorised.
+Douglas answered the three open questions. They are no longer open.
 
-1. **Board button.** Bring the pupil window to the classroom screen and to
-   the front, without hiding OneNote/Word/Chrome. **Recommended: yes.**
-   Answer the question in section 3 only if you want the hide/swap
-   behaviour instead.
-2. **Where the handheld buttons live, after a later approved trial.**
-   Replace Custom Keys with a Classroom Apps page (OneNote, Word, Chrome,
-   Board). **Recommended.** Say if you use Custom Keys every day and want a
-   ninth page instead. Create & Paste stays as it is either way.
-3. **Chrome start-up.** First slice: most recent or chosen window; start
-   plain allowlisted `chrome.exe` only if no window exists. A named Chrome
-   profile can wait. **Recommended.** Say if school Chrome must always open
-   a specific profile.
+1. **Board button — decided.** It only brings the Teaching Board pupil
+   window forward onto the classroom display. It does not hide OneNote,
+   Word or Chrome.
+2. **Handheld buttons — decided.** After a later approved firmware trial,
+   Classroom Apps is a **new ninth page**. Custom Keys stay unchanged.
+   Create & Paste stays page 7 (index 6).
+3. **Chrome — decided.** Default is the most recent Chrome window. The
+   chosen-window list remains an option, the same as OneNote. A named
+   Chrome profile can wait; start allowlisted `chrome.exe` only if no
+   window exists.
 
 Maximise stays on by default for each app, as OneNote already does. Missing
-classroom display stays a hard stop with the existing sentence.
+classroom display stays a hard stop with the existing sentence. There are
+no remaining open decisions for this plan.
 
 ## What this plan is not
 
