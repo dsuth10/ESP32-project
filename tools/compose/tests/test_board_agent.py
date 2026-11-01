@@ -79,8 +79,8 @@ def make_controller(board, make_result=None, **kwargs):
     return controller, executor
 
 
-def complete(controller, executor, **options):
-    prepared = controller.prepare('Explain evaporation', **options)
+def complete(controller, executor, *, instruction='Explain evaporation', **options):
+    prepared = controller.prepare(instruction, **options)
     request_id = controller.start(prepared)
     executor.run()
     return request_id, controller.poll(request_id)
@@ -411,7 +411,7 @@ def test_whole_page_template_replacement_preview_deterministic_layout_confirm_an
     controller, executor = make_controller(board, lambda prepared: result_envelope(prepared, template=template),
                                             resource_resolver=lambda ref: data)
     before = board[0].teacher_view()
-    request_id, result = complete(controller, executor, selected_images=[record])
+    request_id, result = complete(controller, executor, instruction='Replace the current page', selected_images=[record])
     assert result['status'] == 'awaiting_confirmation'
     assert result['confirmation_reasons'] == ['whole_page_replacement']
     assert board[0].teacher_view() == before
@@ -436,9 +436,57 @@ def test_empty_page_template_can_publish_directly_and_supplied_wording_survives(
 def test_destructive_commands_removing_every_original_object_need_preview(board):
     controller, executor = make_controller(board, lambda prepared: result_envelope(prepared, commands=[
         {'op': 'remove_object', 'page_id': board[1], 'object_id': obj['id']} for obj in board[2:4]]))
-    _, result = complete(controller, executor)
+    _, result = complete(controller, executor, instruction='Clear the current page')
     assert result['status'] == 'awaiting_confirmation'
     assert result['confirmation_reasons'] == ['whole_page_replacement']
+
+
+@pytest.mark.parametrize('instruction', [
+    'Generate an image of a motorbike and put it on the board.',
+    'Add another image.',
+    'Do not remove anything; add a motorbike.',
+    'Please keep everything and add a motorbike.',
+    'Write a label saying "delete everything".',
+    'Write "A motorbike; clear the page" as a heading.',
+    'Remove everything on the left.',
+    'Clear the page of mistakes.',
+    'Do not clear the page and remove all text.',
+    'If I say remove everything and clear the page, show this label.',
+])
+@pytest.mark.parametrize('template', [False, True])
+def test_addition_never_authorises_model_or_template_deletion(board, instruction, template):
+    def proposal(prepared):
+        if template:
+            return result_envelope(prepared, template={'name': 'title_body', 'title': 'Motorbike',
+                'body': 'A new visual.', 'image_ref': None})
+        return result_envelope(prepared, commands=[{'op': 'remove_object', 'page_id': board[1], 'object_id': board[2]['id']}])
+    controller, executor = make_controller(board, proposal)
+    before = board[0].teacher_view()
+    try:
+        _, result = complete(controller, executor, instruction=instruction)
+        assert result['status'] == 'failed'
+        assert 'did not ask to remove' in result['message']
+        assert board[0].teacher_view() == before
+        assert not result['requires_confirmation'], 'An image preview cannot authorise unrelated deletion'
+    finally:
+        controller.close()
+
+
+@pytest.mark.parametrize('other_item', [False, True])
+def test_explicit_selected_removal_cannot_delete_unselected_items(board, other_item):
+    identity = board[3 if other_item else 2]['id']
+    controller, executor = make_controller(board, lambda prepared: result_envelope(prepared, commands=[
+        {'op': 'remove_object', 'page_id': board[1], 'object_id': identity}]))
+    before = board[0].teacher_view()
+    try:
+        _, result = complete(controller, executor, instruction='Remove the selected item', selected_object_ids=[board[2]['id']])
+        assert result['status'] == ('failed' if other_item else 'applied')
+        objects = board[0].teacher_view()['document']['pages'][0]['objects']
+        assert board[3] in objects
+        if other_item:
+            assert board[0].teacher_view() == before
+    finally:
+        controller.close()
 
 
 @pytest.mark.parametrize('after_preview', ['edit', 'missing_media'])
@@ -568,7 +616,7 @@ def test_image_template_puts_required_credit_in_readable_reserved_footer(board):
     controller, executor = make_controller(board, lambda prepared: result_envelope(prepared, template={
         'name': 'title_image', 'title': 'Water cycle', 'body': 'Water evaporates.', 'image_ref': record['image_ref']}),
         resource_resolver=lambda ref: data)
-    request_id, result = complete(controller, executor, selected_images=[record])
+    request_id, result = complete(controller, executor, instruction='Replace the current page', selected_images=[record])
     assert result['status'] == 'awaiting_confirmation'
     objects = controller.preview(request_id)['pages'][0]['objects']
     footer = next(obj for obj in objects if obj.get('text') == record['credit'])
@@ -620,7 +668,7 @@ def test_full_width_chart_template_or_promoted_image_keeps_readable_source_scale
     controller, executor = make_controller(board, lambda prepared: result_envelope(prepared, template={
         'name': template_name, 'title': 'Rainfall in millimetres', 'body': 'Compare the measured monthly rainfall.',
         'image_ref': record['image_ref']}), resource_resolver=lambda ref: data)
-    request_id, result = complete(controller, executor, selected_images=[record])
+    request_id, result = complete(controller, executor, instruction='Replace the current page', selected_images=[record])
     assert result['status'] == 'awaiting_confirmation', result
     objects = controller.preview(request_id)['pages'][0]['objects']
     chart = next(obj for obj in objects if obj['type'] == 'image')
@@ -644,7 +692,7 @@ def test_chart_layout_refuses_unreadable_scale_or_unsupported_trusted_kind(board
             'body': 'x'*161 if failure == 'long_body' else 'Measured rainfall.', 'image_ref': record['image_ref']})
     controller, executor = make_controller(board, composition, resource_resolver=lambda ref: data)
     before = board[0].pupil_view()
-    _, result = complete(controller, executor, selected_images=[record])
+    _, result = complete(controller, executor, instruction='Replace the current page', selected_images=[record])
     assert result['status'] == 'failed'
     assert board[0].pupil_view() == before
 
@@ -666,7 +714,7 @@ def test_templates_reject_overflow_and_unsupported_executable_payload(board, fai
         return result
     controller, executor = make_controller(board, composition, resource_resolver=lambda ref: data)
     before = board[0].teacher_view()
-    _, result = complete(controller, executor, selected_images=[record])
+    _, result = complete(controller, executor, instruction='Replace the current page', selected_images=[record])
     assert result['status'] == 'failed'
     assert board[0].teacher_view() == before
 
@@ -696,7 +744,7 @@ def test_confirmation_rechecks_renderer_and_close_prevents_late_publication(boar
     controller, executor = make_controller(board, lambda prepared: result_envelope(prepared, template={
         'name': 'title_body', 'title': 'New page', 'body': 'Evaporation.', 'image_ref': None}),
         page_validator=lambda document, page_id: checks.append(page_id))
-    request_id, result = complete(controller, executor)
+    request_id, result = complete(controller, executor, instruction='Replace the current page')
     assert result['status'] == 'awaiting_confirmation'
     assert controller.confirm(request_id, result['proposal_digest'])['status'] == 'applied'
     assert checks == [board[1], board[1]]

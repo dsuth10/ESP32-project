@@ -367,7 +367,7 @@ def test_complete_destructive_preview_renders_on_native_canvas_then_exact_confir
     editor.test_composer.handler = lambda prepared: result_envelope(prepared, template={
         'name': 'title_body', 'title': 'Water changes state', 'body': 'Heat causes evaporation.', 'image_ref': None})
     before = editor.session.pupil_view()
-    state = send(editor)
+    state = send(editor, 'Replace the current page')
     assert state['status'] == 'awaiting_confirmation'
     assert editor.session.pupil_view() == before
     assert panel.preview_button.isEnabled()
@@ -394,7 +394,7 @@ def test_preview_rejection_keeps_pupil_view_and_can_still_cancel(editor, monkeyp
     editor.test_composer.handler = lambda prepared: result_envelope(prepared, template={
         'name': 'title_body', 'title': 'New title', 'body': 'New explanation.', 'image_ref': None})
     before = editor.session.pupil_view()
-    assert send(editor)['status'] == 'awaiting_confirmation'
+    assert send(editor, 'Replace the current page')['status'] == 'awaiting_confirmation'
     monkeypatch.setattr(QDialog, 'exec', lambda dialog: QDialog.DialogCode.Rejected)
     panel.show_preview()
     assert panel.controller.snapshot(panel.request_id)['status'] == 'awaiting_confirmation'
@@ -608,7 +608,7 @@ def test_real_local_chart_uses_full_readable_template_and_followup_keeps_chart_s
     editor.test_composer.handler = lambda prepared: result_envelope(prepared, template={
         'name': 'title_image', 'title': 'Rainfall in millimetres', 'body': 'Compare the supplied measurements.',
         'image_ref': image['image_ref']})
-    state = send(editor, 'Create the supplied rainfall chart')
+    state = send(editor, 'Replace the current page with the supplied rainfall chart')
     assert state['status'] == 'awaiting_confirmation', state
     objects = gui.page_from({'document': panel.controller.preview(panel.request_id),
                              'page_id': editor.session.teacher_view()['page_id']})['objects']

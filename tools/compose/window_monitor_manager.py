@@ -172,6 +172,44 @@ def parse_launch_parts(command: str) -> list[str] | None:
     return parts or None
 
 
+def _resolve_app_path(executable: str) -> str | None:
+    import shutil
+    found = shutil.which(executable)
+    if found:
+        return found
+    if os.name != 'nt':
+        return None
+    try:
+        import winreg
+        name = os.path.basename(executable)
+        for root in (winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER):
+            try:
+                sub = rf'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\{name}'
+                with winreg.OpenKey(root, sub) as key:
+                    val, _ = winreg.QueryValueEx(key, '')
+                    if val and os.path.isfile(val):
+                        return val
+            except FileNotFoundError:
+                continue
+    except Exception:
+        pass
+    name_upper = os.path.basename(executable).upper()
+    if name_upper == CHROME_EXECUTABLE:
+        for candidate in (
+                r'C:\Program Files\Google\Chrome\Application\chrome.exe',
+                r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
+                os.path.expandvars(r'%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe')):
+            if os.path.isfile(candidate):
+                return candidate
+    elif name_upper == WORD_EXECUTABLE:
+        for candidate in (
+                r'C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE',
+                r'C:\Program Files (x86)\Microsoft Office\root\Office16\WINWORD.EXE'):
+            if os.path.isfile(candidate):
+                return candidate
+    return None
+
+
 def _executable_name(path: str) -> str:
     return path.replace('\\', '/').split('/')[-1].upper()
 
@@ -469,10 +507,11 @@ class Win32WindowMonitorBackend:
             bounds = self.window_bounds(int(hwnd))
             if bounds is None:
                 return True
-            if wanted == CHROME_EXECUTABLE and (
+            is_minimised = bool(user32.IsIconic(hwnd))
+            if wanted == CHROME_EXECUTABLE and not is_minimised and (
                     bounds.width < MIN_CHROME_WINDOW_WIDTH or bounds.height < MIN_CHROME_WINDOW_HEIGHT):
                 return True
-            show_state = 'minimised' if user32.IsIconic(hwnd) else (
+            show_state = 'minimised' if is_minimised else (
                 'maximised' if user32.IsZoomed(hwnd) else 'normal')
             found.append(AppWindow(
                 hwnd=int(hwnd),
@@ -521,8 +560,10 @@ class Win32WindowMonitorBackend:
             subprocess.Popen([exe, *extra], close_fds=True)
             return
         if _executable_name(exe) in {ONENOTE_EXECUTABLE, WORD_EXECUTABLE, CHROME_EXECUTABLE}:
+            resolved = _resolve_app_path(exe)
+            target = resolved if resolved and os.path.isfile(resolved) else exe
             import subprocess
-            subprocess.Popen([exe, *extra], close_fds=True)
+            subprocess.Popen([target, *extra], close_fds=True)
             return
         raise FileNotFoundError('The configured program was not found.')
 

@@ -125,9 +125,61 @@ def test_existing_content_is_never_replaced_by_simple_image_layout(tmp_path, mon
         view = session.teacher_view()
         session.teacher_apply([{'op':'add_object','page_id':page,'object':new_object('text',text='Keep this teaching content')}],
                               expected_revision=view['revision'], expected_token=view['token'])
-        composer(controller.prepare('Put an image of a dog on the board.', selected_images=[image]), lambda *a:None, lambda:False)
-        assert len(calls) == 1
+        proposal = composer(controller.prepare('Put an image of a dog on the board.', selected_images=[image]), lambda *a:None, lambda:False)
+        assert all(command['op'] == 'add_object' for command in proposal['commands'])
+        assert calls == []
         assert session.teacher_view()['document']['pages'][0]['objects'][0]['text'] == 'Keep this teaching content'
+    finally:
+        controller.close(); session.close()
+
+
+def test_full_page_keeps_everything_and_saved_image_without_model_fallback(tmp_path, monkeypatch):
+    from board_agent import BoardAgentError
+    session, controller, composer, image, calls = setup(tmp_path, monkeypatch, generated=True)
+    try:
+        view = session.teacher_view()
+        original = new_object('shape', x=0, y=0, width=1600, height=900)
+        session.teacher_apply([{'op': 'add_object', 'page_id': view['page_id'], 'object': original}],
+            expected_revision=view['revision'], expected_token=view['token'])
+        before = session.teacher_view()
+        with pytest.raises(BoardAgentError, match='not enough clear space'):
+            composer(controller.prepare('Generate an image of a motorbike and put it on the board.', selected_images=[image]),
+                     lambda *a: None, lambda: False)
+        assert session.teacher_view() == before
+        assert session.resolve_image(image['image_ref'])
+        assert calls == []
+    finally:
+        controller.close(); session.close()
+
+
+def test_addition_preserves_images_ink_and_text_and_uses_unoccupied_space(tmp_path, monkeypatch):
+    from PySide6.QtCore import QRectF
+    from PySide6.QtGui import QTransform
+    session, controller, composer, image, calls = setup(tmp_path, monkeypatch, generated=True)
+    try:
+        view = session.teacher_view()
+        old = [new_object('shape', x=80, y=80, width=400, height=300),
+               new_object('ink', x=500, y=100, width=300, height=400, rotation=15),
+               new_object('text', text='Keep this wording', x=80, y=600, width=500, height=100)]
+        session.teacher_apply([{'op': 'add_object', 'page_id': view['page_id'], 'object': obj} for obj in old],
+            expected_revision=view['revision'], expected_token=view['token'])
+        proposal = composer(controller.prepare('Generate an image of a motorbike and put it on the board.', selected_images=[image]),
+                            lambda *a: None, lambda: False)
+        assert all(command['op'] == 'add_object' for command in proposal['commands'])
+        for command in proposal['commands']:
+            new = command['object']
+            for existing in old:
+                frame = QTransform().translate(existing['x'], existing['y']).rotate(existing['rotation']).mapRect(
+                    QRectF(0, 0, existing['width'], existing['height']))
+                assert not frame.intersects(QRectF(new['x'], new['y'], new['width'], new['height']))
+        request = controller.start(controller.prepare('Generate an image of a motorbike and put it on the board.', selected_images=[image]))
+        state = finish(controller, request)
+        assert state['status'] == 'awaiting_confirmation', state
+        assert 'whole_page_replacement' not in state['confirmation_reasons']
+        assert controller.confirm(request, state['proposal_digest'])['status'] == 'applied'
+        objects = session.teacher_view()['document']['pages'][0]['objects']
+        assert all(obj in objects for obj in old)
+        assert calls == []
     finally:
         controller.close(); session.close()
 

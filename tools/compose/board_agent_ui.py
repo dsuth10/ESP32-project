@@ -164,7 +164,7 @@ class AgentPanel(QWidget):
         layout.addWidget(self.forget_button)
         clear = QPushButton('Clear selected resource'); clear.clicked.connect(self.clear_choice); layout.addWidget(clear)
         approve = QPushButton('Approve selected resource for reuse'); approve.clicked.connect(self.approve_choice); layout.addWidget(approve)
-        reuse_page = QPushButton('Reuse selected saved page…'); reuse_page.clicked.connect(self.reuse_page); layout.addWidget(reuse_page)
+        reuse_page = QPushButton('Replace current page with saved page…'); reuse_page.clicked.connect(self.reuse_page); layout.addWidget(reuse_page)
         data = QPushButton('Use chart dataset…'); data.clicked.connect(self.load_dataset); layout.addWidget(data)
         attempts = QPushButton('Review image attempts…'); attempts.clicked.connect(self.review_attempts); layout.addWidget(attempts)
         self.timer = QTimer(self); self.timer.timeout.connect(self.tick); self.timer.start(100)
@@ -628,7 +628,7 @@ class AgentPanel(QWidget):
                 self.preparer.chart_spec = {key: value for key, value in record['metadata'].items() if key in {'kind', 'title', 'colour'}}
                 self.progress.setText('Saved chart and its exact dataset selected. Ask for a chart to reuse them.')
             elif record['resource_type'] == 'page':
-                self.progress.setText('Saved editable page selected. Use Reuse selected saved page to preview it offline.')
+                self.progress.setText('Saved editable page selected. Use Replace current page with saved page to preview an explicit replacement offline.')
         except Exception:
             self.selected_resource = None
             self.progress.setText('This resource is missing a supported dataset or dependency. Choose another saved version.')
@@ -745,7 +745,7 @@ class AgentPanel(QWidget):
             self.controller = BoardAgentController(self.owner.session, composer=local_composer, profile=self.profile,
                 page_validator=lambda document, page_id: validate_page_layout(document, page_id,
                     image_resolver=self.owner.session.resolve_image))
-            prepared = self.controller.prepare('Reuse the selected saved page: ' + record['title'],
+            prepared = self.controller.prepare('Replace the current page with the selected saved page.',
                 selected_images=images, local_only=True)
             self.request_id = self.controller.start(prepared)
             self.clear_choice()
@@ -824,7 +824,7 @@ class AgentPanel(QWidget):
             return
         try:
             if self.selected_resource and self.selected_resource['resource_type'] == 'page':
-                self.progress.setText('Use Reuse selected saved page to restore this page offline.'); return
+                self.progress.setText('Use Replace current page with saved page to preview an explicit replacement offline.'); return
             if self.controller.composer is not self.composer:
                 self.controller.close(); self.controller = self._controller()
             view = self.owner.session.teacher_view()

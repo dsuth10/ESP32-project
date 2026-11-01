@@ -9,6 +9,7 @@ import copy
 import hashlib
 from html.parser import HTMLParser
 import json
+import math
 import re
 import threading
 import textwrap
@@ -126,7 +127,8 @@ class PrimaryBoardComposer:
             + json.dumps(example) + '\nFor edit commands the discriminator is "op", never "type". '
             'An added image object needs exactly id,type,x,y,width,height,rotation,locked,image_ref. '
             'Text/captions must be separate complete text objects, never extra image fields. '
-            'Use an application template for a complete page whenever possible.')
+            'Use a complete-page application template only on an empty page or for an explicit page-replacement request. '
+            'Otherwise use additive edit commands and preserve existing objects.')
         return self.complete(task, prepared['context'])
 
 
@@ -160,53 +162,70 @@ def simple_image_request(instruction):
     return {'kind': 'photo' if factual else 'illustration', 'source': 'generate' if generation else None, 'query': query}
 
 
-def simple_image_composition(prepared):
-    """Compile a plain single-image request without model-generated commands.
+def _free_image_areas(page, margin, gap=20):
+    """Bounded free rectangles; no existing object is moved, covered or removed."""
+    areas = [(margin, margin, page['width']-margin, page['height']-margin)]
+    for obj in page['objects']:
+        angle = math.radians(obj['rotation'])
+        cosine, sine = math.cos(angle), math.sin(angle)
+        corners = [(obj['x']+x*cosine-y*sine, obj['y']+x*sine+y*cosine)
+                   for x, y in ((0, 0), (obj['width'], 0), (0, obj['height']), (obj['width'], obj['height']))]
+        left, top = min(x for x, _ in corners)-gap, min(y for _, y in corners)-gap
+        right, bottom = max(x for x, _ in corners)+gap, max(y for _, y in corners)+gap
+        remaining = []
+        for x1, y1, x2, y2 in areas:
+            if right <= x1 or left >= x2 or bottom <= y1 or top >= y2:
+                remaining.append((x1, y1, x2, y2))
+                continue
+            remaining.extend([(x1, y1, min(left, x2), y2), (max(right, x1), y1, x2, y2),
+                              (x1, y1, x2, min(top, y2)), (x1, max(bottom, y1), x2, y2)])
+        # Keeping a bounded subset can miss a space, but cannot create overlap:
+        # every retained rectangle is still checked against every later object.
+        areas = sorted({area for area in remaining if area[2]-area[0] >= 120 and area[3]-area[1] >= 120},
+                       key=lambda a: (-(a[2]-a[0])*(a[3]-a[1]), a))[:64]
+    return areas
 
-    Explicit generation can propose a complete image page over an occupied page;
-    the controller requires preview before replacing any existing content.
-    Other edits on occupied pages retain the ordinary composition path.
-    The controller still validates exact resources, credits, layout and preview.
+
+def simple_image_composition(prepared):
+    """Add a requested picture in clear space without changing existing work.
+
+    A full page needs a teacher layout decision, never automatic deletion.
     """
     context = json.loads(prepared['context'])
     images, page = context['selected_images'], context['page']
     plan = simple_image_request(context['instruction'])
     if plan is None or context.get('required_wording'):
         return None
-    replacing = bool(page['objects'])
-    if replacing:
-        # Retained page images are context, not candidates for this fresh
-        # generation. Only the one acquired required image may replace the page.
+    if len(images) > 1:
         images = [item for item in images if item.get('required')]
-        if plan['source'] != 'generate' or len(images) != 1 or not images[0].get('generated_unreviewed'):
-            return None
-    elif context.get('selected_object_ids'):
-        return None
     if len(images) != 1 or images[0].get('visual_kind') == 'chart':
         return None
     image = images[0]
     width, height = page['width'], page['height']
     margin = 64 * min(width / 1600, height / 900)
     credit = image.get('credit', '').strip()
-    credit_width = width - 2 * margin
-    # Size for native wrapping while retaining the exact original attribution.
-    lines = len(textwrap.wrap(credit, width=max(1, int(credit_width / 24)))) if credit else 0
-    credit_height = lines * 28 + 16 if credit else 0
-    available_height = height - 2 * margin - credit_height - (28 if credit else 0)
-    if credit_width <= 0 or available_height < height * .35:
-        return None
-    scale = min(credit_width / image['width'], available_height / image['height'])
-    w, h = image['width'] * scale, image['height'] * scale
-    objects = [new_object('image', image_ref=image['image_ref'], x=(width-w)/2,
-                          y=margin+(available_height-h)/2, width=w, height=h)]
+    layouts = []
+    for x1, y1, x2, y2 in _free_image_areas(page, margin):
+        credit_width = x2-x1
+        lines = len(textwrap.wrap(credit, width=max(1, int(credit_width / 24)))) if credit else 0
+        credit_height = lines * 28 + 16 if credit else 0
+        available_height = y2-y1-credit_height-(28 if credit else 0)
+        scale = min(credit_width/image['width'], available_height/image['height'])
+        w, h = image['width']*scale, image['height']*scale
+        if min(w, h) >= 80 and max(w, h) >= 128:
+            layouts.append((w*h, x1, y1, x2, y2, w, h, available_height, credit_height))
+    if not layouts:
+        raise BoardAgentError('The image is saved, but there is not enough clear space to add it without covering existing work. '
+            'Move or resize items, or create a new page and choose the saved image. Nothing was removed.')
+    _, x1, y1, x2, y2, w, h, available_height, credit_height = max(layouts, key=lambda item: item[0])
+    objects = [new_object('image', image_ref=image['image_ref'], x=x1+(x2-x1-w)/2,
+                          y=y1+(available_height-h)/2, width=w, height=h)]
     if credit:
-        objects.append(new_object('text', text=credit, x=margin, y=height-margin-credit_height,
-                                  width=credit_width, height=credit_height, font_size=20, colour='#374151'))
+        objects.append(new_object('text', text=credit, x=x1, y=y2-credit_height,
+                                  width=x2-x1, height=credit_height, font_size=20, colour='#374151'))
     for index, obj in enumerate(objects):
         obj['id'] = str(uuid.uuid5(uuid.UUID(context['request_id']), f'plain-image-{index}'))
-    commands = ([{'op': 'remove_object', 'page_id': page['id'], 'object_id': obj['id']}
-                 for obj in page['objects']] if replacing else [])
-    commands += [{'op':'add_object', 'page_id':page['id'], 'object':obj} for obj in objects]
+    commands = [{'op':'add_object', 'page_id':page['id'], 'object':obj} for obj in objects]
     return result_envelope(prepared, commands=commands, required_image_refs=[image['image_ref']])
 
 

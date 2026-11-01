@@ -8,6 +8,10 @@ then use the selected image generator when no suitable saved image exists.
 Explicit photographs and factual visual evidence retain photo retrieval with
 no automatic synthetic fallback. Chart-data and first-use-preview rules remain.
 
+The later 29 October user correction is binding: existing objects may be removed
+only when explicitly requested. Generating or adding an image must preserve
+existing page content; accepting its preview does not grant deletion authority.
+
 Later implementation record: the [agent build plan](2026-10-25-teaching-board-agent-build-plan.md)
 and [candidate guide](2026-10-25-teaching-board-agent-candidate.md) record the
 integrated local enforcement and tests. The implementation-status statements in

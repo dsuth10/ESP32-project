@@ -67,7 +67,8 @@ class FixtureImageProvider:
     ('Can you put an image of a horse up on the board?', False),
     ('I need you to generate an image of a horse and put it up on the board', False),
     ('I need you to generate an image of a horse and put it up on the board', True),
-], ids=['put', 'generate', 'generate-existing-page'])
+    ('Can you make a picture of a motorbike?', True),
+], ids=['put', 'generate', 'generate-existing-page', 'motorbike-existing-page'])
 def test_saved_voice_profile_enables_horse_preview_and_survives_board_reopen(tmp_path, monkeypatch, uncapped, producer, size, instruction, occupied):
     app = QApplication.instance() or QApplication([])
     for key in config_loader.ENV_KEYS:
@@ -120,8 +121,10 @@ def test_saved_voice_profile_enables_horse_preview_and_survives_board_reopen(tmp
             view = board.session.teacher_view()
             board.session.teacher_apply([
                 {'op': 'add_object', 'page_id': view['page_id'], 'object': new_object('image',
-                    image_ref={key: old[key] for key in ('asset_id', 'version_id', 'sha256')})},
-                {'op': 'add_object', 'page_id': view['page_id'], 'object': new_object('text', text='Existing teaching work')},
+                    image_ref={key: old[key] for key in ('asset_id', 'version_id', 'sha256')},
+                    x=80, y=300, width=160, height=120)},
+                {'op': 'add_object', 'page_id': view['page_id'], 'object': new_object('text', text='Existing teaching work',
+                    x=70, y=80, width=600, height=120, font_size=24)},
             ], expected_revision=view['revision'], expected_token=view['token'])
         before = board.session.pupil_view()['document']
         panel.companion_settings_root = profile
@@ -146,11 +149,10 @@ def test_saved_voice_profile_enables_horse_preview_and_survives_board_reopen(tmp
             time.sleep(.01)
         assert state['status'] == 'awaiting_confirmation', state
         assert 'first_generated_image_use' in state['confirmation_reasons']
-        if occupied:
-            assert 'whole_page_replacement' in state['confirmation_reasons']
+        assert 'whole_page_replacement' not in state['confirmation_reasons']
         assert board.session.pupil_view()['document'] == before
         assert len(provider.calls) == 1
-        assert provider.calls[0][0] == 'horse'
+        assert provider.calls[0][0] == ('motorbike' if 'motorbike' in instruction else 'horse')
         options = provider.calls[0][1]['options']
         assert options['size'] == size
         assert options['aspect_ratio'] == ('4:3' if producer == 'gemini' else '1:1')
@@ -166,6 +168,8 @@ def test_saved_voice_profile_enables_horse_preview_and_survives_board_reopen(tmp
         assert panel.controller.snapshot(panel.request_id)['status'] == 'applied'
         published = board.session.pupil_view()['document']
         assert any(obj['type'] == 'image' for obj in published['pages'][0]['objects'])
+        for original in before['pages'][0]['objects']:
+            assert original in published['pages'][0]['objects'], 'Adding an image must keep every existing object unchanged'
         board.undo()
         assert board.session.pupil_view()['document']['pages'] == before['pages']
         board.redo()

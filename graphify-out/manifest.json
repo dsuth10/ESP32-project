@@ -636,9 +636,9 @@
     "semantic_hash": ""
   },
   "tools/compose/focus_tracker.py": {
-    "mtime": 1793524278.8107793,
-    "seen": 1793524375.4476619,
-    "ast_hash": "f8fccc92d0b746b4d9c57ec8f03bacd4",
+    "mtime": 1793524851.7935717,
+    "seen": 1793527702.9846895,
+    "ast_hash": "cfb63dee3f874a9f796f547602cf3354",
     "semantic_hash": ""
   },
   "tools/compose/llm_pipeline.py": {
@@ -678,9 +678,9 @@
     "semantic_hash": ""
   },
   "tools/compose/compose_gui.py": {
-    "mtime": 1793524310.3104389,
-    "seen": 1793524375.4476619,
-    "ast_hash": "86857aeb3960307eac2c057702b64dfb",
+    "mtime": 1793526610.5497332,
+    "seen": 1793527702.9846895,
+    "ast_hash": "ecfc8307f82b7afd8c223b53dc1c2f32",
     "semantic_hash": ""
   },
   "docs/ESP32_Windows_Compose_Dictate_Implementation_Report.md": {
@@ -690,9 +690,9 @@
     "semantic_hash": ""
   },
   "tools/compose/hotkey_state.py": {
-    "mtime": 1793516549.1800418,
-    "seen": 1793519066.3640256,
-    "ast_hash": "ba44b1e002e116e29427ba2eaa639dc9",
+    "mtime": 1793526610.5497332,
+    "seen": 1793527702.9846895,
+    "ast_hash": "eb0ba7d60a48a04df0a63f911bd1a572",
     "semantic_hash": ""
   },
   "tools/compose/tests/test_compose.py": {
@@ -1122,9 +1122,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1793516545.4427378,
-    "seen": 1793519066.3640256,
-    "ast_hash": "5b59604d3cf2a68ffb88809862756496",
+    "mtime": 1793524876.229127,
+    "seen": 1793527702.9852006,
+    "ast_hash": "aec206945148d30993383786bcb23e2b",
     "semantic_hash": ""
   },
   "docs/2026-10-21-companion-assistant-first-increment.md": {
@@ -1134,9 +1134,9 @@
     "semantic_hash": ""
   },
   "docs/2026-10-21-companion-media-agent-master-plan.md": {
-    "mtime": 1793516545.4438336,
-    "seen": 1793519066.3640256,
-    "ast_hash": "f62e1c74fae87ca9e06df60274aec4b8",
+    "mtime": 1793524876.2302241,
+    "seen": 1793527702.9852006,
+    "ast_hash": "dd1b27c865b134566da7f823ec654706",
     "semantic_hash": ""
   },
   "docs/2026-10-21-embedded-companion-assistant-design.md": {
@@ -1548,9 +1548,9 @@
     "semantic_hash": ""
   },
   "tools/compose/board_candidate.py": {
-    "mtime": 1793263624.3917384,
-    "seen": 1793519066.3640256,
-    "ast_hash": "e43cb5fadf172aaf63afbbfe4eec4bbe",
+    "mtime": 1793526610.5492244,
+    "seen": 1793527702.9846895,
+    "ast_hash": "544dcdd73cd46b26734f093e106a2a01",
     "semantic_hash": ""
   },
   "tools/compose/board_hermes.py": {
@@ -1680,15 +1680,15 @@
     "semantic_hash": ""
   },
   "tools/compose/board_agent.py": {
-    "mtime": 1793516545.4759607,
-    "seen": 1793519066.3640256,
-    "ast_hash": "e1fd188f888c4748f88b753fb96ff766",
+    "mtime": 1793524876.2714317,
+    "seen": 1793527702.9846895,
+    "ast_hash": "8ee1c60786b7fa17a028b99abf496fbc",
     "semantic_hash": ""
   },
   "tools/compose/board_agent_ui.py": {
-    "mtime": 1793516545.4769633,
-    "seen": 1793519066.3640256,
-    "ast_hash": "907020ed59601ddc2a2c6685cfc952d6",
+    "mtime": 1793524876.2724466,
+    "seen": 1793527702.9846895,
+    "ast_hash": "1cf4fa3d2469dda1bdc4de9de0bfec06",
     "semantic_hash": ""
   },
   "tools/compose/board_export.py": {
@@ -1716,9 +1716,9 @@
     "semantic_hash": ""
   },
   "tools/compose/board_runtime.py": {
-    "mtime": 1793516545.4774654,
-    "seen": 1793519066.3640256,
-    "ast_hash": "2d46839d7db91861db02157ce3082fd0",
+    "mtime": 1793524876.272952,
+    "seen": 1793527702.9846895,
+    "ast_hash": "87a36539b4dd80aa7b55d9fefb19ab48",
     "semantic_hash": ""
   },
   "tools/compose/setup_teaching_board_candidate.ps1": {
@@ -1728,15 +1728,15 @@
     "semantic_hash": ""
   },
   "tools/compose/tests/test_board_agent.py": {
-    "mtime": 1793516545.4779727,
-    "seen": 1793519066.3640256,
-    "ast_hash": "8032bd7f0d12d37178e49e43c420c321",
+    "mtime": 1793524876.2744594,
+    "seen": 1793527702.9846895,
+    "ast_hash": "c4039b0ca53d4841c2067bd17e75abd4",
     "semantic_hash": ""
   },
   "tools/compose/tests/test_board_agent_ui.py": {
-    "mtime": 1793516545.4792411,
-    "seen": 1793519066.3640256,
-    "ast_hash": "382c89d733ca57c52ff70d001ce48686",
+    "mtime": 1793524876.2754793,
+    "seen": 1793527702.9846895,
+    "ast_hash": "df28fc73f08e116e37db4ba9d1dd58c6",
     "semantic_hash": ""
   },
   "tools/compose/tests/test_board_export.py": {
@@ -1770,9 +1770,9 @@
     "semantic_hash": ""
   },
   "docs/2026-10-25-board-agent-default-policies.md": {
-    "mtime": 1793516545.4448464,
-    "seen": 1793519066.3640256,
-    "ast_hash": "ca81db8de3a12af2c0a1d7ddd482d56f",
+    "mtime": 1793524876.2307317,
+    "seen": 1793527702.9852006,
+    "ast_hash": "3d121280e3b0648f4b44d8e45eb12cc0",
     "semantic_hash": ""
   },
   "docs/2026-10-25-school-readiness-plan.md": {
@@ -1842,9 +1842,9 @@
     "semantic_hash": ""
   },
   "tools/compose/companion_embedded.py": {
-    "mtime": 1793524225.949394,
-    "seen": 1793524375.4476619,
-    "ast_hash": "55d59c45a5fc41ecd8f05be0a5dd5caa",
+    "mtime": 1793524851.7920675,
+    "seen": 1793527702.9846895,
+    "ast_hash": "a26fc49f510dedccb2bb1051a1a4e57b",
     "semantic_hash": ""
   },
   "tools/compose/companion_host.py": {
@@ -1860,15 +1860,15 @@
     "semantic_hash": ""
   },
   "tools/compose/monitor_shortcut.py": {
-    "mtime": 1793516549.180544,
-    "seen": 1793519066.3640256,
-    "ast_hash": "792f0854222bbe4434fc48a03935536a",
+    "mtime": 1793526610.5516152,
+    "seen": 1793527702.9846895,
+    "ast_hash": "1eed4a5af1f2751896996cb2dcc8a3d8",
     "semantic_hash": ""
   },
   "tools/compose/monitor_shortcut_panel.py": {
-    "mtime": 1793516549.180544,
-    "seen": 1793519066.3640256,
-    "ast_hash": "a397ad72835e1bc348f6b86cec610d00",
+    "mtime": 1793526610.5516152,
+    "seen": 1793527702.9846895,
+    "ast_hash": "2ce6c90e614f3e97596f8f58a74ff6d6",
     "semantic_hash": ""
   },
   "tools/compose/run_unified_desktop.ps1": {
@@ -1884,9 +1884,9 @@
     "semantic_hash": ""
   },
   "tools/compose/tests/capture_monitor_shortcut_ui.py": {
-    "mtime": 1793516549.180544,
-    "seen": 1793519066.3640256,
-    "ast_hash": "529ec072970f401c07f8b166dfa52588",
+    "mtime": 1793526610.5531547,
+    "seen": 1793527702.9846895,
+    "ast_hash": "c2da7dc4149ae53cc276dbb14c17b555",
     "semantic_hash": ""
   },
   "tools/compose/tests/conftest.py": {
@@ -1896,8 +1896,8 @@
     "semantic_hash": ""
   },
   "tools/compose/tests/linux_windows_stubs.py": {
-    "mtime": 1793523782.6098273,
-    "seen": 1793524375.4476619,
+    "mtime": 1793524851.7955801,
+    "seen": 1793527702.9846895,
     "ast_hash": "06a60e02c367a85efdcce9fb56e3f6f2",
     "semantic_hash": ""
   },
@@ -1986,9 +1986,9 @@
     "semantic_hash": ""
   },
   "tools/compose/tests/test_board_settings_image_workflow.py": {
-    "mtime": 1793516545.4802577,
-    "seen": 1793519066.3640256,
-    "ast_hash": "40c453ba808cec1fadaa11ee8462c735",
+    "mtime": 1793524876.2759862,
+    "seen": 1793527702.9846895,
+    "ast_hash": "2d92334a8d99d2031d3bd7a5ba016f08",
     "semantic_hash": ""
   },
   "tools/compose/tests/test_board_settings_reload.py": {
@@ -1998,9 +1998,9 @@
     "semantic_hash": ""
   },
   "tools/compose/tests/test_board_simple_images.py": {
-    "mtime": 1793516545.4807646,
-    "seen": 1793519066.3640256,
-    "ast_hash": "58f361ad40090157455365490f463435",
+    "mtime": 1793524876.2759862,
+    "seen": 1793527702.9846895,
+    "ast_hash": "619c369ae52051d7b60ec712f05611d0",
     "semantic_hash": ""
   },
   "tools/compose/tests/test_companion_embedding.py": {
@@ -2016,21 +2016,21 @@
     "semantic_hash": ""
   },
   "tools/compose/tests/test_monitor_shortcut.py": {
-    "mtime": 1793516549.1826615,
-    "seen": 1793519066.3640256,
+    "mtime": 1793524851.7965825,
+    "seen": 1793527702.9846895,
     "ast_hash": "2f6d7f3293b5ee4079c5c1977bc9efde",
     "semantic_hash": ""
   },
   "tools/compose/tests/test_monitor_shortcut_regressions.py": {
-    "mtime": 1793524341.626534,
-    "seen": 1793524375.4476619,
-    "ast_hash": "b4f1d7039971b985e033afe84c176859",
+    "mtime": 1793526610.5546644,
+    "seen": 1793527702.9846895,
+    "ast_hash": "eca72b3ee3d8d2f3365a812c40f05887",
     "semantic_hash": ""
   },
   "tools/compose/tests/test_monitor_shortcut_ui.py": {
-    "mtime": 1793516549.1846905,
-    "seen": 1793519066.3640256,
-    "ast_hash": "67ac52074892d9355ddff33acb6ed54c",
+    "mtime": 1793526610.555167,
+    "seen": 1793527702.9846895,
+    "ast_hash": "bdd896b2a507c7e61f3a7aefe6949d7c",
     "semantic_hash": ""
   },
   "tools/compose/tests/test_uncapped_image_spending.py": {
@@ -2052,15 +2052,15 @@
     "semantic_hash": ""
   },
   "tools/compose/unified_desktop.py": {
-    "mtime": 1793263613.733687,
-    "seen": 1793519066.3640256,
-    "ast_hash": "ae89715e4a6cd016fefd58a89eda2a9c",
+    "mtime": 1793526610.555167,
+    "seen": 1793527702.9852006,
+    "ast_hash": "326d3f3414c59e95047764bcacdc765c",
     "semantic_hash": ""
   },
   "tools/compose/window_monitor_manager.py": {
-    "mtime": 1793523782.6600912,
-    "seen": 1793524375.4476619,
-    "ast_hash": "db617ca05c72ce17e67a5991d2d28d6f",
+    "mtime": 1793527599.1707692,
+    "seen": 1793527702.9852006,
+    "ast_hash": "8dbee57e24e82bf18aac9b705cf704c9",
     "semantic_hash": ""
   },
   "docs/2026-10-26-teaching-board-request-recovery.md": {
@@ -2100,9 +2100,9 @@
     "semantic_hash": ""
   },
   "docs/2026-10-28-unified-desktop-guide.md": {
-    "mtime": 1793516545.4453533,
-    "seen": 1793519066.3640256,
-    "ast_hash": "a65fe442f8fccd9f33d89b1aad9bc0b0",
+    "mtime": 1793524876.2307317,
+    "seen": 1793527702.9852006,
+    "ast_hash": "f15b2a0c4c0d500657592dddc5600cd5",
     "semantic_hash": ""
   },
   "docs/2026-10-28-unified-desktop-image-settings-diagnosis.md": {
@@ -2124,9 +2124,9 @@
     "semantic_hash": ""
   },
   "docs/2026-10-29-board-image-options.md": {
-    "mtime": 1793516545.4463556,
-    "seen": 1793519066.3640256,
-    "ast_hash": "a8e3ad9c9f50d215393a850e83081f7a",
+    "mtime": 1793524876.2317345,
+    "seen": 1793527702.9852006,
+    "ast_hash": "651df9b2745069063e6a50e1af3dad0e",
     "semantic_hash": ""
   },
   "docs/research/2026-11-01-device-shortcut-monitor-investigation.md": {
@@ -2145,6 +2145,18 @@
     "mtime": 1793505971.538572,
     "seen": 1793519066.3640256,
     "ast_hash": "aee365a19630a1c26aac7a35c808d65c",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_board_classroom_display.py": {
+    "mtime": 1793526610.5531547,
+    "seen": 1793527702.9846895,
+    "ast_hash": "8539e62b076bcf3481836f2a84fd9aff",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_classroom_apps.py": {
+    "mtime": 1793527667.762563,
+    "seen": 1793527702.9846895,
+    "ast_hash": "62a250bbf2a98baf5b6b4a73ef25d706",
     "semantic_hash": ""
   }
 }

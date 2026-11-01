@@ -323,3 +323,26 @@ def test_board_window_path_places_existing_pupil_without_hiding_office(tmp_path)
     assert backend.place_calls == [(71, classroom.work_area.as_tuple(), False)]
     assert note.alive is True
     assert backend.launch_calls == []
+
+def test_resolve_app_path_finds_registered_windows_executables():
+    from window_monitor_manager import _resolve_app_path
+    if sys.platform == 'win32':
+        assert _resolve_app_path('chrome.exe') is not None
+        assert _resolve_app_path('WINWORD.EXE') is not None
+    assert _resolve_app_path('non_existent_app_123.exe') is None
+
+
+def test_minimised_chrome_window_is_discovered_and_placed(tmp_path):
+    classroom = monitor()
+    min_chrome = window(hwnd=80, title='Google Chrome', executable=CHROME_EXECUTABLE,
+                        left=-32000, top=-32000, right=-31840, bottom=-31972,
+                        show_state='minimised')
+    backend = FakeWindowMonitorBackend([classroom], [min_chrome])
+    ctl, _ = controller(
+        tmp_path, backend, classroom_display=classroom.identity_record(),
+        last_seen_identities=[classroom.durable_key()])
+    receipt = ctl.open_app_on_classroom_display(APP_CHROME)
+    assert receipt.kind == KIND_OK
+    assert receipt.hwnd == 80
+    assert not receipt.launched
+    assert backend.place_calls == [(80, classroom.work_area.as_tuple(), True)]
