@@ -129,6 +129,26 @@ class FocusTracker:
                 return False
             if snapshot.get("title") and win32gui.GetWindowText(hwnd) != snapshot["title"]:
                 return False
+            return FocusTracker.request_foreground(hwnd, restore=True)
+        except Exception as e:
+            logging.debug("[FocusTracker] restore_focus error: %s", e)
+            return False
+
+    @staticmethod
+    def request_foreground(hwnd: int, *, restore: bool = False) -> bool:
+        """Ask Windows to foreground an existing window without changing paste permission.
+
+        restore=True matches the historical document-return path. Placement that
+        already restored or maximised a window should pass restore=False.
+        """
+        if not hwnd or FocusTracker.is_internal_window(hwnd):
+            return False
+        try:
+            if not win32gui.IsWindow(hwnd):
+                return False
+            _, pid = win32process.GetWindowThreadProcessId(hwnd)
+            if FocusTracker.is_internal_process(pid):
+                return False
             if win32gui.GetForegroundWindow() == hwnd:
                 return True
             user32 = ctypes.windll.user32
@@ -144,14 +164,15 @@ class FocusTracker:
                 user32.AttachThreadInput(cur_tid, tgt_tid, True)
                 attached.append(tgt_tid)
             try:
-                win32gui.ShowWindow(hwnd, 9)  # SW_RESTORE
+                if restore:
+                    win32gui.ShowWindow(hwnd, 9)  # SW_RESTORE
                 win32gui.SetForegroundWindow(hwnd)
             finally:
                 for tid in reversed(attached):
                     user32.AttachThreadInput(cur_tid, tid, False)
             return win32gui.GetForegroundWindow() == hwnd
         except Exception as e:
-            logging.debug("[FocusTracker] restore_focus error: %s", e)
+            logging.debug("[FocusTracker] request_foreground error: %s", e)
             return False
 
     @staticmethod

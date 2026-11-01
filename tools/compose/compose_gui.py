@@ -50,6 +50,8 @@ from settings_panel import SettingsPanel
 from media_voice_bridge import VoiceBridge
 from hermes_panel import HermesPanel
 from hermes_service import HermesService, HermesServiceError
+from monitor_shortcut import MonitorShortcutController
+from monitor_shortcut_panel import MonitorShortcutPanel
 
 
 def truthy(value):
@@ -137,6 +139,7 @@ class ComposeApp:
         self._busy = False
         self._ui_events = queue.Queue()
         self._recording_timer = None
+        self.monitor_shortcut = MonitorShortcutController(root=data_directory())
 
         self._build_ui()
         self.voice_bridge = None
@@ -168,9 +171,7 @@ class ComposeApp:
                 if self.local_only else "Feature preview: receiver startup disabled; live receiver left alone."))
 
         # Start hardware key listener thread
-        if truthy(self.config.get("ESP32_ENABLE_HOTKEYS", "1")):
-            self.poller_thread = threading.Thread(target=self._hardware_key_poller, daemon=True)
-            self.poller_thread.start()
+        self._ensure_hotkey_poller()
         self._configure_media_sync()
         self.device_feedback = None
         if self.config.get('DEVICE_FEEDBACK_PORT') and hasattr(self,'device_feedback_label'):
@@ -211,6 +212,8 @@ class ComposeApp:
         self.tabs.add(self.library_tab, text="History & saved text")
         self.media_tab = ttk.Frame(self.tabs)
         self.tabs.add(self.media_tab, text="Image library")
+        self.classroom_tab = ttk.Frame(self.tabs)
+        self.tabs.add(self.classroom_tab, text="Classroom display")
         self.settings_tab = ttk.Frame(self.tabs)
         self.tabs.add(self.settings_tab, text="Settings")
         self.media_service = MediaService(self.media_store, self.config) if self.media_store else None
@@ -229,6 +232,12 @@ class ComposeApp:
             ttk.Button(media_options, text="Clear queued image", command=self._clear_media_queue).pack(side="right")
         else:
             ttk.Label(self.media_tab, text="Media storage unavailable. Existing writing and History remain usable.").pack()
+        self.classroom_panel = MonitorShortcutPanel(
+            self.classroom_tab, self.monitor_shortcut,
+            on_status=self._classroom_status,
+            on_hotkey_changed=lambda _enabled: self._ensure_hotkey_poller(),
+        )
+        self.classroom_panel.pack(fill="both", expand=True)
         self.settings_panel = SettingsPanel(self.settings_tab, self.config,
                                             self._validate_settings_before_save, self._apply_saved_settings,
                                             self._post_ui)
@@ -348,6 +357,24 @@ class ComposeApp:
         )
         self.btn_paste.pack(side="left", expand=True, fill="x", padx=(6, 0))
 
+        classroom_btn_frame = tk.Frame(parent, bg="#0B0F19")
+        classroom_btn_frame.pack(fill="x", padx=14, pady=(0, 8))
+        self.btn_classroom_onenote = tk.Button(
+            classroom_btn_frame,
+            text="📓 Open OneNote on classroom display",
+            font=("Segoe UI", 10, "bold"),
+            bg="#4F46E5",
+            fg="#FFFFFF",
+            activebackground="#4338CA",
+            activeforeground="#FFFFFF",
+            relief="flat",
+            padx=14,
+            pady=8,
+            cursor="hand2",
+            command=self.open_onenote_on_classroom_display,
+        )
+        self.btn_classroom_onenote.pack(side="left", fill="x", expand=True)
+
         # Instructions / Shortcut Guide
         guide_frame = tk.Frame(parent, bg="#111827", padx=12, pady=8, highlightthickness=1, highlightbackground="#1F2937")
         guide_frame.pack(fill="x", padx=14, pady=4)
@@ -355,7 +382,8 @@ class ComposeApp:
         guide_txt = (
             "Device page 7/8: tap or hold Compose, Dictate or Images. Tap Library to open image review.\n"
             "F13 Compose · F14 Dictate · F15 Paste Ready · F16 Images · F17 Library.\n"
-            "Fallback: Ctrl+Alt+Shift with F9 / F10 / F11 / F8 / F7 respectively."
+            "Fallback: Ctrl+Alt+Shift with F9 / F10 / F11 / F8 / F7 respectively.\n"
+            "Classroom OneNote: companion button, or optional F18 / Ctrl+Alt+Shift+F6 (off by default; no handheld button yet)."
         )
         tk.Label(guide_frame, text=guide_txt, font=("Segoe UI", 8), fg="#9CA3AF", bg="#111827", justify="left", wraplength=650).pack(anchor="w")
 
@@ -840,6 +868,8 @@ class ComposeApp:
             self.assistant_panel.close()
         if hasattr(self, "hermes_panel"):
             self.hermes_panel.close()
+        if hasattr(self, "classroom_panel"):
+            self.classroom_panel.close()
         if hasattr(self, "settings_panel"):
             self.settings_panel.close()
         if getattr(self, "hermes_service", None):
@@ -1043,6 +1073,10 @@ class ComposeApp:
             snap = FocusTracker.snapshot_foreground_window()
             if snap.get("pid") and not FocusTracker.is_internal_snapshot(snap):
                 self._last_external_snap = snap
+                hwnd = snap.get("hwnd")
+                backend = getattr(getattr(self, "monitor_shortcut", None), "backend", None)
+                if hwnd and backend is not None:
+                    backend.note_foreground(hwnd)
         except Exception:
             logging.debug("Foreground window tracking unavailable", exc_info=True)
         self.root.after(200, self._remember_external_focus)
@@ -1061,6 +1095,10 @@ class ComposeApp:
                     self.root.deiconify();self.root.lift();self.root.focus_force()
                 self.media_panel.refresh()
             return
+        if mode == 'onenote_display':
+            if edge == 'down':
+                self.open_onenote_on_classroom_display()
+            return
         if mode == "paste":
             if edge == "up":
                 self.inject_paste_ui()
@@ -1069,13 +1107,53 @@ class ComposeApp:
         elif self.is_recording and self.recording_mode == mode:
             self.stop_recording_flow()
 
+    def _classroom_status(self, text, colour=None):
+        self.set_status(text, colour or "#F8FAFC")
+        self.log(text)
+
+    def open_onenote_on_classroom_display(self):
+        if self._settings_saving():
+            return
+        controller = getattr(self, "monitor_shortcut", None)
+        if controller is None:
+            return
+        receipt = controller.open_onenote_on_classroom_display()
+        if hasattr(self, "classroom_panel"):
+            self.classroom_panel._show_receipt(receipt)
+        else:
+            self._classroom_status(receipt.message, "#10B981" if receipt.kind == "ok" else "#F59E0B")
+
+    def _enabled_hotkey_modes(self):
+        modes = []
+        if truthy(self.config.get("ESP32_ENABLE_HOTKEYS", "1")):
+            modes.extend(HotkeyState.DEFAULT_MODES)
+        controller = getattr(self, "monitor_shortcut", None)
+        if controller is not None and controller.hotkey_enabled() and "onenote_display" not in modes:
+            modes.append("onenote_display")
+        return modes
+
+    def _ensure_hotkey_poller(self):
+        if not self._enabled_hotkey_modes():
+            return
+        thread = getattr(self, "poller_thread", None)
+        if thread is not None and thread.is_alive():
+            return
+        self.poller_thread = threading.Thread(target=self._hardware_key_poller, daemon=True)
+        self.poller_thread.start()
+
     def _hardware_key_poller(self):
-        state = HotkeyState()
+        enabled = tuple(self._enabled_hotkey_modes())
+        state = HotkeyState(enabled)
         user32 = ctypes.windll.user32
         while not self._stop_poller:
             try:
-                for mode, edge in state.update(lambda key: bool(user32.GetAsyncKeyState(key) & 0x8000)):
-                    self._ui_events.put((self._handle_hardware_event, (mode, edge)))
+                current = tuple(self._enabled_hotkey_modes())
+                if current != enabled:
+                    enabled = current
+                    state = HotkeyState(enabled)
+                if enabled:
+                    for mode, edge in state.update(lambda key: bool(user32.GetAsyncKeyState(key) & 0x8000)):
+                        self._ui_events.put((self._handle_hardware_event, (mode, edge)))
             except Exception:
                 logging.exception("Hardware hotkey polling failed")
             time.sleep(0.015)
