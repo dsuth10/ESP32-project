@@ -10,6 +10,8 @@ import tkinter as tk
 import win32gui
 import win32con
 
+from board_theme_tokens import TOKENS
+
 # Win32 extended style flags
 WS_EX_NOACTIVATE = 0x08000000
 WS_EX_TOOLWINDOW = 0x00000080
@@ -40,26 +42,30 @@ class StatusOverlay:
 
         root.overrideredirect(True)
         root.attributes("-topmost", True)
-        root.configure(bg="#0B0F19")
+                root.configure(bg=TOKENS['background'])
 
         # Set transparent key or dark rounded background
-        frame = tk.Frame(root, bg="#111827", highlightthickness=1, highlightbackground="#374151", padx=16, pady=8)
+        frame = tk.Frame(root, bg=TOKENS['surface_low'], highlightthickness=1,
+                         highlightbackground=TOKENS['outline_variant'], padx=16, pady=8)
         frame.pack(fill="both", expand=True)
         self._frame = frame
 
         # Inner layout: Dot/Icon, Title, Subtitle
-        icon_lbl = tk.Label(frame, text="●", font=("Segoe UI", 12, "bold"), fg="#F59E0B", bg="#111827")
+        icon_lbl = tk.Label(frame, text="●", font=("Segoe UI", 12, "bold"), fg=TOKENS['warning'],
+                            bg=TOKENS['surface_low'])
         icon_lbl.pack(side="left", padx=(0, 8))
         self._label_icon = icon_lbl
 
-        content_box = tk.Frame(frame, bg="#111827")
+        content_box = tk.Frame(frame, bg=TOKENS['surface_low'])
         content_box.pack(side="left", fill="both", expand=True)
 
-        title_lbl = tk.Label(content_box, text="Ready", font=("Segoe UI", 10, "bold"), fg="#F9FAFB", bg="#111827", anchor="w")
+        title_lbl = tk.Label(content_box, text="Ready", font=("Segoe UI", 10, "bold"),
+                             fg=TOKENS['on_surface'], bg=TOKENS['surface_low'], anchor="w")
         title_lbl.pack(fill="x")
         self._label_title = title_lbl
 
-        sub_lbl = tk.Label(content_box, text="", font=("Segoe UI", 8), fg="#9CA3AF", bg="#111827", anchor="w")
+        sub_lbl = tk.Label(content_box, text="", font=("Segoe UI", 8), fg=TOKENS['on_surface_variant'],
+                           bg=TOKENS['surface_low'], anchor="w")
         sub_lbl.pack(fill="x")
         self._label_sub = sub_lbl
 
@@ -118,10 +124,10 @@ class StatusOverlay:
         root.after(40, check_queue)
         root.mainloop()
 
-    def show(self, title: str, subtitle: str = "", color: str = "#F59E0B", autohide_ms: int = 0):
+    def show(self, title: str, subtitle: str = "", color: str = None, autohide_ms: int = 0):
         """Displays or updates the HUD overlay non-blockingly."""
         with self._queue_lock:
-            self._pending_update = ("show", title, subtitle, color, autohide_ms)
+            self._pending_update = ("show", title, subtitle, color or TOKENS['warning'], autohide_ms)
 
     def hide(self):
         """Hides the HUD overlay."""
@@ -130,22 +136,22 @@ class StatusOverlay:
 
     # Convenience state presets
     def show_listening_compose(self):
-        self.show("Listening (Compose)...", "Speak prompt, release button to write", color="#F59E0B")
+        self.show("Listening (Compose)...", "Speak prompt, release button to write", color=TOKENS['warning'])
 
     def show_listening_dictate(self):
-        self.show("Listening (Dictate)...", "Speak text, release button to paste", color="#06B6D4")
+        self.show("Listening (Dictate)...", "Speak text, release button to paste", color=TOKENS['primary_container'])
 
     def show_processing(self, text: str = "Writing..."):
-        self.show(text, "Synthesizing text at cursor...", color="#9333EA")
+        self.show(text, "Synthesizing text at cursor...", color=TOKENS['secondary'])
 
     def show_ready_to_paste(self, title: str = "READY"):
-        self.show("READY TO PASTE", "Window changed. Tap F15 to paste.", color="#10B981")
+        self.show("READY TO PASTE", "Window changed. Tap F15 to paste.", color=TOKENS['tertiary'])
 
     def show_pasted(self):
-        self.show("Pasted!", "Inserted at cursor", color="#10B981", autohide_ms=1200)
+        self.show("Pasted!", "Inserted at cursor", color=TOKENS['tertiary'], autohide_ms=1200)
 
     def show_error(self, err_msg: str):
-        self.show("Error", err_msg[:50], color="#EF4444", autohide_ms=3000)
+        self.show("Error", err_msg[:50], color=TOKENS['error'], autohide_ms=3000)
 
 
 if __name__ == "__main__":

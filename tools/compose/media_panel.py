@@ -10,6 +10,7 @@ from tkinter import ttk, filedialog, simpledialog, messagebox, scrolledtext
 from pathlib import Path
 from PIL import Image, ImageTk
 from image_provider_config import PROVIDER_LABELS, CAPABILITIES, selected_provider
+from board_theme_tokens import apply_tk, style_tk_listbox, style_tk_menu, style_tk_text
 
 
 class MediaPanel(ttk.Frame):
@@ -61,6 +62,7 @@ class MediaPanel(ttk.Frame):
             ttk.Button(actions,text=label,command=callback).grid(row=0,column=index,sticky='w',padx=2,pady=2)
         tools=ttk.Menubutton(actions,text='Library tools')
         menu=tk.Menu(tools,tearoff=False)
+        style_tk_menu(menu)
         menu.add_command(label='Back up media library',command=self.backup)
         menu.add_command(label='Restore backup into a new folder',command=self.restore)
         menu.add_command(label='Review selected job',command=self.review_job)
@@ -72,6 +74,7 @@ class MediaPanel(ttk.Frame):
         tools.configure(menu=menu);tools.grid(row=0,column=4,sticky='w',padx=2)
         ttk.Label(self,text='Describe a media request, or refine the selected image (Ctrl+Enter to send)').grid(row=4,column=0,sticky='w')
         self.prompt=scrolledtext.ScrolledText(self,height=2,wrap='word',font=('Segoe UI',11))
+        style_tk_text(self.prompt)
         self.prompt.grid(row=5,column=0,sticky='ew')
         self.prompt.bind('<Control-Return>',lambda event:(self.ask(),'break')[1])
         commands=ttk.Frame(self);commands.grid(row=6,column=0,sticky='ew',pady=5)
@@ -267,6 +270,7 @@ class MediaPanel(ttk.Frame):
         if not selection:return self.tell('Select a recent job first.')
         job=self.service.store.get_job(selection[0])
         window=tk.Toplevel(self);window.title('Review media attempt')
+        apply_tk(window)
         ttk.Label(window,text=f"{job['kind']} · {job['phase']}\n{job.get('error') or job.get('accounting') or 'No error recorded.'}",
                   wraplength=550,padding=12).pack(fill='x')
         if job.get('image_provider'):
@@ -278,6 +282,7 @@ class MediaPanel(ttk.Frame):
                 wraplength=550,padding=12).pack(fill='x')
         if job.get('provider_receipt'):
             receipt=scrolledtext.ScrolledText(window,height=9,width=65,wrap='word')
+            style_tk_text(receipt)
             receipt.pack(fill='both',expand=True,padx=12,pady=6)
             receipt.insert('1.0',json.dumps(job['provider_receipt'],indent=2));receipt.configure(state='disabled')
         if job['phase']=='preview_ready' and job.get('accounting')=='reservation_held_pending_reconciliation':
@@ -423,11 +428,15 @@ class MediaPanel(ttk.Frame):
     def show_web_results(self,rows):
         if not rows:return self.tell('No supported web images found. No generation was requested.')
         window=tk.Toplevel(self);window.title('External image candidates — review reuse terms')
+        apply_tk(window)
         window.geometry('700x480')
         listing=tk.Listbox(window,height=8,exportselection=False)
+        style_tk_listbox(listing)
         listing.pack(fill='x',padx=10,pady=5)
         for row in rows:listing.insert('end',row['title'])
-        details=scrolledtext.ScrolledText(window,height=10,wrap='word');details.pack(fill='both',expand=True,padx=10)
+        details=scrolledtext.ScrolledText(window,height=10,wrap='word')
+        style_tk_text(details)
+        details.pack(fill='both',expand=True,padx=10)
         rights=tk.BooleanVar(value=False)
         def choose(event=None):
             rights.set(False);details.delete('1.0','end')

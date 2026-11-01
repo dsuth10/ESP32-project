@@ -4,6 +4,7 @@ from __future__ import annotations
 import tkinter as tk
 from tkinter import ttk
 
+from board_theme_tokens import TOKENS
 from monitor_shortcut import (
     DEFAULT_PROFILES,
     KIND_MISSING_DISPLAY,
@@ -175,12 +176,12 @@ class MonitorShortcutPanel(ttk.Frame):
         self.close_overlays()
         monitors = self.controller.list_monitors()
         if not monitors:
-            self._set_status(MISSING_DISPLAY_MESSAGE, '#F59E0B')
+            self._set_status(MISSING_DISPLAY_MESSAGE, TOKENS['warning'])
             return
         for index, monitor in enumerate(monitors, start=1):
             overlay = tk.Toplevel(self)
             overlay.title(f'Screen {index}')
-            overlay.configure(bg='#111827')
+            overlay.configure(bg=TOKENS['surface_low'])
             geometry = (
                 f'{max(320, monitor.bounds.width)}x{max(200, monitor.bounds.height)}'
                 f'+{monitor.bounds.left}+{monitor.bounds.top}')
@@ -195,11 +196,11 @@ class MonitorShortcutPanel(ttk.Frame):
             name = monitor.friendly_name or f'Display {index}'
             tk.Label(
                 overlay, text=f'{index}', font=('Segoe UI', 48, 'bold'),
-                fg='#F8FAFC', bg='#111827',
+                fg=TOKENS['on_surface'], bg=TOKENS['surface_low'],
             ).pack(pady=(40, 8))
             tk.Label(
-                overlay, text=name, font=('Segoe UI', 16), fg='#E5E7EB', bg='#111827',
-                wraplength=600,
+                overlay, text=name, font=('Segoe UI', 16), fg=TOKENS['on_surface_variant'],
+                bg=TOKENS['surface_low'], wraplength=600,
             ).pack()
             ttk.Button(
                 overlay, text='Use as Classroom display',
@@ -212,7 +213,7 @@ class MonitorShortcutPanel(ttk.Frame):
         self.controller.assign_monitor(monitor)
         self.close_overlays()
         self.reload()
-        self._set_status(f'Classroom display is now {monitor.friendly_name or "this screen"}.', '#10B981')
+        self._set_status(f'Classroom display is now {monitor.friendly_name or "this screen"}.', TOKENS['tertiary'])
 
     def close_overlays(self) -> None:
         for overlay in self._overlays:
@@ -229,9 +230,9 @@ class MonitorShortcutPanel(ttk.Frame):
         self._show_receipt(self.controller.open_onenote_on_classroom_display())
 
     def _show_receipt(self, receipt: ActionReceipt) -> None:
-        colour = '#10B981' if receipt.kind == 'ok' else '#F59E0B'
+        colour = TOKENS['tertiary'] if receipt.kind == 'ok' else TOKENS['warning']
         if receipt.kind in {'placement_failed', 'launch_failed', 'window_gone'}:
-            colour = '#EF4444'
+            colour = TOKENS['error']
         text = receipt.message
         if receipt.warning:
             text = f'{receipt.warning} {receipt.message}'.strip()

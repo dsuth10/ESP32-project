@@ -7,6 +7,8 @@ from tkinter import filedialog, messagebox, simpledialog, scrolledtext, ttk
 from datetime import datetime
 from typing import Any, Callable
 
+from board_theme_tokens import style_tk_text
+
 
 class LibraryPanel(ttk.Frame):
     """Browse local history and queue saved responses for the paste-ready flow."""
@@ -72,6 +74,7 @@ class LibraryPanel(ttk.Frame):
 
         ttk.Label(details, text="Request and response").grid(row=0, column=0, sticky="w", pady=(4, 3))
         self.detail_text = scrolledtext.ScrolledText(details, height=7, wrap="word", state="disabled")
+        style_tk_text(self.detail_text)
         self.detail_text.grid(row=1, column=0, sticky="nsew")
 
         action_row = ttk.Frame(self)

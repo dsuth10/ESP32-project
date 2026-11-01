@@ -23,6 +23,7 @@ from board_runtime import (PrimaryBoardComposer, BoardResourcePreparer, create_r
                            HermesBoardComposer, HermesService, truthy)
 from media_store import MediaStore
 from board_recovery import BoardRecoveryStore
+import board_theme
 
 
 def validate_page_layout(document, page_id, *, image_resolver=None):
@@ -172,6 +173,7 @@ class AgentPanel(QWidget):
         self.pending_sources = [self.lesson_media.root, self.library.media.root]
         self.index_timer.start(0)
         self.reload_saved_requests()
+        board_theme.install_agent_panel(self)
 
     def _initial_settings(self, config, settings_root):
         """Reopen only an explicit remembered selection; never discover cloud settings."""
@@ -405,7 +407,10 @@ class AgentPanel(QWidget):
         reload_button.clicked.connect(reload); layout.addWidget(reload_button)
         local = QPushButton('Use local-only Board'); local.clicked.connect(lambda: select(None)); layout.addWidget(local)
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); buttons.rejected.connect(dialog.reject); layout.addWidget(buttons)
-        refresh(); dialog.resize(600, 500); dialog.exec()
+        refresh()
+        board_theme.install_dialog(dialog)
+        dialog.resize(600, 500)
+        dialog.exec()
 
     def _controller(self, *, composer=None, preparer=None):
         return BoardAgentController(self.owner.session, composer=composer or self.composer,
@@ -552,6 +557,7 @@ class AgentPanel(QWidget):
         buttons.accepted.connect(dialog.accept); buttons.rejected.connect(dialog.reject)
         buttons.button(QDialogButtonBox.StandardButton.Reset).clicked.connect(lambda: (year.setValue(5), instructions.setPlainText(TeachingProfile().instructions), illustrative.setChecked(False)))
         layout.addRow(buttons)
+        board_theme.install_dialog(dialog)
         if dialog.exec() == QDialog.DialogCode.Accepted:
             try:
                 profile = TeachingProfile(revision=self.profile.revision + 1, year_level=year.value(),
@@ -657,6 +663,7 @@ class AgentPanel(QWidget):
         note.setWordWrap(True); form.addRow(note)
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         buttons.accepted.connect(dialog.accept); buttons.rejected.connect(dialog.reject); form.addRow(buttons)
+        board_theme.install_dialog(dialog)
         if dialog.exec() != QDialog.DialogCode.Accepted:
             return
         try:
@@ -936,6 +943,7 @@ class AgentPanel(QWidget):
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Cancel)
         accept = buttons.addButton('Use image and present' if 'first_generated_image_use' in state['confirmation_reasons'] else 'Present this page', QDialogButtonBox.ButtonRole.AcceptRole)
         buttons.accepted.connect(dialog.accept); buttons.rejected.connect(dialog.reject); layout.addWidget(buttons)
+        board_theme.install_dialog(dialog)
         dialog.resize(1050, 720)
         QTimer.singleShot(0, canvas.fit)
         if dialog.exec() == QDialog.DialogCode.Accepted:

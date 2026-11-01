@@ -36,6 +36,7 @@ from board_resize import handle_positions, resize_frame
 from board_images import import_prepared, safe_path
 from board_images import SavedImageLibrary
 from board_image_picker import ImagePicker
+import board_theme
 
 REPOSITORY = Path(__file__).resolve().parents[2]
 CANDIDATE_ROOT = REPOSITORY / '.local' / 'teaching-board-candidate'
@@ -229,9 +230,9 @@ class BoardCanvas(QGraphicsView):
             self.scene().blockSignals(False)
         page = page_from(view)
         self.scene().setSceneRect(0, 0, page['width'], page['height'])
-        self.scene().setBackgroundBrush(QColor('#DDE2E7'))
+        self.scene().setBackgroundBrush(board_theme.color('viewport'))
         self.page_item = self.scene().addRect(0, 0, page['width'], page['height'],
-                                             QPen(Qt.PenStyle.NoPen), QBrush(QColor('white')))
+                                             QPen(Qt.PenStyle.NoPen), QBrush(board_theme.color('page')))
         self.page_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemClipsChildrenToShape)
         for value in page['objects']:
             self.add_item(value)
@@ -309,14 +310,14 @@ class BoardCanvas(QGraphicsView):
             value = {**value, **self.resize_state['changes']}
         positions = handle_positions(value)
         painter.save()
-        pen = QPen(QColor('#1769B0'), 1, Qt.PenStyle.DashLine); pen.setCosmetic(True)
+        pen = QPen(board_theme.color('selection'), 1.5, Qt.PenStyle.DashLine); pen.setCosmetic(True)
         painter.setPen(pen); painter.setBrush(Qt.BrushStyle.NoBrush)
         path = QPainterPath(QPointF(*positions['nw']))
         for key in ('ne', 'se', 'sw', 'nw'):
             path.lineTo(QPointF(*positions[key]))
         painter.drawPath(path)
         pen.setStyle(Qt.PenStyle.SolidLine); painter.setPen(pen)
-        painter.setBrush(QColor('white'))
+        painter.setBrush(board_theme.color('background'))
         half = 5/max(abs(self.transform().m11()), .0001)
         for x, y in positions.values():
             painter.drawRect(QRectF(x-half, y-half, half*2, half*2))
@@ -545,6 +546,7 @@ class BoardCandidate(QWidget):
                  agent_config=None, resource_root=None, composer=None, agent_settings_root=None,
                  settings_selection_path=None):
         super().__init__()
+        board_theme.apply_application()
         self.session, self.store, self.resolver = session, store, resolver
         self.library_root = Path(library_root) if library_root else None
         self.selected, self.refreshing, self.media_unavailable = None, False, False
@@ -567,8 +569,8 @@ class BoardCandidate(QWidget):
         self.save_timer.timeout.connect(self.autosave)
         self.setWindowTitle('Teaching Board — experimental isolated candidate')
         layout = QVBoxLayout(self)
-        notice = QLabel('Experimental Teaching Board · local candidate lesson')
-        layout.addWidget(notice)
+        self.notice = QLabel('Experimental Teaching Board · local candidate lesson')
+        layout.addWidget(self.notice)
         top = QHBoxLayout(); layout.addLayout(top)
         self.name = QLineEdit(session.teacher_view()['document']['title'])
         self.name.textEdited.connect(self.capture_name_edit)
@@ -596,10 +598,20 @@ class BoardCandidate(QWidget):
         self.mode = QComboBox(); self.mode.addItems(['Select / move', 'Ink', 'Erase ink', 'Pan'])
         self.mode.hide()
         self.mode.currentTextChanged.connect(lambda: self.tool_changed(False))
+        self.page_nav, self.history_buttons = {}, {}
+        self.freeze_button = self.resume_button = None
         for label, command in [('Previous', lambda: self.navigate(-1)), ('Next', lambda: self.navigate(1)),
                                ('New page', self.add_page), ('Undo', self.undo), ('Redo', self.redo),
                                ('Freeze', self.freeze), ('Resume', self.resume)]:
             button = QPushButton(label); button.clicked.connect(command); toolbar.addWidget(button)
+            if label in ('Previous', 'Next', 'New page'):
+                self.page_nav[label] = button
+            elif label in ('Undo', 'Redo'):
+                self.history_buttons[label] = button
+            elif label == 'Freeze':
+                self.freeze_button = button
+            elif label == 'Resume':
+                self.resume_button = button
         self.add_image_toolbar = QPushButton('Add image…')
         self.add_image_toolbar.setToolTip('Insert a saved-library or local image on this page.')
         self.add_image_toolbar.clicked.connect(self.add_image)
@@ -680,8 +692,9 @@ class BoardCandidate(QWidget):
         for label, command in [('Export editable lesson…', self.export_package), ('Export PDF…', self.export_pdf),
                                ('Import editable lesson…', self.import_package)]:
             button = QPushButton(label); button.clicked.connect(command); exports.addWidget(button)
-        self.resize(1240, 820); self.pupil.resize(1000, 650)
+        self.resize(1280, 860); self.pupil.resize(1100, 720)
         self._restore_view_state()
+        board_theme.install(self)
         self.refresh()
         if not self.session.teacher_view()['dirty']:
             self.sync_saved_lessons()
@@ -741,6 +754,7 @@ class BoardCandidate(QWidget):
         else:
             self.location.setText('No lesson folder configured')
         self.status.setText(' · '.join(parts))
+        board_theme.sync(self)
         self.refreshing = False
 
     def run(self, operation, *, save=True):
