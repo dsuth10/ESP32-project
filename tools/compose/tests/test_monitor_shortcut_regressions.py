@@ -43,6 +43,34 @@ def test_optional_onenote_chord_coalesces_only_when_enabled():
     assert state.update(keys.__contains__) == [('onenote_display', 'up')]
 
 
+def test_classroom_app_chords_edge_detect_like_onenote_and_stay_off_by_default():
+    assert HotkeyState.CLASSROOM_MODES == (
+        'onenote_display', 'word_display', 'chrome_display', 'board_display')
+    idle = HotkeyState()
+    assert 'word_display' not in idle.enabled_modes
+    assert idle.update({0x82}.__contains__) == []
+    assert idle.update({0x11, 0x10, 0x12, 0x74}.__contains__) == []
+    assert idle.update({0x83}.__contains__) == []
+    assert idle.update({0x11, 0x10, 0x12, 0x73}.__contains__) == []
+    assert idle.update({0x84}.__contains__) == []
+    assert idle.update({0x11, 0x10, 0x12, 0x72}.__contains__) == []
+    enabled = HotkeyState(HotkeyState.CLASSROOM_MODES)
+    for mode, extended, standard in (
+            ('word_display', 0x82, 0x74),
+            ('chrome_display', 0x83, 0x73),
+            ('board_display', 0x84, 0x72)):
+        state = HotkeyState((mode,))
+        keys = {0x11, 0x10, 0x12, extended, standard}
+        assert state.update(keys.__contains__) == [(mode, 'down')]
+        keys.remove(extended)
+        assert state.update(keys.__contains__) == []
+        keys.clear()
+        assert state.update(keys.__contains__) == [(mode, 'up')]
+    both = HotkeyState(HotkeyState.DEFAULT_MODES + HotkeyState.CLASSROOM_MODES)
+    assert both.update({0x11, 0x10, 0x12, 0x74}.__contains__) == [('word_display', 'down')]
+    assert both.update({0x11, 0x10, 0x12, 0x78}.__contains__) == [('compose', 'down'), ('word_display', 'up')]
+
+
 def test_onenote_hotkey_does_not_start_recording_or_paste(tmp_path):
     app = ComposeApp.__new__(ComposeApp)
     app._settings_saving = lambda: False
@@ -66,6 +94,25 @@ def test_onenote_hotkey_does_not_start_recording_or_paste(tmp_path):
     app.open_onenote_on_classroom_display = Mock()
     ComposeApp._handle_hardware_event(app, 'onenote_display', 'down')
     app.open_onenote_on_classroom_display.assert_called_once()
+    app.start_recording_flow.assert_not_called()
+    app.inject_paste_ui.assert_not_called()
+
+
+def test_word_chrome_and_board_hotkeys_do_not_start_recording_or_paste():
+    app = ComposeApp.__new__(ComposeApp)
+    app._settings_saving = lambda: False
+    app.log = Mock()
+    app.set_status = Mock()
+    app.start_recording_flow = Mock()
+    app.inject_paste_ui = Mock()
+    app.is_recording = False
+    app.open_classroom_app = Mock()
+    app.open_onenote_on_classroom_display = Mock()
+    ComposeApp._handle_hardware_event(app, 'word_display', 'down')
+    ComposeApp._handle_hardware_event(app, 'chrome_display', 'down')
+    ComposeApp._handle_hardware_event(app, 'board_display', 'down')
+    assert app.open_classroom_app.call_args_list == [(('word',),), (('chrome',),), (('board',),)]
+    app.open_onenote_on_classroom_display.assert_not_called()
     app.start_recording_flow.assert_not_called()
     app.inject_paste_ui.assert_not_called()
 

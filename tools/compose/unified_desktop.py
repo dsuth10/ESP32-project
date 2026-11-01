@@ -70,6 +70,12 @@ class UnifiedDesktop(QMainWindow):
         companion.closePrepared.connect(self._companion_prepared)
         companion.closeBlockedCode.connect(self._close_blocked_code)
         companion.closed.connect(self._companion_closed)
+        companion_root = getattr(companion, 'data_root', None)
+        if companion_root:
+            try:
+                board.watch_classroom_board_requests(Path(companion_root))
+            except Exception:
+                pass
         self._microphone_timer = QTimer(self)
         self._microphone_timer.timeout.connect(self._update_microphone_state)
         self._microphone_timer.start(150)

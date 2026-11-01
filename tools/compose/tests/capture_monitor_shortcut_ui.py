@@ -7,6 +7,9 @@ from pathlib import Path
 from PIL import ImageGrab
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from linux_windows_stubs import install_windows_stubs
+install_windows_stubs()
 
 from monitor_shortcut import MonitorShortcutController
 from monitor_shortcut_panel import MonitorShortcutPanel
@@ -57,8 +60,29 @@ def main(destination: Path):
     panel._assign_from_overlay(backend.monitors[1])
     root.geometry('920x580+0+0')
     grab(root, destination / 'classroom-display-assigned.png')
+    if panel.app_tabs.index('end') >= 2:
+        panel.app_tabs.select(1)
+        root.update()
+        grab(root, destination / 'classroom-display-word-tab.png')
+        panel.app_tabs.select(2)
+        root.update()
+        grab(root, destination / 'classroom-display-chrome-tab.png')
     panel.close()
     root.destroy()
+
+    from compose_gui import ComposeApp
+
+    writing = tk.Tk()
+    writing.title('Classroom apps')
+    writing.geometry('920x160+0+0')
+    writing.configure(bg='#0B0F19')
+    app = ComposeApp.__new__(ComposeApp)
+    app.open_onenote_on_classroom_display = lambda: None
+    app.open_classroom_app = lambda _app: None
+    app.clear_ready_queue = lambda: None
+    app._build_classroom_apps_area(writing)
+    grab(writing, destination / 'classroom-apps-buttons.png')
+    writing.destroy()
 
 
 if __name__ == '__main__':
