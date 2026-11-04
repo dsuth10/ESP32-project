@@ -75,6 +75,7 @@ def test_classroom_panel_lists_windows_and_keeps_most_recent_default(tk_root, tm
     assert any('Water cycle' in label for label in panel.window_box['values'])
     assert panel.hotkey_var.get() is False
     assert panel.maximise_var.get() is True
+    assert panel.app_tabs.index('end') == 3
     _grab(tk_root, 'classroom-display-panel')
     panel.close()
 
@@ -100,3 +101,22 @@ def test_identify_overlay_assigns_named_classroom_display(tk_root, tmp_path):
     assert 'Classroom panel' in panel.display_var.get()
     _grab(tk_root, 'classroom-display-assigned')
     panel.close()
+
+
+def test_classroom_apps_area_has_four_app_buttons(tk_root):
+    from compose_gui import ComposeApp
+
+    app = ComposeApp.__new__(ComposeApp)
+    app.open_onenote_on_classroom_display = lambda: None
+    app.open_classroom_app = lambda _app: None
+    app.clear_ready_queue = lambda: None
+    tk_root.configure(bg='#0B0F19')
+    app._build_classroom_apps_area(tk_root)
+    tk_root.geometry('920x140')
+    tk_root.deiconify()
+    tk_root.update()
+    assert app.btn_classroom_onenote.cget('text') == '📓 OneNote'
+    assert app.btn_classroom_word.cget('text') == '📄 Word'
+    assert app.btn_classroom_chrome.cget('text') == '🌐 Chrome'
+    assert app.btn_classroom_board.cget('text') == '📋 Board'
+    _grab(tk_root, 'classroom-apps-buttons')

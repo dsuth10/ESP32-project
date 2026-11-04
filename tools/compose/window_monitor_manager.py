@@ -1,4 +1,4 @@
-"""Monitor and window operations for the classroom OneNote action.
+"""Monitor and window operations for classroom app placement.
 
 Windows calls live in the Win32 backend and run only when os.name == 'nt'.
 Linux tests use FakeWindowMonitorBackend. This module does not grant Paste Ready
@@ -8,13 +8,47 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import os
+import re
+import shlex
 import time
 from typing import Protocol
 
 
 ONENOTE_EXECUTABLE = 'ONENOTE.EXE'
+WORD_EXECUTABLE = 'WINWORD.EXE'
+CHROME_EXECUTABLE = 'CHROME.EXE'
 ALLOWLISTED_LAUNCH_URI = 'onenote:'
 MISSING_DISPLAY_MESSAGE = 'No classroom display detected.'
+BOARD_PUPIL_TITLE = 'Teaching Board — pupil display'
+APP_ONENOTE = 'onenote'
+APP_WORD = 'word'
+APP_CHROME = 'chrome'
+APP_BOARD = 'board'
+CHROME_PROFILE_RE = re.compile(r'^[A-Za-z0-9 ._\-]+$')
+MIN_CHROME_WINDOW_WIDTH = 80
+MIN_CHROME_WINDOW_HEIGHT = 80
+
+
+@dataclass(frozen=True)
+class ClassroomApp:
+    app_id: str
+    label: str
+    executable: str
+    default_launch: str
+    allows_onenote_uri: bool = False
+    allows_chrome_profile: bool = False
+
+
+CLASSROOM_APPS = {
+    APP_ONENOTE: ClassroomApp(
+        APP_ONENOTE, 'OneNote', ONENOTE_EXECUTABLE, ALLOWLISTED_LAUNCH_URI,
+        allows_onenote_uri=True),
+    APP_WORD: ClassroomApp(
+        APP_WORD, 'Word', WORD_EXECUTABLE, WORD_EXECUTABLE),
+    APP_CHROME: ClassroomApp(
+        APP_CHROME, 'Chrome', CHROME_EXECUTABLE, 'chrome.exe',
+        allows_chrome_profile=True),
+}
 
 
 @dataclass(frozen=True)
@@ -117,19 +151,126 @@ class WindowMonitorBackend(Protocol):
     def launch_application(self, command: str) -> None: ...
     def wait_for_app_window(self, executable: str, timeout_s: float = 8.0) -> AppWindow | None: ...
     def place_window(self, hwnd: int, work_area: Rect, maximise: bool) -> bool: ...
-    def request_foreground(self, hwnd: int, pid: int = 0, title: str = '') -> bool: ...
+    def request_foreground(self, hwnd: int, pid: int = 0, title: str = '',
+                           allow_internal: bool = False) -> bool: ...
     def window_bounds(self, hwnd: int) -> Rect | None: ...
     def note_foreground(self, hwnd: int, when: float | None = None) -> None: ...
+    def list_board_pupil_windows(self, include_hidden: bool = False) -> list[AppWindow]: ...
+    def show_window(self, hwnd: int) -> bool: ...
 
 
-def is_allowlisted_launch(command: str) -> bool:
+def parse_launch_parts(command: str) -> list[str] | None:
+    text = (command or '').strip()
+    if not text:
+        return None
+    if text.lower() == ALLOWLISTED_LAUNCH_URI:
+        return [ALLOWLISTED_LAUNCH_URI]
+    try:
+        parts = shlex.split(text, posix=False)
+    except ValueError:
+        return None
+    return parts or None
+
+
+def _resolve_app_path(executable: str) -> str | None:
+    import shutil
+    found = shutil.which(executable)
+    if found:
+        return found
+    if os.name != 'nt':
+        return None
+    try:
+        import winreg
+        name = os.path.basename(executable)
+        for root in (winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER):
+            try:
+                sub = rf'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\{name}'
+                with winreg.OpenKey(root, sub) as key:
+                    val, _ = winreg.QueryValueEx(key, '')
+                    if val and os.path.isfile(val):
+                        return val
+            except FileNotFoundError:
+                continue
+    except Exception:
+        pass
+    name_upper = os.path.basename(executable).upper()
+    if name_upper == CHROME_EXECUTABLE:
+        for candidate in (
+                r'C:\Program Files\Google\Chrome\Application\chrome.exe',
+                r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
+                os.path.expandvars(r'%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe')):
+            if os.path.isfile(candidate):
+                return candidate
+    elif name_upper == WORD_EXECUTABLE:
+        for candidate in (
+                r'C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE',
+                r'C:\Program Files (x86)\Microsoft Office\root\Office16\WINWORD.EXE'):
+            if os.path.isfile(candidate):
+                return candidate
+    return None
+
+
+def _executable_name(path: str) -> str:
+    return path.replace('\\', '/').split('/')[-1].upper()
+
+
+def _chrome_profile_argument(argument: str) -> str | None:
+    prefix = '--profile-directory='
+    if not argument.startswith(prefix):
+        return None
+    value = argument[len(prefix):].strip().strip('"').strip("'")
+    if not value or not CHROME_PROFILE_RE.fullmatch(value):
+        return None
+    return value
+
+
+def chrome_profile_from_command(command: str) -> str | None:
+    marker = '--profile-directory='
+    text = (command or '').strip()
+    index = text.find(marker)
+    if index < 0:
+        return None
+    value = text[index + len(marker):].strip()
+    if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+        value = value[1:-1]
+    if ' --' in f' {value}':
+        return None
+    return value if value and CHROME_PROFILE_RE.fullmatch(value) else None
+
+
+def is_allowlisted_launch(command: str, app_id: str | None = None) -> bool:
     text = (command or '').strip()
     if not text:
         return False
-    if text.lower() == ALLOWLISTED_LAUNCH_URI:
+    apps = [CLASSROOM_APPS[app_id]] if app_id else list(CLASSROOM_APPS.values())
+    if any(app.allows_onenote_uri and text.lower() == ALLOWLISTED_LAUNCH_URI for app in apps):
         return True
-    name = text.replace('\\', '/').split('/')[-1].upper()
-    return name == ONENOTE_EXECUTABLE
+    if '--' not in text:
+        name = _executable_name(text)
+        return any(name == app.executable for app in apps)
+    parts = parse_launch_parts(text)
+    if not parts:
+        return False
+    exe = parts[0]
+    extra = parts[1:]
+    name = _executable_name(exe)
+    for app in apps:
+        if name != app.executable:
+            continue
+        if not extra:
+            return True
+        if app.allows_chrome_profile and extra[0].startswith('--profile-directory='):
+            joined = ' '.join(extra)
+            if chrome_profile_from_command(f'chrome.exe {joined}'):
+                return True
+        return False
+    return False
+
+
+def classroom_app(app_id: str) -> ClassroomApp:
+    if app_id not in CLASSROOM_APPS:
+        raise ValueError(f'Unsupported classroom app: {app_id}')
+    return CLASSROOM_APPS[app_id]
 
 
 def verify_placement(bounds: Rect | None, work_area: Rect) -> bool:
@@ -158,6 +299,7 @@ class FakeWindowMonitorBackend:
         self.fail_foreground = False
         self.die_during_place = False
         self.launch_delay_windows: list[AppWindow] = []
+        self.show_calls: list[int] = []
 
     def list_monitors(self) -> list[MonitorInfo]:
         return list(self.monitors)
@@ -193,7 +335,7 @@ class FakeWindowMonitorBackend:
 
     def launch_application(self, command: str) -> None:
         if not is_allowlisted_launch(command):
-            raise ValueError('OneNote launch command is not allowlisted.')
+            raise ValueError('Launch command is not allowlisted.')
         self.launch_calls.append(command)
         created = self.launch_window or (self.launch_delay_windows[0] if self.launch_delay_windows else None)
         if created is not None:
@@ -228,12 +370,39 @@ class FakeWindowMonitorBackend:
                 return True
         return False
 
-    def request_foreground(self, hwnd: int, pid: int = 0, title: str = '') -> bool:
+    def request_foreground(self, hwnd: int, pid: int = 0, title: str = '',
+                           allow_internal: bool = False) -> bool:
         self.foreground_requests.append(hwnd)
         if self.fail_foreground or not self.is_window_alive(hwnd):
             return False
         self.set_foreground(hwnd)
         return True
+
+    def list_board_pupil_windows(self, include_hidden: bool = False) -> list[AppWindow]:
+        found = []
+        for window in self.windows:
+            if window.hwnd in self.dead_hwnds:
+                window.alive = False
+                continue
+            if window.title != BOARD_PUPIL_TITLE:
+                continue
+            if window.show_state == 'hidden' and not include_hidden:
+                continue
+            if window.alive or include_hidden:
+                found.append(window)
+        return found
+
+    def show_window(self, hwnd: int) -> bool:
+        self.show_calls.append(hwnd)
+        if hwnd in self.dead_hwnds:
+            return False
+        for window in self.windows:
+            if window.hwnd == hwnd:
+                window.alive = True
+                if window.show_state == 'hidden':
+                    window.show_state = 'normal'
+                return True
+        return False
 
     def window_bounds(self, hwnd: int) -> Rect | None:
         if not self.is_window_alive(hwnd):
@@ -338,7 +507,11 @@ class Win32WindowMonitorBackend:
             bounds = self.window_bounds(int(hwnd))
             if bounds is None:
                 return True
-            show_state = 'minimised' if user32.IsIconic(hwnd) else (
+            is_minimised = bool(user32.IsIconic(hwnd))
+            if wanted == CHROME_EXECUTABLE and not is_minimised and (
+                    bounds.width < MIN_CHROME_WINDOW_WIDTH or bounds.height < MIN_CHROME_WINDOW_HEIGHT):
+                return True
+            show_state = 'minimised' if is_minimised else (
                 'maximised' if user32.IsZoomed(hwnd) else 'normal')
             found.append(AppWindow(
                 hwnd=int(hwnd),
@@ -372,15 +545,27 @@ class Win32WindowMonitorBackend:
 
     def launch_application(self, command: str) -> None:
         if not is_allowlisted_launch(command):
-            raise ValueError('OneNote launch command is not allowlisted.')
-        text = command.strip()
-        if text.lower() == ALLOWLISTED_LAUNCH_URI:
+            raise ValueError('Launch command is not allowlisted.')
+        parts = parse_launch_parts(command) or []
+        exe = parts[0] if parts else ''
+        extra = parts[1:]
+        profile = chrome_profile_from_command(command)
+        if profile:
+            extra = [f'--profile-directory={profile}']
+        if exe.lower() == ALLOWLISTED_LAUNCH_URI:
             os.startfile(ALLOWLISTED_LAUNCH_URI)  # noqa: S606 — allowlisted URI only
             return
-        if not os.path.isfile(text):
-            raise FileNotFoundError('The configured OneNote program was not found.')
-        import subprocess
-        subprocess.Popen([text], close_fds=True)
+        if os.path.isfile(exe):
+            import subprocess
+            subprocess.Popen([exe, *extra], close_fds=True)
+            return
+        if _executable_name(exe) in {ONENOTE_EXECUTABLE, WORD_EXECUTABLE, CHROME_EXECUTABLE}:
+            resolved = _resolve_app_path(exe)
+            target = resolved if resolved and os.path.isfile(resolved) else exe
+            import subprocess
+            subprocess.Popen([target, *extra], close_fds=True)
+            return
+        raise FileNotFoundError('The configured program was not found.')
 
     def wait_for_app_window(self, executable: str, timeout_s: float = 8.0) -> AppWindow | None:
         deadline = time.time() + max(0.2, timeout_s)
@@ -419,15 +604,65 @@ class Win32WindowMonitorBackend:
             user32.ShowWindow(hwnd, SW_SHOWMAXIMIZED)
         return self.is_window_alive(hwnd)
 
-    def request_foreground(self, hwnd: int, pid: int = 0, title: str = '') -> bool:
+    def request_foreground(self, hwnd: int, pid: int = 0, title: str = '',
+                           allow_internal: bool = False) -> bool:
         from focus_tracker import FocusTracker
         if not self.is_window_alive(hwnd):
             return False
-        if pid and FocusTracker.is_internal_process(pid):
-            return False
-        if FocusTracker.is_internal_window(hwnd):
-            return False
+        if not allow_internal:
+            if pid and FocusTracker.is_internal_process(pid):
+                return False
+            if FocusTracker.is_internal_window(hwnd):
+                return False
         return FocusTracker.request_foreground(hwnd, restore=False)
+
+    def list_board_pupil_windows(self, include_hidden: bool = False) -> list[AppWindow]:
+        from ctypes import wintypes
+        import ctypes
+
+        user32 = ctypes.WinDLL('user32', use_last_error=True)
+        found: list[AppWindow] = []
+        GWL_EXSTYLE = -20
+        WS_EX_TOOLWINDOW = 0x00000080
+
+        def _callback(hwnd, _data):
+            visible = bool(user32.IsWindowVisible(hwnd))
+            if not visible and not include_hidden:
+                return True
+            if user32.GetWindowLongW(hwnd, GWL_EXSTYLE) & WS_EX_TOOLWINDOW:
+                return True
+            if _window_text(hwnd) != BOARD_PUPIL_TITLE:
+                return True
+            pid = wintypes.DWORD()
+            user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+            image = _process_image_name(pid.value)
+            bounds = self.window_bounds(int(hwnd)) or Rect(0, 0, 0, 0)
+            show_state = 'hidden' if not visible else (
+                'minimised' if user32.IsIconic(hwnd) else (
+                    'maximised' if user32.IsZoomed(hwnd) else 'normal'))
+            found.append(AppWindow(
+                hwnd=int(hwnd),
+                pid=int(pid.value),
+                title=BOARD_PUPIL_TITLE,
+                executable=os.path.basename(image).upper() or 'PYTHON.EXE',
+                bounds=bounds,
+                class_name=_class_name(hwnd),
+                last_foreground_at=self._last_foreground.get(int(hwnd)),
+                show_state=show_state,
+            ))
+            return True
+
+        WNDENUMPROC = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
+        user32.EnumWindows(WNDENUMPROC(_callback), 0)
+        return found
+
+    def show_window(self, hwnd: int) -> bool:
+        import ctypes
+        user32 = ctypes.WinDLL('user32', use_last_error=True)
+        if not self.is_window_alive(hwnd):
+            return False
+        SW_RESTORE = 9
+        return bool(user32.ShowWindow(hwnd, SW_RESTORE))
 
     def window_bounds(self, hwnd: int) -> Rect | None:
         from ctypes import wintypes

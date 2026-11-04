@@ -358,39 +358,7 @@ class ComposeApp:
         )
         self.btn_paste.pack(side="left", expand=True, fill="x", padx=(6, 0))
 
-        classroom_btn_frame = tk.Frame(parent, bg="#0B0F19")
-        classroom_btn_frame.pack(fill="x", padx=14, pady=(0, 8))
-        self.btn_classroom_onenote = tk.Button(
-            classroom_btn_frame,
-            text="📓 Open OneNote on classroom display",
-            font=("Segoe UI", 10, "bold"),
-            bg="#4F46E5",
-            fg="#FFFFFF",
-            activebackground="#4338CA",
-            activeforeground="#FFFFFF",
-            relief="flat",
-            padx=14,
-            pady=8,
-            cursor="hand2",
-            command=self.open_onenote_on_classroom_display,
-        )
-        self.btn_classroom_onenote.pack(side="left", fill="x", expand=True, padx=(0, 6))
-
-        self.btn_clear_ready = tk.Button(
-            classroom_btn_frame,
-            text="🗑️ Clear Ready",
-            font=("Segoe UI", 10, "bold"),
-            bg="#374151",
-            fg="#E5E7EB",
-            activebackground="#4B5563",
-            activeforeground="#FFFFFF",
-            relief="flat",
-            padx=14,
-            pady=8,
-            cursor="hand2",
-            command=self.clear_ready_queue,
-        )
-        self.btn_clear_ready.pack(side="left")
+        self._build_classroom_apps_area(parent)
 
         # Instructions / Shortcut Guide
         guide_frame = tk.Frame(parent, bg="#111827", padx=12, pady=8, highlightthickness=1, highlightbackground="#1F2937")
@@ -400,7 +368,9 @@ class ComposeApp:
             "Device page 7/8: tap or hold Compose, Dictate or Images. Tap Library to open image review.\n"
             "F13 Compose · F14 Dictate · F15 Paste Ready · F16 Images · F17 Library.\n"
             "Fallback: Ctrl+Alt+Shift with F9 / F10 / F11 / F8 / F7 respectively.\n"
-            "Classroom OneNote: companion button, or optional F18 / Ctrl+Alt+Shift+F6 (off by default; no handheld button yet)."
+            "Classroom apps: companion buttons for OneNote, Word, Chrome and Board. Optional shortcuts "
+            "(off by default; enable Classroom Apps tick box): F18–F21 or Ctrl+Alt+Shift+F6 / F5 / F4 / F3; "
+            "handheld page buttons use the same chords when that option is on."
         )
         tk.Label(guide_frame, text=guide_txt, font=("Segoe UI", 8), fg="#9CA3AF", bg="#111827", justify="left", wraplength=650).pack(anchor="w")
 
@@ -422,6 +392,68 @@ class ComposeApp:
             height=8,
         )
         self.log_box.pack(fill="both", expand=True, padx=14, pady=(0, 14))
+
+    def _build_classroom_apps_area(self, parent):
+        classroom_wrap = tk.Frame(parent, bg="#0B0F19")
+        classroom_wrap.pack(fill="x", padx=14, pady=(0, 8))
+        tk.Label(
+            classroom_wrap,
+            text="CLASSROOM APPS",
+            font=("Segoe UI", 8, "bold"),
+            fg="#9CA3AF",
+            bg="#0B0F19",
+        ).pack(anchor="w", pady=(0, 4))
+        classroom_btn_frame = tk.Frame(classroom_wrap, bg="#0B0F19")
+        classroom_btn_frame.pack(fill="x")
+        self.btn_classroom_onenote = self._classroom_app_button(
+            classroom_btn_frame, "📓 OneNote", "#4F46E5", "#4338CA",
+            self.open_onenote_on_classroom_display)
+        self.btn_classroom_onenote.pack(side="left", fill="x", expand=True, padx=(0, 6))
+        self.btn_classroom_word = self._classroom_app_button(
+            classroom_btn_frame, "📄 Word", "#1D4ED8", "#1E40AF",
+            lambda: self.open_classroom_app("word"))
+        self.btn_classroom_word.pack(side="left", fill="x", expand=True, padx=(0, 6))
+        self.btn_classroom_chrome = self._classroom_app_button(
+            classroom_btn_frame, "🌐 Chrome", "#B45309", "#92400E",
+            lambda: self.open_classroom_app("chrome"))
+        self.btn_classroom_chrome.pack(side="left", fill="x", expand=True, padx=(0, 6))
+        self.btn_classroom_board = self._classroom_app_button(
+            classroom_btn_frame, "📋 Board", "#0F766E", "#115E59",
+            lambda: self.open_classroom_app("board"))
+        self.btn_classroom_board.pack(side="left", fill="x", expand=True, padx=(0, 6))
+
+        self.btn_clear_ready = tk.Button(
+            classroom_btn_frame,
+            text="🗑️ Clear Ready",
+            font=("Segoe UI", 10, "bold"),
+            bg="#374151",
+            fg="#E5E7EB",
+            activebackground="#4B5563",
+            activeforeground="#FFFFFF",
+            relief="flat",
+            padx=14,
+            pady=8,
+            cursor="hand2",
+            command=self.clear_ready_queue,
+        )
+        self.btn_clear_ready.pack(side="left")
+        return classroom_wrap
+
+    def _classroom_app_button(self, parent, text, background, active, command):
+        return tk.Button(
+            parent,
+            text=text,
+            font=("Segoe UI", 10, "bold"),
+            bg=background,
+            fg="#FFFFFF",
+            activebackground=active,
+            activeforeground="#FFFFFF",
+            relief="flat",
+            padx=10,
+            pady=8,
+            cursor="hand2",
+            command=command,
+        )
 
     def log(self, text: str, content: bool = False):
         if not content:
@@ -1167,9 +1199,18 @@ class ComposeApp:
                     self.root.deiconify();self.root.lift();self.root.focus_force()
                 self.media_panel.refresh()
             return
-        if mode == 'onenote_display':
+        classroom_modes = {
+            'onenote_display': 'onenote',
+            'word_display': 'word',
+            'chrome_display': 'chrome',
+            'board_display': 'board',
+        }
+        if mode in classroom_modes:
             if edge == 'down':
-                self.open_onenote_on_classroom_display()
+                if mode == 'onenote_display':
+                    self.open_onenote_on_classroom_display()
+                else:
+                    self.open_classroom_app(classroom_modes[mode])
             return
         if mode == "paste":
             if edge == "up":
@@ -1184,12 +1225,18 @@ class ComposeApp:
         self.log(text)
 
     def open_onenote_on_classroom_display(self):
+        self.open_classroom_app("onenote")
+
+    def open_classroom_app(self, app_id: str):
         if self._settings_saving():
             return
         controller = getattr(self, "monitor_shortcut", None)
         if controller is None:
             return
-        receipt = controller.open_onenote_on_classroom_display()
+        if app_id == "board":
+            receipt = controller.bring_board_to_classroom_display()
+        else:
+            receipt = controller.open_app_on_classroom_display(app_id)
         if hasattr(self, "classroom_panel"):
             self.classroom_panel._show_receipt(receipt)
         else:
@@ -1200,8 +1247,10 @@ class ComposeApp:
         if truthy(self.config.get("ESP32_ENABLE_HOTKEYS", "1")):
             modes.extend(HotkeyState.DEFAULT_MODES)
         controller = getattr(self, "monitor_shortcut", None)
-        if controller is not None and controller.hotkey_enabled() and "onenote_display" not in modes:
-            modes.append("onenote_display")
+        if controller is not None and controller.hotkey_enabled():
+            for mode in HotkeyState.CLASSROOM_MODES:
+                if mode not in modes:
+                    modes.append(mode)
         return modes
 
     def _ensure_hotkey_poller(self):

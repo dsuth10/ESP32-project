@@ -130,9 +130,16 @@ or factual visual evidence retains the reusable-photo search route.
 **“I need you to generate an image of a horse and put it up on the board”**
 requests a fresh generated image, even if a saved horse image exists. Simple
 generate/create/draw/make requests use application-built placement without a text
-model constructing image commands. If the active page already has content,
-review the complete replacement preview before accepting; the original page
-stays visible until acceptance, and Undo restores it afterwards.
+model constructing image commands. Existing objects stay in place; the new image
+and any required credit use clear space. If there is no suitable space, the image
+stays saved and the page stays unchanged. Make room or create a new page, then
+choose the saved image rather than generating it again.
+
+**Existing content is removed only when you explicitly ask to remove it.**
+Approving a generated-image preview does not authorise clearing the page. Select
+particular items before asking to remove them, or explicitly ask to clear or
+replace the current page when that is what you intend. Page replacement retains
+its separate complete-preview check.
 An ordinary dog photo can instead use the bounded reusable-photo route when
 external lookup is enabled; saved images remain available locally.
 

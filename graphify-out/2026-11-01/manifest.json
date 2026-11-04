@@ -636,9 +636,9 @@
     "semantic_hash": ""
   },
   "tools/compose/focus_tracker.py": {
-    "mtime": 1793518683.5151112,
-    "seen": 1793519066.3640256,
-    "ast_hash": "734fd4fbfc913a810acbbebccd2fec89",
+    "mtime": 1793524278.8107793,
+    "seen": 1793524375.4476619,
+    "ast_hash": "f8fccc92d0b746b4d9c57ec8f03bacd4",
     "semantic_hash": ""
   },
   "tools/compose/llm_pipeline.py": {
@@ -678,9 +678,9 @@
     "semantic_hash": ""
   },
   "tools/compose/compose_gui.py": {
-    "mtime": 1793518921.7258809,
-    "seen": 1793519066.3640256,
-    "ast_hash": "09ec62337aa0890531f1ee4ebcb939ef",
+    "mtime": 1793524310.3104389,
+    "seen": 1793524375.4476619,
+    "ast_hash": "86857aeb3960307eac2c057702b64dfb",
     "semantic_hash": ""
   },
   "docs/ESP32_Windows_Compose_Dictate_Implementation_Report.md": {
@@ -1842,9 +1842,9 @@
     "semantic_hash": ""
   },
   "tools/compose/companion_embedded.py": {
-    "mtime": 1793179166.9372923,
-    "seen": 1793519066.3640256,
-    "ast_hash": "d1a12f782fc756009ea44090500a2fe3",
+    "mtime": 1793524225.949394,
+    "seen": 1793524375.4476619,
+    "ast_hash": "55d59c45a5fc41ecd8f05be0a5dd5caa",
     "semantic_hash": ""
   },
   "tools/compose/companion_host.py": {
@@ -1896,8 +1896,8 @@
     "semantic_hash": ""
   },
   "tools/compose/tests/linux_windows_stubs.py": {
-    "mtime": 1793518947.8855746,
-    "seen": 1793519066.3640256,
+    "mtime": 1793523782.6098273,
+    "seen": 1793524375.4476619,
     "ast_hash": "06a60e02c367a85efdcce9fb56e3f6f2",
     "semantic_hash": ""
   },
@@ -2022,9 +2022,9 @@
     "semantic_hash": ""
   },
   "tools/compose/tests/test_monitor_shortcut_regressions.py": {
-    "mtime": 1793519021.8617527,
-    "seen": 1793519066.3640256,
-    "ast_hash": "b58d6f64bb473372296f4d03ec6bfd6b",
+    "mtime": 1793524341.626534,
+    "seen": 1793524375.4476619,
+    "ast_hash": "b4f1d7039971b985e033afe84c176859",
     "semantic_hash": ""
   },
   "tools/compose/tests/test_monitor_shortcut_ui.py": {
@@ -2058,8 +2058,8 @@
     "semantic_hash": ""
   },
   "tools/compose/window_monitor_manager.py": {
-    "mtime": 1793518715.8758807,
-    "seen": 1793519066.3640256,
+    "mtime": 1793523782.6600912,
+    "seen": 1793524375.4476619,
     "ast_hash": "db617ca05c72ce17e67a5991d2d28d6f",
     "semantic_hash": ""
   },

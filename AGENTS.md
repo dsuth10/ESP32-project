@@ -13,3 +13,10 @@ Before registration, flashing, upload-tool changes or recovery, read the board-s
 For Hermes tasks, endpoint migration or home/work connectivity, read [the permanent-route runbook](docs/hermes-tailscale-home-work.md) and the [Hermes collaboration skill](.agents/skills/hermes-collaboration/SKILL.md). The required target is the same Linux Hermes over persistent private Tailscale at both locations; Groq stays primary. Distinguish the development skill from the unfinished in-app adapter and planned transport from verified deployment.
 
 Report local builds/tests, deployment checks and physical application/classroom acceptance separately. Documentation or a healthy HTTP endpoint does not close the corresponding acceptance gates.
+
+
+<!-- herdr-worker-lifecycle -->
+## Herdr coordination
+
+When acting as the Codex coordinator inside Herdr (`HERDR_ENV=1`), read `C:/Users/dsuth/Documents/Codex/Tools/HerdrCoordination/COORDINATOR.md` on startup/resume, before delegating and when collecting worker results. It governs task-scoped worker conversations, handovers and saved resume IDs. Other agents follow their assigned task and the project instructions above.
+<!-- /herdr-worker-lifecycle -->

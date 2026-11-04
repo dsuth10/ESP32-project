@@ -546,6 +546,8 @@ class BoardCandidate(QWidget):
                  settings_selection_path=None):
         super().__init__()
         self.session, self.store, self.resolver = session, store, resolver
+        self.classroom_settings_root = None
+        self._classroom_timer = None
         self.library_root = Path(library_root) if library_root else None
         self.selected, self.refreshing, self.media_unavailable = None, False, False
         self.selection_view = None
@@ -641,9 +643,13 @@ class BoardCandidate(QWidget):
         side_layout.addStretch()
         self.show_pupil = QCheckBox('Show pupil window'); self.show_pupil.setChecked(True)
         side_layout.addWidget(self.show_pupil)
+        self.classroom_display_label = QLabel('Classroom display: not assigned')
+        self.classroom_display_label.setWordWrap(True)
+        side_layout.addWidget(self.classroom_display_label)
         self.screens = QComboBox()
-        self.screens.addItems([f'Display {i+1}' for i, _ in enumerate(QGuiApplication.screens())]); side_layout.addWidget(self.screens)
-        move = QPushButton('Move pupil to display'); move.clicked.connect(self.move_pupil); side_layout.addWidget(move)
+        self._refresh_classroom_display_selector()
+        side_layout.addWidget(self.screens)
+        move = QPushButton('Move pupil to classroom display'); move.clicked.connect(self.move_pupil); side_layout.addWidget(move)
         self.status = QLabel(); self.status.setWordWrap(True); layout.addWidget(self.status)
         self.pupil = PupilWindow(self); self.pupil.setWindowTitle('Teaching Board — pupil display')
         pupil_layout = QVBoxLayout(self.pupil)
@@ -1346,10 +1352,160 @@ class BoardCandidate(QWidget):
         except Exception as error:
             self.error = 'Lesson import failed: ' + str(error)[:400]; self.refresh()
 
+    def classroom_settings_directory(self):
+        root = getattr(self, 'classroom_settings_root', None)
+        if root:
+            return Path(root)
+        configured = os.environ.get('ESP32_COMPANION_DATA_DIR')
+        if configured:
+            return Path(configured)
+        return None
+
+    def _refresh_classroom_display_selector(self):
+        from monitor_shortcut import active_profile, load_shortcut_settings
+        label = 'Classroom display (not assigned)'
+        root = self.classroom_settings_directory()
+        if root is not None:
+            try:
+                assigned = active_profile(load_shortcut_settings(root)).get('classroom_display') or {}
+                name = assigned.get('friendly_name') or assigned.get('device_name')
+                if name:
+                    label = name
+            except Exception:
+                pass
+        if hasattr(self, 'classroom_display_label'):
+            self.classroom_display_label.setText('Classroom display: ' + (
+                label if label != 'Classroom display (not assigned)' else 'not assigned'))
+        self.screens.clear()
+        self.screens.addItem(label)
+
+    def _qt_screen_matching(self, work_area):
+        screens = list(QGuiApplication.screens())
+        if not screens:
+            return None
+        for screen in screens:
+            geo = screen.availableGeometry()
+            if geo.x() == work_area.left and geo.y() == work_area.top:
+                return screen
+        best = screens[0]
+        best_area = 0
+        for screen in screens:
+            geo = screen.geometry()
+            width = max(0, min(geo.x() + geo.width(), work_area.right) - max(geo.x(), work_area.left))
+            height = max(0, min(geo.y() + geo.height(), work_area.bottom) - max(geo.y(), work_area.top))
+            area = width * height
+            if area > best_area:
+                best, best_area = screen, area
+        return best
+
+    def bring_pupil_to_work_area(self, work_area):
+        """Show and raise the existing pupil window. Never freeze, resume or navigate."""
+        from window_monitor_manager import Rect
+        before = self.session.pupil_view()
+        self.pupil.show()
+        self.show_pupil.setChecked(True)
+        if work_area is not None:
+            area = work_area if hasattr(work_area, 'left') else Rect(*work_area)
+            screen = self._qt_screen_matching(area)
+            handle = self.pupil.windowHandle()
+            if screen is not None and handle is not None:
+                handle.setScreen(screen)
+                self.pupil.move(screen.geometry().topLeft())
+            else:
+                self.pupil.move(area.left, area.top)
+        self.pupil.raise_()
+        after = self.session.pupil_view()
+        return {
+            'ok': True,
+            'frozen': bool(after.get('frozen')),
+            'page_id': after.get('page_id'),
+            'unchanged': after == before,
+            'show_checked': True,
+        }
+
+    def write_board_presence(self, running=True):
+        root = self.classroom_settings_directory()
+        if root is None:
+            return
+        from monitor_shortcut import BOARD_PRESENCE_NAME
+        from window_monitor_manager import BOARD_PUPIL_TITLE
+        path = Path(root) / BOARD_PRESENCE_NAME
+        path.parent.mkdir(parents=True, exist_ok=True)
+        hwnd = 0
+        try:
+            hwnd = int(self.pupil.winId())
+        except Exception:
+            pass
+        path.write_text(json.dumps({
+            'running': bool(running),
+            'title': BOARD_PUPIL_TITLE,
+            'hwnd': hwnd,
+            'pid': os.getpid(),
+            'visible': bool(self.pupil.isVisible()),
+            'show_checked': bool(self.show_pupil.isChecked()),
+        }), encoding='utf-8')
+
+    def watch_classroom_board_requests(self, root):
+        self.classroom_settings_root = Path(root)
+        self._refresh_classroom_display_selector()
+        self.write_board_presence(True)
+        if getattr(self, '_classroom_timer', None) is None:
+            self._classroom_timer = QTimer(self)
+            self._classroom_timer.timeout.connect(self._poll_classroom_board_request)
+            self._classroom_timer.start(150)
+
+    def _poll_classroom_board_request(self):
+        from monitor_shortcut import BOARD_RECEIPT_NAME, BOARD_REQUEST_NAME
+        from window_monitor_manager import Rect
+        root = self.classroom_settings_directory()
+        if root is None:
+            return
+        path = Path(root) / BOARD_REQUEST_NAME
+        if not path.is_file():
+            return
+        try:
+            request = json.loads(path.read_text(encoding='utf-8'))
+            path.unlink()
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, TypeError):
+            return
+        work = request.get('work_area') if isinstance(request, dict) else None
+        work_area = Rect(*work) if isinstance(work, list) and len(work) == 4 else None
+        result = self.bring_pupil_to_work_area(work_area)
+        receipt = {'id': request.get('id') if isinstance(request, dict) else None, **result}
+        (Path(root) / BOARD_RECEIPT_NAME).write_text(json.dumps(receipt), encoding='utf-8')
+        self.write_board_presence(True)
+
     def move_pupil(self):
-        screen = QGuiApplication.screens()[self.screens.currentIndex()]
-        self.pupil.show(); self.show_pupil.setChecked(True)
-        self.pupil.windowHandle().setScreen(screen); self.pupil.move(screen.geometry().topLeft())
+        from monitor_shortcut import (
+            KIND_MISSING_DISPLAY, KIND_OK, MISSING_DISPLAY_MESSAGE, UNASSIGNED_MESSAGE,
+            active_profile, load_shortcut_settings, match_classroom_monitor,
+        )
+        from window_monitor_manager import create_backend
+        self._refresh_classroom_display_selector()
+        root = self.classroom_settings_directory()
+        if root is None:
+            self.error = UNASSIGNED_MESSAGE
+            self.refresh()
+            return
+        settings = load_shortcut_settings(root)
+        profile = active_profile(settings)
+        try:
+            monitors = create_backend().list_monitors()
+        except Exception:
+            monitors = []
+        status, monitor, message = match_classroom_monitor(
+            profile.get('classroom_display'), monitors, profile.get('last_seen_identities'))
+        if status == KIND_MISSING_DISPLAY or monitor is None:
+            self.error = MISSING_DISPLAY_MESSAGE if status == KIND_MISSING_DISPLAY else (message or UNASSIGNED_MESSAGE)
+            self.refresh()
+            return
+        if status != KIND_OK:
+            self.error = message or UNASSIGNED_MESSAGE
+            self.refresh()
+            return
+        self.error = ''
+        self.bring_pupil_to_work_area(monitor.work_area)
+        self.refresh()
 
     def prepare_close(self, *, wait_for_work=False):
         """Save/check closure without stopping the session or hiding pupils.
@@ -1380,6 +1536,9 @@ class BoardCandidate(QWidget):
     def finish_close(self):
         """Commit an already approved close; no further dialogue or save."""
         self.save_timer.stop(); self.property_timer.stop(); self.group_timer.stop()
+        if self._classroom_timer is not None:
+            self._classroom_timer.stop()
+        self.write_board_presence(False)
         if self.agent_panel:
             self.agent_panel.close_runtime()
         self.session.close(); self.pupil.hide()

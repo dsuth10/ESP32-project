@@ -1,5 +1,12 @@
 # Board image options and ordinary image requests
 
+**Current correction, later on 29 October:** the user confirmed live generation
+and presentation of a motorbike, then reported that the old images had been
+removed. The user explicitly directed: **“we only remove things when we ask to
+remove them.”** This supersedes the occupied-page replacement behaviour recorded
+below. Adding or generating an image now preserves existing objects and finds
+clear space. A generated-image preview grants no authority to remove anything.
+
 29 October 2026, `codex/companion-media-agent`. The user requested Google and
 OpenAI with every existing supported output choice available to Board requests,
 then reported that “Can you put an image of a horse up on the board?” failed
@@ -120,3 +127,52 @@ profile. Native inspection confirmed the original dog image and ink remained,
 the Board was Ready with configured services, and the exact horse instruction
 was restored in the request field. It was left unsent for the user's live retest;
 no existing task was replayed and no paid request was submitted.
+
+## Content-preservation correction
+
+The occupied-page regression first reproduced `whole_page_replacement` for an
+ordinary image-generation request. The deterministic layout now emits only
+`add_object` commands. It selects the acquired image from the required shortlist
+and finds a clear rectangle while accounting for existing rotated object bounds.
+Existing object identities, geometry, text, ink and image references stay intact.
+The new image retains its aspect ratio and reserves readable space for its own
+attribution. If no suitable space exists, the image stays saved, the current page
+stays unchanged and the teacher is directed to make room or create a new page
+and use the saved image. Nothing is implicitly removed or put on another page.
+
+Controller validation independently rejects removal commands, including commands
+compiled from page templates, unless the current teacher instruction explicitly
+requests removal of those items. Quoted content, negative instructions, profile
+defaults, model output and acceptance of an image preview grant no deletion
+authority. Selected-item removal is restricted to selected items. Ambiguous
+targets require selection; explicit page clearing/replacement retains its existing
+exact-preview requirement. Saved-page replacement now has a clearly labelled
+**Replace current page with saved page…** action and an explicit replacement
+instruction, rather than disguising replacement as reuse.
+
+Every final image still has its local bytes, hash and dimensions checked. New or
+changed images require readable attribution, and attribution that was readable
+before the request must stay readable. An unrelated addition does not rewrite
+untouched older images just to repair attribution missing before the request.
+
+Local regressions cover untouched existing objects, free-space placement using
+native rotated bounds, full-page refusal without losing the saved image,
+unrequested partial/template deletion, negative and quoted removal wording,
+selected-target limits, explicit replacement and Undo/Redo/save/reopen. Provider
+credentials, spending modes, firmware and private lesson data are unchanged.
+No paid generation request is part of this correction's automated checks.
+
+Validation: the broad Board/provider/media/unified-desktop run passed **796
+tests, 6 skipped, 2 deselected** (the same sandbox junction/loopback exclusions).
+The final strengthened removal-intent controller suite passed **125 tests**.
+The exact live wording “Can you make a picture of a motorbike?” passed **8 saved
+profile cases**, spanning both spending modes and all existing producer/output
+choices, with original objects preserved through preview, acceptance, Undo/Redo
+and reopening. These overlapping counts are separate checkpoints, not an added
+release total. Live classroom acceptance of the additive correction remains open.
+
+The app was saved and closed through its normal handshake, then reopened with
+the same feature profile and lesson. The saved document checksum was unchanged.
+Native inspection confirmed Ready/configured services and the new explicit
+saved-page replacement label, verifying the corrected source was loaded. The
+current motorbike page was preserved; no request was submitted or replayed.

@@ -9,8 +9,12 @@ class HotkeyState:
         "media": (0x7F, 0x77),
         "library": (0x80, 0x76),
         "onenote_display": (0x81, 0x75),  # F18 / Ctrl+Alt+Shift+F6; optional, off by default
+        "word_display": (0x82, 0x74),     # F19 / Ctrl+Alt+Shift+F5; optional, off by default
+        "chrome_display": (0x83, 0x73),   # F20 / Ctrl+Alt+Shift+F4; optional, off by default
+        "board_display": (0x84, 0x72),    # F21 / Ctrl+Alt+Shift+F3; optional, off by default
     }
     DEFAULT_MODES = ("compose", "dictate", "paste", "media", "library")
+    CLASSROOM_MODES = ("onenote_display", "word_display", "chrome_display", "board_display")
 
     def __init__(self, enabled_modes=None):
         modes = tuple(self.DEFAULT_MODES if enabled_modes is None else enabled_modes)

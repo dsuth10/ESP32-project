@@ -12,6 +12,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import threading
 import time
@@ -247,6 +248,54 @@ def result_envelope(prepared, *, commands=None, template=None, required_image_re
             'required_image_refs': list(required_image_refs)}
 
 
+def _requested_removals(context):
+    """Removal authority comes only from an explicit teacher instruction.
+
+    Ambiguous targets require selection. Quoted content, profile instructions,
+    model output and approval of a generated image cannot grant this authority.
+    """
+    objects = {obj['id']: obj for obj in context['page']['objects']}
+    selected = set(context.get('selected_object_ids', ())) & objects.keys()
+    text = re.sub(r'"[^"\n]*"|“[^”\n]*”|(?<!\w)\x27[^\x27\n]*\x27', ' quoted ', context['instruction'].casefold())
+    allowed = set()
+    # A negated/conditional coordinated sentence cannot grant authority through
+    # its second verb (for example "do not clear the page and remove images").
+    sentences = [sentence for sentence in re.split(r'[.!?\n]', text)
+                 if not re.search(r'\b(if|unless|when|whenever)\b|'
+                     r'\b(?:do not|don\x27t|never|must not|without)\s+(?:remove|delete|erase|clear|replace|wipe)\b', sentence)]
+    for clause in re.split(r';|\band\s+(?:then\s+)?|\bthen\s+', ';'.join(sentences)):
+        request = re.match(r'^\s*(?:(?:please|can you|could you|would you|i (?:need|want)(?: you)? to)\s+)*'
+                           r'(?:remove|delete|erase|clear|replace|wipe)\s+(.+)', clause)
+        if not request:
+            continue
+        target = request[1].strip()
+        if re.search(r'\b(except|keep|leave|preserve|not|without)\b', target):
+            continue
+        page_target = r'(?:(?:the|this|current|whole|entire|existing)\s+)*(?:page|board)'
+        page_scope = r'(?:\s+(?:on|from)\s+' + page_target + r')?'
+        all_target = r'(?:everything|all(?:\s+(?:of|the|existing))*\s*(?:content|objects|items)?)'
+        if (re.fullmatch(page_target + r'(?:\s+with\s+.+)?', target)
+                or re.fullmatch(all_target + page_scope + r'(?:\s+with\s+.+)?', target)):
+            allowed.update(objects)
+            continue
+        kind = re.match(r'(?:(?:all|of|the|selected|this|that|an?|existing)\s+)*'
+                        r'(images?|pictures?|photos?|photographs?|text|shapes?|arrows?|ink|strokes?)\b', target)
+        if kind:
+            noun = kind[1]
+            types = ({'image'} if noun.startswith(('image', 'picture', 'photo')) else
+                     {'shape'} if noun.startswith('shape') else {'arrow'} if noun.startswith('arrow') else
+                     {'ink'} if noun.startswith(('ink', 'stroke')) else {'text'})
+            matches = {identity for identity, obj in objects.items() if obj['type'] in types}
+            if selected and not target.startswith('all '):
+                matches &= selected
+            unqualified = re.fullmatch(page_scope, target[kind.end():]) is not None
+            if selected or (unqualified and (noun.endswith('s') or target.startswith('all ') or len(matches) == 1)):
+                allowed.update(matches)
+        elif re.match(r'(?:(?:the|this|that)\s+)?(?:selected\b|selection\b|objects?\b|items?\b|it\b|this\b|that\b)', target):
+            allowed.update(selected)
+    return allowed
+
+
 def _template_commands(template, page, images, request_id):
     """Compile a small declarative layout vocabulary, never generated source code."""
     if not isinstance(template, dict) or set(template) != {'name', 'title', 'body', 'image_ref'}:
@@ -413,7 +462,11 @@ class BoardAgentController:
             'Only exact selected_images references may be added; do not invent paths, URLs or references. '
             'Do not change pages, lesson identity or permissions. Preserve supplied required_wording exactly. '
             'Current instruction overrides lesson context, then profile defaults. Required resources missing '
-            'means return no proposed publication; the application must keep the existing pupil page.'
+            'means return no proposed publication; the application must keep the existing pupil page. '
+            'Adding or generating content must preserve every existing object. Remove objects only when '
+            'the current teacher instruction explicitly asks to remove or replace those items. '
+            'On an occupied page use additive edit commands; a page template removes existing objects '
+            'and is allowed only for an explicit page-clear or page-replacement request.'
         )
         return {'request_id': context['request_id'], 'task': task, 'context': raw.decode('utf-8'),
                 'context_sha256': digest, 'effective_context': copy.deepcopy(context['effective_context'])}
@@ -636,6 +689,9 @@ class BoardAgentController:
                     raise BoardAgentError('New objects cannot reuse an earlier object identity.')
                 if obj.get('type') == 'image' and canonical_json(obj.get('image_ref')) not in allowed_refs:
                     raise BoardAgentError('A new image must match the trusted exact-version shortlist.')
+        if removed - _requested_removals(context):
+            raise BoardAgentError('This proposal removes existing content that you did not ask to remove. '
+                'Everything was kept. Select the items and explicitly ask to remove them, or explicitly ask to clear or replace the page.')
         candidate = BoardModel(view['document'])
         candidate.apply(commands, expected_revision=view['revision'])
         document = candidate.snapshot()
@@ -673,7 +729,14 @@ class BoardAgentController:
             known = allowed_refs.get(canonical_json(reference))
             if known and (known['width'] != width or known['height'] != height):
                 raise BoardAgentError('Selected image dimensions do not match its actual local bytes.')
-            if known and known.get('credit', '').strip() and not _readable_credit(known['credit'].strip(), proposed_page['objects']):
+            # An unrelated addition must not rewrite older images to repair
+            # attribution missing before this request. New/changed images and
+            # any previously readable credit retain the full credit check.
+            changed = any(obj['type'] == 'image' and obj['image_ref'] == reference
+                          and obj != original.get(obj['id']) for obj in proposed_page['objects'])
+            credit_required = known and known.get('credit', '').strip() and (
+                changed or _readable_credit(known['credit'].strip(), page['objects']))
+            if credit_required and not _readable_credit(known['credit'].strip(), proposed_page['objects']):
                 raise BoardAgentError('Required readable image credit is missing from the pupil page. Use dark text of at least 20 canvas units in its own clear area.')
         if self.page_validator is not None and self.page_validator(copy.deepcopy(document), page['id']) is False:
             raise BoardAgentError('The completed page did not pass the renderer layout check.')

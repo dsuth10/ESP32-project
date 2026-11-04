@@ -6,9 +6,13 @@ supported output choices, replacing the Google/1K-only Board restriction.
 Durable claims, explicit settings reload, first-use preview and recovery remain.
 The subsequent generation-phrasing repair recognises “generate an image of a
 horse and put it up on the board” without a classifier/model-command round trip.
-On an occupied page, it offers an explicit complete replacement preview with
-Undo recovery; existing work remains unchanged until the teacher accepts.
-Provider access, live image quality and classroom acceptance remain separate.
+The user subsequently confirmed successful live generation/presentation of a
+motorbike, then corrected the occupied-page replacement behaviour: existing
+content may be removed only when explicitly requested. Simple images now add
+in clear space while preserving existing objects; a full page retains the saved
+image and asks the teacher to make space. Model/template deletions are rejected
+without an explicit, scoped removal request. Preview alone grants no deletion
+authority. Provider invoice/quality and wider classroom acceptance remain separate.
 
 28 October image-placement follow-up: the [plain image repair](2026-10-28-board-image-placement-repair.md)
 uses typed local layout for simple single-image requests, reuses a sole cached
