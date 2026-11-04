@@ -74,7 +74,7 @@ class AgentPanel(QWidget):
         self.lesson_media = MediaStore(owner.store.root / 'media')
         self._import_saved_catalogue()
         self.media_service = create_resource_service(self.library, self.config)
-        self.preparer = BoardResourcePreparer(self.library, self.lesson_media, self.config, media_service=self.media_service)
+        self.preparer = BoardResourcePreparer(self.library, self.lesson_media, self.config, media_service=self.media_service, staging_tray=getattr(self.owner, 'staging_tray', None))
         self.hermes = None
         if composer is None and truthy(self.config.get('HERMES_ENABLED')) and not truthy(self.config.get('LOCAL_ONLY')):
             self.hermes = HermesService(self.config, self.library.root / 'agent-runtime')
@@ -164,6 +164,10 @@ class AgentPanel(QWidget):
         layout.addWidget(self.forget_button)
         clear = QPushButton('Clear selected resource'); clear.clicked.connect(self.clear_choice); layout.addWidget(clear)
         approve = QPushButton('Approve selected resource for reuse'); approve.clicked.connect(self.approve_choice); layout.addWidget(approve)
+        self.stage_deck_button = QPushButton('Stage selected on Teacher Deck')
+        self.stage_deck_button.setToolTip('Stage selected or searched library images on the Teacher Deck touchscreen.')
+        self.stage_deck_button.clicked.connect(self.stage_selected_to_deck)
+        layout.addWidget(self.stage_deck_button)
         reuse_page = QPushButton('Replace current page with saved page…'); reuse_page.clicked.connect(self.reuse_page); layout.addWidget(reuse_page)
         data = QPushButton('Use chart dataset…'); data.clicked.connect(self.load_dataset); layout.addWidget(data)
         attempts = QPushButton('Review image attempts…'); attempts.clicked.connect(self.review_attempts); layout.addWidget(attempts)
@@ -336,7 +340,7 @@ class AgentPanel(QWidget):
             if recovery_blocker:
                 self.settings_error = recovery_blocker; self._refresh_settings_status(); return False
             new_media = create_resource_service(self.library, config)
-            new_preparer = BoardResourcePreparer(self.library, self.lesson_media, config, media_service=new_media)
+            new_preparer = BoardResourcePreparer(self.library, self.lesson_media, config, media_service=new_media, staging_tray=getattr(self.owner, 'staging_tray', None))
             new_preparer.dataset = copy.deepcopy(self.preparer.dataset)
             new_preparer.chart_spec = copy.deepcopy(self.preparer.chart_spec)
             if self._composer_override is None and truthy(config.get('HERMES_ENABLED')) and not truthy(config.get('LOCAL_ONLY')):
@@ -418,7 +422,7 @@ class AgentPanel(QWidget):
         self.controller.close()
         self.lesson_media = MediaStore(self.owner.store.root / 'media')
         self._import_saved_catalogue()
-        self.preparer = BoardResourcePreparer(self.library, self.lesson_media, self.config, media_service=self.media_service)
+        self.preparer = BoardResourcePreparer(self.library, self.lesson_media, self.config, media_service=self.media_service, staging_tray=getattr(self.owner, 'staging_tray', None))
         self.recovery_store = BoardRecoveryStore(self.owner.store.root / 'board-requests')
         if isinstance(self.composer, HermesBoardComposer):
             self.composer = HermesBoardComposer(self.hermes, recovery_store=self.recovery_store)
@@ -597,8 +601,34 @@ class AgentPanel(QWidget):
                 self.results.addItem(item)
             count = len(self.records)
             self.progress.setText(f'{count} local {"match" if count == 1 else "matches"} (up to 8 shown). Select one to review or reuse.' if self.records else 'No local match for these words and filters. Try a shorter topic or change the filters.')
+            staging_tray = getattr(self.owner, 'staging_tray', None)
+            if staging_tray is not None and self.records:
+                try:
+                    from board_runtime import stage_records_to_tray
+                    image_matches = [r for r in self.records if r.get('resource_type') == 'image']
+                    if image_matches:
+                        stage_records_to_tray(image_matches, tray=staging_tray, series_title=self.query.text().strip() or "Library Search")
+                except Exception:
+                    pass
         except Exception:
             self.progress.setText('Resource search is unavailable; the lesson remains editable.')
+
+    def stage_selected_to_deck(self):
+        from board_runtime import stage_records_to_tray
+        staging_tray = getattr(self.owner, 'staging_tray', None)
+        if staging_tray is None:
+            self.progress.setText('Teacher Deck staging tray is not active.')
+            return
+        targets = []
+        if self.selected_resource and self.selected_resource.get('resource_type') == 'image':
+            targets = [self.selected_resource]
+        elif self.records:
+            targets = [r for r in self.records if r.get('resource_type') == 'image']
+        if not targets:
+            self.progress.setText('Select an image or search images first to stage on Teacher Deck.')
+            return
+        staged = stage_records_to_tray(targets, tray=staging_tray, series_title=self.query.text().strip() or "Teacher Deck")
+        self.progress.setText(f'Staged {len(staged)} candidate {"image" if len(staged) == 1 else "images"} on Teacher Deck.')
 
     def choose(self, item):
         self.preparer.dataset = None; self.preparer.chart_spec = None

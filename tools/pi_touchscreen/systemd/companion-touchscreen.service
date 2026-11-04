@@ -1,0 +1,19 @@
+[Unit]
+Description=Companion Teacher Touchscreen Deck
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=companion
+Group=companion
+PAMName=login
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+Environment=WAYLAND_DISPLAY=wayland-0
+WorkingDirectory=/home/companion/esp32-project
+ExecStart=/usr/bin/cage -s -- /usr/bin/python3 /home/companion/esp32-project/tools/pi_touchscreen/deck_ui.py --kiosk --config /home/companion/.config/companion-touchscreen/config.json
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

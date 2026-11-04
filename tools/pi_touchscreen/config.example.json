@@ -1,0 +1,9 @@
+{
+  "url": "http://companion-pc.local:8790",
+  "token": "REPLACE_WITH_LOCAL_TEACHER_DECK_TOKEN",
+  "windowed": false,
+  "kiosk": true,
+  "width": 1024,
+  "height": 600,
+  "poll_ms": 1000
+}

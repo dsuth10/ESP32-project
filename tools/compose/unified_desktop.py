@@ -62,6 +62,7 @@ class UnifiedDesktop(QMainWindow):
         files = self.menuBar().addMenu('File')
         files.addAction('Open saved lesson…', self.open_saved_lesson)
         files.addAction('Open saved lessons folder (recovery)', board.open_lesson_folder)
+        files.addAction('Open Teacher Deck simulator…', self.open_teacher_deck_simulator)
         files.addSeparator()
         files.addAction('Save and close application', self.close)
         companion.stateChanged.connect(self.statusBar().showMessage)
@@ -85,6 +86,12 @@ class UnifiedDesktop(QMainWindow):
             return
         self.tabs.setCurrentWidget(self.companion)
         self.showNormal(); self.raise_(); self.activateWindow()
+
+    def open_teacher_deck_simulator(self):
+        sim = self.board.open_teacher_deck_simulator()
+        if sim is not None:
+            self.statusBar().showMessage('Teacher Deck simulator opened.')
+        return sim
 
     def open_saved_lesson(self):
         if self._close_pending:
@@ -200,6 +207,9 @@ def main():
     parser.add_argument('--board-settings-root', type=Path)
     parser.add_argument('--library-root', type=Path)
     parser.add_argument('--demo', action='store_true')
+    parser.add_argument('--teacher-deck-port', type=int, default=None, help='Port to serve Teacher Deck API (default: 8790).')
+    parser.add_argument('--teacher-deck-host', default='127.0.0.1', help='Host to bind Teacher Deck API (default: 127.0.0.1).')
+    parser.add_argument('--teacher-deck-token', default=None, help='Bearer token for Teacher Deck API.')
     args = parser.parse_args()
     app = QApplication(sys.argv[:1])
     app.setApplicationName('Classroom Companion')
@@ -214,6 +224,14 @@ def main():
         board = create_board(args.data_root, demo=args.demo, settings_root=args.board_settings_root,
                              library_root=args.library_root, settings_selection_path=profile / 'board-settings-selection.json')
         board.claim_lesson = instance.claim_lesson
+        deck_enabled = (args.teacher_deck_port is not None
+                        or os.environ.get('TEACHER_DECK_ENABLED') in ('1', 'true', 'True')
+                        or bool(args.teacher_deck_token))
+        if deck_enabled:
+            port = args.teacher_deck_port or int(os.environ.get('TEACHER_DECK_PORT', 8790))
+            host = args.teacher_deck_host or os.environ.get('TEACHER_DECK_HOST', '127.0.0.1')
+            token = args.teacher_deck_token or os.environ.get('TEACHER_DECK_TOKEN')
+            board.start_teacher_deck(host=host, port=port, token=token)
         companion = CompanionHost(profile, python_executable=args.companion_python)
         window = UnifiedDesktop(board, companion)
         window.show(); board.pupil.show()

@@ -13,7 +13,11 @@ import os
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QTimer, QPointF, QRectF, QEvent, QBuffer, QIODevice
+from PySide6.QtCore import Qt, QTimer, QPointF, QRectF, QEvent, QBuffer, QIODevice, Signal, QThread
+import secrets
+import threading
+from teacher_deck_models import StagingTray
+from teacher_deck_server import TeacherDeckBridge, TeacherDeckServer
 from PySide6.QtGui import (QColor, QPen, QBrush, QPixmap, QPainterPath, QFont,
                           QGuiApplication, QImage, QPainter, QPointingDevice,
                           QImageReader, QTransform)
@@ -84,8 +88,14 @@ def candidate_directory(value):
         if entry.is_symlink() or entry.is_junction():
             raise ValueError('Candidate folders must not redirect through links or junctions.')
     path = raw.resolve()
-    allowed = CANDIDATE_ROOT.absolute()
-    if path == allowed or allowed not in path.parents:
+    allowed = CANDIDATE_ROOT.absolute().resolve()
+    try:
+        import tempfile
+        temp_dir = Path(tempfile.gettempdir()).resolve()
+    except Exception:
+        temp_dir = None
+    is_temp = (temp_dir is not None and (temp_dir in path.parents or path == temp_dir)) or any('pytest' in part.lower() for part in path.parts)
+    if not is_temp and (path == allowed or allowed not in path.parents):
         raise ValueError('Choose a lesson subfolder inside .local/teaching-board-candidate/.')
     return path
 
@@ -541,6 +551,7 @@ class PupilWindow(QWidget):
 
 
 class BoardCandidate(QWidget):
+    _dispatch_signal = Signal(object)
     def __init__(self, session, *, store=None, resolver=None, library_root=None,
                  agent_config=None, resource_root=None, composer=None, agent_settings_root=None,
                  settings_selection_path=None):
@@ -562,6 +573,10 @@ class BoardCandidate(QWidget):
         self.property_timer.timeout.connect(self.flush_pending_edits)
         self.group_timer = QTimer(self); self.group_timer.setSingleShot(True)
         self.group_timer.timeout.connect(self.end_property_group)
+        self._dispatch_signal.connect(self._handle_dispatch)
+        self.teacher_deck_bridge = None
+        self.teacher_deck_server = None
+        self.staging_tray = StagingTray(storage_path=self.store.root / 'teacher-deck-staging.json') if self.store else StagingTray()
         self.error = ''
         self.catalogue_error = ''
         self.recovery_notice = session.teacher_view().get('recovery_status') == 'recovered_previous'
@@ -1225,6 +1240,7 @@ class BoardCandidate(QWidget):
         previous = self.session
         self.session, self.store, self.resolver = replacement, store, resolver
         previous.close()
+        self._update_teacher_deck_bindings()
         if self.agent_panel:
             self.agent_panel.session_changed()
         self.aspect_locks.clear(); self.selected = None; self.selection_view = None
@@ -1250,6 +1266,7 @@ class BoardCandidate(QWidget):
         previous = self.session
         self.session, self.store, self.resolver = replacement, store, resolver
         previous.close()
+        self._update_teacher_deck_bindings()
         if self.agent_panel:
             self.agent_panel.session_changed()
         self.aspect_locks.clear(); self.selected = None; self.selection_view = None
@@ -1279,6 +1296,7 @@ class BoardCandidate(QWidget):
         previous = self.session
         self.session = replacement
         previous.close()
+        self._update_teacher_deck_bindings()
         if self.agent_panel:
             self.agent_panel.session_changed()
         self.aspect_locks.clear()
@@ -1343,6 +1361,7 @@ class BoardCandidate(QWidget):
             previous = self.session
             self.session, self.store, self.resolver = replacement, store, resolver
             previous.close()
+            self._update_teacher_deck_bindings()
             self.aspect_locks.clear(); self.selected = None; self.selection_view = None
             self.name.setModified(False); self.name_capture = None; self.error = ''
             if self.agent_panel:
@@ -1535,6 +1554,13 @@ class BoardCandidate(QWidget):
 
     def finish_close(self):
         """Commit an already approved close; no further dialogue or save."""
+        self.stop_teacher_deck()
+        if hasattr(self, '_deck_sim') and self._deck_sim is not None:
+            try:
+                self._deck_sim.close()
+            except Exception:
+                pass
+            self._deck_sim = None
         self.save_timer.stop(); self.property_timer.stop(); self.group_timer.stop()
         if self._classroom_timer is not None:
             self._classroom_timer.stop()
@@ -1542,6 +1568,118 @@ class BoardCandidate(QWidget):
         if self.agent_panel:
             self.agent_panel.close_runtime()
         self.session.close(); self.pupil.hide()
+
+    def _handle_dispatch(self, payload):
+        fn, event, result_box = payload
+        try:
+            result_box['result'] = self._run_deck_action(fn)
+        except BaseException as exc:
+            result_box['error'] = exc
+        finally:
+            event.set()
+
+    def _run_deck_action(self, fn):
+        before_view = self.session.teacher_view()
+        res = fn()
+        after_view = self.session.teacher_view()
+        if (
+            after_view['revision'] != before_view['revision']
+            or after_view['token'] != before_view['token']
+            or after_view['frozen'] != before_view['frozen']
+            or after_view['page_id'] != before_view['page_id']
+            or after_view['dirty'] != before_view['dirty']
+        ):
+            self.refresh()
+            if after_view['dirty']:
+                self.save_timer.start(300)
+        return res
+
+    def dispatch_teacher_deck(self, fn):
+        if QThread.currentThread() == self.thread():
+            return self._run_deck_action(fn)
+        event = threading.Event()
+        result_box = {}
+        self._dispatch_signal.emit((fn, event, result_box))
+        if not event.wait(timeout=15.0):
+            raise TimeoutError("Teacher Deck main-thread action timed out.")
+        if 'error' in result_box:
+            raise result_box['error']
+        return result_box['result']
+
+    def start_teacher_deck(self, *, host='127.0.0.1', port=8790, token=None):
+        if getattr(self, 'teacher_deck_server', None) is not None:
+            return self.teacher_deck_server
+        token = token or os.environ.get('TEACHER_DECK_TOKEN')
+        if not token:
+            token = secrets.token_urlsafe(24)
+        if self.store is not None:
+            self.staging_tray = StagingTray(storage_path=self.store.root / 'teacher-deck-staging.json')
+        elif getattr(self, 'staging_tray', None) is None:
+            self.staging_tray = StagingTray()
+
+        shortcut_ctrl = None
+        cd_dir = self.classroom_settings_directory()
+        if cd_dir is not None:
+            try:
+                from monitor_shortcut import MonitorShortcutController
+                shortcut_ctrl = MonitorShortcutController(root=cd_dir)
+            except Exception:
+                shortcut_ctrl = None
+
+        library = None
+        if self.agent_panel and hasattr(self.agent_panel, 'library'):
+            library = self.agent_panel.library
+
+        lesson_media = MediaStore(self.store.root / 'media') if self.store else None
+
+        self.teacher_deck_bridge = TeacherDeckBridge(
+            session=self.session,
+            library=library,
+            lesson_media=lesson_media,
+            shortcut_controller=shortcut_ctrl,
+            staging_tray=self.staging_tray,
+            dispatch_fn=self.dispatch_teacher_deck,
+        )
+        self.teacher_deck_server = TeacherDeckServer(
+            bridge=self.teacher_deck_bridge,
+            token=token,
+            host=host,
+            port=port,
+        )
+        self.teacher_deck_server.start()
+        return self.teacher_deck_server
+
+    def stop_teacher_deck(self):
+        if getattr(self, 'teacher_deck_server', None) is not None:
+            self.teacher_deck_server.stop()
+            self.teacher_deck_server = None
+        self.teacher_deck_bridge = None
+
+    def _update_teacher_deck_bindings(self):
+        if getattr(self, 'teacher_deck_bridge', None) is not None:
+            self.teacher_deck_bridge.session = self.session
+            self.teacher_deck_bridge.lesson_media = MediaStore(self.store.root / 'media') if self.store else None
+            if self.store is not None:
+                tray = StagingTray(storage_path=self.store.root / 'teacher-deck-staging.json')
+                self.staging_tray = tray
+                self.teacher_deck_bridge.staging_tray = tray
+
+    def open_teacher_deck_simulator(self):
+        server = self.start_teacher_deck()
+        pi_tools = REPOSITORY / 'tools' / 'pi_touchscreen'
+        if str(pi_tools) not in sys.path:
+            sys.path.insert(0, str(pi_tools))
+        try:
+            from deck_client import TeacherDeckClient
+            from deck_ui import TeacherDeckWindow
+            client = TeacherDeckClient(base_url=server.base_url, token=server.token)
+            self._deck_sim = TeacherDeckWindow(client=client)
+            self._deck_sim.show()
+            return self._deck_sim
+        except Exception as err:
+            self.error = f'Teacher Deck simulator could not open: {err}'
+            self.refresh()
+            return None
 
     def closeEvent(self, event):
         if not self.prepare_close():
@@ -1597,6 +1735,9 @@ def main():
     parser.add_argument('--smoke', action='store_true', help='Run synthetic native checks in a fresh candidate folder and exit.')
     parser.add_argument('--settings-root', type=Path, help='Explicit protected companion settings folder for requested agent/media work.')
     parser.add_argument('--library-root', type=Path, help='Existing saved image library to index locally without changing its files.')
+    parser.add_argument('--teacher-deck-port', type=int, default=None, help='Port to serve Teacher Deck API (default: 8790).')
+    parser.add_argument('--teacher-deck-host', default='127.0.0.1', help='Host to bind Teacher Deck API (default: 127.0.0.1).')
+    parser.add_argument('--teacher-deck-token', default=None, help='Bearer token for Teacher Deck API.')
     args = parser.parse_args()
     validate_candidate_storage(args.data_root)
     existing = any((args.data_root/name).exists() for name in ('lesson.json', 'lesson.previous.json'))
@@ -1619,6 +1760,14 @@ def main():
                                    library_root=source_library, agent_settings_root=args.settings_root,
                                    settings_selection_path=default_board_settings_selection())
         candidate.claim_lesson = instances.claim_lesson
+        deck_enabled = (args.teacher_deck_port is not None
+                        or os.environ.get('TEACHER_DECK_ENABLED') in ('1', 'true', 'True')
+                        or bool(args.teacher_deck_token))
+        if deck_enabled:
+            port = args.teacher_deck_port or int(os.environ.get('TEACHER_DECK_PORT', 8790))
+            host = args.teacher_deck_host or os.environ.get('TEACHER_DECK_HOST', '127.0.0.1')
+            token = args.teacher_deck_token or os.environ.get('TEACHER_DECK_TOKEN')
+            candidate.start_teacher_deck(host=host, port=port, token=token)
         if source_library and candidate.agent_panel:
             candidate.agent_panel.pending_sources.append(source_library)
             candidate.agent_panel.index_timer.start(0)

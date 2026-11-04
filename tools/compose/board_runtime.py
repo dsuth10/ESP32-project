@@ -229,9 +229,70 @@ def simple_image_composition(prepared):
     return result_envelope(prepared, commands=commands, required_image_refs=[image['image_ref']])
 
 
+def stage_records_to_tray(records, tray=None, callback=None, series_id=None, series_title=None):
+    if tray is None and callback is None:
+        return []
+    try:
+        from teacher_deck_models import StagedImageItem
+    except ImportError:
+        return []
+    import uuid
+    sid = (series_id or "").strip() or str(uuid.uuid4())
+    items = []
+    for rec in records:
+        try:
+            vid = rec.get("version_id", "")
+            if not vid:
+                continue
+            meta = rec.get("metadata", {}) or {}
+            prov = rec.get("provenance", {}) or {}
+            img_ref = rec.get("image_ref") or {}
+            aid = img_ref.get("asset_id") or rec.get("resource_id", vid)
+            sha = rec.get("content_hash") or img_ref.get("sha256", "0" * 64)
+            w = int(meta.get("width") or rec.get("width") or 800)
+            h = int(meta.get("height") or rec.get("height") or 600)
+            origin = meta.get("origin") or rec.get("origin") or "library"
+            if origin not in {"library", "generated", "import", "web"}:
+                origin = "library"
+            rev = rec.get("review_state") or "approved"
+            if rev not in {"approved", "draft", "unreviewed", "rejected", "excluded"}:
+                rev = "approved"
+            title = (rec.get("title") or series_title or "Image")[:120].strip() or "Image"
+            item = StagedImageItem(
+                stage_id=str(uuid.uuid4()),
+                series_id=sid,
+                asset_id=aid,
+                version_id=vid,
+                sha256=sha,
+                title=title,
+                width=w,
+                height=h,
+                origin=origin,
+                review_state=rev,
+                credit=(prov.get("attribution") or rec.get("credit") or "")[:200],
+            )
+            items.append(item)
+        except Exception:
+            continue
+    if not items:
+        return []
+    if tray is not None:
+        try:
+            tray.stage_series(items, series_id=sid)
+        except Exception:
+            pass
+    if callback is not None:
+        try:
+            callback(items)
+        except Exception:
+            pass
+    return items
+
+
 class BoardResourcePreparer:
     """Search/acquire a required visual before the composition worker runs."""
-    def __init__(self, library, lesson_media, config, *, media_service=None, planner=None):
+    def __init__(self, library, lesson_media, config, *, media_service=None, planner=None,
+                 staging_tray=None, on_stage_candidates=None):
         self.library, self.lesson_media = library, lesson_media
         self.config = dict(config)
         self.local_only = _truthy(config.get('LOCAL_ONLY'))
@@ -242,6 +303,11 @@ class BoardResourcePreparer:
         self.chart_spec = None
         self._choices = {}
         self._lock = threading.RLock()
+        self.staging_tray = staging_tray
+        self.on_stage_candidates = on_stage_candidates
+
+    def _stage_candidates(self, records, series_title=None):
+        return stage_records_to_tray(records, tray=self.staging_tray, callback=self.on_stage_candidates, series_title=series_title)
 
     def choose_for_request(self, request_id, record):
         # Choice is explicitly made in the teacher UI, never by model JSON.
@@ -302,6 +368,8 @@ class BoardResourcePreparer:
                 # enforced by select() and the controller publication checks.
                 return [self.library.select(candidates[0], self.lesson_media)]
             if candidates:
+                image_matches = [c for c in candidates if c.get('resource_type', 'image') == 'image']
+                self._stage_candidates(image_matches or candidates, series_title=query)
                 raise BoardAgentError('Several saved resources may fit. Search resources, select a thumbnail and send the request again.')
             if explicit_source == 'library':
                 raise BoardAgentError('No suitable saved version was found. Choose or import a library image.')
@@ -359,6 +427,7 @@ class BoardResourcePreparer:
                                      'changes': 'Scaled to fit; no crop', 'acquired_at': acquired_at})
                 selected = self.library.select(record, self.lesson_media)
                 selected['credit'] = credit
+                self._stage_candidates([record], series_title=query)
                 return [selected]
             raise BoardAgentError('No supported reusable photo was found. Choose an image or change the subject.')
         if route.route == 'generate_once':
@@ -399,6 +468,7 @@ class BoardResourcePreparer:
             record = self.library._index(version, self.library.media.root)
             selected = self.library.select(record, self.lesson_media)
             selected['generated_unreviewed'] = True
+            self._stage_candidates([record], series_title=query)
             return [selected]
         raise BoardAgentError('Choose a supported saved resource for this page.')
 
