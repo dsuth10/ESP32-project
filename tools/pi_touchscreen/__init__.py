@@ -6,10 +6,11 @@ and classroom display switching.
 """
 from __future__ import annotations
 
-from .deck_client import DeckClientError, TeacherDeckClient, load_deck_config
+from .deck_client import DeckClientError, InProcessDeckClient, TeacherDeckClient, load_deck_config
 
 __all__ = [
     "DeckClientError",
+    "InProcessDeckClient",
     "TeacherDeckClient",
     "load_deck_config",
 ]

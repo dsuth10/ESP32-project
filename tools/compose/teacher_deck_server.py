@@ -244,8 +244,8 @@ class TeacherDeckBridge:
         }
 
     def get_status(self) -> dict[str, Any]:
-        """Return the current glanceable teacher status snapshot."""
-        return self.dispatch(self._read_status_internal)
+        """Return the current glanceable teacher status snapshot (thread-safe via BoardSession RLock)."""
+        return self._read_status_internal()
 
     def list_staged(self, series_id: str | None = None) -> list[dict[str, Any]]:
         """Return staged candidate images, optionally filtered by series_id."""
@@ -688,13 +688,16 @@ class TeacherDeckRequestHandler(BaseHTTPRequestHandler):
         body: bytes = b"",
         content_type: str = "application/json",
     ) -> None:
-        self.send_response(status)
-        self.send_header("Content-Type", content_type)
-        self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-store")
-        self.end_headers()
-        if body:
-            self.wfile.write(body)
+        try:
+            self.send_response(status)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            if body:
+                self.wfile.write(body)
+        except (BrokenPipeError, ConnectionAbortedError, ConnectionResetError):
+            return
 
     def _json(self, status: int, value: Any) -> None:
         payload = json.dumps(value, ensure_ascii=False).encode("utf-8")

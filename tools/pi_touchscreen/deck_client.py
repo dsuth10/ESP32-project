@@ -189,6 +189,79 @@ class TeacherDeckClient:
         return self._request("POST", "/api/v1/display/switch", body={"target": cleaned_target})
 
 
+class InProcessDeckClient:
+    """Direct in-process client adapter for launching TeacherDeckWindow inside the Qt host process."""
+
+    def __init__(self, bridge: Any, base_url: str = "http://127.0.0.1:8790") -> None:
+        self.bridge = bridge
+        self.base_url = base_url
+        self._thumb_cache: dict[str, bytes] = {}
+
+    def _call(self, fn, *args, **kwargs) -> Any:
+        try:
+            return fn(*args, **kwargs)
+        except Exception as exc:
+            status = getattr(exc, "status", 400 if isinstance(exc, ValueError) else 500)
+            message = getattr(exc, "message", str(exc))
+            details = getattr(exc, "details", {})
+            raise DeckClientError(status=status, message=message, details=details) from exc
+
+    def health(self) -> dict[str, Any]:
+        return {"ok": True, "status": "ok"}
+
+    def get_status(self) -> dict[str, Any]:
+        return self._call(self.bridge.get_status)
+
+    def list_staged(self, series_id: str | None = None) -> list[dict[str, Any]]:
+        return self._call(self.bridge.list_staged, series_id=series_id)
+
+    def search_library(self, query: str = "", limit: int = 12) -> list[dict[str, Any]]:
+        return self._call(self.bridge.search_library, query=query, limit=limit)
+
+    def get_thumbnail(self, version_id: str) -> bytes:
+        cleaned_vid = str(version_id or "").strip()
+        if cleaned_vid in self._thumb_cache:
+            return self._thumb_cache[cleaned_vid]
+        thumb = self._call(self.bridge.get_thumbnail, cleaned_vid)
+        if not thumb:
+            raise DeckClientError(status=404, message="Thumbnail not found")
+        self._thumb_cache[cleaned_vid] = thumb
+        return thumb
+
+    def stage_images(
+        self,
+        query: str | None = None,
+        version_ids: list[str] | None = None,
+        series_id: str | None = None,
+    ) -> dict[str, Any]:
+        sid, items = self._call(
+            self.bridge.stage_images,
+            query=query,
+            version_ids=version_ids,
+            series_id=series_id,
+        )
+        return {"ok": True, "series_id": sid, "items": items}
+
+    def present_image(
+        self,
+        version_id: str,
+        target: str = "current_page",
+        expected_revision: int | None = None,
+    ) -> dict[str, Any]:
+        return self._call(
+            self.bridge.present_image,
+            version_id=version_id,
+            target=target,
+            expected_revision=expected_revision,
+        )
+
+    def board_control(self, action: str) -> dict[str, Any]:
+        return self._call(self.bridge.board_control, action)
+
+    def switch_display(self, target: str) -> dict[str, Any]:
+        return self._call(self.bridge.switch_display, target)
+
+
 def load_deck_config(config_path: Path | str | None = None) -> dict[str, Any]:
     """Load configuration merged from defaults, optional JSON file, and environment variables."""
     cfg: dict[str, Any] = {

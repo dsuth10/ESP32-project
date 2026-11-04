@@ -1670,10 +1670,17 @@ class BoardCandidate(QWidget):
         if str(pi_tools) not in sys.path:
             sys.path.insert(0, str(pi_tools))
         try:
-            from deck_client import TeacherDeckClient
+            from deck_client import InProcessDeckClient
             from deck_ui import TeacherDeckWindow
-            client = TeacherDeckClient(base_url=server.base_url, token=server.token)
+            if getattr(self, '_deck_sim', None) is not None:
+                self._deck_sim.showNormal()
+                self._deck_sim.raise_()
+                self._deck_sim.activateWindow()
+                self._deck_sim.refresh_state()
+                return self._deck_sim
+            client = InProcessDeckClient(self.teacher_deck_bridge, base_url=server.base_url)
             self._deck_sim = TeacherDeckWindow(client=client)
+            self._deck_sim.resize(1024, 600)
             self._deck_sim.show()
             return self._deck_sim
         except Exception as err:
