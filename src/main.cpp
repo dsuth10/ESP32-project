@@ -1008,7 +1008,24 @@ void loop() {
           gui.drawButton(currentPage, btnIndex, true);
           setLedColor(120, 120, 120); // Bright White flash
 
-          executeMacro(btn);
+          // Classroom Apps: match Create & Paste — send F18–F21 plus the
+          // Ctrl+Alt+Shift stand-in chord. Bare F18–F21 often never reach
+          // GetAsyncKeyState over BLE; the dual press is what the host listens for.
+          if (currentPage == PAGE_CLASSROOM_APPS && btnIndex >= 0 && btnIndex <= 3 &&
+              bleKeyboard.isConnected()) {
+            const uint8_t standard[] = {KEY_F6, KEY_F5, KEY_F4, KEY_F3};
+            const uint8_t extended[] = {KEY_F18, KEY_F19, KEY_F20, KEY_F21};
+            bleKeyboard.press(KEY_LEFT_CTRL);
+            bleKeyboard.press(KEY_LEFT_ALT);
+            bleKeyboard.press(KEY_LEFT_SHIFT);
+            bleKeyboard.press(standard[btnIndex]);
+            bleKeyboard.press(extended[btnIndex]);
+            delay(30);
+            bleKeyboard.releaseAll();
+            Serial.printf("[Classroom] App %d chord+F%d sent.\n", btnIndex, 18 + btnIndex);
+          } else {
+            executeMacro(btn);
+          }
 
           // Wait until finger is lifted
           uint32_t pressStart = millis();

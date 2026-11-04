@@ -369,7 +369,8 @@ class ComposeApp:
             "F13 Compose · F14 Dictate · F15 Paste Ready · F16 Images · F17 Library.\n"
             "Fallback: Ctrl+Alt+Shift with F9 / F10 / F11 / F8 / F7 respectively.\n"
             "Classroom apps: companion buttons for OneNote, Word, Chrome and Board. Optional shortcuts "
-            "(off by default): F18–F21 or Ctrl+Alt+Shift+F6 / F5 / F4 / F3. No handheld buttons yet."
+            "(off by default; enable Classroom Apps tick box): F18–F21 or Ctrl+Alt+Shift+F6 / F5 / F4 / F3; "
+            "handheld page buttons use the same chords when that option is on."
         )
         tk.Label(guide_frame, text=guide_txt, font=("Segoe UI", 8), fg="#9CA3AF", bg="#111827", justify="left", wraplength=650).pack(anchor="w")
 

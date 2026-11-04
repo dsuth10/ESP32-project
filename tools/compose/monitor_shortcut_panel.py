@@ -82,7 +82,7 @@ class MonitorShortcutPanel(ttk.Frame):
         ttk.Label(
             self,
             text='When enabled: F18 OneNote, F19 Word, F20 Chrome, F21 Board, '
-                 'or Ctrl+Alt+Shift+F6 / F5 / F4 / F3. No handheld buttons in this slice.',
+                 'or Ctrl+Alt+Shift+F6 / F5 / F4 / F3 (same chords for handheld page buttons).',
             wraplength=820,
         ).grid(row=5, column=0, columnspan=3, sticky='w', pady=(0, 6))
 

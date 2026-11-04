@@ -121,6 +121,21 @@ const MacroProfile PROFILES[NUM_PAGES] = {
       { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
       { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr }
     }
+  },
+
+  // Page 8: Classroom Apps (display page 9/9) — one-shot F18–F21 to host
+  {
+    "Classroom Apps",
+    0x3A9F, // Classroom blue accent
+    4,      // Portrait 2x3 grid; four used, two spare blank
+    {
+      { "ONENOTE", "Classroom screen", 0x18F4, 0x529F, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F18, nullptr },
+      { "WORD",    "Classroom screen", 0x0270, 0x1CB2, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F19, nullptr },
+      { "CHROME",  "Classroom screen", 0x4A69, 0xFDA0, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F20, nullptr },
+      { "BOARD",   "Classroom screen", 0x2949, 0xA35F, ACTION_KEY_COMBO, nullptr, 0, 0, 0, KEY_F21, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr },
+      { "", "", 0, 0, ACTION_MEDIA, nullptr, 0, 0, 0, 0, nullptr }
+    }
   }
 };
 
