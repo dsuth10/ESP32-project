@@ -2,6 +2,7 @@
 
 Prepared 4 November 2026 (Australia/Brisbane).
 Current programme governance: [consolidated branch plan](2026-10-21-companion-media-agent-master-plan.md).
+Multi-host networking and hub-catalogue expansion: [classroom hub Tailscale brief](2026-11-05-classroom-hub-tailscale-brief.md) (5 November 2026) — Tailscale-primary control plane; this document remains the Teacher Deck UI/API build plan.
 Target hardware baseline: Raspberry Pi 3 Model B Rev 1.2 (`companionpi`), Raspberry Pi OS Lite 64-bit (Debian 13 Trixie), 1 GB RAM.
 
 > **Security & Git boundary:** All private Wi-Fi credentials, SSH host keys, IP receipts and imaging artefacts remain strictly inside `.local/raspberry-pi/` (which is excluded by `.gitignore`). All source code, systemd templates, UI modules, protocol schemas and this plan live in tracked repository directories (`docs/`, `tools/compose/`, `tools/pi_touchscreen/`) with zero hardcoded secrets or school/home network identifiers.

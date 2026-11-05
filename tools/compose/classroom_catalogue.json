@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "title": "JoshuaOS Podium — MrSutherland.net Launchpad",
+  "items": [
+    {
+      "id": "mrsutherland-home",
+      "title": "MrSutherland.net Hub",
+      "category": "Core Portal",
+      "url": "https://mrsutherland.net/",
+      "description": "Main interactive teaching portal and classroom lesson index.",
+      "display_target": "chrome",
+      "tags": ["portal", "home"]
+    },
+    {
+      "id": "maths-command-station",
+      "title": "Maths Command Station",
+      "category": "Mathematics",
+      "url": "https://mrsutherland.net/maths/",
+      "description": "Interactive mathematics manipulatives, warm-ups, and visual problem-solving tools.",
+      "display_target": "chrome",
+      "tags": ["maths", "numeracy", "manipulatives"]
+    },
+    {
+      "id": "interactive-number-line",
+      "title": "Fractions & Number Line Explorer",
+      "category": "Mathematics",
+      "url": "https://mrsutherland.net/maths/fractions/",
+      "description": "Visual fraction wall and dynamic number line for modelling equivalence and ordering.",
+      "display_target": "chrome",
+      "tags": ["maths", "fractions", "number-line"]
+    },
+    {
+      "id": "science-water-cycle",
+      "title": "Water Cycle & Earth Systems Lab",
+      "category": "Science",
+      "url": "https://mrsutherland.net/science/water-cycle/",
+      "description": "Interactive diagram and stage-by-stage simulation of evaporation, condensation, and precipitation.",
+      "display_target": "chrome",
+      "tags": ["science", "earth-systems", "water-cycle"]
+    },
+    {
+      "id": "literacy-writing-studio",
+      "title": "Literacy & Writing Studio",
+      "category": "English",
+      "url": "https://mrsutherland.net/english/writing/",
+      "description": "Structured writing prompts, sentence scaffolds, and vocabulary builders for classroom modelling.",
+      "display_target": "chrome",
+      "tags": ["english", "literacy", "writing"]
+    },
+    {
+      "id": "classroom-timer-wheel",
+      "title": "Classroom Timer & Randomiser",
+      "category": "Classroom Tools",
+      "url": "https://mrsutherland.net/tools/timer/",
+      "description": "Podium countdown timer, transition visualiser, and student group selector.",
+      "display_target": "chrome",
+      "tags": ["tools", "timer", "management"]
+    },
+    {
+      "id": "design-3d-showcase",
+      "title": "Design & 3D Modelling Showcase",
+      "category": "Technologies",
+      "url": "https://mrsutherland.net/design/3d/",
+      "description": "Interactive 3D exemplars, orthographic projection guides, and design thinking prompts.",
+      "display_target": "chrome",
+      "tags": ["design", "technologies", "3d"]
+    }
+  ]
+}

@@ -1555,6 +1555,13 @@ class BoardCandidate(QWidget):
     def finish_close(self):
         """Commit an already approved close; no further dialogue or save."""
         self.stop_teacher_deck()
+        if hasattr(self, '_glass_overlay') and self._glass_overlay is not None:
+            try:
+                self._glass_overlay.hide()
+                self._glass_overlay.close()
+            except Exception:
+                pass
+            self._glass_overlay = None
         if hasattr(self, '_deck_sim') and self._deck_sim is not None:
             try:
                 self._deck_sim.close()
@@ -1606,12 +1613,42 @@ class BoardCandidate(QWidget):
             raise result_box['error']
         return result_box['result']
 
+    def _load_teacher_deck_saved_config(self) -> dict:
+        cd_dir = self.classroom_settings_directory()
+        if cd_dir is not None:
+            try:
+                cfg_file = Path(cd_dir) / 'teacher-deck-config.json'
+                if cfg_file.is_file():
+                    data = json.loads(cfg_file.read_text(encoding='utf-8'))
+                    if isinstance(data, dict):
+                        return data
+            except Exception:
+                pass
+        return {}
+
+    def _resolve_teacher_deck_token(self, explicit_token=None):
+        token = explicit_token or os.environ.get('TEACHER_DECK_TOKEN')
+        if token and str(token).strip():
+            return str(token).strip()
+        saved = self._load_teacher_deck_saved_config()
+        if str(saved.get('token') or '').strip():
+            return str(saved['token']).strip()
+        cd_dir = self.classroom_settings_directory()
+        if cd_dir is not None:
+            try:
+                cfg_file = Path(cd_dir) / 'teacher-deck-config.json'
+                new_token = secrets.token_urlsafe(24)
+                cfg_file.parent.mkdir(parents=True, exist_ok=True)
+                cfg_file.write_text(json.dumps({'token': new_token, 'port': 8790}, indent=2), encoding='utf-8')
+                return new_token
+            except Exception:
+                pass
+        return secrets.token_urlsafe(24)
+
     def start_teacher_deck(self, *, host='127.0.0.1', port=8790, token=None):
         if getattr(self, 'teacher_deck_server', None) is not None:
             return self.teacher_deck_server
-        token = token or os.environ.get('TEACHER_DECK_TOKEN')
-        if not token:
-            token = secrets.token_urlsafe(24)
+        token = self._resolve_teacher_deck_token(token)
         if self.store is not None:
             self.staging_tray = StagingTray(storage_path=self.store.root / 'teacher-deck-staging.json')
         elif getattr(self, 'staging_tray', None) is None:
@@ -1632,6 +1669,15 @@ class BoardCandidate(QWidget):
 
         lesson_media = MediaStore(self.store.root / 'media') if self.store else None
 
+        glass_ctrl = None
+        try:
+            from glass_overlay import GlassInkController, GlassInkOverlay
+            glass_ctrl = GlassInkController()
+            if os.environ.get('QT_QPA_PLATFORM', '').strip().lower() != 'offscreen':
+                self._glass_overlay = GlassInkOverlay(controller=glass_ctrl)
+        except Exception:
+            glass_ctrl = None
+
         self.teacher_deck_bridge = TeacherDeckBridge(
             session=self.session,
             library=library,
@@ -1639,6 +1685,7 @@ class BoardCandidate(QWidget):
             shortcut_controller=shortcut_ctrl,
             staging_tray=self.staging_tray,
             dispatch_fn=self.dispatch_teacher_deck,
+            glass_controller=glass_ctrl,
         )
         self.teacher_deck_server = TeacherDeckServer(
             bridge=self.teacher_deck_bridge,
@@ -1743,7 +1790,7 @@ def main():
     parser.add_argument('--settings-root', type=Path, help='Explicit protected companion settings folder for requested agent/media work.')
     parser.add_argument('--library-root', type=Path, help='Existing saved image library to index locally without changing its files.')
     parser.add_argument('--teacher-deck-port', type=int, default=None, help='Port to serve Teacher Deck API (default: 8790).')
-    parser.add_argument('--teacher-deck-host', default='127.0.0.1', help='Host to bind Teacher Deck API (default: 127.0.0.1).')
+    parser.add_argument('--teacher-deck-host', default=None, help='Host to bind Teacher Deck API (default: 127.0.0.1).')
     parser.add_argument('--teacher-deck-token', default=None, help='Bearer token for Teacher Deck API.')
     args = parser.parse_args()
     validate_candidate_storage(args.data_root)
@@ -1767,13 +1814,15 @@ def main():
                                    library_root=source_library, agent_settings_root=args.settings_root,
                                    settings_selection_path=default_board_settings_selection())
         candidate.claim_lesson = instances.claim_lesson
+        saved_deck = candidate._load_teacher_deck_saved_config() if not args.smoke else {}
         deck_enabled = (args.teacher_deck_port is not None
                         or os.environ.get('TEACHER_DECK_ENABLED') in ('1', 'true', 'True')
-                        or bool(args.teacher_deck_token))
+                        or bool(args.teacher_deck_token)
+                        or bool(saved_deck.get('enabled')))
         if deck_enabled:
-            port = args.teacher_deck_port or int(os.environ.get('TEACHER_DECK_PORT', 8790))
-            host = args.teacher_deck_host or os.environ.get('TEACHER_DECK_HOST', '127.0.0.1')
-            token = args.teacher_deck_token or os.environ.get('TEACHER_DECK_TOKEN')
+            port = int(args.teacher_deck_port or os.environ.get('TEACHER_DECK_PORT') or saved_deck.get('port') or 8790)
+            host = str(args.teacher_deck_host or os.environ.get('TEACHER_DECK_HOST') or saved_deck.get('host') or '127.0.0.1')
+            token = args.teacher_deck_token or os.environ.get('TEACHER_DECK_TOKEN') or saved_deck.get('token')
             candidate.start_teacher_deck(host=host, port=port, token=token)
         if source_library and candidate.agent_panel:
             candidate.agent_panel.pending_sources.append(source_library)

@@ -914,3 +914,86 @@ def test_agent_panel_search_and_preparer_auto_stage_to_teacher_deck(tmp_path):
 
     finally:
         candidate.finish_close()
+
+
+def test_joshuaos_podium_catalogue_open_url_and_glass_ink_endpoints(tmp_path):
+    """Verify GET /api/v1/catalogue, POST /api/v1/display/open-url, POST /api/v1/glass/control, and showrunner cues."""
+    session, store, library, ctl, tray, bridge = setup_deck_fixtures(tmp_path)
+
+    with TeacherDeckServer(bridge, token=TEST_TOKEN, host="127.0.0.1", port=0) as server:
+        # 1. GET /api/v1/status includes active_display_target, glass_ink, and showrunner_cues
+        status_code, status_body = make_request(server.base_url, "/api/v1/status")
+        assert status_code == 200
+        assert status_body["ok"] is True
+        assert "active_display_target" in status_body
+        assert "glass_ink" in status_body
+        assert status_body["glass_ink"]["mode"] == "off"
+        assert isinstance(status_body["showrunner_cues"], list)
+        assert len(status_body["showrunner_cues"]) == 3
+
+        # 2. GET /api/v1/catalogue returns curated MrSutherland.net entries
+        cat_code, cat_body = make_request(server.base_url, "/api/v1/catalogue")
+        assert cat_code == 200
+        assert cat_body["ok"] is True
+        items = cat_body["items"]
+        assert len(items) >= 5
+        assert any("mrsutherland.net" in item["url"] for item in items)
+
+        # 3. POST /api/v1/display/open-url launches allowlisted MrSutherland.net URL and rejects others
+        open_code, open_body = make_request(
+            server.base_url,
+            "/api/v1/display/open-url",
+            method="POST",
+            body={"url": "https://mrsutherland.net/science/water-cycle/", "title": "Water Cycle Sim"},
+        )
+        assert open_code == 200
+        assert open_body["ok"] is True
+        assert open_body["receipt"]["app_id"] == APP_CHROME
+        assert open_body["receipt"]["granted_paste_permission"] is False
+
+        bad_code, bad_body = make_request(
+            server.base_url,
+            "/api/v1/display/open-url",
+            method="POST",
+            body={"url": "https://evil.example.com/phish"},
+        )
+        assert bad_code == 400
+        assert bad_body["ok"] is False
+
+        # 4. POST /api/v1/glass/control toggles draw, interact (click-through), colour, and snap_to_board
+        draw_code, draw_body = make_request(
+            server.base_url,
+            "/api/v1/glass/control",
+            method="POST",
+            body={"action": "draw", "colour": "blue", "width": 8.0},
+        )
+        assert draw_code == 200
+        assert draw_body["glass_ink"]["mode"] == "draw"
+        assert draw_body["glass_ink"]["active"] is True
+        assert draw_body["glass_ink"]["click_through"] is False
+
+        interact_code, interact_body = make_request(
+            server.base_url,
+            "/api/v1/glass/control",
+            method="POST",
+            body={"action": "interact"},
+        )
+        assert interact_code == 200
+        assert interact_body["glass_ink"]["mode"] == "interact"
+        assert interact_body["glass_ink"]["click_through"] is True
+
+        # Add a stroke and snap to board
+        bridge.glass_controller.add_stroke([[100, 100], [300, 250], [500, 180]], colour="red", width=6.0)
+        snap_code, snap_body = make_request(
+            server.base_url,
+            "/api/v1/glass/control",
+            method="POST",
+            body={"action": "snap_to_board", "target": "new_page"},
+        )
+        assert snap_code == 200
+        assert snap_body["ok"] is True
+        assert snap_body["version_id"]
+        assert snap_body["glass_ink"]["mode"] == "off"
+        assert snap_body["glass_ink"]["stroke_count"] == 0
+        assert len(session.teacher_view()["document"]["pages"]) == 2
+

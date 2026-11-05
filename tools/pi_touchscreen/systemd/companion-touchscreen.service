@@ -11,7 +11,7 @@ PAMName=login
 Environment=XDG_RUNTIME_DIR=/run/user/1000
 Environment=WAYLAND_DISPLAY=wayland-0
 WorkingDirectory=/home/companion/esp32-project
-ExecStart=/usr/bin/cage -s -- /usr/bin/python3 /home/companion/esp32-project/tools/pi_touchscreen/deck_ui.py --kiosk --config /home/companion/.config/companion-touchscreen/config.json
+ExecStart=/bin/sh -c 'if [ -S /run/user/1000/wayland-0 ]; then exec /usr/bin/python3 /home/companion/esp32-project/tools/pi_touchscreen/deck_ui.py --kiosk --config /home/companion/.config/companion-touchscreen/config.json; else exec /usr/bin/cage -s -- /usr/bin/python3 /home/companion/esp32-project/tools/pi_touchscreen/deck_ui.py --kiosk --config /home/companion/.config/companion-touchscreen/config.json; fi'
 Restart=always
 RestartSec=3
 

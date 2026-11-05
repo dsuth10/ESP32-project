@@ -13,6 +13,8 @@ import shlex
 import time
 from typing import Protocol
 
+from classroom_catalogue import is_allowlisted_web_url
+
 
 ONENOTE_EXECUTABLE = 'ONENOTE.EXE'
 WORD_EXECUTABLE = 'WINWORD.EXE'
@@ -224,18 +226,89 @@ def _chrome_profile_argument(argument: str) -> str | None:
     return value
 
 
-def chrome_profile_from_command(command: str) -> str | None:
-    marker = '--profile-directory='
-    text = (command or '').strip()
-    index = text.find(marker)
-    if index < 0:
+def _chrome_url_argument(argument: str) -> str | None:
+    token = (argument or '').strip()
+    if not token:
         return None
-    value = text[index + len(marker):].strip()
+    if (token.startswith('"') and token.endswith('"')) or (token.startswith("'") and token.endswith("'")):
+        token = token[1:-1].strip()
+    if token.startswith('--app='):
+        raw_url = token[len('--app='):].strip()
+        if (raw_url.startswith('"') and raw_url.endswith('"')) or (raw_url.startswith("'") and raw_url.endswith("'")):
+            raw_url = raw_url[1:-1].strip()
+        return f'--app={raw_url}' if is_allowlisted_web_url(raw_url) else None
+    return token if is_allowlisted_web_url(token) else None
+
+
+def _extract_profile_value(raw_profile_arg: str) -> str | None:
+    marker = '--profile-directory='
+    text = (raw_profile_arg or '').strip()
+    if not text.startswith(marker):
+        return None
+    value = text[len(marker):].strip()
     if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
         value = value[1:-1]
     if ' --' in f' {value}':
         return None
     return value if value and CHROME_PROFILE_RE.fullmatch(value) else None
+
+
+def _parse_chrome_launch(command: str) -> tuple[str, str | None, str | None] | None:
+    text = (command or '').strip()
+    if not text:
+        return None
+    quoted_match = re.match(r'^(?:"([^"]+)"|\'([^\']+)\')(?:\s+(.*))?$', text)
+    if quoted_match:
+        exe = (quoted_match.group(1) or quoted_match.group(2) or '').strip()
+        rest = (quoted_match.group(3) or '').strip()
+    else:
+        exe_match = re.match(r'^(.*?chrome\.exe)(?:\s+(.*))?$', text, re.IGNORECASE)
+        if not exe_match:
+            return None
+        exe = exe_match.group(1).strip()
+        rest = (exe_match.group(2) or '').strip()
+    if _executable_name(exe) != CHROME_EXECUTABLE:
+        return None
+    if any(ch in exe for ch in ('"', "'", ';', '|', '&', '`', '$', '\n', '\r', '\0')):
+        return None
+    if not rest:
+        return exe, None, None
+
+    url_only = _chrome_url_argument(rest)
+    if url_only is not None:
+        return exe, None, url_only
+
+    profile_only = _extract_profile_value(rest)
+    if profile_only is not None:
+        return exe, profile_only, None
+
+    split_right = rest.rsplit(None, 1)
+    if len(split_right) == 2:
+        prefix_part, last_token = split_right
+        url_arg = _chrome_url_argument(last_token)
+        profile_val = _extract_profile_value(prefix_part)
+        if url_arg is not None and profile_val is not None:
+            return exe, profile_val, url_arg
+    return None
+
+
+def chrome_profile_from_command(command: str) -> str | None:
+    parsed = _parse_chrome_launch(command)
+    if parsed is not None:
+        return parsed[1]
+    marker = '--profile-directory='
+    text = (command or '').strip()
+    index = text.find(marker)
+    if index < 0:
+        return None
+    return _extract_profile_value(text[index:])
+
+
+def chrome_url_from_command(command: str) -> str | None:
+    parsed = _parse_chrome_launch(command)
+    if parsed is not None:
+        return parsed[2]
+    return None
 
 
 def is_allowlisted_launch(command: str, app_id: str | None = None) -> bool:
@@ -245,9 +318,12 @@ def is_allowlisted_launch(command: str, app_id: str | None = None) -> bool:
     apps = [CLASSROOM_APPS[app_id]] if app_id else list(CLASSROOM_APPS.values())
     if any(app.allows_onenote_uri and text.lower() == ALLOWLISTED_LAUNCH_URI for app in apps):
         return True
-    if '--' not in text:
+    if any(app.allows_chrome_profile for app in apps) and _parse_chrome_launch(text) is not None:
+        return True
+    if '--' not in text and '://' not in text:
         name = _executable_name(text)
-        return any(name == app.executable for app in apps)
+        if any(name == app.executable for app in apps if not app.allows_chrome_profile):
+            return True
     parts = parse_launch_parts(text)
     if not parts:
         return False
@@ -259,11 +335,6 @@ def is_allowlisted_launch(command: str, app_id: str | None = None) -> bool:
             continue
         if not extra:
             return True
-        if app.allows_chrome_profile and extra[0].startswith('--profile-directory='):
-            joined = ' '.join(extra)
-            if chrome_profile_from_command(f'chrome.exe {joined}'):
-                return True
-        return False
     return False
 
 
@@ -546,12 +617,18 @@ class Win32WindowMonitorBackend:
     def launch_application(self, command: str) -> None:
         if not is_allowlisted_launch(command):
             raise ValueError('Launch command is not allowlisted.')
-        parts = parse_launch_parts(command) or []
-        exe = parts[0] if parts else ''
-        extra = parts[1:]
-        profile = chrome_profile_from_command(command)
-        if profile:
-            extra = [f'--profile-directory={profile}']
+        chrome_parsed = _parse_chrome_launch(command)
+        if chrome_parsed is not None:
+            exe, profile, url_arg = chrome_parsed
+            extra: list[str] = []
+            if profile:
+                extra.append(f'--profile-directory={profile}')
+            if url_arg:
+                extra.append(url_arg)
+        else:
+            parts = parse_launch_parts(command) or []
+            exe = parts[0] if parts else ''
+            extra = parts[1:]
         if exe.lower() == ALLOWLISTED_LAUNCH_URI:
             os.startfile(ALLOWLISTED_LAUNCH_URI)  # noqa: S606 — allowlisted URI only
             return

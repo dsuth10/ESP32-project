@@ -12,6 +12,7 @@ import logging
 from pathlib import Path
 import time
 
+from classroom_catalogue import is_allowlisted_web_url
 from companion_settings import data_directory
 from window_monitor_manager import (
     ALLOWLISTED_LAUNCH_URI,
@@ -27,6 +28,7 @@ from window_monitor_manager import (
     MonitorInfo,
     Rect,
     WindowMonitorBackend,
+    chrome_profile_from_command,
     classroom_app,
     create_backend,
     is_allowlisted_launch,
@@ -755,6 +757,229 @@ class MonitorShortcutController:
             profile=profile_name, monitor_key=monitor.durable_key(), app_id=APP_BOARD)
         write_receipt(receipt, self.root)
         return receipt
+
+    def open_web_url_on_classroom_display(self, url: str, title: str = '') -> ActionReceipt:
+        settings = self.load()
+        profile_name = active_profile_name(settings)
+        profile = active_profile(settings)
+        clean_url = (url or '').strip() if isinstance(url, str) else ''
+        if not is_allowlisted_web_url(clean_url):
+            receipt = ActionReceipt(
+                kind=KIND_LAUNCH_FAILED,
+                message='Web lesson URL is not allowlisted.',
+                profile=profile_name,
+                app_id=APP_CHROME,
+            )
+            write_receipt(receipt, self.root)
+            return receipt
+
+        status, monitor, message, profile_name = self._resolve_classroom_monitor(settings)
+        if status == KIND_MISSING_DISPLAY or status != KIND_OK or monitor is None:
+            return self._missing_or_unresolved_receipt(status, message, profile_name, APP_CHROME)
+
+        app = classroom_app(APP_CHROME)
+        settings_for_chrome = app_settings(profile, APP_CHROME)
+        base_launch = str(settings_for_chrome.get('launch') or app.default_launch).strip()
+        if not is_allowlisted_launch(base_launch, APP_CHROME):
+            base_launch = app.default_launch
+        chrome_profile = chrome_profile_from_command(base_launch)
+        if chrome_profile:
+            exe_part = base_launch[:base_launch.find('--profile-directory=')].strip() or app.default_launch
+            launch_cmd = f'{exe_part} --profile-directory="{chrome_profile}" {clean_url}'
+        else:
+            launch_cmd = f'{base_launch} {clean_url}'
+
+        if not is_allowlisted_launch(launch_cmd, APP_CHROME):
+            receipt = ActionReceipt(
+                kind=KIND_LAUNCH_FAILED,
+                message='Web lesson URL is not allowlisted.',
+                profile=profile_name,
+                monitor_key=monitor.durable_key(),
+                app_id=APP_CHROME,
+            )
+            write_receipt(receipt, self.root)
+            return receipt
+
+        before_hwnds = {w.hwnd for w in self.list_app_windows(APP_CHROME)}
+        try:
+            self.backend.launch_application(launch_cmd)
+        except Exception as error:
+            receipt = ActionReceipt(
+                kind=KIND_LAUNCH_FAILED,
+                message=f'{app.label} could not be started. {error}',
+                profile=profile_name,
+                monitor_key=monitor.durable_key(),
+                app_id=APP_CHROME,
+            )
+            write_receipt(receipt, self.root)
+            return receipt
+
+        window: AppWindow | None = None
+        current_windows = self.list_app_windows(APP_CHROME)
+        new_windows = [w for w in current_windows if w.hwnd not in before_hwnds]
+        if new_windows:
+            window = new_windows[-1]
+        else:
+            _, resolved_win, _ = resolve_app_window(
+                APP_CHROME, profile, current_windows, self.backend.foreground_hwnd())
+            window = resolved_win or (current_windows[0] if current_windows else None)
+            if window is None:
+                window = self.backend.wait_for_app_window(app.executable, self.wait_timeout_s)
+
+        if window is None:
+            receipt = ActionReceipt(
+                kind=KIND_LAUNCH_FAILED,
+                message=f'{app.label} did not open in time. Open it once, then try again.',
+                launched=True,
+                profile=profile_name,
+                monitor_key=monitor.durable_key(),
+                app_id=APP_CHROME,
+            )
+            write_receipt(receipt, self.root)
+            return receipt
+
+        if not self.backend.is_window_alive(window.hwnd):
+            receipt = ActionReceipt(
+                kind=KIND_WINDOW_GONE,
+                message=f'The {app.label} window closed before it could be moved.',
+                hwnd=window.hwnd,
+                launched=True,
+                profile=profile_name,
+                monitor_key=monitor.durable_key(),
+                app_id=APP_CHROME,
+            )
+            write_receipt(receipt, self.root)
+            return receipt
+
+        maximise = bool(settings_for_chrome.get('maximise', True))
+        placed = self.backend.place_window(window.hwnd, monitor.work_area, maximise)
+        effective_title = (title or '').strip() or window.title
+        if not placed or not self.backend.is_window_alive(window.hwnd):
+            gone = not self.backend.is_window_alive(window.hwnd)
+            receipt = ActionReceipt(
+                kind=KIND_WINDOW_GONE if gone else KIND_PLACEMENT_FAILED,
+                message=(f'The {app.label} window closed before it could be moved.'
+                         if gone else f'{app.label} could not be moved onto the classroom display.'),
+                hwnd=window.hwnd,
+                launched=True,
+                profile=profile_name,
+                monitor_key=monitor.durable_key(),
+                work_area=monitor.work_area.as_tuple(),
+                window_title=effective_title,
+                app_id=APP_CHROME,
+            )
+            write_receipt(receipt, self.root)
+            return receipt
+
+        placement_ok = verify_placement(self.backend.window_bounds(window.hwnd), monitor.work_area)
+        foreground_ok = self.backend.request_foreground(window.hwnd, window.pid, window.title)
+        if placement_ok and self.backend.is_window_alive(window.hwnd):
+            live_foreground = False
+            try:
+                live_foreground = self.backend.foreground_hwnd() == window.hwnd
+            except Exception:
+                live_foreground = False
+            foreground_ok = bool(foreground_ok and live_foreground)
+        else:
+            receipt = ActionReceipt(
+                kind=KIND_PLACEMENT_FAILED,
+                message=f'{app.label} was not on the classroom display after moving it.',
+                hwnd=window.hwnd,
+                launched=True,
+                placed=False,
+                foreground=False,
+                profile=profile_name,
+                monitor_key=monitor.durable_key(),
+                work_area=monitor.work_area.as_tuple(),
+                window_title=effective_title,
+                app_id=APP_CHROME,
+            )
+            write_receipt(receipt, self.root)
+            return receipt
+
+        if not foreground_ok:
+            receipt = ActionReceipt(
+                kind=KIND_FOREGROUND_FAILED,
+                message=(f'{app.label} is on the classroom display, but Windows kept another window in front. '
+                         f'Click the {app.label} window once.'),
+                hwnd=window.hwnd,
+                launched=True,
+                placed=True,
+                foreground=False,
+                profile=profile_name,
+                monitor_key=monitor.durable_key(),
+                work_area=monitor.work_area.as_tuple(),
+                window_title=effective_title,
+                app_id=APP_CHROME,
+            )
+            write_receipt(receipt, self.root)
+            return receipt
+
+        where = monitor.friendly_name or 'classroom display'
+        lesson_label = f' ({title.strip()})' if (title or '').strip() else ''
+        receipt = ActionReceipt(
+            kind=KIND_OK,
+            message=f'Opened {app.label}{lesson_label} and placed it on {where}.',
+            hwnd=window.hwnd,
+            launched=True,
+            placed=True,
+            foreground=True,
+            profile=profile_name,
+            monitor_key=monitor.durable_key(),
+            work_area=monitor.work_area.as_tuple(),
+            window_title=effective_title,
+            app_id=APP_CHROME,
+        )
+        write_receipt(receipt, self.root)
+        return receipt
+
+    def detect_active_classroom_target(self) -> str:
+        """Best-effort non-mutating check of which target is currently active on the classroom monitor."""
+        try:
+            settings = self.load()
+            status, monitor, _, _ = self._resolve_classroom_monitor(settings)
+            if status != KIND_OK or monitor is None:
+                return 'none'
+
+            work_area = monitor.work_area
+            fg_hwnd = self.backend.foreground_hwnd()
+            candidates: list[tuple[str, AppWindow]] = []
+
+            for pupil_win in self.backend.list_board_pupil_windows(include_hidden=False):
+                if not pupil_win.alive or pupil_win.show_state in {'minimised', 'hidden'}:
+                    continue
+                bounds = self.backend.window_bounds(pupil_win.hwnd) or pupil_win.bounds
+                if bounds and work_area.contains_point(*bounds.centre):
+                    candidates.append((APP_BOARD, pupil_win))
+
+            for app_id in (APP_ONENOTE, APP_WORD, APP_CHROME):
+                for win in self.list_app_windows(app_id):
+                    if not win.alive or win.show_state in {'minimised', 'hidden'}:
+                        continue
+                    bounds = self.backend.window_bounds(win.hwnd) or win.bounds
+                    if bounds and work_area.contains_point(*bounds.centre):
+                        candidates.append((app_id, win))
+
+            if fg_hwnd:
+                for target_id, win in candidates:
+                    if win.hwnd == fg_hwnd:
+                        return target_id
+
+            timed = [(target_id, win) for target_id, win in candidates if win.last_foreground_at is not None]
+            if timed:
+                best_target, _ = max(timed, key=lambda pair: pair[1].last_foreground_at or 0.0)
+                return best_target
+
+            if candidates:
+                return candidates[0][0]
+
+            if self.board_target is not None and getattr(self.board_target, 'visible', False):
+                place_calls = getattr(self.board_target, 'place_calls', [])
+                if any(call[1] == monitor.durable_key() for call in place_calls if len(call) >= 2):
+                    return APP_BOARD
+        except Exception:
+            return 'none'
+        return 'none'
 
     def test_placement(self) -> ActionReceipt:
         return self.open_onenote_on_classroom_display()

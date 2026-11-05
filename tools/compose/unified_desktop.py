@@ -208,7 +208,7 @@ def main():
     parser.add_argument('--library-root', type=Path)
     parser.add_argument('--demo', action='store_true')
     parser.add_argument('--teacher-deck-port', type=int, default=None, help='Port to serve Teacher Deck API (default: 8790).')
-    parser.add_argument('--teacher-deck-host', default='127.0.0.1', help='Host to bind Teacher Deck API (default: 127.0.0.1).')
+    parser.add_argument('--teacher-deck-host', default=None, help='Host to bind Teacher Deck API (default: 127.0.0.1).')
     parser.add_argument('--teacher-deck-token', default=None, help='Bearer token for Teacher Deck API.')
     args = parser.parse_args()
     app = QApplication(sys.argv[:1])
@@ -224,13 +224,15 @@ def main():
         board = create_board(args.data_root, demo=args.demo, settings_root=args.board_settings_root,
                              library_root=args.library_root, settings_selection_path=profile / 'board-settings-selection.json')
         board.claim_lesson = instance.claim_lesson
+        saved_deck = board._load_teacher_deck_saved_config()
         deck_enabled = (args.teacher_deck_port is not None
                         or os.environ.get('TEACHER_DECK_ENABLED') in ('1', 'true', 'True')
-                        or bool(args.teacher_deck_token))
+                        or bool(args.teacher_deck_token)
+                        or bool(saved_deck.get('enabled')))
         if deck_enabled:
-            port = args.teacher_deck_port or int(os.environ.get('TEACHER_DECK_PORT', 8790))
-            host = args.teacher_deck_host or os.environ.get('TEACHER_DECK_HOST', '127.0.0.1')
-            token = args.teacher_deck_token or os.environ.get('TEACHER_DECK_TOKEN')
+            port = int(args.teacher_deck_port or os.environ.get('TEACHER_DECK_PORT') or saved_deck.get('port') or 8790)
+            host = str(args.teacher_deck_host or os.environ.get('TEACHER_DECK_HOST') or saved_deck.get('host') or '127.0.0.1')
+            token = args.teacher_deck_token or os.environ.get('TEACHER_DECK_TOKEN') or saved_deck.get('token')
             board.start_teacher_deck(host=host, port=port, token=token)
         companion = CompanionHost(profile, python_executable=args.companion_python)
         window = UnifiedDesktop(board, companion)

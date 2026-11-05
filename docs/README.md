@@ -18,6 +18,8 @@
 | [Gemini live trial](2026-10-24-gemini-live-trial.md) | Delivery-mode rejection resolved; ten saved images from twelve attempts, actual timings, retained allocations, private audit and recovery evidence. |
 | [Create & Paste device trial](2026-10-24-create-paste-device-trial.md) | Approved page 7/8 layout flashed to the original S3 through scoped recovery-backed application writes; USB feedback and user-reported layout/Library pass, remaining physical gates separate. |
 | [Permanent Hermes/Tailscale connection](hermes-tailscale-home-work.md) | Required same-agent home/work route, safe migration, protected setup, persistence and off-LAN acceptance. Configuration remains pending. |
+| [Classroom hub Tailscale brief](2026-11-05-classroom-hub-tailscale-brief.md) | Pi podium hub as multi-host control surface over Tailscale; Teacher Deck first slice; later MrSutherland.net tools catalogue; gates separate from bring-up. |
+| [Raspberry Pi Teacher Touchscreen plan](2026-11-04-raspberry-pi-touchscreen-plan.md) | Teacher Deck API/UI detail for image staging, board controls and display switching on the Pi client. |
 | [Home/work architecture](home-work-architecture.md) | Current S3/Windows/Groq/Hermes/library ownership and target topology. |
 | [Hermes integration checkpoint](2026-10-21-hermes-integration-checkpoint.md) | Current runtime/UI, recovery, packaging and bounded test evidence; deployment/user gates remain open. |
 | [Home desktop acceptance](2026-10-24-home-acceptance.md) | User-confirmed Word/History/image/restart checks and OneNote image insertion/undo/reopen after the approved keyboard-paste fix; remaining gates distinguished. |

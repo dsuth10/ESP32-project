@@ -1188,9 +1188,9 @@
     "semantic_hash": ""
   },
   "docs/README.md": {
-    "mtime": 1793178840.0072045,
-    "seen": 1793519066.3640256,
-    "ast_hash": "efe3ad8adb0ab04cc41756d7c76c1cfc",
+    "mtime": 1793867749.158118,
+    "seen": 1793869952.6713836,
+    "ast_hash": "d33b2deabb828c64c70a85567cc146cb",
     "semantic_hash": ""
   },
   "docs/board-upload-safety.md": {
@@ -1548,9 +1548,9 @@
     "semantic_hash": ""
   },
   "tools/compose/board_candidate.py": {
-    "mtime": 1793526610.5492244,
-    "seen": 1793527702.9846895,
-    "ast_hash": "544dcdd73cd46b26734f093e106a2a01",
+    "mtime": 1793871417.2711535,
+    "seen": 1793871477.7127874,
+    "ast_hash": "a509c2e8f72cb06341ee676aed115d59",
     "semantic_hash": ""
   },
   "tools/compose/board_hermes.py": {
@@ -1686,9 +1686,9 @@
     "semantic_hash": ""
   },
   "tools/compose/board_agent_ui.py": {
-    "mtime": 1793524876.2724466,
-    "seen": 1793527702.9846895,
-    "ast_hash": "1cf4fa3d2469dda1bdc4de9de0bfec06",
+    "mtime": 1793785913.2577212,
+    "seen": 1793869952.6713836,
+    "ast_hash": "253ea62050f44076f7dca9bd3a2143e3",
     "semantic_hash": ""
   },
   "tools/compose/board_export.py": {
@@ -1716,9 +1716,9 @@
     "semantic_hash": ""
   },
   "tools/compose/board_runtime.py": {
-    "mtime": 1793524876.272952,
-    "seen": 1793527702.9846895,
-    "ast_hash": "87a36539b4dd80aa7b55d9fefb19ab48",
+    "mtime": 1793785806.7401984,
+    "seen": 1793869952.6713836,
+    "ast_hash": "e2605f65c4eed4dc3e8d3361dfe9bee9",
     "semantic_hash": ""
   },
   "tools/compose/setup_teaching_board_candidate.ps1": {
@@ -1860,9 +1860,9 @@
     "semantic_hash": ""
   },
   "tools/compose/monitor_shortcut.py": {
-    "mtime": 1793526610.5516152,
-    "seen": 1793527702.9846895,
-    "ast_hash": "1eed4a5af1f2751896996cb2dcc8a3d8",
+    "mtime": 1793869565.5776088,
+    "seen": 1793869952.6713836,
+    "ast_hash": "16ea13df033058ef231deb4c1f4aca45",
     "semantic_hash": ""
   },
   "tools/compose/monitor_shortcut_panel.py": {
@@ -2052,15 +2052,15 @@
     "semantic_hash": ""
   },
   "tools/compose/unified_desktop.py": {
-    "mtime": 1793526610.555167,
-    "seen": 1793527702.9852006,
-    "ast_hash": "326d3f3414c59e95047764bcacdc765c",
+    "mtime": 1793871417.3152192,
+    "seen": 1793871477.7128882,
+    "ast_hash": "7bd0e9af1c653c59483b4236d09e15c7",
     "semantic_hash": ""
   },
   "tools/compose/window_monitor_manager.py": {
-    "mtime": 1793527599.1707692,
-    "seen": 1793527702.9852006,
-    "ast_hash": "8dbee57e24e82bf18aac9b705cf704c9",
+    "mtime": 1793869691.395347,
+    "seen": 1793869952.6713836,
+    "ast_hash": "274917cf2caf3a37fcced6312555a68d",
     "semantic_hash": ""
   },
   "docs/2026-10-26-teaching-board-request-recovery.md": {
@@ -2154,9 +2154,123 @@
     "semantic_hash": ""
   },
   "tools/compose/tests/test_classroom_apps.py": {
-    "mtime": 1793527667.762563,
-    "seen": 1793527702.9846895,
-    "ast_hash": "62a250bbf2a98baf5b6b4a73ef25d706",
+    "mtime": 1793530172.2494423,
+    "seen": 1793869952.6713836,
+    "ast_hash": "49c9d3c83a016da747f87fc219672b59",
+    "semantic_hash": ""
+  },
+  "tools/compose/classroom_catalogue.json": {
+    "mtime": 1793869443.1901932,
+    "seen": 1793869952.6713836,
+    "ast_hash": "a9ed82eb67c6752da465c17a82c44d06",
+    "semantic_hash": ""
+  },
+  "tools/compose/classroom_catalogue.py": {
+    "mtime": 1793869471.591412,
+    "seen": 1793869952.6713836,
+    "ast_hash": "79f9f2565f962782faa262bf763dc77b",
+    "semantic_hash": ""
+  },
+  "tools/compose/glass_overlay.py": {
+    "mtime": 1793869599.7664676,
+    "seen": 1793869952.6713836,
+    "ast_hash": "6d18cc47686bb9aecb06e0913ecc794a",
+    "semantic_hash": ""
+  },
+  "tools/compose/lesson_showrunner.py": {
+    "mtime": 1793869497.8810663,
+    "seen": 1793869952.6713836,
+    "ast_hash": "9fca1d7d0bf6990db2ca53281eccd679",
+    "semantic_hash": ""
+  },
+  "tools/compose/teacher_deck_models.py": {
+    "mtime": 1793781564.740255,
+    "seen": 1793869952.6713836,
+    "ast_hash": "12a594b0746a158ae1b82636a770d624",
+    "semantic_hash": ""
+  },
+  "tools/compose/teacher_deck_server.py": {
+    "mtime": 1793870041.795152,
+    "seen": 1793871222.8245401,
+    "ast_hash": "3339ff40677eeee233bc3bb8334952ef",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_classroom_catalogue_launch.py": {
+    "mtime": 1793869617.5009952,
+    "seen": 1793869952.6713836,
+    "ast_hash": "1b5958aeba5f80da8998aebb9385cfc7",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_glass_and_showrunner.py": {
+    "mtime": 1793869625.3616335,
+    "seen": 1793869952.6713836,
+    "ast_hash": "f656404cc653c58707dcd9ce410bfbbd",
+    "semantic_hash": ""
+  },
+  "tools/compose/tests/test_teacher_deck.py": {
+    "mtime": 1793870041.8618488,
+    "seen": 1793871222.8245401,
+    "ast_hash": "087c2ebb505b19464353ec3b99a66cb4",
+    "semantic_hash": ""
+  },
+  "tools/pi_touchscreen/__init__.py": {
+    "mtime": 1793788406.933082,
+    "seen": 1793869952.6713836,
+    "ast_hash": "125ecbd08f6cbdfe33879b69574dc1bc",
+    "semantic_hash": ""
+  },
+  "tools/pi_touchscreen/config.example.json": {
+    "mtime": 1793869592.6603484,
+    "seen": 1793869952.6713836,
+    "ast_hash": "faad148ca6b7b31e1251d780f80b603b",
+    "semantic_hash": ""
+  },
+  "tools/pi_touchscreen/deck_client.py": {
+    "mtime": 1793869385.9709694,
+    "seen": 1793869952.6713836,
+    "ast_hash": "3261dbd973f67ace19efb27620c33c31",
+    "semantic_hash": ""
+  },
+  "tools/pi_touchscreen/deck_ui.py": {
+    "mtime": 1793869530.7389739,
+    "seen": 1793869952.6713836,
+    "ast_hash": "4c5ee4c691f95b82eef8f4f68fec7dc6",
+    "semantic_hash": ""
+  },
+  "tools/pi_touchscreen/tests/test_deck_ui.py": {
+    "mtime": 1793869595.377342,
+    "seen": 1793869952.6713836,
+    "ast_hash": "8590ddb7e3e7e813fe2b1c4376cffa0a",
+    "semantic_hash": ""
+  },
+  "docs/2026-11-04-raspberry-pi-touchscreen-plan.md": {
+    "mtime": 1793867761.93962,
+    "seen": 1793869952.6713836,
+    "ast_hash": "133ee182247de1575a1cf9019e32d43e",
+    "semantic_hash": ""
+  },
+  "docs/2026-11-05-classroom-hub-tailscale-brief.md": {
+    "mtime": 1793867734.2155845,
+    "seen": 1793869952.6713836,
+    "ast_hash": "af0ecfd32dd6363bc9fe51d7791cc5c1",
+    "semantic_hash": ""
+  },
+  "docs/2026-11-05-joshuaos-podium-master-plan.md": {
+    "mtime": 1793869315.9669921,
+    "seen": 1793869952.6713836,
+    "ast_hash": "9eeaedb394095161bd05f45ef1d1d894",
+    "semantic_hash": ""
+  },
+  "tools/pi_touchscreen/README.md": {
+    "mtime": 1793783226.65688,
+    "seen": 1793869952.6713836,
+    "ast_hash": "daed21ed35653ec0d6b490fd91eb2f37",
+    "semantic_hash": ""
+  },
+  "graphify-out/converted/pinout_allocation_f58fa43e.md": {
+    "mtime": 1789134115.7116265,
+    "seen": 1793871477.71296,
+    "ast_hash": "a48a5fad95d8c475f9ff97c40b213d0b",
     "semantic_hash": ""
   }
 }

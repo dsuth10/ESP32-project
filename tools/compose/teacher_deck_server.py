@@ -29,6 +29,9 @@ from board_model import (
 )
 from board_runtime import _free_image_areas
 from board_session import BoardSession
+from classroom_catalogue import is_allowlisted_web_url, load_classroom_catalogue
+from glass_overlay import GlassInkController
+from lesson_showrunner import LessonShowrunner
 from monitor_shortcut import (
     APP_BOARD,
     APP_CHROME,
@@ -185,6 +188,9 @@ class TeacherDeckBridge:
         shortcut_controller: MonitorShortcutController | None = None,
         staging_tray: StagingTray | None = None,
         dispatch_fn: Callable[[Callable[[], Any]], Any] | None = None,
+        glass_controller: GlassInkController | None = None,
+        showrunner: LessonShowrunner | None = None,
+        catalogue: list[dict[str, Any]] | None = None,
     ) -> None:
         if not isinstance(session, BoardSession):
             raise ValueError("session must be an instance of BoardSession.")
@@ -195,6 +201,18 @@ class TeacherDeckBridge:
         self.staging_tray = staging_tray if staging_tray is not None else StagingTray()
         self.dispatch_fn = dispatch_fn
         self.thumbnail_cache = LRUThumbnailCache()
+        self.glass_controller = (
+            glass_controller if glass_controller is not None else GlassInkController()
+        )
+        self._catalogue = (
+            list(catalogue) if catalogue is not None else load_classroom_catalogue()
+        )
+        self.showrunner = (
+            showrunner
+            if showrunner is not None
+            else LessonShowrunner(catalogue=self._catalogue)
+        )
+        self._last_switched_target: str = "board"
 
     def dispatch(self, fn: Callable[[], Any]) -> Any:
         """Execute a callable via dispatch_fn if configured, otherwise invoke directly."""
@@ -218,6 +236,7 @@ class TeacherDeckBridge:
         page_index = next((idx for idx, p in enumerate(pages) if p["id"] == page_id), 0)
 
         disp_summary: dict[str, Any] = {"configured": False, "display": None}
+        active_display_target = self._last_switched_target
         if self.shortcut_controller is not None:
             try:
                 settings = self.shortcut_controller.load()
@@ -225,8 +244,24 @@ class TeacherDeckBridge:
                 cd = profile.get("classroom_display")
                 if cd:
                     disp_summary = {"configured": True, "display": cd}
+                if hasattr(self.shortcut_controller, "detect_active_classroom_target"):
+                    detected = self.shortcut_controller.detect_active_classroom_target()
+                    if detected and detected != "none":
+                        active_display_target = detected
             except Exception:
                 pass
+
+        staged_count = len(self.staging_tray.list_items())
+        glass_state = self.glass_controller.get_state()
+        lesson_title = doc.get("title", "") or "Untitled lesson"
+
+        showrunner_cues = self.showrunner.compute_predictive_cues(
+            lesson_title=lesson_title,
+            active_target=active_display_target,
+            staged_count=staged_count,
+            glass_mode=glass_state.get("mode", "off"),
+            catalogue=self._catalogue,
+        )
 
         return {
             "ok": True,
@@ -239,8 +274,12 @@ class TeacherDeckBridge:
             "revision": teacher_view["revision"],
             "token": teacher_view["token"],
             "pupil_revision": pupil_view["revision"],
-            "staged_count": len(self.staging_tray.list_items()),
+            "staged_count": staged_count,
             "classroom_display": disp_summary,
+            "active_display_target": active_display_target,
+            "glass_ink": glass_state,
+            "showrunner_cues": showrunner_cues,
+            "catalogue_count": len(self._catalogue),
         }
 
     def get_status(self) -> dict[str, Any]:
@@ -666,10 +705,181 @@ class TeacherDeckBridge:
         else:
             receipt = self.shortcut_controller.open_app_on_classroom_display(cleaned_target)
 
+        if receipt.kind == "ok":
+            self._last_switched_target = cleaned_target
+            self.showrunner.record_event("switch_display", {"target": cleaned_target})
+
         return {
             "ok": receipt.kind == "ok",
             "receipt": receipt.as_dict(),
         }
+
+    def list_catalogue(self) -> list[dict[str, Any]]:
+        """Return the curated MrSutherland.net classroom web lesson catalogue."""
+        return [dict(item) for item in self._catalogue]
+
+    def open_web_lesson(self, url: str, title: str = "") -> dict[str, Any]:
+        """Launch an allowlisted MrSutherland.net web lesson onto the classroom display."""
+        cleaned_url = str(url or "").strip()
+        if not cleaned_url:
+            raise ApiError(400, "Field 'url' is required.")
+        if not is_allowlisted_web_url(cleaned_url):
+            raise ApiError(400, "Web lesson URL is not allowlisted.")
+        if self.shortcut_controller is None:
+            raise ApiError(503, "MonitorShortcutController is not configured.")
+
+        receipt = self.shortcut_controller.open_web_url_on_classroom_display(
+            url=cleaned_url,
+            title=str(title or "").strip(),
+        )
+        if receipt.kind == "ok":
+            self._last_switched_target = "chrome"
+            self.showrunner.update_context(
+                active_display_target="chrome",
+                active_web_url=cleaned_url,
+            )
+            self.showrunner.record_event(
+                "open_web",
+                {"url": cleaned_url, "title": str(title or "").strip()},
+            )
+
+        return {
+            "ok": receipt.kind == "ok",
+            "url": cleaned_url,
+            "title": str(title or "").strip(),
+            "receipt": receipt.as_dict(),
+        }
+
+    def glass_control(
+        self,
+        action: str,
+        colour: str | None = None,
+        width: float | None = None,
+        target: str = "new_page",
+    ) -> dict[str, Any]:
+        """Control the Unified Glass Ink overlay or snap annotations onto the Teaching Board."""
+        cleaned_action = str(action or "").strip().lower()
+        if not cleaned_action:
+            raise ApiError(400, "Field 'action' is required.")
+
+        def _execute_glass() -> dict[str, Any]:
+            if colour is not None or width is not None:
+                try:
+                    self.glass_controller.set_pen(colour=colour, width=width)
+                except ValueError as exc:
+                    raise ApiError(400, str(exc)) from exc
+
+            if cleaned_action in {"off", "draw", "interact", "eraser"}:
+                state = self.glass_controller.set_mode(cleaned_action)
+                self.showrunner.update_context(glass_mode=state["mode"])
+                self.showrunner.record_event("glass_mode", {"mode": state["mode"]})
+                return {"ok": True, "action": cleaned_action, "glass_ink": state}
+
+            if cleaned_action == "set_pen":
+                state = self.glass_controller.get_state()
+                return {"ok": True, "action": cleaned_action, "glass_ink": state}
+
+            if cleaned_action == "clear":
+                cleared = self.glass_controller.clear()
+                state = self.glass_controller.get_state()
+                self.showrunner.record_event("glass_clear", {"cleared": cleared})
+                return {
+                    "ok": True,
+                    "action": cleaned_action,
+                    "cleared": cleared,
+                    "glass_ink": state,
+                }
+
+            if cleaned_action == "undo":
+                undone = self.glass_controller.undo()
+                return {
+                    "ok": True,
+                    "action": cleaned_action,
+                    "undone": undone,
+                    "glass_ink": self.glass_controller.get_state(),
+                }
+
+            if cleaned_action == "redo":
+                redone = self.glass_controller.redo()
+                return {
+                    "ok": True,
+                    "action": cleaned_action,
+                    "redone": redone,
+                    "glass_ink": self.glass_controller.get_state(),
+                }
+
+            if cleaned_action == "snap_to_board":
+                cleaned_target = validate_present_target(target or "new_page")
+                png_bytes = self.glass_controller.render_to_png(width=1600, height=900)
+                snap_title = f"Annotated Screen Snapshot ({self._last_switched_target.title()})"
+                if self.lesson_media is not None:
+                    imported = self.lesson_media.import_bytes(
+                        png_bytes,
+                        title=snap_title,
+                        origin="import",
+                    )
+                    vid = imported["version_id"]
+                    aid = imported["asset_id"]
+                    sha = imported["sha256"]
+                    w = int(imported.get("width", 1600))
+                    h = int(imported.get("height", 900))
+                else:
+                    import hashlib
+
+                    vid = str(uuid.uuid4())
+                    aid = str(uuid.uuid4())
+                    sha = hashlib.sha256(png_bytes).hexdigest()
+                    w, h = 1600, 900
+
+                staged_item = StagedImageItem(
+                    stage_id=str(uuid.uuid4()),
+                    series_id="glass-snapshots",
+                    asset_id=aid,
+                    version_id=vid,
+                    sha256=sha,
+                    title=snap_title,
+                    width=w,
+                    height=h,
+                    origin="import",
+                    review_state="approved",
+                    credit="Captured via JoshuaOS Glass Ink Overlay",
+                )
+                self.staging_tray.stage_item(staged_item)
+                present_res: dict[str, Any] = {}
+                if self.lesson_media is not None:
+                    try:
+                        present_res = self.present_image(
+                            version_id=vid,
+                            target=cleaned_target,
+                        )
+                    except ApiError as exc:
+                        if exc.status == 409 and cleaned_target == "current_page":
+                            present_res = self.present_image(
+                                version_id=vid,
+                                target="new_page",
+                            )
+                        else:
+                            raise
+                self.glass_controller.clear()
+                self.glass_controller.set_mode("off")
+                self.showrunner.update_context(glass_mode="off")
+                self.showrunner.record_event("snap_to_board", {"version_id": vid})
+                return {
+                    "ok": True,
+                    "action": cleaned_action,
+                    "version_id": vid,
+                    "staged_item": staged_item.as_dict(),
+                    "presented": present_res,
+                    "glass_ink": self.glass_controller.get_state(),
+                }
+
+            raise ApiError(
+                400,
+                f"Unsupported glass_control action '{cleaned_action}'. "
+                "Allowed: off, draw, interact, eraser, set_pen, clear, undo, redo, snap_to_board.",
+            )
+
+        return self.dispatch(_execute_glass)
 
 
 class TeacherDeckRequestHandler(BaseHTTPRequestHandler):
@@ -762,6 +972,9 @@ class TeacherDeckRequestHandler(BaseHTTPRequestHandler):
                     limit = 8
                 items = self.server.bridge.search_library(query=query_str, limit=limit)
                 self._json(200, {"ok": True, "items": items})
+            elif path == "/api/v1/catalogue":
+                items = self.server.bridge.list_catalogue()
+                self._json(200, {"ok": True, "items": items})
             elif path.startswith("/api/v1/thumb/"):
                 version_id = path[len("/api/v1/thumb/") :].strip("/")
                 thumb = self.server.bridge.get_thumbnail(version_id)
@@ -825,6 +1038,27 @@ class TeacherDeckRequestHandler(BaseHTTPRequestHandler):
                 if not target:
                     raise ApiError(400, "Field 'target' is required.")
                 res = self.server.bridge.switch_display(target)
+                self._json(200, res)
+            elif path == "/api/v1/display/open-url":
+                url = body.get("url")
+                if not url:
+                    raise ApiError(400, "Field 'url' is required.")
+                title = body.get("title", "")
+                res = self.server.bridge.open_web_lesson(url=url, title=title)
+                self._json(200, res)
+            elif path == "/api/v1/glass/control":
+                action = body.get("action") or body.get("mode")
+                if not action:
+                    raise ApiError(400, "Field 'action' is required.")
+                colour = body.get("colour")
+                width = body.get("width")
+                target = body.get("target", "new_page")
+                res = self.server.bridge.glass_control(
+                    action=action,
+                    colour=colour,
+                    width=width,
+                    target=target,
+                )
                 self._json(200, res)
             else:
                 self._json(404, {"ok": False, "error": f"Endpoint not found: {path}"})

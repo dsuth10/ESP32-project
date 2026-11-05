@@ -1,9 +1,23 @@
 {
-  "url": "http://companion-pc.local:8790",
+  "active_host_id": "school-pc",
+  "hosts": [
+    {
+      "id": "school-pc",
+      "label": "School Classroom PC",
+      "url": "http://classroom-pc.tailnet.ts.net:8790",
+      "token": "REPLACE_WITH_SCHOOL_TEACHER_DECK_TOKEN"
+    },
+    {
+      "id": "home-pc",
+      "label": "Home Desktop PC",
+      "url": "http://home-desktop.tailnet.ts.net:8790",
+      "token": "REPLACE_WITH_HOME_TEACHER_DECK_TOKEN"
+    }
+  ],
   "token": "REPLACE_WITH_LOCAL_TEACHER_DECK_TOKEN",
   "windowed": false,
   "kiosk": true,
-  "width": 1024,
-  "height": 600,
+  "width": 1920,
+  "height": 1080,
   "poll_ms": 1000
 }

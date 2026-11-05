@@ -1,18 +1,20 @@
-"""Unit and integration tests for the Touch-First Teacher Deck client and UI.
+"""Unit and integration tests for the JoshuaOS Podium & Teacher Deck client and UI.
 
-Verifies TeacherDeckClient API calls, thumbnail caching, and TeacherDeckWindow
-touch operations (staging grid, clear-space image placement, 409 conflict handling,
-freeze/resume toggles, page navigation, display switching, and offline resilience).
+Verifies TeacherDeckClient API calls, multi-host Tailscale switching, thumbnail caching,
+and TeacherDeckWindow touch operations (staging grid, clear-space image placement,
+409 conflict handling, freeze/resume toggles, page navigation, display switching,
+MrSutherland.net Launchpad tab, Glass Ink overlay controls, Hermes Showrunner
+predictive cues, and offline resilience).
 """
 from __future__ import annotations
 
-import io
+import json
 import os
 from pathlib import Path
 import sys
+from typing import Any
 import uuid
 
-from PIL import Image
 import pytest
 from PySide6.QtWidgets import QApplication
 
@@ -27,7 +29,12 @@ from teacher_deck_models import StagedImageItem
 from teacher_deck_server import TeacherDeckServer
 from test_teacher_deck import TEST_TOKEN, create_png_bytes, setup_deck_fixtures
 
-from tools.pi_touchscreen.deck_client import DeckClientError, TeacherDeckClient
+from tools.pi_touchscreen.deck_client import (
+    DeckClientError,
+    InProcessDeckClient,
+    TeacherDeckClient,
+    load_deck_config,
+)
 from tools.pi_touchscreen.deck_ui import TeacherDeckWindow
 
 
@@ -345,5 +352,224 @@ def test_deck_window_offline_resilience(qapp):
         window.refresh_state()
         assert window.connected is False
         assert "Waiting for Classroom PC" in window.connection_label.text()
+    finally:
+        window.close()
+
+
+def test_multi_host_config_and_host_combo_switching(tmp_path, qapp):
+    """JoshuaOS Podium supports multi-host Tailscale config and one-tap host switching."""
+    cfg_file = tmp_path / "podium_config.json"
+    cfg_data = {
+        "active_host_id": "home-pc",
+        "hosts": [
+            {
+                "id": "school-pc",
+                "label": "School Classroom PC",
+                "url": "http://school-pc.tailnet.ts.net:8790",
+                "token": "school-secret",
+            },
+            {
+                "id": "home-pc",
+                "label": "Home Desktop PC",
+                "url": "http://home-pc.tailnet.ts.net:8790",
+                "token": "home-secret",
+            },
+        ],
+        "width": 1920,
+        "height": 1080,
+        "kiosk": True,
+    }
+    cfg_file.write_text(json.dumps(cfg_data), encoding="utf-8")
+
+    cfg = load_deck_config(cfg_file)
+    assert cfg["active_host_id"] == "home-pc"
+    assert cfg["url"] == "http://home-pc.tailnet.ts.net:8790"
+    assert cfg["token"] == "home-secret"
+    assert len(cfg["hosts"]) == 2
+
+    client = TeacherDeckClient(
+        base_url=cfg["url"],
+        token=cfg["token"],
+        timeout=0.1,
+        hosts=cfg["hosts"],
+        active_host_id=cfg["active_host_id"],
+    )
+    client._thumb_cache["cached-v1"] = b"png-bytes"
+    assert client.get_active_host()["id"] == "home-pc"
+
+    window = TeacherDeckWindow(client, poll_ms=0)
+    try:
+        assert window.host_combo.count() == 2
+        assert window.host_combo.currentIndex() == 1
+
+        # Switch to School Classroom PC (index 0) via combo box
+        window.host_combo.setCurrentIndex(0)
+        assert client.active_host_id == "school-pc"
+        assert client.base_url == "http://school-pc.tailnet.ts.net:8790"
+        assert client.token == "school-secret"
+        assert len(client._thumb_cache) == 0
+        assert "School Classroom PC" in window.feedback_label.text()
+    finally:
+        window.close()
+
+
+class _FakePodiumBridge:
+    """In-process stub bridge exposing JoshuaOS Podium methods for UI testing."""
+
+    def __init__(self) -> None:
+        self.launched_urls: list[tuple[str, str]] = []
+        self.glass_calls: list[dict[str, Any]] = []
+        self.board_actions: list[str] = []
+        self.display_targets: list[str] = []
+        self.staged_queries: list[str] = []
+        self.catalogue: list[dict[str, Any]] = [
+            {
+                "id": "cat-fractions",
+                "title": "MrSutherland.net — Interactive Fractions Lab",
+                "category": "Maths",
+                "url": "https://mrsutherland.net/fractions",
+                "description": "Visual fraction bars and equivalence challenges",
+            },
+            {
+                "id": "cat-forces",
+                "title": "MrSutherland.net — Forces & Motion Simulator",
+                "category": "Science",
+                "url": "https://mrsutherland.net/forces",
+                "description": "Newtonian motion interactive sandbox",
+            },
+        ]
+        self.cues: list[dict[str, Any]] = [
+            {
+                "id": "cue-1",
+                "label": "🚀 Launch Fractions Lab",
+                "kind": "open_web",
+                "payload": {
+                    "url": "https://mrsutherland.net/fractions",
+                    "title": "Interactive Fractions Lab",
+                },
+            },
+            {
+                "id": "cue-2",
+                "label": "✏️ Circle Denominator (Red Ink)",
+                "kind": "glass_ink",
+                "payload": {"action": "draw", "colour": "red"},
+            },
+            {
+                "id": "cue-3",
+                "label": "🖼️ Stage Fraction Diagrams",
+                "kind": "stage_query",
+                "payload": {"query": "equivalent fractions diagram"},
+            },
+        ]
+
+    def get_status(self) -> dict[str, Any]:
+        return {
+            "ok": True,
+            "title": "Year 7 Fractions",
+            "page_id": "p1",
+            "page_index": 0,
+            "page_count": 1,
+            "frozen": False,
+            "active_display_target": self.display_targets[-1] if self.display_targets else "board",
+            "pages": [{"id": "p1", "title": "Page 1", "object_count": 0}],
+            "showrunner_cues": self.cues,
+        }
+
+    def list_staged(self, series_id: str | None = None) -> list[dict[str, Any]]:
+        return []
+
+    def list_catalogue(self) -> list[dict[str, Any]]:
+        return list(self.catalogue)
+
+    def open_web_lesson(self, url: str, title: str = "") -> dict[str, Any]:
+        self.launched_urls.append((url, title))
+        self.display_targets.append("chrome")
+        return {"ok": True, "url": url, "title": title}
+
+    def glass_control(
+        self,
+        action: str,
+        colour: str | None = None,
+        width: float | None = None,
+        target: str = "new_page",
+    ) -> dict[str, Any]:
+        call = {"action": action, "colour": colour, "width": width, "target": target}
+        self.glass_calls.append(call)
+        return {"ok": True, **call}
+
+    def stage_images(
+        self,
+        query: str | None = None,
+        version_ids: list[str] | None = None,
+        series_id: str | None = None,
+    ) -> tuple[str, list[dict[str, Any]]]:
+        if query:
+            self.staged_queries.append(query)
+        return ("series-1", [])
+
+    def board_control(self, action: str) -> dict[str, Any]:
+        self.board_actions.append(action)
+        return {"ok": True, "action": action}
+
+    def switch_display(self, target: str) -> dict[str, Any]:
+        self.display_targets.append(target)
+        return {"ok": True, "target": target}
+
+
+def test_podium_launchpad_glass_ink_and_showrunner_cues(qapp):
+    """JoshuaOS Podium Launchpad, Glass Ink rail, and Hermes Showrunner cues operate end-to-end."""
+    bridge = _FakePodiumBridge()
+    client = InProcessDeckClient(bridge)
+    window = TeacherDeckWindow(client, poll_ms=0)
+    try:
+        window.refresh_state()
+
+        # 1. Verify MrSutherland.net Launchpad tab populated from bridge catalogue
+        assert window.catalogue_list.count() == 2
+        window.catalogue_list.setCurrentRow(1)
+        assert window.web_url_input.text() == "https://mrsutherland.net/forces"
+
+        window.launch_web_button.click()
+        assert bridge.launched_urls[-1] == (
+            "https://mrsutherland.net/forces",
+            "MrSutherland.net — Forces & Motion Simulator",
+        )
+        assert window.active_display_target == "chrome"
+
+        # 2. Verify Glass Ink rail buttons and colour swatches
+        window.glass_colour_buttons["blue"].click()
+        assert window.active_glass_colour == "blue"
+        assert bridge.glass_calls[-1]["action"] == "colour"
+        assert bridge.glass_calls[-1]["colour"] == "blue"
+
+        window.glass_buttons["draw"].click()
+        assert bridge.glass_calls[-1]["action"] == "draw"
+        assert bridge.glass_calls[-1]["colour"] == "blue"
+        assert "DRAWING ON SCREEN" in window.glass_status_label.text()
+
+        window.glass_buttons["interact"].click()
+        assert bridge.glass_calls[-1]["action"] == "interact"
+        assert "CLICK-THROUGH" in window.glass_status_label.text()
+
+        window.glass_buttons["clear"].click()
+        assert bridge.glass_calls[-1]["action"] == "clear"
+
+        window.glass_buttons["snap_to_board"].click()
+        assert bridge.glass_calls[-1]["action"] == "snap_to_board"
+
+        # 3. Verify Hermes Showrunner predictive cues rendered and execute on tap
+        assert len(window.cue_buttons) == 3
+        assert window.cue_buttons[0].text() == "🚀 Launch Fractions Lab"
+        assert window.cue_buttons[1].text() == "✏️ Circle Denominator (Red Ink)"
+        assert window.cue_buttons[2].text() == "🖼️ Stage Fraction Diagrams"
+
+        window.cue_buttons[0].click()
+        assert bridge.launched_urls[-1] == (
+            "https://mrsutherland.net/fractions",
+            "Interactive Fractions Lab",
+        )
+
+        window.cue_buttons[2].click()
+        assert bridge.staged_queries[-1] == "equivalent fractions diagram"
     finally:
         window.close()
